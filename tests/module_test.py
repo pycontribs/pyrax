@@ -21,27 +21,33 @@ class TestCase(unittest.TestCase):
 
 	def test_cloudservers_images(self):
 		imgs = pyrax.cloudservers.images.list()
-		self.assert_(len(imgs) > 1)
-
+		self.assert_(isinstance(imgs, list))
 
 	def test_cloudfiles_base_container(self):
 		conts = pyrax.cloudfiles.get_container("")
-		self.assert_(len(conts) > 1)
+		self.assert_(isinstance(conts, tuple))
+
+	def test_keystone_tenants(self):
+		tenants = pyrax.keystone.tenants.list()
+		self.assert_(isinstance(tenants, list))
+
+	def test_cloud_loadbalancers(self):
+		lbs = pyrax.cloud_lbs.list()
+		self.assert_(isinstance(lbs, list))
+
+	def test_cloud_dns(self):
+		doms = pyrax.cloud_dns.get_domains()
+		print "DOMS", type(doms), doms
+		self.assert_(isinstance(doms, tuple))
+
+
+if __name__ == "__main__":
+	unittest.main()
 
 
 
 
 if False:
-	if True:
-		print "Tenants:", pyrax.keystone.tenants.list()
-	#	print "SVC", keystone.services.list()
-
-
-	if True:
-		print "LoadBalancers:", pyrax.cloud_lbs.list()
-		print dir(pyrax.cloud_lbs)
-	#	print dir(pyrax.cloud_lbs)
-
 	if True:
 #		pyrax.cloud_dns.create_domain(name='1234-example.com', ttl=300,
 #				emailAddress='me@example.com')
