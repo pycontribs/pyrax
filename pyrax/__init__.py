@@ -9,12 +9,20 @@ trace = pudb.set_trace
 import rax_identity as _rax_identity
 import version
 
-import clouddb as _cdb
-import clouddns as _cdns
+try:
+    import clouddb as _cdb
+    _USE_DB = True
+except ImportError:
+    _USE_DB = False
+try:
+    import clouddns as _cdns
+    _USE_DNS = True
+except ImportError:
+    _USE_DNS = False
+import cloudfiles as _cf
 import cloudlb as _cloudlb
 from keystoneclient.v2_0 import client as _ks_client
 from novaclient.v1_1 import client as _cs_client
-from swiftclient import client as _cf_client
 
 # These require Libcloud
 #import rackspace_monitoring.providers as mon_providers
@@ -123,9 +131,11 @@ def connect_to_cloudfiles(region=None):
     cf_url = identity.services["object_store"]["endpoints"][region]["public_url"]
     opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token, "endpoint_type": "publicURL",
             "tenant_name": identity.tenant_name, "object_storage_url": cf_url, "region_name": region}
-    cloudfiles = _cf_client.Connection(identity.auth_endpoint, identity.username, identity.api_key,
-            tenant_name=identity.tenant_name, preauthurl=cf_url, preauthtoken=identity.token,
-            auth_version="2", os_options=opts)
+    cloudfiles = _cf.get_connection(username=identity.username, api_key=identity.api_key)
+#    cloudfiles = _cf_client.Connection(identity.auth_endpoint, identity.username, identity.api_key,
+#            tenant_name=identity.tenant_name, preauthurl=cf_url, preauthtoken=identity.token,
+#            auth_version="2", os_options=opts)
+
 
 @_require_auth
 def connect_to_keystone():
@@ -149,6 +159,8 @@ def connect_to_cloud_lbs(region=None):
 
 @_require_auth
 def connect_to_cloud_dns(region=None):
+    if not _USE_DNS:
+        return
     global cloud_dns
     if region is None:
         region = default_region or FALLBACK_REGION
@@ -158,6 +170,8 @@ def connect_to_cloud_dns(region=None):
 
 @_require_auth
 def connect_to_cloud_db(region=None):
+    if not _USE_DB:
+        return
     global cloud_db
     if region is None:
         region = default_region or FALLBACK_REGION
