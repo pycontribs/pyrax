@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
-
 from sys import version
 if version < "2.2.3":
     from distutils.dist import DistributionMetadata
     DistributionMetadata.classifiers = None
     DistributionMetadata.download_url = None
+
+import pyrax
+
+
 setup(name = "pyrax",
-        version = "0.1.2",
+        version = pyrax.version.version,
         description = "Python language bindings for the Rackspace Cloud.",
         author = "Ed Leafe + various module authors",
         author_email = "ed.leafe@rackspace.com",
