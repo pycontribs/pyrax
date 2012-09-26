@@ -19,7 +19,7 @@ try:
     _USE_DNS = True
 except ImportError:
     _USE_DNS = False
-import cloudfiles as _cf
+import cfwrapper as _cf
 import cloudlb as _cloudlb
 from keystoneclient.v2_0 import client as _ks_client
 from novaclient.v1_1 import client as _cs_client
@@ -129,12 +129,13 @@ def connect_to_cloudfiles(region=None):
     if region is None:
         region = default_region or FALLBACK_REGION
     cf_url = identity.services["object_store"]["endpoints"][region]["public_url"]
+    cdn_url = identity.services["object_cdn"]["endpoints"][region]["public_url"]
     opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token, "endpoint_type": "publicURL",
-            "tenant_name": identity.tenant_name, "object_storage_url": cf_url, "region_name": region}
-    cloudfiles = _cf.get_connection(username=identity.username, api_key=identity.api_key)
-#    cloudfiles = _cf_client.Connection(identity.auth_endpoint, identity.username, identity.api_key,
-#            tenant_name=identity.tenant_name, preauthurl=cf_url, preauthtoken=identity.token,
-#            auth_version="2", os_options=opts)
+            "tenant_name": identity.tenant_name, "object_storage_url": cf_url, "object_cdn_url": cdn_url,
+            "region_name": region}
+    cloudfiles = _cf.get_connection(identity.auth_endpoint, identity.username, identity.api_key,
+            tenant_name=identity.tenant_name, preauthurl=cf_url, preauthtoken=identity.token,
+            auth_version="2", os_options=opts)
 
 
 @_require_auth
