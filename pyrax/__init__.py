@@ -133,9 +133,10 @@ def connect_to_cloudfiles(region=None):
     opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token, "endpoint_type": "publicURL",
             "tenant_name": identity.tenant_name, "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
-    cloudfiles = _cf.get_connection(identity.auth_endpoint, identity.username, identity.api_key,
+    cloudfiles = _cf.Client(identity.auth_endpoint, identity.username, identity.api_key,
             tenant_name=identity.tenant_name, preauthurl=cf_url, preauthtoken=identity.token,
             auth_version="2", os_options=opts)
+    cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)
 
 
 @_require_auth
