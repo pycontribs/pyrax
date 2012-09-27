@@ -9,6 +9,7 @@ trace = pudb.set_trace
 import rax_identity as _rax_identity
 import version
 
+import cf_wrapper.client as _cf
 try:
     import clouddb as _cdb
     _USE_DB = True
@@ -19,7 +20,6 @@ try:
     _USE_DNS = True
 except ImportError:
     _USE_DNS = False
-import cfwrapper as _cf
 import cloudlb as _cloudlb
 from keystoneclient.v2_0 import client as _ks_client
 from novaclient.v1_1 import client as _cs_client

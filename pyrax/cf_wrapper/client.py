@@ -8,206 +8,14 @@ import urllib
 import urlparse
 
 from swiftclient import client as _swift_client
+from pyrax.cf_wrapper.container import Container
+from pyrax.cf_wrapper.storage_object import StorageObject
 
 CONNECTION_TIMEOUT = 5
 
 
 import pudb
 trace = pudb.set_trace
-
-
-class Connection(_swift_client.Connection):
-    """This class wraps the swiftclient connection, adding support for CDN"""
-    def __init__(self, *args, **kwargs):
-        super(Connection, self).__init__(*args, **kwargs)
-        # Add the user_agent, if not defined
-        try:
-            self.user_agent
-        except AttributeError:
-            self.user_agent = "swiftclient"
-
-
-    def cdn_request(self, method, path=[], data="", hdrs=None):
-        """
-        Given a method (i.e. GET, PUT, POST, etc), a path, data, header and
-        metadata dicts, performs an http request against the CDN service.
-
-        Taken directly from the cloudfiles library and modified for use here.
-        """
-        def quote(val):
-            if isinstance(val, unicode):
-                val = val.encode("utf-8")
-            return urllib.quote(val)
-
-        pth = "/".join([quote(elem) for elem in path])
-        path = "/%s/%s" % (self.uri.rstrip("/"), pth)
-        headers = {"Content-Length": str(len(data)),
-                "User-Agent": self.user_agent,
-                "X-Auth-Token": self.token}
-        if isinstance(hdrs, dict):
-            headers.update(hdrs)
-
-        def retry_request():
-            """Re-connect and re-try a failed request once"""
-            self.cdn_connect()
-            self.cdn_connection.request(method, path, data, headers)
-            return self.cdn_connection.getresponse()
-
-        try:
-            self.cdn_connection.request(method, path, data, headers)
-            response = self.cdn_connection.getresponse()
-        except (socket.error, IOError, httplib.HTTPException):
-            response = retry_request()
-        if response.status == 401:
-            self._authenticate()
-            headers["X-Auth-Token"] = self.token
-            response = retry_request()
-        return response
-
-
-    @property
-    def uri(self):
-        return self.connection.url
-
-
-
-class Container(object):
-    """Represents a CloudFiles container."""
-    def __init__(self, client, name, object_count=None, total_bytes=None):
-        self.client = client
-        self.name = name
-        self.object_count = object_count
-        self.total_bytes = total_bytes
-
-
-    def get_objects(self, limit=None, marker=None, **parms):
-        """
-        Return a list of StorageObjects representing the objects in 
-        the container.
-        """
-        objs = self.client.get_container_objects(self.name)
-        return objs
-
-
-    def get_object(self, name):
-        """
-        Return the StorageObject in this container with the
-        specified name.
-        """
-        objs = [obj for obj in self.client.get_container_objects(self.name)
-                if obj.name == name]
-        try:
-            return objs[0]
-        except IndexError:
-            raise Exception("No object with the name '%s' exists")
-
-
-    def delete(self, del_objects=False):
-        """
-        Deletes this Container. If the container contains objects, the
-        command will fail unless 'del_objects' is passed as True. In that
-        case, each object will be deleted first, and then the container.
-        """
-        self.client.delete_container(self.name, del_objects=del_objects)
-
-
-    def get_metadata(self):
-        return self.client.get_container_metadata(self)
-
-
-    def set_metadata(self, metadata, clear=False):
-        self.client.set_container_metadata(self, metadata, clear=clear)
-
-
-    def __repr__(self):
-        return "<Container '%s'>" % self.name
-
-
-#cn.auth                    cn.cdn_args                cn.cdn_connect             cn.cdn_connection          cn.cdn_enabled             cn.cdn_request
-#cn.cdn_url                 cn.conn_class              cn.connection              cn.connection_args         cn.create_container        cn.debuglevel
-#cn.delete_container        cn.get_all_containers      cn.get_container           cn.get_info                cn.http_connect            cn.list_containers
-#cn.list_containers_info    cn.list_public_containers  cn.make_request            cn.servicenet              cn.timeout                 cn.token
-#cn.uri                     cn.user_agent
-
-
-
-class StorageObject(object):
-    """Represents a CloudFiles storage object."""
-    def __init__(self, client, container, name=None, total_bytes=None, content_type=None,
-            last_modified=None, hashval=None, attdict=None):
-        """
-        The object can either be initialized with individual params, or by
-        passing the dict that is returned by swiftclient.
-        """
-        self.client = client
-        if isinstance(container, basestring):
-            self.container = self.client.get_container(container)
-        else:
-            self.container = container
-        self.name = name
-        self.total_bytes = total_bytes
-        self.content_type = content_type
-        self.last_modified = last_modified
-        self.hashval = hashval
-        if attdict:
-            self._read_attdict(attdict)
-
-
-    def _read_attdict(self, dct):
-        """Populate the object attributes using the dict returned by swiftclient."""
-        self.name = dct["name"]
-        self.total_bytes = dct.get("bytes")
-        self.content_type = dct.get("content_type")
-        self.last_modified = dct.get("last_modified")
-        self.hashval = dct.get("hash")
-
-
-    def get(self, chunk_size=None, include_meta=False):
-        """
-        Returns the object from storage.
-
-        If include_meta is False, only the bytes representing the
-        file is returned.
-        
-        When include_meta is True, what is returned from this method is a 2-tuple:
-            Element 0: a dictionary containing metadata about the file,
-                with the following keys:
-                    accept-ranges
-                    content-length
-                    content-type
-                    date
-                    etag
-                    last-modified
-                    x-timestamp
-                    x-trans-id
-
-            Element 1: a stream of bytes representing the object's contents.
-                Note: if 'chunk_size' is defined, you must fully read the object's
-                contents before making another request.
-        """
-        meta, data = self.client.get_object(container=self.container.name, name=self.name,
-                chunk_size=chunk_size)
-        if include_meta:
-            return (meta, data)
-        else:
-            return data
-
-
-    def delete(self):
-        """Deletes the object from storage."""
-        self.client.delete_object(container=self.container.name, name=self.name)
-
-
-    def get_metadata(self):
-        return self.client.get_object_metadata(self.container, self)
-
-
-    def set_metadata(self, metadata, clear=False):
-        self.client.set_object_metadata(self.container, self, metadata, clear=clear)
-
-
-    def __repr__(self):
-        return "<Object '%s' (%s)>" % (self.name, self.content_type)
 
 
 
@@ -510,3 +318,61 @@ class Client(object):
         self.connection.user_agent = val
 
     user_agent = property(_get_user_agent, _set_user_agent)
+
+
+
+class Connection(_swift_client.Connection):
+    """This class wraps the swiftclient connection, adding support for CDN"""
+    def __init__(self, *args, **kwargs):
+        super(Connection, self).__init__(*args, **kwargs)
+        # Add the user_agent, if not defined
+        try:
+            self.user_agent
+        except AttributeError:
+            self.user_agent = "swiftclient"
+
+
+    def cdn_request(self, method, path=[], data="", hdrs=None):
+        """
+        Given a method (i.e. GET, PUT, POST, etc), a path, data, header and
+        metadata dicts, performs an http request against the CDN service.
+
+        Taken directly from the cloudfiles library and modified for use here.
+        """
+        def quote(val):
+            if isinstance(val, unicode):
+                val = val.encode("utf-8")
+            return urllib.quote(val)
+
+        pth = "/".join([quote(elem) for elem in path])
+        path = "/%s/%s" % (self.uri.rstrip("/"), pth)
+        headers = {"Content-Length": str(len(data)),
+                "User-Agent": self.user_agent,
+                "X-Auth-Token": self.token}
+        if isinstance(hdrs, dict):
+            headers.update(hdrs)
+
+        def retry_request():
+            """Re-connect and re-try a failed request once"""
+            self.cdn_connect()
+            self.cdn_connection.request(method, path, data, headers)
+            return self.cdn_connection.getresponse()
+
+        try:
+            self.cdn_connection.request(method, path, data, headers)
+            response = self.cdn_connection.getresponse()
+        except (socket.error, IOError, httplib.HTTPException):
+            response = retry_request()
+        if response.status == 401:
+            self._authenticate()
+            headers["X-Auth-Token"] = self.token
+            response = retry_request()
+        return response
+
+
+    @property
+    def uri(self):
+        return self.connection.url
+
+
+
