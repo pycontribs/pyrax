@@ -24,8 +24,8 @@ class TestCase(unittest.TestCase):
         self.assert_(isinstance(imgs, list))
 
     def test_cloudfiles_base_container(self):
-        conts = pyrax.cloudfiles.get_container("")
-        self.assert_(isinstance(conts, tuple))
+        conts = pyrax.cloudfiles.get_all_containers()
+        self.assert_(isinstance(conts, list))
 
     def test_keystone_tenants(self):
         tenants = pyrax.keystone.tenants.list()
@@ -36,9 +36,15 @@ class TestCase(unittest.TestCase):
         self.assert_(isinstance(lbs, list))
 
     def test_cloud_dns(self):
-        doms = pyrax.cloud_dns.get_domains()
-        print "DOMS", type(doms), doms
-        self.assert_(isinstance(doms, tuple))
+        if pyrax._USE_DNS:
+            doms = pyrax.cloud_dns.get_domains()
+            for dom in doms:
+                self.assert_(isinstance(dom.name, basestring))
+
+    def test_cloud_db(self):
+        if pyrax._USE_DB:
+            flavors = pyrax.cloud_db.list_flavors()
+            self.assert_(isinstance(flavors, list))
 
 
 if __name__ == "__main__":

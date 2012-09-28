@@ -26,47 +26,45 @@ class StorageObject(object):
 
     def _read_attdict(self, dct):
         """Populate the object attributes using the dict returned by swiftclient."""
-        self.name = dct["name"]
+        self.name = dct.get("name")
+        if not self.name:
+            # Could be a pseudo-subdirectory
+            self.name = dct.get("subdir").rstrip("/")
+            self.content_type = "pseudo/subdir"
+        else:
+            self.content_type = dct.get("content_type")
         self.total_bytes = dct.get("bytes")
-        self.content_type = dct.get("content_type")
         self.last_modified = dct.get("last_modified")
         self.hashval = dct.get("hash")
 
 
-    def get(self, chunk_size=None, include_meta=False):
+    def get(self, include_meta=False, chunk_size=None):
         """
-        Returns the object from storage.
+        Fetches the object from storage.
 
-        If include_meta is False, only the bytes representing the
+        If 'include_meta' is False, only the bytes representing the
         file is returned.
-        
-        When include_meta is True, what is returned from this method is a 2-tuple:
-            Element 0: a dictionary containing metadata about the file,
-                with the following keys:
-                    accept-ranges
-                    content-length
-                    content-type
-                    date
-                    etag
-                    last-modified
-                    x-timestamp
-                    x-trans-id
 
+        Note: if 'chunk_size' is defined, you must fully read the object's
+        contents before making another request.
+        
+        When 'include_meta' is True, what is returned from this method is a 2-tuple:
+            Element 0: a dictionary containing metadata about the file.
             Element 1: a stream of bytes representing the object's contents.
-                Note: if 'chunk_size' is defined, you must fully read the object's
-                contents before making another request.
         """
-        meta, data = self.client.get_object(container=self.container.name, name=self.name,
-                chunk_size=chunk_size)
-        if include_meta:
-            return (meta, data)
-        else:
-            return data
+        return self.client.fetch_object(container=self.container.name,
+                obj_name=self.name, include_meta=include_meta, chunk_size=chunk_size)
 
 
     def delete(self):
         """Deletes the object from storage."""
         self.client.delete_object(container=self.container.name, name=self.name)
+
+
+    def purge(self, email_addresses=[]):
+        """Purges the object from the CDN network, sending an optional email confirmation."""
+        self.client.purge_cdn_object(container=self.container.name, name=self.name,
+                email_addresses=email_addresses)
 
 
     def get_metadata(self):

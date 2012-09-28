@@ -9,14 +9,43 @@ class Container(object):
         self.name = name
         self.object_count = object_count
         self.total_bytes = total_bytes
+        self.cdn_uri = None
+        self.cdn_ttl = client.default_cdn_ttl
+        self.cdn_ssl_uri = None
+        self.cdn_streaming_uri = None
+        self.cdn_log_retention = False
+        self._fetch_cdn_data()
+        self._object_cache = {}
 
 
-    def get_objects(self, limit=None, marker=None, **parms):
+    def _fetch_cdn_data(self):
+        """Fetch the object's CDN data from the CDN service"""
+        response = self.client.connection.cdn_request("HEAD", [self.name])
+        if 200 <= response.status < 300:
+            for hdr in response.getheaders():
+                if hdr[0].lower() == "x-cdn-uri":
+                    self.cdn_uri = hdr[1]
+                if hdr[0].lower() == "x-ttl":
+                    self.cdn_ttl = int(hdr[1])
+                if hdr[0].lower() == "x-cdn-ssl-uri":
+                    self.cdn_ssl_uri = hdr[1]
+                if hdr[0].lower() == "x-cdn-streaming-uri":
+                    self.cdn_streaming_uri = hdr[1]
+                if hdr[0].lower() == "x-log-retention":
+                    self.cdn_log_retention = (hdr[1] == "True")
+
+
+    def get_objects(self, marker=None, limit=None, prefix=None, delimiter=None,
+            full_listing=False):
         """
-        Return a list of StorageObjects representing the objects in 
-        the container.
+        Return a list of StorageObjects representing the objects in the container.
+        You can use the marker and limit params to handle pagination, and the prefix
+        and delimiter params to filter the objects returned. Also, by default only
+        the first 10,000 objects are returned; if you set full_listing to True, all
+        objects in the container are returned.
         """
-        objs = self.client.get_container_objects(self.name)
+        objs = self.client.get_container_objects(self.name, marker=marker, limit=limit,
+                prefix=prefix, delimiter=delimiter, full_listing=full_listing)
         return objs
 
 
@@ -25,12 +54,16 @@ class Container(object):
         Return the StorageObject in this container with the
         specified name.
         """
-        objs = [obj for obj in self.client.get_container_objects(self.name)
-                if obj.name == name]
-        try:
-            return objs[0]
-        except IndexError:
-            raise Exception("No object with the name '%s' exists")
+        ret = self._object_cache.get(name)
+        if not ret:
+            objs = [obj for obj in self.client.get_container_objects(self.name)
+                    if obj.name == name]
+            try:
+                ret = objs[0]
+            except IndexError:
+                raise Exception("No object with the name '%s' exists")
+            self._object_cache[name] = ret
+        return ret
 
 
     def delete(self, del_objects=False):
@@ -50,13 +83,47 @@ class Container(object):
         self.client.set_container_metadata(self, metadata, clear=clear)
 
 
+    def set_web_index_page(self, page):
+        """
+        Sets the header indicating the index page for this container
+        when creating a static website.
+
+        Note: the container must be CDN-enabled for this to have
+        any effect.
+        """
+        self.client.set_container_index_page(self, page)
+
+
+    def set_web_error_page(self, page):
+        """
+        Sets the header indicating the error page for this container
+        when creating a static website.
+
+        Note: the container must be CDN-enabled for this to have
+        any effect.
+        """
+        self.client.set_container_error_page(self, page)
+
+
+    def make_public(self, ttl=None):
+        """Enables CDN access for the specified container."""
+        return self.client.make_container_public(self, ttl)
+
+
+    def make_private(self):
+        """
+        Disables CDN access to this container. It may still appear public until
+        its TTL expires.
+        """
+        return self.client.make_container_private(self)
+
+
+    @property
+    def cdn_enabled(self):
+        return bool(self.cdn_uri)
+
+
     def __repr__(self):
         return "<Container '%s'>" % self.name
 
-
-#cn.auth                    cn.cdn_args                cn.cdn_connect             cn.cdn_connection          cn.cdn_enabled             cn.cdn_request
-#cn.cdn_url                 cn.conn_class              cn.connection              cn.connection_args         cn.create_container        cn.debuglevel
-#cn.delete_container        cn.get_all_containers      cn.get_container           cn.get_info                cn.http_connect            cn.list_containers
-#cn.list_containers_info    cn.list_public_containers  cn.make_request            cn.servicenet              cn.timeout                 cn.token
-#cn.uri                     cn.user_agent
 

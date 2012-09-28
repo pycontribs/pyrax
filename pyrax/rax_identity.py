@@ -13,8 +13,6 @@ import pudb
 trace = pudb.set_trace
 
 
-TOKEN_FILE = os.path.join(os.getenv("HOME"), ".rackspace_cloud_token")
-CREDS_FILE = os.path.join(os.getenv("HOME"), ".rackspace_cloud_credentials")
 API_DATE_PATTERN = re.compile(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})")
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
