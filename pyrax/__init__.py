@@ -33,6 +33,7 @@ class NotAuthenticatedError(Exception):
     pass
 
 
+# This can be changed for unit testing or for other identity managers.
 identity = _rax_identity.Identity()
 # Initiate the services to None until we are authenticated.
 cloudservers = None

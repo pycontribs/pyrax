@@ -32,7 +32,6 @@ class Identity(object):
     expires = ""
     authenticated = False
 
-
     def __init__(self, username=None, api_key=None, token=None,
             credential_file=None):
         self.username = username
@@ -148,7 +147,8 @@ class Identity(object):
         return bool(self.token and (self.expires > datetime.datetime.now()))
 
 
-    def _parse_api_time(self, timestr):
+    @staticmethod
+    def _parse_api_time(timestr):
         """Typical expiration times returned from the auth server are in this format:
         2012-05-02T14:27:40.000-05:00
 
@@ -163,27 +163,3 @@ class Identity(object):
         else:
             ret = base_dt + delta
         return ret
-
-
-    def dt_format(self, val):
-        """If a datetime value is supplied, returns a string using the standard
-        format in DATE_FORMAT. If a string is supplied, the reverse is run, and
-        the equivalent datetime value is returned.
-        """
-        if isinstance(val, basestring):
-            return datetime.datetime.strptime(val, DATE_FORMAT)
-        else:
-            return val.strftime(DATE_FORMAT)
-
-
-    def auth_wrapper(fnc):
-        def _wrapped(self, *args, **kwargs):
-            try:
-                return fnc(self, *args, **kwargs)
-            except urllib2.HTTPError as e:
-                if e.code == 401:
-                    self.authenticate()
-                    return fnc(self, *args, **kwargs)
-                else:
-                    print "ERROR:", type(e), e.msg
-        return _wrapped

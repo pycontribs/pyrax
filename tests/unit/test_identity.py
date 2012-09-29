@@ -85,13 +85,6 @@ class IdentityTest(unittest.TestCase):
         parsed = self.ident._parse_api_time(test_date)
         self.assertEqual(parsed, expected)
 
-    def test_dt_format(self):
-        now = datetime.datetime.now()
-        str_now = self.ident.dt_format(now)
-        unformatted = self.ident.dt_format(str_now)
-        # Need to compare timetuples, since they ignore microseconds.
-        self.assertEqual(now.timetuple(), unformatted.timetuple())
-
 
 if __name__ == "__main__":
     unittest.main()

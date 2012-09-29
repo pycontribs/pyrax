@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from pyrax import exceptions as exc
+
 
 class Container(object):
     """Represents a CloudFiles container."""
@@ -61,7 +63,7 @@ class Container(object):
             try:
                 ret = objs[0]
             except IndexError:
-                raise Exception("No object with the name '%s' exists")
+                raise exc.NoSuchObject("No object with the name '%s' exists")
             self._object_cache[name] = ret
         return ret
 
@@ -91,7 +93,7 @@ class Container(object):
         Note: the container must be CDN-enabled for this to have
         any effect.
         """
-        self.client.set_container_index_page(self, page)
+        self.client.set_container_web_index_page(self, page)
 
 
     def set_web_error_page(self, page):
@@ -102,7 +104,7 @@ class Container(object):
         Note: the container must be CDN-enabled for this to have
         any effect.
         """
-        self.client.set_container_error_page(self, page)
+        self.client.set_container_web_error_page(self, page)
 
 
     def make_public(self, ttl=None):

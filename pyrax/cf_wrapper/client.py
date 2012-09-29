@@ -13,6 +13,8 @@ import urlparse
 from swiftclient import client as _swift_client
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
+import pyrax.exceptions as exc
+
 
 CONNECTION_TIMEOUT = 5
 
@@ -20,6 +22,22 @@ CONNECTION_TIMEOUT = 5
 import pudb
 trace = pudb.set_trace
 
+
+no_such_container_pattern = re.compile(r"Container GET|HEAD failed: .+/(.+) 404")
+
+
+def handle_swiftclient_exception(fnc):
+    def _wrapped(*args, **kwargs):
+        try:
+            return fnc(*args, **kwargs)
+        except _swift_client.ClientException as e:
+            str_error = "%s" % e
+            bad_container = no_such_container_pattern.search(str_error)
+            if bad_container:
+                raise exc.NoSuchContainer("Container '%s' doesn't exist" % bad_container.groups()[0])
+            # Not handled; re-raise
+            raise
+    return _wrapped
 
 
 class Client(object):
@@ -74,36 +92,35 @@ class Client(object):
         return ret
 
 
+    def _resolve_name(self, val):
+        return val if isinstance(val, basestring) else val.name
+
+
+    @handle_swiftclient_exception
     def get_account_metadata(self):
-        try:
-            headers = self.connection.head_account()
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        headers = self.connection.head_account()
         prfx = self.account_meta_prefix.lower()
         ret = {}
         for hkey, hval in headers.iteritems():
-            if hkey.startswith(prfx):
+            if hkey.lower().startswith(prfx):
                 ret[hkey] = hval
         return ret
 
 
+    @handle_swiftclient_exception
     def get_container_metadata(self, container):
         """Returns a dictionary containing the metadata for the container."""
         cname = self._resolve_name(container)
-        try:
-            headers = self.connection.head_container(cname)
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        headers = self.connection.head_container(cname)
         prfx = self.container_meta_prefix.lower()
         ret = {}
         for hkey, hval in headers.iteritems():
-            if hkey.startswith(prfx):
+            if hkey.lower().startswith(prfx):
                 ret[hkey] = hval
         return ret
 
 
+    @handle_swiftclient_exception
     def set_container_metadata(self, container, metadata, clear=False):
         """
         Accepts a dictionary of metadata key/value pairs and updates
@@ -122,26 +139,20 @@ class Client(object):
             for ckey in curr_meta:
                 new_meta[ckey] = ""
         new_meta.update(massaged)
-        try:
-            self.connection.post_container(cname, new_meta)
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        self.connection.post_container(cname, new_meta)
 
 
+    @handle_swiftclient_exception
     def get_container_cdn_metadata(self, container):
         """Returns a dictionary containing the CDN metadata for the container."""
         cname = self._resolve_name(container)
-        try:
-            response = self.connection.cdn_request("HEAD", [cname])
-            headers = response.getheaders()
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        response = self.connection.cdn_request("HEAD", [cname])
+        headers = response.getheaders()
         # headers is a list of 2-tuples instead of a dict.
         return dict(headers)
 
 
+    @handle_swiftclient_exception
     def set_container_cdn_metadata(self, container, metadata):
         """
         Accepts a dictionary of metadata key/value pairs and updates
@@ -160,32 +171,26 @@ class Client(object):
                 continue
             hdrs[mkey] = str(mval)
         if bad:
-            raise Exception("The only CDN metadata you can update are: X-Log-Retention, X-CDN-enabled, and X-TTL. "
+            raise exc.InvalidCDNMetada("The only CDN metadata you can update are: X-Log-Retention, X-CDN-enabled, and X-TTL. "
                     "Received the following illegal item(s): %s" % ", ".join(bad))
-        try:
-            self.connection.cdn_request("POST", [ct.name], hdrs=hdrs)
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        self.connection.cdn_request("POST", [ct.name], hdrs=hdrs)
 
 
+    @handle_swiftclient_exception
     def get_object_metadata(self, container, obj):
         """Retrieves any metadata for the specified object."""
         cname = self._resolve_name(container)
         oname = self._resolve_name(obj)
-        try:
-            headers = self.connection.head_object(cname, oname)
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        headers = self.connection.head_object(cname, oname)
         prfx = self.object_meta_prefix.lower()
         ret = {}
         for hkey, hval in headers.iteritems():
-            if hkey.startswith(prfx):
+            if hkey.lower().startswith(prfx):
                 ret[hkey] = hval
         return ret
 
 
+    @handle_swiftclient_exception
     def set_object_metadata(self, container, obj, metadata, clear=False):
         """
         Accepts a dictionary of metadata key/value pairs and updates
@@ -207,65 +212,48 @@ class Client(object):
         if not clear:
             new_meta = self.get_object_metadata(cname, oname)
         new_meta.update(massaged)
-        try:
-            self.connection.post_object(cname, oname, new_meta)
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        self.connection.post_object(cname, oname, new_meta)
 
 
+    @handle_swiftclient_exception
     def create_container(self, name):
-        try:
-            self.connection.put_container(name)
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        """Creates a container with the specified name."""
+        self.connection.put_container(name)
         return self.get_container(name)
 
 
-    def _resolve_name(self, val):
-        return val if isinstance(val, basestring) else val.name
-
-
+    @handle_swiftclient_exception
     def delete_container(self, container, del_objects=False):
         cname = self._resolve_name(container)
         if del_objects:
             objs = self.get_container_object_names(cname)
             for obj in objs:
                 self.delete_object(cname, obj)
-        try:
-            self.connection.delete_container(cname)
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        self.connection.delete_container(cname)
         return True
 
 
+    @handle_swiftclient_exception
     def delete_object(self, container, name):
         ct = self.get_container(container)
         oname = self._resolve_name(name)
-        try:
-            self.connection.delete_object(ct.name, oname)
-        except _swift_client.ClientException:
-            raise
+        self.connection.delete_object(ct.name, oname)
         return True
  
 
+    @handle_swiftclient_exception
     def purge_cdn_object(self, container, name, email_addresses=[]):
         ct = self.get_container(container)
         oname = self._resolve_name(name)
         if not ct.cdn_enabled:
-            raise Exception("The object '%s' is not in a CDN-enabled container." % oname)
+            raise exc.NotCDNEnabled("The object '%s' is not in a CDN-enabled container." % oname)
         hdrs = {}
         if email_addresses:
             if not isinstance(email_addresses, (list, tuple)):
                 email_addresses = [email_addresses]
             emls = ", ".join(email_addresses)
             hdrs = {"X-Purge-Email": emls}
-        try:
-            self.connection.cdn_request("DELETE", ct.name, oname, hdrs=hdrs)
-        except _swift_client.ClientException:
-            raise
+        self.connection.cdn_request("DELETE", ct.name, oname, hdrs=hdrs)
         return True
 
 
@@ -360,7 +348,7 @@ class Client(object):
         if ispath:
             # Make sure it exists
             if not os.path.exists(file_or_path):
-                raise IOError("The file '%s' does not exist" % file_or_path)
+                raise exc.FileNotFound("The file '%s' does not exist" % file_or_path)
             fname = os.path.basename(file_or_path)
         else:
             fname = file_or_path.name
@@ -398,34 +386,29 @@ class Client(object):
             return data
 
 
+    @handle_swiftclient_exception
     def get_all_containers(self, limit=None, marker=None, **parms):
-        try:
-            hdrs, conts = self.connection.get_container("")
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        hdrs, conts = self.connection.get_container("")
         ret = [Container(self, name=cont["name"], object_count=cont["count"],
                 total_bytes=cont["bytes"]) for cont in conts]
         return ret
 
 
+    @handle_swiftclient_exception
     def get_container(self, container):
         cname = self._resolve_name(container)
         if not cname:
-            raise Exception("No container name specified")
+            raise exc.MissingName("No container name specified")
         cont = self._container_cache.get(cname)
         if not cont:
-            try:
-                hdrs = self.connection.head_container(cname)
-            except _swift_client.ClientException:
-                # Do something else?
-                raise
-            cont = Container(self, name=cname, object_count=hdrs["x-container-object-count"],
-                    total_bytes=hdrs["x-container-bytes-used"])
+            hdrs = self.connection.head_container(cname)
+            cont = Container(self, name=cname, object_count=hdrs.get("x-container-object-count"),
+                    total_bytes=hdrs.get("x-container-bytes-used"))
             self._container_cache[cname] = cont
         return cont
 
 
+    @handle_swiftclient_exception
     def get_container_objects(self, container, marker=None, limit=None, prefix=None,
             delimiter=None, full_listing=False):
         """
@@ -436,35 +419,25 @@ class Client(object):
         objects in the container are returned.
         """
         cname = self._resolve_name(container)
-        try:
-            hdrs, objs = self.connection.get_container(cname, marker=marker, limit=limit,
-                    prefix=prefix, delimiter=delimiter, full_listing=full_listing)
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        hdrs, objs = self.connection.get_container(cname, marker=marker, limit=limit,
+                prefix=prefix, delimiter=delimiter, full_listing=full_listing)
         cont = self.get_container(cname)
         return [StorageObject(self, container=cont, attdict=obj) for obj in objs
                 if "name" in obj]
 
 
+    @handle_swiftclient_exception
     def get_container_object_names(self, container):
         cname = self._resolve_name(container)
-        try:
-            hdrs, objs = self.connection.get_container(cname)
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        hdrs, objs = self.connection.get_container(cname)
         cont = self.get_container(cname)
         return [obj["name"] for obj in objs]
 
 
+    @handle_swiftclient_exception
     def get_info(self):
         """Return tuple for number of containers and total bytes in the account."""
-        try:
-            hdrs = self.connection.head_container("")
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        hdrs = self.connection.head_container("")
         return (hdrs["x-account-container-count"], hdrs["x-account-bytes-used"])
 
 
@@ -474,17 +447,15 @@ class Client(object):
         return cont.cdn_streaming_uri
 
 
+    @handle_swiftclient_exception
     def list_containers(self, limit=None, marker=None, **parms):
         """Returns a list of all container names as strings."""
-        try:
-            hdrs, conts = self.connection.get_container("")
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        hdrs, conts = self.connection.get_container("")
         ret = [cont["name"] for cont in conts]
         return ret
 
 
+    @handle_swiftclient_exception
     def list_containers_info(self, limit=None, marker=None, **parms):
         """Returns a list of info on Containers.
         
@@ -493,24 +464,17 @@ class Client(object):
             count - the number of objects in the container
             bytes - the total bytes in the container
         """
-        try:
-            hdrs, conts = self.connection.get_container("")
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        hdrs, conts = self.connection.get_container("")
         return conts
 
 
+    @handle_swiftclient_exception
     def list_public_containers(self):
         """Returns a list of all CDN-enabled containers."""
-        try:
-            response = self.connection.cdn_request("GET", [""])
-        except _swift_client.ClientException:
-            # Do something else?
-            raise
+        response = self.connection.cdn_request("GET", [""])
         status = response.status
         if not 200 <= status < 300:
-            raise Exception("Bad response: (%s) %s" % (status, response.reason))
+            raise exc.CDNFailed("Bad response: (%s) %s" % (status, response.reason))
         return response.read().splitlines()
 
 
@@ -539,7 +503,7 @@ class Client(object):
         response = self.connection.cdn_request(mthd, [ct.name], hdrs=hdrs)
         status = response.status
         if not 200 <= status < 300:
-            raise Exception("Bad response: (%s) %s" % (status, response.reason))
+            raise exc.CDNFailed("Bad response: (%s) %s" % (status, response.reason))
         ct.cdn_ttl = ttl
         for hdr in response.getheaders():
             if hdr[0].lower() == "x-cdn-uri":
@@ -553,11 +517,11 @@ class Client(object):
         response = self.connection.cdn_request("POST", [ct.name], hdrs=hdrs)
         status = response.status
         if not 200 <= status < 300:
-            raise Exception("Bad response: (%s) %s" % (status, response.reason))
+            raise exc.CDNFailed("Bad response: (%s) %s" % (status, response.reason))
         ct.cdn_log_retention = enabled
 
 
-    def set_container_index_page(self, container, page):
+    def set_container_web_index_page(self, container, page):
         """
         Sets the header indicating the index page in a container
         when creating a static website.
@@ -569,7 +533,7 @@ class Client(object):
         return self.set_container_metadata(container, hdr, clear=False)
 
 
-    def set_container_error_page(self, container, page):
+    def set_container_web_error_page(self, container, page):
         """
         Sets the header indicating the error page in a container
         when creating a static website.
@@ -665,6 +629,3 @@ class Connection(_swift_client.Connection):
     @property
     def uri(self):
         return self.url
-
-
-
