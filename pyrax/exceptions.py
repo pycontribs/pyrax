@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
+class NotAuthenticated(Exception):
+    pass
+
 class InvalidCDNMetada(Exception):
     pass
 

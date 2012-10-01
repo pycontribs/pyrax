@@ -30,7 +30,10 @@ class Identity(object):
     api_key = ""
     token = ""
     expires = ""
+    tenant_id = ""
+    tenant_name = ""
     authenticated = False
+    services = {}
 
     def __init__(self, username=None, api_key=None, token=None,
             credential_file=None):
@@ -57,11 +60,11 @@ class Identity(object):
         except IOError:
             # No such file
             log.error("Credential file is missing")
-            return
+            raise
         except ValueError:
             # Invalid JSON in the file
             log.error("Credential file does not contain valid JSON.")
-            return
+            raise
         try:
             creds = raw_creds["auth"]["RAX-KSKEY:apiKeyCredentials"]
             self.username = creds["username"]

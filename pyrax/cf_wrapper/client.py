@@ -6,13 +6,13 @@ import math
 import os
 import re
 import socket
-import tempfile
 import urllib
 import urlparse
 
 from swiftclient import client as _swift_client
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
+import pyrax.common.utils as utils
 import pyrax.exceptions as exc
 
 
@@ -332,13 +332,12 @@ class Client(object):
             for segment in xrange(num_segments):
                 sequence = str(segment + 1).zfill(digits)
                 seg_name = "%s.%s" % (fname, sequence)
-                fd, tmpname = tempfile.mkstemp()
-                os.close(fd)
-                with file(tmpname, "wb") as tmp:
-                    tmp.write(fileobj.read(self.max_file_size))
-                with file(tmpname, "rb") as tmp:
-                    self.connection.put_object(cont.name, seg_name,
-                            contents=tmp, content_type=content_type)
+                with utils.SelfDeletingTempfile() as tmpname:
+                    with file(tmpname, "wb") as tmp:
+                        tmp.write(fileobj.read(self.max_file_size))
+                    with file(tmpname, "rb") as tmp:
+                        self.connection.put_object(cont.name, seg_name,
+                                contents=tmp, content_type=content_type)
             # Upload the manifest
             hdr = {"X-Object-Meta-Manifest": "%s." % fname}
             return self.connection.put_object(cont.name, fname,

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import tempfile
 import unittest
 
 from mock import patch
@@ -10,6 +9,7 @@ from mock import MagicMock as Mock
 
 import pyrax
 from pyrax.cf_wrapper.container import Container
+import pyrax.common.utils as utils
 import pyrax.exceptions as exc
 from tests.unit.fakes import FakeContainer
 from tests.unit.fakes import FakeIdentity
@@ -19,22 +19,33 @@ from tests.unit.fakes import FakeResponse
 
 class CF_ClientTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
+        reload(pyrax)
+        self.orig_connect_to_cloudservers = pyrax.connect_to_cloudservers
+        self.orig_connect_to_keystone = pyrax.connect_to_keystone
+        self.orig_connect_to_cloud_lbs = pyrax.connect_to_cloud_lbs
+        self.orig_connect_to_cloud_dns = pyrax.connect_to_cloud_dns
+        self.orig_connect_to_cloud_db = pyrax.connect_to_cloud_db
         super(CF_ClientTest, self).__init__(*args, **kwargs)
-        pyrax.identity = FakeIdentity()
+
+    def setUp(self):
         pyrax.connect_to_cloudservers = Mock()
         pyrax.connect_to_keystone = Mock()
         pyrax.connect_to_cloud_lbs = Mock()
         pyrax.connect_to_cloud_dns = Mock()
         pyrax.connect_to_cloud_db = Mock()
+        pyrax.identity = FakeIdentity()
         pyrax.set_credentials("user", "api_key")
-
-    def setUp(self):
         pyrax.connect_to_cloudfiles()
         self.client = pyrax.cloudfiles
         self.client._container_cache = {}
 
     def tearDown(self):
         self.client = None
+        pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
+        pyrax.connect_to_keystone = self.orig_connect_to_keystone
+        pyrax.connect_to_cloud_lbs = self.orig_connect_to_cloud_lbs
+        pyrax.connect_to_cloud_dns = self.orig_connect_to_cloud_dns
+        pyrax.connect_to_cloud_db = self.orig_connect_to_cloud_db
 
     def test_account_metadata(self):
         client = self.client
@@ -185,6 +196,40 @@ class CF_ClientTest(unittest.TestCase):
                 contents="something", content_type="test/test")
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_upload_file(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        client.connection.put_object = Mock()
+        cont = client.get_container("testcont")
+        with utils.SelfDeletingTempfile() as tmpname:
+            small_file_contents = "Test Value " * 25
+            client.max_file_size = len(small_file_contents) + 1
+            with file(tmpname, "wb") as tmp:
+                tmp.write(small_file_contents)
+            fname = os.path.basename(tmpname)
+            fake_type = "test/test"
+            client.upload_file(cont, tmpname, content_type=fake_type)
+            self.assertEqual(client.connection.put_object.call_count, 1)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_upload_large_file(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        client.connection.put_object = Mock()
+        cont = client.get_container("testcont")
+        with utils.SelfDeletingTempfile() as tmpname:
+            small_file_contents = "Test Value " * 25
+            client.max_file_size = len(small_file_contents) - 1
+            with file(tmpname, "wb") as tmp:
+                tmp.write(small_file_contents)
+            fname = os.path.basename(tmpname)
+            fake_type = "test/test"
+            client.upload_file(cont, tmpname, content_type=fake_type)
+            # Large files require 1 call for manifest, plus one for each
+            # segment. This should be a 2-segment file upload.
+            self.assertEqual(client.connection.put_object.call_count, 3)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_copy_object(self):
         client = self.client
         client.connection.head_container = Mock()
@@ -195,7 +240,6 @@ class CF_ClientTest(unittest.TestCase):
         client.copy_object("testcont", "o1", "newcont")
         client.connection.put_object.assert_called_with("newcont", "o1", contents=None,
                 headers={"X-Copy-From": "/testcont/o1"})
-
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_move_object(self):
@@ -217,19 +261,18 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.head_container = Mock()
         cont = client.get_container("testcont")
         client.connection.put_object = Mock(return_value="0000")
-        fd, tmpname = tempfile.mkstemp()
-        os.close(fd)
-        with file(tmpname, "wb") as tmp:
-            tmp.write("Some dummy file content")
-        client.connection.put_object = Mock(return_value="0000")
-        client.upload_file("testcont", tmpname)
-        fname = os.path.basename(tmpname)
-        ccpo = client.connection.put_object
-        self.assertEqual(len(ccpo.call_args[0]), 2)
-        self.assertEqual(len(ccpo.call_args[1]), 2)
-        self.assertEqual(ccpo.call_args[0], ("testcont", fname))
-        self.assert_("contents" in ccpo.call_args[1])
-        self.assert_("content_type" in ccpo.call_args[1])
+        with utils.SelfDeletingTempfile() as tmpname:
+            with file(tmpname, "wb") as tmp:
+                tmp.write("Some dummy file content")
+            client.connection.put_object = Mock(return_value="0000")
+            client.upload_file("testcont", tmpname)
+            fname = os.path.basename(tmpname)
+            ccpo = client.connection.put_object
+            self.assertEqual(len(ccpo.call_args[0]), 2)
+            self.assertEqual(len(ccpo.call_args[1]), 2)
+            self.assertEqual(ccpo.call_args[0], ("testcont", fname))
+            self.assert_("contents" in ccpo.call_args[1])
+            self.assert_("content_type" in ccpo.call_args[1])
 
     def test_fetch_object(self):
         client = self.client
@@ -423,6 +466,18 @@ class CF_ClientTest(unittest.TestCase):
         client.set_container_web_error_page(cont, pg)
         client.connection.post_container.assert_called_with("testcont",
                 {"X-Container-Meta-Web-Error": pg})
+
+    def test_cdn_request(self):
+        client = self.client
+        conn = client.connection
+        conn.cdn_connection.request = Mock()
+        conn.cdn_connection.getresponse = Mock()
+        conn.cdn_request("GET", path=["A", "B"])
+        call_args = conn.cdn_connection.request.call_args_list[0][0]
+        self.assertEqual(call_args[0], "GET")
+        self.assert_(call_args[1].endswith("A/B"))
+        hdrs = call_args[-1]
+        self.assert_("pyrax" in hdrs["User-Agent"])
 
 
 if __name__ == "__main__":

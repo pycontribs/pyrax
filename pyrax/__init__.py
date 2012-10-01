@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
 
 import pudb
 trace = pudb.set_trace
 
+import exceptions as exc
 import rax_identity as _rax_identity
 import version
 
@@ -29,12 +31,15 @@ from novaclient.v1_1 import client as _cs_client
 #import rackspace_monitoring.types as mon_types
 
 
-class NotAuthenticatedError(Exception):
-    pass
-
+# Default to the rax_identity class.
+identity_class = _rax_identity.Identity
+# Allow for different identity classes.
+def set_identity_class(cls):
+    global identity_class
+    identity_class = cls
 
 # This can be changed for unit testing or for other identity managers.
-identity = _rax_identity.Identity()
+identity = identity_class()
 # Initiate the services to None until we are authenticated.
 cloudservers = None
 cloudfiles = None
@@ -57,21 +62,21 @@ def _require_auth(fnc):
     def _wrapped(*args, **kwargs):
         if not identity.authenticated:
             msg = "Authentication required before calling '%s'." % fnc.__name__
-            raise NotAuthenticatedError(msg)
+            raise exc.NotAuthenticated(msg)
         return fnc(*args, **kwargs)
     return _wrapped
 
 
-def set_credentials(username, api_key):
+def set_credentials(username, api_key, authenticate=True):
     """Set the username and api_key directly, and then try to authenticate."""
-    identity.set_credentials(username=username, api_key=api_key, authenticate=True)
+    identity.set_credentials(username=username, api_key=api_key, authenticate=authenticate)
     if identity.authenticated:
         connect_to_services()
 
 
-def set_credential_file(cred_file):
+def set_credential_file(cred_file, authenticate=True):
     """Set the username and api_key from a formatted JSON file, and then try to authenticate."""
-    identity.set_credentials(cred_file, authenticate=True)
+    identity.set_credential_file(cred_file, authenticate=authenticate)
     if identity.authenticated:
         connect_to_services()
 
@@ -80,7 +85,7 @@ def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, cloudservers, cloudfiles, keystone, cloud_lbs, cloud_lb_node, cloud_lb_vip
     global cloud_dns, cloud_db, default_region
-    identity = _rax_identity.Identity()
+    identity = identity_class()
     cloudservers = None
     cloudfiles = None
     keystone = None
@@ -92,7 +97,7 @@ def clear_credentials():
     default_region = None
 
 
-def set_default_region(self, region):
+def set_default_region(region):
     global default_region
     default_region = region
 
@@ -104,8 +109,6 @@ def _make_agent_name(base):
 @_require_auth
 def connect_to_services():
     """Establish authenticated connections to the various cloud APIs."""
-    if not identity.authenticated:
-        raise NotAuthenticatedError("You must authenticate before connecting to the cloud services.")
     connect_to_cloudservers()
     connect_to_cloudfiles()
     connect_to_keystone()
@@ -129,8 +132,8 @@ def connect_to_cloudfiles(region=None):
     global cloudfiles
     if region is None:
         region = default_region or FALLBACK_REGION
-    cf_url = identity.services["object_store"]["endpoints"][region]["public_url"]
-    cdn_url = identity.services["object_cdn"]["endpoints"][region]["public_url"]
+    cf_url = identity.services.get("object_store", {}).get("endpoints", {}).get(region, {}).get("public_url")
+    cdn_url = identity.services.get("object_cdn", {}).get("endpoints", {}).get(region, {}).get("public_url")
     opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token, "endpoint_type": "publicURL",
             "tenant_name": identity.tenant_name, "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
@@ -173,6 +176,7 @@ def connect_to_cloud_dns(region=None):
 
 @_require_auth
 def connect_to_cloud_db(region=None):
+    print "USEDB: %s" % _USE_DB
     if not _USE_DB:
         return
     global cloud_db
@@ -184,7 +188,8 @@ def connect_to_cloud_db(region=None):
 
 
 def _dev_only_auth():
-    set_credentials("leaferax", "0592bd1cf7a7e81fca9dd6b6ec31afe3")
+    creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
+    set_credential_file(creds_file)
 
 
 if __name__ == "__main__":

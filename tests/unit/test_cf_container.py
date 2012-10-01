@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import tempfile
 import unittest
 
 from mock import patch
@@ -19,6 +17,12 @@ from tests.unit.fakes import FakeResponse
 
 class CF_ContainerTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
+        reload(pyrax)
+        self.orig_connect_to_cloudservers = pyrax.connect_to_cloudservers
+        self.orig_connect_to_keystone = pyrax.connect_to_keystone
+        self.orig_connect_to_cloud_lbs = pyrax.connect_to_cloud_lbs
+        self.orig_connect_to_cloud_dns = pyrax.connect_to_cloud_dns
+        self.orig_connect_to_cloud_db = pyrax.connect_to_cloud_db
         super(CF_ContainerTest, self).__init__(*args, **kwargs)
         pyrax.identity = FakeIdentity()
         pyrax.connect_to_cloudservers = Mock()
@@ -30,6 +34,11 @@ class CF_ContainerTest(unittest.TestCase):
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def setUp(self):
+        pyrax.connect_to_cloudservers = Mock()
+        pyrax.connect_to_keystone = Mock()
+        pyrax.connect_to_cloud_lbs = Mock()
+        pyrax.connect_to_cloud_dns = Mock()
+        pyrax.connect_to_cloud_db = Mock()
         pyrax.connect_to_cloudfiles()
         self.client = pyrax.cloudfiles
         self.client.connection.head_container = Mock()
@@ -40,6 +49,29 @@ class CF_ContainerTest(unittest.TestCase):
     def tearDown(self):
         self.client = None
         self.container = None
+        pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
+        pyrax.connect_to_keystone = self.orig_connect_to_keystone
+        pyrax.connect_to_cloud_lbs = self.orig_connect_to_cloud_lbs
+        pyrax.connect_to_cloud_dns = self.orig_connect_to_cloud_dns
+        pyrax.connect_to_cloud_db = self.orig_connect_to_cloud_db
+
+    def test_fetch_cdn(self):
+        self.client.connection.cdn_request = Mock()
+        resp = FakeResponse()
+        resp.status = 204
+        resp.getheaders = Mock()
+        test_uri = "http://example.com"
+        test_ttl = "6666"
+        test_ssl_uri = "http://ssl.example.com"
+        test_streaming_uri = "http://streaming.example.com"
+        test_log_retention = True
+        resp.getheaders.return_value = [("x-cdn-uri", test_uri), ("x-ttl", test_ttl),
+                ("x-cdn-ssl-uri", test_ssl_uri), ("x-cdn-streaming-uri", test_streaming_uri),
+                ("x-log-retention", test_log_retention)]
+        self.client.connection.cdn_request.return_value = resp
+        # We need an actual container
+        cont = Container(self.client, "realcontainer")
+        self.assertEqual(cont.cdn_uri, test_uri)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_objects(self):
