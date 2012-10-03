@@ -4,7 +4,6 @@
 import ConfigParser
 import datetime
 import json
-import logging
 import os
 import re
 import urllib2
@@ -15,8 +14,6 @@ import pyrax.exceptions as exc
 
 API_DATE_PATTERN = re.compile(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})")
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-
-log = logging.getLogger(__name__)
 
 
 
@@ -67,18 +64,15 @@ class Identity(object):
             if not cfg.read(credential_file):
                 # If the specified file does not exist, the parser will
                 # return an empty list
-                log.error("Credential file is missing")
                 raise exc.FileNotFound("The specified credential file '%s' does not exist"
                         % credential_file)
         except ConfigParser.MissingSectionHeaderError as e:
             # The file exists, but doesn't have the correct format.
-            log.error("Invalid configuration file '%s'." % credential_file)
             raise exc.InvalidCredentialFile(e)
         try:
             self.username = cfg.get("rackspace_cloud", "username")
             self.api_key = cfg.get("rackspace_cloud", "api_key")
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as e:
-            log.error("Invalid configuration file '%s'." % credential_file)
             raise exc.InvalidCredentialFile(e)
         if authenticate:
             self.authenticate()

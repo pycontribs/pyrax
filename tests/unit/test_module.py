@@ -62,12 +62,11 @@ class PyraxInitTest(unittest.TestCase):
         self.assert_(pyrax.identity.authenticated)
 
     def test_set_credential_file(self):
-        fakecreds = {"auth":{"RAX-KSKEY:apiKeyCredentials":{
-                "username": self.username,
-                "apiKey": self.api_key}}}
         with utils.SelfDeletingTempfile() as tmpname:
             with file(tmpname, "wb") as tmp:
-                json.dump(fakecreds, tmp)
+                tmp.write("[rackspace_cloud]\n")
+                tmp.write("username = %s\n" % self.username)
+                tmp.write("api_key = %s\n" % self.api_key)
             pyrax.set_credential_file(tmpname)
             self.assertEqual(pyrax.identity.username, self.username)
             self.assertEqual(pyrax.identity.api_key, self.api_key)

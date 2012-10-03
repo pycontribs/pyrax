@@ -42,12 +42,6 @@ class FakeService(object):
         pass
 
 
-def get_fake_credentials():
-    return {"auth":{"RAX-KSKEY:apiKeyCredentials":{
-         "username":"fakeuser",
-         "apiKey":"fake_api_key"}}}
-
-
 class FakeIdentity(Identity):
     """Class that returns canned authentication responses."""
     def authenticate(self):

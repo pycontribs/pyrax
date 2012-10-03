@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import unittest
 
 import pyrax
 
-AUTH_ENDPOINT = "https://identity.api.rackspacecloud.com/v2.0"
-username = "leaferax"
-api_key = "0592bd1cf7a7e81fca9dd6b6ec31afe3"
-tenant_name = "728829"
-default_region = "DFW"
+
+# This file needs to contain the actual credentials for a
+# valid Rackspace Cloud account.
+creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 
 
 class TestCase(unittest.TestCase):
     def setUp(self):
-        pyrax.set_credentials(username, api_key)    
+        pyrax.set_credential_file(creds_file)    
     
     def tearDown(self):
         pyrax.clear_credentials()

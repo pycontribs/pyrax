@@ -34,6 +34,19 @@ def handle_swiftclient_exception(fnc):
             raise
     return _wrapped
 
+def handle_swiftclient_exception(fnc):
+    def _wrapped(*args, **kwargs):
+        try:
+            return fnc(*args, **kwargs)
+        except _swift_client.ClientException as e:
+            str_error = "%s" % e
+            bad_container = no_such_container_pattern.search(str_error)
+            if bad_container:
+                raise exc.NoSuchContainer("Container '%s' doesn't exist" % bad_container.groups()[0])
+            # Not handled; re-raise
+            raise
+    return _wrapped
+
 
 class Client(object):
     """

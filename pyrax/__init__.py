@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
 import os
 
 import exceptions as exc
@@ -131,9 +130,8 @@ def connect_to_cloudservers(region=None):
     if not mgt_url:
         # Try the 'ALL' region
         mgt_url = identity.services.get("compute", {}).get("endpoints", {}).get("ALL", {}).get("public_url")
-
     cloudservers = _cs_client.Client(identity.username, identity.api_key, identity.tenant_name,
-            identity.auth_endpoint, bypass_url=mgt_url, proxy_token=identity.token, auth_system="rackspace",
+            identity.auth_endpoint, bypass_url=mgt_url, auth_system="rackspace",
             region_name=region, service_type="compute")
     cloudservers.client.USER_AGENT = _make_agent_name(cloudservers.client.USER_AGENT)
 
