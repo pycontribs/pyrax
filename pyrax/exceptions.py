@@ -5,6 +5,9 @@
 class NotAuthenticated(Exception):
     pass
 
+class InvalidCredentialFile(Exception):
+    pass
+
 class InvalidCDNMetada(Exception):
     pass
 

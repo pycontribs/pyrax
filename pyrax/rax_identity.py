@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import ConfigParser
 import datetime
 import json
 import logging
@@ -9,8 +10,7 @@ import re
 import urllib2
 import urlparse
 
-import pudb
-trace = pudb.set_trace
+import pyrax.exceptions as exc
 
 
 API_DATE_PATTERN = re.compile(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})")
@@ -52,25 +52,34 @@ class Identity(object):
 
 
     def set_credential_file(self, credential_file, authenticate=False):
-        """Read in the credentials from the supplied file."""
+        """
+        Read in the credentials from the supplied file. It should be a standard
+        config file in the format:
+
+        [rackspace_cloud]
+        username = myusername
+        api_key = 1234567890abcdef
+
+        """
         self._creds_file = credential_file
+        cfg = ConfigParser.SafeConfigParser()
         try:
-            with file(self._creds_file) as credsfile:
-                raw_creds = json.load(credsfile)
-        except IOError:
-            # No such file
-            log.error("Credential file is missing")
-            raise
-        except ValueError:
-            # Invalid JSON in the file
-            log.error("Credential file does not contain valid JSON.")
-            raise
+            if not cfg.read(credential_file):
+                # If the specified file does not exist, the parser will
+                # return an empty list
+                log.error("Credential file is missing")
+                raise exc.FileNotFound("The specified credential file '%s' does not exist"
+                        % credential_file)
+        except ConfigParser.MissingSectionHeaderError as e:
+            # The file exists, but doesn't have the correct format.
+            log.error("Invalid configuration file '%s'." % credential_file)
+            raise exc.InvalidCredentialFile(e)
         try:
-            creds = raw_creds["auth"]["RAX-KSKEY:apiKeyCredentials"]
-            self.username = creds["username"]
-            self.api_key = creds["apiKey"]
-        except KeyError:
-            log.error("Credentials file '%s' is not in the proper format" % self._creds_file)
+            self.username = cfg.get("rackspace_cloud", "username")
+            self.api_key = cfg.get("rackspace_cloud", "api_key")
+        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as e:
+            log.error("Invalid configuration file '%s'." % credential_file)
+            raise exc.InvalidCredentialFile(e)
         if authenticate:
             self.authenticate()
 

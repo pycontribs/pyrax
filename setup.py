@@ -7,11 +7,9 @@ if version < "2.2.3":
     DistributionMetadata.classifiers = None
     DistributionMetadata.download_url = None
 
-import pyrax
-
 
 setup(name = "pyrax",
-        version = pyrax.version.version,
+        version = "0.2.2",
         description = "Python language bindings for the Rackspace Cloud.",
         author = "Ed Leafe + various module authors",
         author_email = "ed.leafe@rackspace.com",
@@ -21,10 +19,14 @@ setup(name = "pyrax",
                 "License :: OSI Approved :: Apache Software License",
                 "Programming Language :: Python :: 2",
                 ],
-        install_requires=["rackspace-novaclient", "python-swiftclient", "python-keystoneclient",
-                "python-cloudlb"],
-        dependency_links = ["https://github.com/rackspace/python-clouddns/tarball/master#egg=python-clouddns",
-                "https://github.com/slizadel/python-clouddb/tarball/master#egg=python-clouddb"],
-        packages = ["pyrax", "pyrax/common", "tests"],
+        install_requires=[
+                "rackspace-novaclient",
+                "python-swiftclient",
+                "python-keystoneclient",
+                "python-cloudlb",
+                ],
+#        dependency_links = ["https://github.com/rackspace/python-clouddns/tarball/master#egg=python-clouddns",
+#                "https://github.com/slizadel/python-clouddb/tarball/master#egg=python-clouddb"],
+        packages = ["pyrax", "pyrax/cf_wrapper", "pyrax/common", "tests"],
         #scripts = ["path/to/script"]
         )

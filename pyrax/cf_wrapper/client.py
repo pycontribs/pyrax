@@ -1,4 +1,4 @@
- #!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import httplib
@@ -17,11 +17,6 @@ import pyrax.exceptions as exc
 
 
 CONNECTION_TIMEOUT = 5
-
-
-import pudb
-trace = pudb.set_trace
-
 
 no_such_container_pattern = re.compile(r"Container GET|HEAD failed: .+/(.+) 404")
 

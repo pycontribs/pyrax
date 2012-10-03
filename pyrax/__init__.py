@@ -1,11 +1,8 @@
- #!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import logging
 import os
-
-import pudb
-trace = pudb.set_trace
 
 import exceptions as exc
 import rax_identity as _rax_identity
@@ -75,7 +72,15 @@ def set_credentials(username, api_key, authenticate=True):
 
 
 def set_credential_file(cred_file, authenticate=True):
-    """Set the username and api_key from a formatted JSON file, and then try to authenticate."""
+    """
+    Read in the credentials from the supplied file path, and then try to
+    authenticate. The file should be a standard config file in the format:
+
+    [rackspace_cloud]
+    username = myusername
+    api_key = 1234567890abcdef
+
+    """
     identity.set_credential_file(cred_file, authenticate=authenticate)
     if identity.authenticated:
         connect_to_services()
@@ -122,8 +127,14 @@ def connect_to_cloudservers(region=None):
     global cloudservers
     if region is None:
         region = default_region or FALLBACK_REGION
+    mgt_url = identity.services.get("compute", {}).get("endpoints", {}).get(region, {}).get("public_url")
+    if not mgt_url:
+        # Try the 'ALL' region
+        mgt_url = identity.services.get("compute", {}).get("endpoints", {}).get("ALL", {}).get("public_url")
+
     cloudservers = _cs_client.Client(identity.username, identity.api_key, identity.tenant_name,
-            identity.auth_endpoint, auth_system="rackspace", region_name=region, service_type="compute")
+            identity.auth_endpoint, bypass_url=mgt_url, proxy_token=identity.token, auth_system="rackspace",
+            region_name=region, service_type="compute")
     cloudservers.client.USER_AGENT = _make_agent_name(cloudservers.client.USER_AGENT)
 
 
@@ -194,5 +205,4 @@ def _dev_only_auth():
 
 if __name__ == "__main__":
     _dev_only_auth()
-    print identity.authenticated
 
