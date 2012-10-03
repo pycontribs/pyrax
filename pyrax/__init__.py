@@ -185,7 +185,6 @@ def connect_to_cloud_dns(region=None):
 
 @_require_auth
 def connect_to_cloud_db(region=None):
-    print "USEDB: %s" % _USE_DB
     if not _USE_DB:
         return
     global cloud_db
