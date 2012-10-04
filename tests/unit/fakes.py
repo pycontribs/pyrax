@@ -4,6 +4,7 @@
 import json
 
 from pyrax.cf_wrapper.container import Container
+import pyrax.exceptions as exc
 from pyrax.rax_identity import Identity
 
 
@@ -44,9 +45,19 @@ class FakeService(object):
 
 class FakeIdentity(Identity):
     """Class that returns canned authentication responses."""
+    def __init__(self, *args, **kwargs):
+        super(FakeIdentity, self).__init__(*args, **kwargs)
+        self._good_username = "fakeuser"
+        self._good_api_key = "fakeapikey"
     def authenticate(self):
-        self._parse_response(self.fake_response())
-        self.authenticated = True
+        if ((self.username == self._good_username) and
+                (self.api_key == self._good_api_key)):
+            self._parse_response(self.fake_response())
+            self.authenticated = True
+        else:
+            self.authenticated = False
+            raise exc.AuthenticationFailed("No match for '%s'/'%s' username/api_key"
+                    % (self.username, self.api_key))
     def get_token(self, force=False):
         return self.token
     def fake_response(self):

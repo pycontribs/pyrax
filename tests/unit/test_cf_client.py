@@ -34,7 +34,7 @@ class CF_ClientTest(unittest.TestCase):
         pyrax.connect_to_cloud_dns = Mock()
         pyrax.connect_to_cloud_db = Mock()
         pyrax.identity = FakeIdentity()
-        pyrax.set_credentials("user", "api_key")
+        pyrax.set_credentials("fakeuser", "fakeapikey")
         pyrax.connect_to_cloudfiles()
         self.client = pyrax.cloudfiles
         self.client._container_cache = {}

@@ -28,7 +28,7 @@ class PyraxInitTest(unittest.TestCase):
         self.orig_connect_to_cloud_db = pyrax.connect_to_cloud_db
         super(PyraxInitTest, self).__init__(*args, **kwargs)
         self.username = "fakeuser"
-        self.api_key = "fake_api_key"
+        self.api_key = "fakeapikey"
 
     def setUp(self):
         pyrax.set_identity_class(FakeIdentity)
@@ -61,6 +61,10 @@ class PyraxInitTest(unittest.TestCase):
         self.assertEqual(pyrax.identity.api_key, self.api_key)
         self.assert_(pyrax.identity.authenticated)
 
+    def test_set_bad_credentials(self):
+        self.assertRaises(exc.AuthenticationFailed, pyrax.set_credentials, "bad", "creds")    
+        self.assertFalse(pyrax.identity.authenticated)
+
     def test_set_credential_file(self):
         with utils.SelfDeletingTempfile() as tmpname:
             with file(tmpname, "wb") as tmp:
@@ -71,6 +75,15 @@ class PyraxInitTest(unittest.TestCase):
             self.assertEqual(pyrax.identity.username, self.username)
             self.assertEqual(pyrax.identity.api_key, self.api_key)
             self.assert_(pyrax.identity.authenticated)
+
+    def test_set_bad_credential_file(self):
+        with utils.SelfDeletingTempfile() as tmpname:
+            with file(tmpname, "wb") as tmp:
+                tmp.write("[rackspace_cloud]\n")
+                tmp.write("username = bad\n")
+                tmp.write("api_key = creds\n")
+            self.assertRaises(exc.AuthenticationFailed, pyrax.set_credential_file, tmpname)
+            self.assertFalse(pyrax.identity.authenticated)
 
     def test_clear_credentials(self):
         pyrax.set_credentials(self.username, self.api_key)

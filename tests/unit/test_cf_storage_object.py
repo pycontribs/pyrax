@@ -43,7 +43,7 @@ class CF_StorageObjectTest(unittest.TestCase):
         pyrax.connect_to_cloud_db = Mock()
         pyrax.identity_class = FakeIdentity
         pyrax.clear_credentials()
-        pyrax.set_credentials("user", "api_key")
+        pyrax.set_credentials("fakeuser", "fakeapikey")
         pyrax.connect_to_cloudfiles()
         self.client = pyrax.cloudfiles
         self.container = FakeContainer(self.client, self.container_name)
