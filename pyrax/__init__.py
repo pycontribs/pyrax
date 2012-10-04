@@ -65,7 +65,11 @@ def _require_auth(fnc):
 
 def set_credentials(username, api_key, authenticate=True):
     """Set the username and api_key directly, and then try to authenticate."""
-    identity.set_credentials(username=username, api_key=api_key, authenticate=authenticate)
+    try:
+        identity.set_credentials(username=username, api_key=api_key, authenticate=authenticate)
+    except exc.AuthenticationFailed:
+        clear_credentials()
+        raise
     if identity.authenticated:
         connect_to_services()
 
@@ -80,7 +84,11 @@ def set_credential_file(cred_file, authenticate=True):
     api_key = 1234567890abcdef
 
     """
-    identity.set_credential_file(cred_file, authenticate=authenticate)
+    try:
+        identity.set_credential_file(cred_file, authenticate=authenticate)
+    except exc.AuthenticationFailed:
+        clear_credentials()
+        raise
     if identity.authenticated:
         connect_to_services()
 

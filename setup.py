@@ -9,7 +9,7 @@ if version < "2.2.3":
 
 
 setup(name = "pyrax",
-        version = "0.2.2",
+        version = "0.3.1",
         description = "Python language bindings for the Rackspace Cloud.",
         author = "Ed Leafe + various module authors",
         author_email = "ed.leafe@rackspace.com",

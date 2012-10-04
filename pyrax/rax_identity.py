@@ -98,7 +98,13 @@ class Identity(object):
         auth_req = urllib2.Request(url, data=json.dumps(creds))
         auth_req.add_header("Content-Type", "application/json")
         # TODO: dabo: add better error reporting
-        raw_resp = urllib2.urlopen(auth_req)
+        try:
+            raw_resp = urllib2.urlopen(auth_req)
+        except urllib2.HTTPError as e:
+            errcode = e.getcode()
+            if errcode == 401:
+                # Invalid authorization
+                raise exc.AuthenticationFailed("Incorrect/unauthorized credentials received")
         resp = json.loads(raw_resp.read())
         self._parse_response(resp)
         self.authenticated = True
