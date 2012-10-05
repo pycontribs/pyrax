@@ -12,7 +12,7 @@ import urlparse
 from swiftclient import client as _swift_client
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
-import pyrax.common.utils as utils
+import pyrax.utils as utils
 import pyrax.exceptions as exc
 
 

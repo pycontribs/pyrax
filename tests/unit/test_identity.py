@@ -10,7 +10,7 @@ import urllib2
 from mock import patch
 from mock import MagicMock as Mock
 
-import pyrax.common.utils as utils
+import pyrax.utils as utils
 import pyrax.exceptions as exc
 from pyrax import rax_identity
 

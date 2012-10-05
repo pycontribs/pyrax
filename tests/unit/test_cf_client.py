@@ -9,7 +9,7 @@ from mock import MagicMock as Mock
 
 import pyrax
 from pyrax.cf_wrapper.container import Container
-import pyrax.common.utils as utils
+import pyrax.utils as utils
 import pyrax.exceptions as exc
 from tests.unit.fakes import FakeContainer
 from tests.unit.fakes import FakeIdentity
@@ -190,10 +190,12 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         client.connection.head_container = Mock()
         client.connection.put_object = Mock()
-        obj = client.store_object("testcont", "testobj", "something",
-                content_type="test/test")
+        content = "something"
+        etag = utils.get_checksum(content)
+        obj = client.store_object("testcont", "testobj", content,
+                content_type="test/test", etag=etag)
         client.connection.put_object.assert_called_with("testcont", "testobj",
-                contents="something", content_type="test/test")
+                contents=content, content_type="test/test", etag=etag)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_upload_file(self):
