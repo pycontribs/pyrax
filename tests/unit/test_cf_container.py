@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import unittest
 
 from mock import patch
@@ -8,6 +9,7 @@ from mock import MagicMock as Mock
 
 import pyrax
 from pyrax.cf_wrapper.container import Container
+import pyrax.common.utils as utils
 import pyrax.exceptions as exc
 from tests.unit.fakes import FakeContainer
 from tests.unit.fakes import FakeIdentity
@@ -30,7 +32,7 @@ class CF_ContainerTest(unittest.TestCase):
         pyrax.connect_to_cloud_lbs = Mock()
         pyrax.connect_to_cloud_dns = Mock()
         pyrax.connect_to_cloud_db = Mock()
-        pyrax.set_credentials("user", "api_key")
+        pyrax.set_credentials("fakeuser", "fakeapikey")
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def setUp(self):
@@ -90,6 +92,31 @@ class CF_ContainerTest(unittest.TestCase):
         self.assertRaises(exc.NoSuchObject, cont.get_object, "missing")
         obj = cont.get_object("o2")
         self.assertEqual(obj.name, "o2")
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_store_object(self):
+        cont = self.container
+        cont.client.connection.head_container = Mock()
+        cont.client.connection.put_object = Mock()
+        obj = cont.client.store_object("testcont", "testobj", "something",
+                content_type="test/test")
+        cont.client.connection.put_object.assert_called_with("testcont", "testobj",
+                contents="something", content_type="test/test")
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_upload_file(self):
+        cont = self.container
+        cont.client.connection.head_container = Mock()
+        cont.client.connection.put_object = Mock()
+        with utils.SelfDeletingTempfile() as tmpname:
+            small_file_contents = "Test Value " * 25
+            cont.client.max_file_size = len(small_file_contents) + 1
+            with file(tmpname, "wb") as tmp:
+                tmp.write(small_file_contents)
+            fname = os.path.basename(tmpname)
+            fake_type = "test/test"
+            cont.client.upload_file(cont, tmpname, content_type=fake_type)
+            self.assertEqual(cont.client.connection.put_object.call_count, 1)
 
     def test_delete(self):
         cont = self.container

@@ -68,13 +68,31 @@ class Container(object):
         return ret
 
 
+    def store_object(self, obj_name, data, content_type=None):
+        """
+        Creates a new object in this container, and populates it with
+        the given data.
+        """
+        return self.client.store_object(self, obj_name, data, content_type=content_type)
+
+
+    def upload_file(self, file_or_path, obj_name=None, content_type=None):
+        """
+        Uploads the specified file to this container. If no name is supplied, the
+        file's name will be used. Either a file path or an open file-like object
+        may be supplied.
+        """
+        return self.client.upload_file(self, file_or_path, obj_name=obj_name,
+                content_type=content_type)
+
+
     def delete(self, del_objects=False):
         """
         Deletes this Container. If the container contains objects, the
         command will fail unless 'del_objects' is passed as True. In that
         case, each object will be deleted first, and then the container.
         """
-        self.client.delete_container(self.name, del_objects=del_objects)
+        return self.client.delete_container(self.name, del_objects=del_objects)
 
 
     def get_metadata(self):
@@ -82,7 +100,7 @@ class Container(object):
 
 
     def set_metadata(self, metadata, clear=False):
-        self.client.set_container_metadata(self, metadata, clear=clear)
+        return self.client.set_container_metadata(self, metadata, clear=clear)
 
 
     def set_web_index_page(self, page):
@@ -93,7 +111,7 @@ class Container(object):
         Note: the container must be CDN-enabled for this to have
         any effect.
         """
-        self.client.set_container_web_index_page(self, page)
+        return self.client.set_container_web_index_page(self, page)
 
 
     def set_web_error_page(self, page):
@@ -104,7 +122,7 @@ class Container(object):
         Note: the container must be CDN-enabled for this to have
         any effect.
         """
-        self.client.set_container_web_error_page(self, page)
+        return self.client.set_container_web_error_page(self, page)
 
 
     def make_public(self, ttl=None):
@@ -127,5 +145,3 @@ class Container(object):
 
     def __repr__(self):
         return "<Container '%s'>" % self.name
-
-
