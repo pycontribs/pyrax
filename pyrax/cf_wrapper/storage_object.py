@@ -35,7 +35,7 @@ class StorageObject(object):
             self.content_type = dct.get("content_type")
         self.total_bytes = dct.get("bytes")
         self.last_modified = dct.get("last_modified")
-        self.etag = dct.get("etag")
+        self.etag = dct.get("hash")
 
 
     def get(self, include_meta=False, chunk_size=None):
