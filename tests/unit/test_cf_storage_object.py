@@ -52,7 +52,7 @@ class CF_StorageObjectTest(unittest.TestCase):
         self.client.connection.get_container = Mock()
         self.client.connection.head_object = Mock()
         objs = [{"name": self.obj_name, "content_type": "test/test",
-                "bytes": 444, "hash": "abcdef0123456789"}]
+                "bytes": 444, "etag": "abcdef0123456789"}]
         self.client.connection.head_object.return_value = ({}, objs)
         self.client.connection.get_container.return_value = ({}, objs)
         self.storage_object = self.client.get_object(self.container, "testobj")
@@ -75,16 +75,16 @@ class CF_StorageObjectTest(unittest.TestCase):
         ttype = "foo/bar"
         tbytes = 12345
         tlastmodified = "2222-02-22T22:22:22.222222" 
-        thash = "123123123"
+        tetag = "123123123"
         dct = {"name": tname, "content_type": ttype, "bytes": tbytes,
-                "last_modified": tlastmodified, "hash": thash}
+                "last_modified": tlastmodified, "etag": tetag}
         obj = self.storage_object
         obj._read_attdict(dct)
         self.assertEqual(obj.name, tname)
         self.assertEqual(obj.content_type, ttype)
         self.assertEqual(obj.total_bytes, tbytes)
         self.assertEqual(obj.last_modified, tlastmodified)
-        self.assertEqual(obj.hashval, thash)
+        self.assertEqual(obj.etag, tetag)
 
     def test_subdir(self):
         tname = "something"

@@ -289,12 +289,12 @@ class Client(object):
         Works just like copy_object, except that the source object is deleted
         after a succesful copy.
         """
-        new_obj_hash = self.copy_object(container, obj_name, new_container,
+        new_obj_etag = self.copy_object(container, obj_name, new_container,
                 new_obj_name=new_obj_name)
-        if new_obj_hash:
+        if new_obj_etag:
             # Copy succeeded; delete the original.
             self.delete_object(container, obj_name)
-        return new_obj_hash
+        return new_obj_etag
 
 
     def upload_file(self, container, file_or_path, obj_name=None, content_type=None):
