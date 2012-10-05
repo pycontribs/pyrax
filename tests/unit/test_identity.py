@@ -88,11 +88,35 @@ class IdentityTest(unittest.TestCase):
 
     def test_authenticate(self):
         ident = self.identity_class(username=self.username, api_key=self.api_key)
+        savopen = urllib2.urlopen
         urllib2.urlopen = Mock(return_value=fakes.FakeIdentityResponse())
         ident.authenticate()
-        
+        urllib2.urlopen = savopen
+
+    def test_get_token(self):
+        ident = self.identity_class(username=self.username, api_key=self.api_key)
+        ident.token = "test_token"
+        sav_valid = ident._has_valid_token
+        sav_auth = ident.authenticate
+        ident._has_valid_token = Mock(return_value=True)
+        ident.authenticate = Mock()
+        tok = ident.get_token()
+        self.assertEqual(tok, "test_token")
+        # Force
+        tok = ident.get_token(force=True)
+        ident.authenticate.assert_called_with()
+        # Invalid token
+        ident._has_valid_token = Mock(return_value=False)
+        ident.authenticated = False
+        tok = ident.get_token()
+        ident.authenticate.assert_called_with()
+        ident._has_valid_token = sav_valid
+        ident.authenticate = sav_auth
+
     def test_has_valid_token(self):
         ident = self.identity_class(username=self.username, api_key=self.api_key)
+        savopen = urllib2.urlopen
+        urllib2.urlopen = Mock(return_value=fakes.FakeIdentityResponse())
         ident.authenticate()
         valid = ident._has_valid_token()
         self.assert_(valid)
@@ -102,6 +126,7 @@ class IdentityTest(unittest.TestCase):
         ident = self._get_clean_identity()
         valid = ident._has_valid_token()
         self.assertFalse(valid)
+        urllib2.urlopen = savopen
 
     def test_parse_api_time(self):
         ident = self.identity_class()

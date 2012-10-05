@@ -11,6 +11,9 @@ class NotAuthenticated(Exception):
 class InvalidCredentialFile(Exception):
     pass
 
+class UploadFailed(Exception):
+    pass
+
 class InvalidCDNMetada(Exception):
     pass
 

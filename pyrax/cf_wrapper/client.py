@@ -19,7 +19,7 @@ import pyrax.exceptions as exc
 CONNECTION_TIMEOUT = 5
 
 no_such_container_pattern = re.compile(r"Container GET|HEAD failed: .+/(.+) 404")
-
+etag_failed_pattern = re.compile(r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity")
 
 def handle_swiftclient_exception(fnc):
     def _wrapped(*args, **kwargs):
@@ -30,6 +30,10 @@ def handle_swiftclient_exception(fnc):
             bad_container = no_such_container_pattern.search(str_error)
             if bad_container:
                 raise exc.NoSuchContainer("Container '%s' doesn't exist" % bad_container.groups()[0])
+            failed_upload = etag_failed_pattern.search(str_error)
+            if failed_upload:
+                cont, fname = failed_upload.groups()
+                raise exc.UploadFailed("Upload of file '%(fname)s' to container '%(cont)s' failed." % locals())
             # Not handled; re-raise
             raise
     return _wrapped
@@ -259,16 +263,19 @@ class Client(object):
         return obj
 
 
-    def store_object(self, container, obj_name, data, content_type=None):
+    @handle_swiftclient_exception
+    def store_object(self, container, obj_name, data, content_type=None,
+            etag=None):
         """
         Creates a new object in the specified container, and populates it with
         the given data.
         """
         cont = self.get_container(container)
         return self.connection.put_object(cont.name, obj_name, contents=data,
-                content_type=content_type)
+                content_type=content_type, etag=etag)
 
 
+    @handle_swiftclient_exception
     def copy_object(self, container, obj_name, new_container, new_obj_name=None):
         """
         Copies the object to the new container, optionally giving it a new name.
@@ -284,6 +291,7 @@ class Client(object):
                 headers=hdrs)
 
 
+    @handle_swiftclient_exception
     def move_object(self, container, obj_name, new_container, new_obj_name=None):
         """
         Works just like copy_object, except that the source object is deleted
@@ -297,6 +305,7 @@ class Client(object):
         return new_obj_etag
 
 
+    @handle_swiftclient_exception
     def upload_file(self, container, file_or_path, obj_name=None, content_type=None):
         """
         Uploads the specified file to the container. If no name is supplied, the
