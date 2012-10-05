@@ -5,7 +5,7 @@
 class StorageObject(object):
     """Represents a CloudFiles storage object."""
     def __init__(self, client, container, name=None, total_bytes=None, content_type=None,
-            last_modified=None, hashval=None, attdict=None):
+            last_modified=None, etag=None, attdict=None):
         """
         The object can either be initialized with individual params, or by
         passing the dict that is returned by swiftclient.
@@ -19,7 +19,7 @@ class StorageObject(object):
         self.total_bytes = total_bytes
         self.content_type = content_type
         self.last_modified = last_modified
-        self.hashval = hashval
+        self.etag = etag
         if attdict:
             self._read_attdict(attdict)
 
@@ -35,7 +35,7 @@ class StorageObject(object):
             self.content_type = dct.get("content_type")
         self.total_bytes = dct.get("bytes")
         self.last_modified = dct.get("last_modified")
-        self.hashval = dct.get("hash")
+        self.etag = dct.get("etag")
 
 
     def get(self, include_meta=False, chunk_size=None):
