@@ -51,14 +51,30 @@ def get_checksum(content):
     return md.hexdigest()
 
 
+def coerce_string_to_list(val):
+    """
+    For parameters that can take either a single string or a list of strings,
+    this function will ensure that the result is a list containing the passed
+    values.
+    """
+    if val:
+        if not isinstance(val, (list, tuple)):
+            val = [val]
+    else:
+        val = []
+    return val
+
+
 def folder_size(pth, ignore=None):
+    """
+    Returns the total bytes for the specified, optionally ignoring
+    any files which match the 'ignore' parameter. 'ignore' can either be
+    a single string pattern, or a list of such patterns.
+    """
     if not os.path.isdir(pth):
         raise exc.FolderNotFound
-    if ignore:
-        if not isinstance(ignore, (list, tuple)):
-            ignore = [ignore]
-    else:
-        ignore = []
+
+    ignore = coerce_string_to_list(ignore)
 
     def get_size(total, root, names):
         paths = [os.path.realpath(os.path.join(root, nm)) for nm in names]

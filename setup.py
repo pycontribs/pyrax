@@ -9,7 +9,7 @@ if version < "2.2.3":
 
 
 setup(name = "pyrax",
-        version = "0.3.1",
+        version = "0.4.1",
         description = "Python language bindings for the Rackspace Cloud.",
         author = "Ed Leafe + various module authors",
         author_email = "ed.leafe@rackspace.com",
@@ -27,6 +27,6 @@ setup(name = "pyrax",
                 ],
 #        dependency_links = ["https://github.com/rackspace/python-clouddns/tarball/master#egg=python-clouddns",
 #                "https://github.com/slizadel/python-clouddb/tarball/master#egg=python-clouddb"],
-        packages = ["pyrax", "pyrax/cf_wrapper", "pyrax/common", "tests"],
+        packages = ["pyrax", "pyrax/cf_wrapper", "tests"],
         #scripts = ["path/to/script"]
         )

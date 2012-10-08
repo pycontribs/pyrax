@@ -8,10 +8,12 @@ from mock import patch
 from mock import MagicMock as Mock
 
 import pyrax
+from pyrax.cf_wrapper.client import _swift_client
 from pyrax.cf_wrapper.container import Container
 import pyrax.utils as utils
 import pyrax.exceptions as exc
 from tests.unit.fakes import FakeContainer
+from tests.unit.fakes import FakeFolderUploader
 from tests.unit.fakes import FakeIdentity
 from tests.unit.fakes import FakeResponse
 
@@ -232,6 +234,99 @@ class CF_ClientTest(unittest.TestCase):
             self.assertEqual(client.connection.put_object.call_count, 3)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_upload_folder_bad_folder(self):
+        self.assertRaises(exc.FolderNotFound, self.client.upload_folder, "/doesnt_exist")
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_upload_folder_ignore_patterns(self):
+        client = self.client
+        bg = client._upload_folder_in_background
+        client._upload_folder_in_background = Mock()
+        opi = os.path.isdir
+        os.path.isdir = Mock(return_value=True)
+        test_folder = "testfolder"
+        # Test string and list of ignores
+        pat1 = "*.foo"
+        pat2 = "*.bar"
+        client.upload_folder(test_folder, ignore=pat1)
+        client._upload_folder_in_background.assert_called_with(test_folder, None, [pat1])
+        client.upload_folder(test_folder, ignore=[pat1, pat2])
+        client._upload_folder_in_background.assert_called_with(test_folder, None, [pat1, pat2])
+        client._upload_folder_in_background = bg
+        os.path.isdir = opi
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_upload_folder_initial_progress(self):
+        client = self.client
+        bg = client._upload_folder_in_background
+        client._upload_folder_in_background = Mock()
+        opi = os.path.isdir
+        os.path.isdir = Mock(return_value=True)
+        ufs = utils.folder_size
+        fake_size = 1234
+        utils.folder_size = Mock(return_value=fake_size)
+        test_folder = "testfolder"
+        client.upload_folder(test_folder)
+        expected = (0, fake_size)
+        self.assertEqual(client.progress, expected)
+        client._upload_folder_in_background = bg
+        utils.folder_size = ufs
+        os.path.isdir = opi
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    @patch('pyrax.cf_wrapper.client.FolderUploader', new=FakeFolderUploader)
+    def test_upload_folder_in_backgroud(self):
+        client = self.client
+        start = FakeFolderUploader.start
+        FakeFolderUploader.start = Mock()
+        client._upload_folder_in_background("folder/path", "cont_name", [])
+        FakeFolderUploader.start.assert_called_with()
+        FakeFolderUploader.start = start
+
+    def test_folder_name_from_path(self):
+        uploader = FakeFolderUploader("root", "cont", None, self.client)
+        path1 = "/foo/bar/baz"
+        path2 = "/foo/bar/baz"
+        nm1 = uploader.folder_name_from_path(path1)
+        nm2 = uploader.folder_name_from_path(path2)
+        self.assertEqual(nm1, "baz")
+        self.assertEqual(nm2, "baz")
+
+    def test_uploader_consider(self):
+        uploader = FakeFolderUploader("root", "cont", "*.bad", self.client)
+        self.assertFalse(uploader.consider("some.bad"))
+        self.assertTrue(uploader.consider("some.good"))
+
+    def test_uploader_bad_dirname(self):
+        uploader = FakeFolderUploader("root", "cont", "*.bad", self.client)
+        ret = uploader.upload_files_in_folder(None, "folder.bad", ["a", "b"])
+        self.assertFalse(ret)
+
+    def test_uploader_bad_dirname(self):
+        uploader = FakeFolderUploader("root", "cont", "*.bad", self.client)
+        ret = uploader.upload_files_in_folder(None, "folder.bad", ["a", "b"])
+        self.assertFalse(ret)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_upload_folder_with_files(self):
+        client = self.client
+        up = client.upload_file
+        client.upload_file = Mock()
+        client.connection.head_container = Mock()
+        cont = client.get_container("testcont")
+        client.connection.put_container = Mock()
+        num_files = 10
+        with utils.SelfDeletingTempDirectory() as tmpdir:
+            for idx in xrange(num_files):
+                nm = "file%s" % idx
+                pth = os.path.join(tmpdir, nm)
+                file(pth, "w").write("test")
+            uploader = FakeFolderUploader(tmpdir, "fake_cont", "", client)
+            # Note that the fake moved the actual run() code to a different method
+            uploader.actual_run()
+            self.assertEqual(client.upload_file.call_count, num_files)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_copy_object(self):
         client = self.client
         client.connection.head_container = Mock()
@@ -271,7 +366,7 @@ class CF_ClientTest(unittest.TestCase):
             fname = os.path.basename(tmpname)
             ccpo = client.connection.put_object
             self.assertEqual(len(ccpo.call_args[0]), 2)
-            self.assertEqual(len(ccpo.call_args[1]), 2)
+            self.assertEqual(len(ccpo.call_args[1]), 3)
             self.assertEqual(ccpo.call_args[0], ("testcont", fname))
             self.assert_("contents" in ccpo.call_args[1])
             self.assert_("content_type" in ccpo.call_args[1])
@@ -480,6 +575,37 @@ class CF_ClientTest(unittest.TestCase):
         self.assert_(call_args[1].endswith("A/B"))
         hdrs = call_args[-1]
         self.assert_("pyrax" in hdrs["User-Agent"])
+
+    def test_handle_swiftclient_exception_container(self):
+        client = self.client
+        gc = client.get_container
+        client.get_container = Mock()
+        client.get_container.side_effect = _swift_client.ClientException(
+                "Container GET failed: some_container 404")
+        # Note: we're using delete_object because its first call is get_container
+        self.assertRaises(exc.NoSuchContainer, client.delete_object, "some_container", "some_object") 
+        client.get_container = gc
+
+    def test_handle_swiftclient_exception_upload(self):
+        client = self.client
+        gc = client.get_container
+        client.get_container = Mock()
+        client.get_container.side_effect = _swift_client.ClientException(
+                "Object PUT failed: foo/bar/baz 422 Unprocessable Entity")
+        # Note: we're using delete_object because its first call is get_container
+        self.assertRaises(exc.UploadFailed, client.delete_object, "some_container", "some_object") 
+        client.get_container = gc
+
+    def test_handle_swiftclient_exception_others(self):
+        client = self.client
+        gc = client.get_container
+        client.get_container = Mock()
+        client.get_container.side_effect = _swift_client.ClientException(
+                "Some other sort of error message")
+        # Note: we're using delete_object because its first call is get_container
+        self.assertRaises(_swift_client.ClientException, client.delete_object, "some_container", "some_object") 
+        client.get_container = gc
+
 
 
 if __name__ == "__main__":
