@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import fnmatch
 import httplib
 import math
 import os
 import re
 import socket
+import threading
 import urllib
 import urlparse
 
@@ -57,6 +59,11 @@ class Client(object):
     _container_cache = {}
     # Upload size limit
     max_file_size = 5368709119  # 5GB - 1
+    # Flag to interrupt folder uploads
+    _stop_folder_upload = False
+    # Tuple used for tracking folder upload
+    # Elements are (bytes_uploaded, total_bytes)
+    progress = (0, 0)
 
 
     def __init__(self, auth_endpoint, username, api_key, tenant_name,
@@ -223,6 +230,13 @@ class Client(object):
 
     @handle_swiftclient_exception
     def delete_container(self, container, del_objects=False):
+        """
+        Deletes the specified container. This will fail if the container
+        still has objects stored in it; if that's the case and you want
+        to delete the container anyway, set del_objects to True, and
+        the container's objects will be deleted before the container is
+        deleted.
+        """
         cname = self._resolve_name(container)
         if del_objects:
             objs = self.get_container_object_names(cname)
@@ -234,6 +248,7 @@ class Client(object):
 
     @handle_swiftclient_exception
     def delete_object(self, container, name):
+        """Deletes the specified object from the container."""
         ct = self.get_container(container)
         oname = self._resolve_name(name)
         self.connection.delete_object(ct.name, oname)
@@ -306,7 +321,8 @@ class Client(object):
 
 
     @handle_swiftclient_exception
-    def upload_file(self, container, file_or_path, obj_name=None, content_type=None):
+    def upload_file(self, container, file_or_path, obj_name=None, content_type=None,
+            etag=None):
         """
         Uploads the specified file to the container. If no name is supplied, the
         file's name will be used. Either a file path or an open file-like object
@@ -322,12 +338,16 @@ class Client(object):
             fileobj.seek(currpos)
             return total_size
 
-        def upload(fileobj):
-            fsize = get_file_size(fileobj)
+        def upload(fileobj, content_type, etag):
+            if isinstance(fileobj, basestring):
+                # This is an empty directory file
+                fsize = 0
+            else:
+                fsize = get_file_size(fileobj)
             if fsize < self.max_file_size:
                 # We can just upload it as-is.
                 return self.connection.put_object(cont.name, obj_name, contents=fileobj,
-                        content_type=content_type)
+                        content_type=content_type, etag=etag)
             # Files larger than self.max_file_size must be segmented
             # and uploaded separately.
             num_segments = int(math.ceil(float(fsize) / self.max_file_size))
@@ -340,8 +360,10 @@ class Client(object):
                     with file(tmpname, "wb") as tmp:
                         tmp.write(fileobj.read(self.max_file_size))
                     with file(tmpname, "rb") as tmp:
-                        self.connection.put_object(cont.name, seg_name,
-                                contents=tmp, content_type=content_type)
+                        # We have to calculate the etag for each segment
+                        etag = utils.get_checksum(tmp)
+                        self.connection.put_object(cont.name, seg_name, contents=tmp,
+                                content_type=content_type, etag=etag)
             # Upload the manifest
             hdr = {"X-Object-Meta-Manifest": "%s." % fname}
             return self.connection.put_object(cont.name, fname,
@@ -358,12 +380,68 @@ class Client(object):
         if not obj_name:
             obj_name = fname
 
-        if ispath:
+        if ispath and os.path.isfile(file_or_path):
             # Need to wrap the call in a context manager
             with file(file_or_path, "rb") as ff:
-                return upload(ff)
+                return upload(ff, content_type, etag)
         else:
-            return upload(file_or_path)
+            return upload(file_or_path, content_type, etag)
+
+
+    def upload_folder(self, folder_path, container=None, ignore=None):
+        """
+        Convenience method for uploading an entire folder, including any sub-folders,
+        to Cloud Files.
+
+        All files will be uploaded to objects with the same name as the file. In the
+        case of nested folders, files will be named with the full path relative to
+        the base folder. E.g., if the folder you specify contains a folder named 'docs',
+        and 'docs' contains a file named 'install.html', that file will be uploaded to
+        an object named 'docs/install.html'.
+
+        If 'container' is specified, the folder's contents will be uploaded to that
+        container. If it is not specified, a new container with the same name as the
+        specified folder will be created, and the files uploaded to this new
+        container.
+
+        You can selectively ignore files by passing either a single pattern or a list
+        of patterns; these will be applied to the individual folder and file names, and
+        any names that match any of the 'ignore' patterns will not be uploaded. The
+        patterns should be standard *nix-style shell patterns; e.g., '*pyc' will ignore
+        all files ending in 'pyc', such as 'program.pyc' and 'abcpyc'.
+
+        The upload will happen asynchronously; in other words, the call to upload_folder()
+        will return immediately, and the uploading will happen in the background. As it
+        progresses, the value of pyrax.cloudfiles.progress will be updated with a 2-tuple,
+        representing (bytes_uploaded, total_bytes). You can query that to check on the
+        progress of the upload.
+
+        If you start an upload and need to cancel it, call cancel_folder_upload(). It will
+        then be up to you to either keep or delete the partially-uploaded content.
+        """
+        if not os.path.isdir(folder_path):
+            raise exc.FolderNotFound("No such folder: '%s'" % folder_path)
+
+        ignore = utils.coerce_string_to_list(ignore)
+        self._stop_folder_upload = False
+        total_bytes = utils.folder_size(folder_path, ignore)
+        self.progress = (0, total_bytes)
+
+        self._upload_folder_in_background(folder_path, container, ignore)
+
+
+    def _upload_folder_in_background(self, folder_path, container, ignore):
+        """Runs the folder upload in the background."""
+        uploader = FolderUploader(folder_path, container, ignore, self)
+        uploader.start()
+
+
+    def cancel_folder_upload(self):
+        """
+        Cancels any folder upload happening in the background. If there is no such
+        upload in progress, calling this method has no effect.
+        """
+        self._stop_folder_upload = True
 
 
     def fetch_object(self, container, obj_name, include_meta=False, chunk_size=None):
@@ -632,3 +710,47 @@ class Connection(_swift_client.Connection):
     @property
     def uri(self):
         return self.url
+
+
+
+class FolderUploader(threading.Thread):
+    """Threading class to allow for uploading multiple files in the background."""
+    def __init__(self, root_folder, container, ignore, client):
+        self.root_folder = root_folder.rstrip("/")
+        self.container = container
+        self.ignore = utils.coerce_string_to_list(ignore)
+        self.client = client
+        threading.Thread.__init__(self)
+
+    def folder_name_from_path(self, pth):
+        return os.path.basename(pth.rstrip(os.sep))
+
+    def consider(self, nm):
+        """If the name matches any of the ignore patterns, return False."""
+        for pat in self.ignore:
+            if fnmatch.fnmatch(nm, pat):
+                return False
+        return True
+
+    def upload_files_in_folder(self, arg, dirname, fnames):
+        if not self.consider(dirname):
+            return False
+        for fname in (nm for nm in fnames if self.consider(nm)):
+            if self.client._stop_folder_upload:
+                return
+            full_path = os.path.join(dirname, fname)
+            obj_name = os.path.relpath(full_path, self.base_path)
+            obj_size = os.stat(full_path).st_size
+            self.client.upload_file(self.container, full_path, obj_name=obj_name)
+            curr_total, total = self.client.progress
+            self.client.progress = (curr_total + obj_size, total)
+
+    def run(self):
+        root_path, folder_name = os.path.split(self.root_folder)
+        if self.container is None:
+            self.base_path = os.path.join(root_path, folder_name)
+        else:
+            self.base_path = root_path
+        # If the container already exists, this won't hurt anything.
+        self.container = self.client.create_container(folder_name)
+        os.path.walk(self.root_folder, self.upload_files_in_folder, None)

@@ -23,6 +23,9 @@ class NotCDNEnabled(Exception):
 class FileNotFound(Exception):
     pass
 
+class FolderNotFound(Exception):
+    pass
+
 class MissingName(Exception):
     pass
 

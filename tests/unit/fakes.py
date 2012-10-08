@@ -3,6 +3,7 @@
 
 import json
 
+from pyrax.cf_wrapper.client import FolderUploader
 from pyrax.cf_wrapper.container import Container
 import pyrax.exceptions as exc
 from pyrax.rax_identity import Identity
@@ -40,6 +41,18 @@ class FakeService(object):
         self.client = FakeClient()
 
     def authenticate(self):
+        pass
+
+
+
+class FakeFolderUploader(FolderUploader):
+    def __init__(self, *args, **kwargs):
+        super(FakeFolderUploader, self).__init__(*args, **kwargs)
+        # Useful for when we mock out the run() method.
+        self.actual_run = self.run
+        self.run = self.fake_run
+
+    def fake_run(self):
         pass
 
 

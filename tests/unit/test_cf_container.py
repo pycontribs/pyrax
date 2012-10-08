@@ -120,6 +120,15 @@ class CF_ContainerTest(unittest.TestCase):
             cont.client.upload_file(cont, tmpname, content_type=fake_type)
             self.assertEqual(cont.client.connection.put_object.call_count, 1)
 
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_delete_object(self):
+        cont = self.container
+        client = cont.client
+        cont.client.connection.head_container = Mock()
+        cont.client.connection.delete_object = Mock()
+        cont.delete_object("testobj")
+        cont.client.connection.delete_object.assert_called_with("testcont", "testobj")
+
     def test_delete(self):
         cont = self.container
         cont.client.connection.delete_container = Mock()

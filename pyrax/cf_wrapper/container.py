@@ -86,6 +86,17 @@ class Container(object):
                 content_type=content_type)
 
 
+    def delete_object(self, obj):
+        """Deletes the specified object from this container."""
+        return self.client.delete_object(self, obj)
+
+
+    def delete_all_objects(self):
+        """Deletes the specified object from this container."""
+        for obj_name in self.client.get_container_object_names(self):
+            return self.client.delete_object(self, obj_name)
+
+
     def delete(self, del_objects=False):
         """
         Deletes this Container. If the container contains objects, the
