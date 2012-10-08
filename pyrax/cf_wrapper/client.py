@@ -717,7 +717,10 @@ class FolderUploader(threading.Thread):
     """Threading class to allow for uploading multiple files in the background."""
     def __init__(self, root_folder, container, ignore, client):
         self.root_folder = root_folder.rstrip("/")
-        self.container = container
+        if container:
+            self.container = client.create_container(container)
+        else:
+            self.container = None
         self.ignore = utils.coerce_string_to_list(ignore)
         self.client = client
         threading.Thread.__init__(self)
@@ -739,6 +742,9 @@ class FolderUploader(threading.Thread):
             if self.client._stop_folder_upload:
                 return
             full_path = os.path.join(dirname, fname)
+            if os.path.isdir(full_path):
+                # Skip folders; os.walk will include them in the next pass.
+                continue
             obj_name = os.path.relpath(full_path, self.base_path)
             obj_size = os.stat(full_path).st_size
             self.client.upload_file(self.container, full_path, obj_name=obj_name)
@@ -751,6 +757,4 @@ class FolderUploader(threading.Thread):
             self.base_path = os.path.join(root_path, folder_name)
         else:
             self.base_path = root_path
-        # If the container already exists, this won't hurt anything.
-        self.container = self.client.create_container(folder_name)
         os.path.walk(self.root_folder, self.upload_files_in_folder, None)

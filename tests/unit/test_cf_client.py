@@ -279,11 +279,16 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         start = FakeFolderUploader.start
         FakeFolderUploader.start = Mock()
+        client.connection.put_container = Mock()
+        client.connection.head_container = Mock()
         client._upload_folder_in_background("folder/path", "cont_name", [])
         FakeFolderUploader.start.assert_called_with()
         FakeFolderUploader.start = start
 
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_folder_name_from_path(self):
+        self.client.connection.put_container = Mock()
+        self.client.connection.head_container = Mock()
         uploader = FakeFolderUploader("root", "cont", None, self.client)
         path1 = "/foo/bar/baz"
         path2 = "/foo/bar/baz"
@@ -292,17 +297,18 @@ class CF_ClientTest(unittest.TestCase):
         self.assertEqual(nm1, "baz")
         self.assertEqual(nm2, "baz")
 
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_uploader_consider(self):
+        self.client.connection.put_container = Mock()
+        self.client.connection.head_container = Mock()
         uploader = FakeFolderUploader("root", "cont", "*.bad", self.client)
         self.assertFalse(uploader.consider("some.bad"))
         self.assertTrue(uploader.consider("some.good"))
 
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_uploader_bad_dirname(self):
-        uploader = FakeFolderUploader("root", "cont", "*.bad", self.client)
-        ret = uploader.upload_files_in_folder(None, "folder.bad", ["a", "b"])
-        self.assertFalse(ret)
-
-    def test_uploader_bad_dirname(self):
+        self.client.connection.put_container = Mock()
+        self.client.connection.head_container = Mock()
         uploader = FakeFolderUploader("root", "cont", "*.bad", self.client)
         ret = uploader.upload_files_in_folder(None, "folder.bad", ["a", "b"])
         self.assertFalse(ret)

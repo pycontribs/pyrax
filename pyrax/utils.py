@@ -81,6 +81,9 @@ def folder_size(pth, ignore=None):
         for pth in paths[::-1]:
             if not os.path.exists(pth):
                 paths.remove(pth)
+            if os.path.isdir(pth):
+                # Don't count folder stat sizes
+                paths.remove(pth)
             for pattern in ignore:
                 if fnmatch.fnmatch(pth, pattern):
                     paths.remove(pth)
