@@ -63,7 +63,7 @@ class Container(object):
             try:
                 ret = objs[0]
             except IndexError:
-                raise exc.NoSuchObject("No object with the name '%s' exists")
+                raise exc.NoSuchObject("No object with the name '%s' exists" % name)
             self._object_cache[name] = ret
         return ret
 
