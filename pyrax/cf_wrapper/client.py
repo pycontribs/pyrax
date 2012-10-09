@@ -286,8 +286,12 @@ class Client(object):
         the given data.
         """
         cont = self.get_container(container)
-        return self.connection.put_object(cont.name, obj_name, contents=data,
-                content_type=content_type, etag=etag)
+        with utils.SelfDeletingTempfile() as tmp:
+            with file(tmp, "wb") as tmpfile:
+                tmpfile.write(data)
+            with file(tmp, "rb") as tmpfile:
+                return self.connection.put_object(cont.name, obj_name,
+                        contents=tmpfile, content_type=content_type, etag=etag)
 
 
     @handle_swiftclient_exception

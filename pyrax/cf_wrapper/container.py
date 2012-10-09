@@ -94,7 +94,7 @@ class Container(object):
     def delete_all_objects(self):
         """Deletes the specified object from this container."""
         for obj_name in self.client.get_container_object_names(self):
-            return self.client.delete_object(self, obj_name)
+            self.client.delete_object(self, obj_name)
 
 
     def delete(self, del_objects=False):
