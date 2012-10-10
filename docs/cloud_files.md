@@ -1,0 +1,380 @@
+# Working with Cloud Files
+
+
+## Basic Concepts
+Rackspace Cloud Files allows you to store files in a scalable, redundant manner, and optionally make them available globally using the Akamai CDN network. Unlike a typical computer OS, though, Cloud Files consists of Containers, each of which can store millions of objects, but which cannot be nested within other Containers, as you can with directories on your computer. However, you can simulate a nested folder structure by naming your objects with names that resemble traditional path notation; e.g., "photos/vacations/2012/cancun/beach.jpg". So while all your files will be at the base level of their containers, you can retrieve them based on the "path" prefix.
+
+In pyrax Cloud Files is represented by Container and StorageObject classes. Once you're authenticated with pyrax, you can interact with Cloud Files via the `pyrax.cloudfiles` object. In the example code that follows, we're assuming that you've already imported pyrax and authenticated.
+
+
+## General Account Information
+If you want to get an idea of the overall usage for your Cloud Files account, you can run the following:
+
+	pyrax.cloudfiles.get_account_metadata()
+
+This will return a dict that will look something like the following:
+
+	{'x-account-bytes-used': '693966',
+	 'x-account-container-count': '4',
+	 'x-account-meta-temp-url-key': 'a3f7d9d89d75385245e13c15490b82cf',
+	 'x-account-object-count': '148'}
+
+
+## Creating a Container
+You must have a container before you can store anything on Cloud Files, so let's start by creating a container:
+
+	cf = pyrax.cloudfiles
+	cont = cf.create_container("example")
+	print "Name:", cont.name
+	print "# of objects:", cont.object_count
+
+And this outputs:
+
+	Name: example
+	# of objects: 0
+
+Please note that if you call create_container more than once with the same name, the request is ignored, and a reference to the existing container with that name is returned. It is useful for cases where you want to get a reference to a container, creating it if it doesn't yet exist.
+
+
+## Listing All Containers
+We can also query pyrax.cloudfiles for all the containers on the system. There are two methods for this: list_containers() and get_all_containers(); the difference is that the former returns a list of all container names, while the latter returns a list of Container objects representing each container:
+
+	print "list_containers:", cf.list_containers
+	print "get_all_containers:", cf.get_all_containers()
+
+This results in:
+
+	list_containers: ['example']
+	get_all_containers: [<Container 'example'>]
+
+If you want more information about these containers, you can call `list_containers_info()`. This will return a list of dicts, one for each container. Each dict will contain the following keys:
+
+* name - the name of the container
+* count - the number of objects in the container
+* bytes - the total bytes in the container
+
+
+## Getting a Container Object
+Given the name of a container, you can get the corresponding Container object easily enough:
+
+	cf = pyrax.cloudfiles
+	cont = cf.get_container("example")
+	print "Container:", cont
+	=> Container: <Container 'example'>
+
+Note that if there is no existing container with the name you supply, a **NoSuchContainer** exception will be raised.
+
+
+## Storing Objects in Cloud Files
+There are two primary options for getting your objects into Cloud Files: passing the content directly, or passing in a file-like object reference; in the latter case, pyrax will read the content to be stored from the object. The two methods for this are called `store_object()` and `upload_file()`, respectively.
+
+You also have two options for specifying into which container the object should be stored. If you already have the Container object, you can call either of those methods directly on the container, and the object will be stored in the corresponding container. You can also pass the name of the container to pyrax.cloudfiles, and the container with that name will be chosen to store the object. If there is no container by that name, a **NoSuchContainer** exception will be raised.
+
+Both methods take an optional 'content_type' parameter, which allow you to identify what sort of file the object represents. Examples of content_type would be 'text/html', or 'audio/mpeg'. If you don't specify content_type, Cloud Files will try to determine it for you.
+
+Let's start with the simplest example: storing some text as an object. I'm assuming that the 'example' container we created earlier still exists; if not, make sure you create it before running this code.
+
+	cf = pyrax.cloudfiles
+	text = "This is the content of the file."
+	obj = cf.store_object("example", "new_object.txt", text)
+	print "Stored object:", obj
+
+When an object is successfully created, you receive a StorageObject instance representing that object.
+
+One common issue when storing objects is ensuring that the object did not get changed or corrupted in the process; in other words, the object that is stored is exactly what you uploaded. StorageObject instances have an `etag` attribute that is the MD5 checksum of the file as it exists on Cloud Files; you can run a checksum on your local copy to see if the two values match; if they do, the file was stored intact. However, if you're concerned about integrity, you can compute the MD5 checksum of your file before uploading, and then pass that value in the 'etag' parameter of store_object() or upload_file(), and Cloud Files will check to make sure that its generated checksum matches your supplied etag. If the two don't match, the file will not be stored, and an **UploadFailed** exception will be raised.
+
+To make this a simpler process, pyrax includes a utility method for calculating the MD5 checksum; it accepts either raw text or a file-like object. So let's try this again, this time sending the checksum as the etag parameter:
+
+	cf = pyrax.cloudfiles
+	text = "This is a random collection of words."
+	chksum = pyrax.utils.get_checksum(text)
+	obj = cf.store_object("example", "new_object.txt",
+			text, etag=chksum)
+	print "Calculated checksum:", chksum
+	print "Stored object etag:", obj.etag
+
+If all went well, the two values will match. If not, an UploadFailed exception would have been raised, and the object would not be stored in Cloud Files.
+
+If you have a container object, you can call store_object() directly on it to store an object into that container:
+
+	cf = pyrax.cloudfiles
+	cont = cf.get_container("example")
+	text = "This is a random collection of words."
+	chksum = pyrax.utils.get_checksum(text)
+	obj_etag = cont.store_object("new_object.txt", text, etag=chksum)
+	print "Calculated checksum:", chksum
+	print "Stored object etag:", obj_etag
+
+Most of the time, though, you won't have raw text in your code to store; the more likely situation is that you want to store files that exist on your computer into Cloud Files. The way to do that is essentially the same, except that you call `upload_file()`, and pass the full path to the file you want to upload. Additionally, you do not need to specify a name for the object; pyrax will use the name of the file as the object name. Of course, if you want to store it under a different name, pass that as the obj_name parameter, and the file will be stored with that new name. Of course, upload_file() accepts the same 'etag' parameter that store_object() does, and etag verification works the same way.
+
+	cf = pyrax.cloudfiles
+	pth = "/home/me/path/to/myfile.txt"
+	chksum = pyrax.utils.get_checksum(pth)
+	obj_etag = cf.upload_file("example", pth, etag=chksum)
+	print "Calculated checksum:", chksum
+	print "Stored object etag:", obj_etag
+
+And just as with store_object(), you can call upload_file() directly on a Container object.
+
+Note that (currently) both store_object() and upload_file() run synchronously, so your code will block while the transfer occurs. If you plan on building an application that will involve significant file transfer, you should plan on making these calls using an asynchronous approach such as threading, eventlet, twisted, or another similar approach.
+
+
+## Retrieving (Downloading) Stored Objects
+As with most operations on objects, there are 3 ways to do this. If you have a StorageObject reference for the the object you want to download, just call its `get()` method. If you have the Container object that holds the stored object, call its `fetch_object()` method, passing in the name of the object to fetch. Finally, you can call the `pyrax.cloudfiles.fetch_object()` method, passing in the container and object names.
+
+All 3 take the same optional parameters:
+
+* **include_meta**: Defaults to False. When True, the methods return a 2-tuple, with the first element containing metadata about the object, and the second a stream of bytes representing the object's contents. When False, just the stream of bytes (i.e., the file's contents) is returned.
+* **chunk_size**: Default = None. This represents the number of bytes to return from the server at a time. Note that if you specify a chunk size, instead of a stream of bytes, a generator is returned. You must iterate on the generator to retrieve the chunks of bytes; also, you must fully read the object's contents form the generator before making any other requests, or the results are not defined.
+
+Here is some sample code that creates a stored object containing some unicode text, and then retrieves that from Cloud Files using the various parameters:
+
+	cf = pyrax.cloudfiles
+	
+	text = "This is some text containing unicode like é, ü and ˚¬∆ç"
+	obj_etag = cf.store_object("example", "new_object.txt", text)
+	obj = cf.get_object("example", "new_object.txt")
+	
+	# Make sure that the content stored is identical
+	print "Using obj.get()"
+	stored_text = obj.get()
+	if stored_text == text:
+	    print "Stored text is identical"
+	else:
+	    print "Difference detected!"
+	    print "Original:", text
+	    print "Stored:", stored_text
+	
+	# Let's look at the metadata for the stored object
+	meta, stored_text = obj.get(include_meta=True)
+	print
+	print "Metadata:", meta
+	
+	# Demonstrate chunked retrieval
+	print
+	print "Using chunked retrieval"
+	obj_generator = obj.get(chunk_size=12)
+	joined_text = "".join(obj_generator)
+	if joined_text == text:
+	    print "Joined text is identical"
+	else:
+	    print "Difference detected!"
+	    print "Original:", text
+	    print "Joined:", joined_text
+
+Try running this code; you should find that the retrieved text is identical using both chunked and non-chunked methods. The metadata for the object should look something like:
+
+	Metadata: {'content-length': '62', 'accept-ranges': 'bytes',
+	'last-modified': 'Wed, 10 Oct 2012 16:06:25 GMT',
+	'etag': '3b3e32a6cd87076997dad4552972194b', 'x-timestamp': '1349885185.68412',
+	'x-trans-id': 'txb57464c49e0345f496a7acf451be77d8',
+	'date': 'Wed, 10 Oct 2012 16:06:25 GMT', 'content-type': 'text/plain'}
+
+
+## Uploading an Entire Folder to Cloud Files
+A very common use case is needing to upload an entire folder, including subfolders, to a Cloud Files container. Because this is so common, pyrax includes an `upload_folder()` method. You pass in the path to the folder you want to upload, and it will handle the rest in the background. You can also pass in a container if you wish; if so, the folder contents will be uploaded to that container. If you don't specify a container, a new container with the same name as the folder you are uploading will be created, and the objects stored in there.
+
+You can also specify one or more file name patterns to ignore; pyrax will skip any of the files that match any of the patterns. This is useful if there are files that you don't wish to retain (e.g., .pyc files in a Python project). You can pass either a single string pattern, or a list of strings to use.
+
+Here are some examples, using the local folder **"/home/me/projects/cool_project/"**:
+
+	cf = pyrax.cloudfiles
+	folder = "/home/me/projects/cool_project/"
+
+	# This will create a new container named 'cool_project', and
+	# upload the contents of the target folder to it
+	cf.upload_folder(folder)
+
+	# This will upload the contents of the target folder to a container
+	# named 'software'. If that container doesn't exist, it will be created.
+	cf.upload_folder(folder, container="software")
+
+	# This is the same as above, but will ignore any files ending in '.pyc'
+	cf.upload_folder(folder, container="software", ignore="*.pyc")
+
+	# Same as above, but will skip several different file name patterns
+	cf.upload_folder(folder, container="software", ignore=["*.pyc",
+			"*.tgz", "tmp*"])
+
+### Monitoring Folder Uploads
+Since a folder upload can take a while, the uploading happens in a background thread. If you'd like to follow the progress of the upload, you can query the 'progress' attribute of cloudfiles: this is a 2-tuple, with the first element the number of bytes uploaded, and the second the total bytes to be uploaded. This makes it simple to calculate the percentage of the upload that has completed.
+
+### Interrupting Folder Uploads
+Sometimes it is necessary to stop a folder upload before it has completed. To do this, call `cloudfiles.cancel_folder_upload()`, which will cause the background thread to stop uploading.
+
+
+## Listing Objects in a Container
+Assuming you have a Container object, simply call:
+
+	objects = cont.get_objects()
+
+This will return a list of StorageObjects representing the objects in the container. Note that since a container can hold millions of objects, there are several ways of limiting the number of objects returned by this method.
+
+The first limit is the default for Cloud Files: only the first 10,000 objects will be returned. If you absolutely must have more than that returned in a single call, you can call `cont.get_objects(full_listing=True)`. Be warned that very large containers may take a long time to respond, and connections may time out when waiting for millions of objects to be returned. Conversely, if you have lots of objects and only want to retrieve a much smaller set than 10,000, you can set the 'limit' parameter to the maximum number of objects you want returned. If you later on want to get more, such as when paginating your object listings, use the 'marker' parameter: setting it to the name of the last object returned from your previous get_objects() call will cause Cloud Files to return objects starting after the 'marker' setting.
+
+There are also two ways to filter your results: the 'prefix' and 'delimiter' parameters to get_objects(). 'prefix' works by only returning objects whose names begin with the value you set it to. 'delimiter' takes a single character, and excludes any object whose name contains that character.
+
+To illustrate these uses, let's start by creating a new folder, and populating it with 20 objects. The first 10 will have names starting with 'series_' followed by an integer between 0 and 9; the second 10 will simulate items in a nested folder. They will have a names that are a single character repeated. The content of the objects isn't important, as get_objects() works only on the names.
+
+	cf = pyrax.cloudfiles
+	cont = cf.create_container("my_objects")
+	for idx in xrange(10):
+	fname = "series_%s" % idx
+		cf.store_object(cont, fname, "some text")
+	start = ord("a")
+	for idx in xrange(start, start+10):
+		chars = chr(idx) * 4
+		fname = "stuff/%s" % chars
+		cont.store_object(fname, "some text")
+
+OK, lets start by listing everything:
+
+	objs = cont.get_objects()
+	for obj in objs:
+		print obj.name
+
+This returns:
+
+	series_0
+	series_1
+	series_2
+	series_3
+	series_4
+	series_5
+	series_6
+	series_7
+	series_8
+	series_9
+	stuff/aaaa
+	stuff/bbbb
+	stuff/cccc
+	stuff/dddd
+	stuff/eeee
+	stuff/ffff
+	stuff/gggg
+	stuff/hhhh
+	stuff/iiii
+	stuff/jjjj
+
+Now let's try paginating the results:
+
+	limit = 6
+	marker = ""
+	objs = cont.get_objects(limit=limit, marker=marker)
+	print "Objects:", [obj.name for obj in objs]	while objs:
+		marker = objs[-1].name
+		objs = cont.get_objects(limit=limit, marker=marker)
+		print "Objects:", [obj.name for obj in objs]
+
+The results show simple pagination in action:
+
+	Objects: ['series_0', 'series_1', 'series_2', 'series_3', 'series_4', 'series_5']
+	Objects: ['series_6', 'series_7', 'series_8', 'series_9', 'stuff/aaaa', 'stuff/bbbb']
+	Objects: ['stuff/cccc', 'stuff/dddd', 'stuff/eeee', 'stuff/ffff', 'stuff/gggg', 'stuff/hhhh']
+	Objects: ['stuff/iiii', 'stuff/jjjj']
+	Objects: []
+
+You can use the prefix parameter to only retrieve objects whose names start with that prefix:
+
+	objs = cont.get_objects(prefix="stuff")
+	print "Objects:", [obj.name for obj in objs]
+
+This returns only the 10 'stuff/...' objects:
+
+	Objects: ['stuff/aaaa', 'stuff/bbbb', 'stuff/cccc', 'stuff/dddd', 'stuff/eeee', 'stuff/ffff', 'stuff/gggg', 'stuff/hhhh', 'stuff/iiii', 'stuff/jjjj']
+
+The 'delimiter' parameter takes a single character and acts to filter out those files containing that character. The most common usage is to use the slash character to skip objects in nested folders within a container.
+
+	objs = cont.get_objects(delimiter="/")
+	print "Objects:", [obj.name for obj in objs]
+
+This excludes all the objects in the nested 'stuff' folder:
+
+	Objects: ['series_0', 'series_1', 'series_2', 'series_3', 'series_4', 'series_5', 'series_6', 'series_7', 'series_8', 'series_9']
+
+
+## Deleting Objects
+If you want to delete an object from Cloud Files, there are several ways to do this. 
+
+If you have the associated StorageObject instance for that object, just call its `obj.delete()` method. If you have the Container object, you can call its `cont.delete_object(obj_name)` method, passing in the object name. You can also call `pyrax.cloudfiles.delete_object(cont_name, obj_name)`, passing in the container and object names. Finally, if you want to delete all the objects in a container, just call the `container.delete_all_objects()` method.
+
+Please note that these methods are asynchronous and return almost immediately; they do not wait until the object has actually been deleted. There may be a period of several seconds where the object will still show up in the container, but do not interpret the presence of the object in the container soon after deleting it as a sign that the deletion failed.
+
+Here's some code that illustrates object deletion:
+
+	cf = pyrax.cloudfiles	
+	cname = "delete_object_test"
+	fname = "soon_to_vanish.txt"
+	cont = cf.create_container(cname)
+	text = "File Content"
+	
+	# Create a file in the container
+	cont.store_object(fname, text)
+	
+	# Verify that it's there.
+	obj = cont.get_object(fname)
+	print "Object present, size =", obj.total_bytes
+	
+	# Delete it!
+	cont.delete_object(fname)
+	start = time.time()
+	
+	# See if it's still there; if not, this should raise an exception
+	# Generally this happens quickly, but an object may appear to remain
+	# in a container for a short period of time after calling delete().
+	while obj:
+	    try:
+	        obj = cont.get_object(fname)
+	        print "...still there..."
+	        time.sleep(0.5)
+	    except exc.NoSuchObject:
+	        obj = None
+	        print "Object '%s' has been deleted" % fname
+	        print "It took %4.2f seconds to appear as deleted." % (time.time() - start)
+
+
+## Copying / Moving Objects
+Occasionally you may want to copy or move an object from one container to another. You could, of course, upload the object a second time to the new container, but that's slow and uses up bandwidth. You can do this all server-side  through the use of the `cloudfiles.copy_object()` and `cloudfiles.move_object()` methods. The methods are identical with the sole difference that move_object() deletes the object from the original container, whereas copy_object() leaves it there.
+
+Both methods take the parameters: `container, obj_name, new_container, new_obj_name=None`. If you omit the new_obj_name parameter, the object is moved without renaming.
+
+
+## Metadata for Containers and Objects
+Cloud Files allows you to set and retrieve arbitrary metadata on containers and storage objects. Metadata are simple key/value pairs, with both key and value being strings. The content of the metadata can be anything that is useful to you; the only requirement is that the keys begin with "X-Container-Meta-" and "X-Object-Meta-", respectively, for containers and storage objects. However, to make things easy for you, pyrax will automatically prefix your metadata headers with those strings if they aren't already present.
+
+	cf = pyrax.cloudfiles	
+	cname = "example"
+	cont = cf.create_container(cname)
+	
+	# Get the existing metadata, if any
+	meta = cf.get_container_metadata(cont)
+	print "Initial metadata:", meta
+
+Unless you've explicitly added metadata to this container, you should see it print an empty dict here.
+
+	# Create a dict of metadata. Make one key with the required prefix,
+	# and the other without, to illustrate how pyrax will 'massage'
+	# the keys to include the require prefix.
+	new_meta = {"X-Account-Meta-City": "Springfield",
+	        "Famous_Family": "Simpsons"}
+	cf.set_container_metadata(cont, new_meta)
+	
+	# Verify that the new metadata has been set for both keys.
+	meta = cf.get_container_metadata(cont)
+	print "Updated metadata:", meta
+
+After running this, you should see:
+
+	Updated metadata: {'x-container-meta-x-account-meta-city': 'Springfield',
+	'x-container-meta-famous-family': 'Simpsons'}
+
+
+
+
+
+
+
+
+
+
+
