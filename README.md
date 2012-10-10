@@ -4,6 +4,14 @@ Python SDK for OpenStack/Rackspace APIs
 
 See the COPYING file for license and copyright information.
 
+
+# UNDER DEVELOPMENT #
+This software is being actively developed and modified. **DO NOT** create any
+applications based on it, as it can (and will) change and break your
+application.
+
+----
+
 <b>pyrax</b> should work with most OpenStack-based cloud deployments, though it
 specifically targets the Rackspace public cloud. For example, the code for
 cloudfiles contains the ability to publish your content on Rackspace's CDN
