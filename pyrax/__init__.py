@@ -28,7 +28,7 @@ from novaclient.v1_1 import client as _cs_client
 
 # print a warning not to use this library in applications in
 # its current state of development.
-print 
+print
 print
 print "=" * 80
 print "pyrax is under active development and subject to substantial change."
@@ -100,6 +100,19 @@ def set_credential_file(cred_file, authenticate=True):
         raise
     if identity.authenticated:
         connect_to_services()
+
+
+def authenticate():
+    """
+    Generally you will not need to call this directly; passing in your
+    credentials via set_credentials() and set_credential_file() will call
+    authenticate() on the identity object by default. But for situations where
+    you set your credentials manually or otherwise need finer control over
+    the authentication sequence, this method will call the identity object's
+    authenticate() method, and an AuthenticationFailed exception will be raised
+    if your credentials have not been properly set first.
+    """
+    identity.authenticate()
 
 
 def clear_credentials():

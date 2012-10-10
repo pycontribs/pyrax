@@ -148,9 +148,8 @@ class Identity(object):
         to get a new token. Passing 'True' to 'force' will force a call for a new
         token, even if there already is a valid token.
         """
-        if not force and self._has_valid_token():
-                return self.token
-        if not self.authenticated:
+        self.authenticated = self._has_valid_token()
+        if force or not self.authenticated:
             self.authenticate()
         return self.token
 

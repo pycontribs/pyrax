@@ -47,7 +47,7 @@ class StorageObject(object):
 
         Note: if 'chunk_size' is defined, you must fully read the object's
         contents before making another request.
-        
+
         When 'include_meta' is True, what is returned from this method is a 2-tuple:
             Element 0: a dictionary containing metadata about the file.
             Element 1: a stream of bytes representing the object's contents.

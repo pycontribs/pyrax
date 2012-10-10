@@ -45,7 +45,7 @@ class Client(object):
     """
     Wraps the calls to swiftclient with objects representing Containers and StorageObjects.
 
-    These classes allow a developer to work with regular Python objects instead of 
+    These classes allow a developer to work with regular Python objects instead of
     calling functions.
     """
     # Constants used in metadata headers
@@ -149,6 +149,19 @@ class Client(object):
 
 
     @handle_swiftclient_exception
+    def remove_container_metadata_key(self, container, key):
+        """
+        Removes the specified key from the container's metadata. If the key
+        does not exist in the metadata, nothing is done.
+        """
+        meta_dict = {key: ""}
+        # Add the metadata prefix, if needed.
+        massaged = self._ensure_prefix(meta_dict, self.container_meta_prefix)
+        cname = self._resolve_name(container)
+        self.connection.post_container(cname, massaged)
+
+
+    @handle_swiftclient_exception
     def get_container_cdn_metadata(self, container):
         """Returns a dictionary containing the CDN metadata for the container."""
         cname = self._resolve_name(container)
@@ -222,6 +235,20 @@ class Client(object):
 
 
     @handle_swiftclient_exception
+    def remove_object_metadata_key(self, container, obj, key):
+        """
+        Removes the specified key from the storage object's metadata. If the key
+        does not exist in the metadata, nothing is done.
+        """
+        meta_dict = {key: ""}
+        # Add the metadata prefix, if needed.
+        massaged = self._ensure_prefix(meta_dict, self.object_meta_prefix)
+        cname = self._resolve_name(container)
+        oname = self._resolve_name(obj)
+        self.connection.post_object(cname, oname, massaged)
+
+
+    @handle_swiftclient_exception
     def create_container(self, name):
         """Creates a container with the specified name."""
         self.connection.put_container(name)
@@ -250,10 +277,11 @@ class Client(object):
     def delete_object(self, container, name):
         """Deletes the specified object from the container."""
         ct = self.get_container(container)
+        ct.remove_from_cache(name)
         oname = self._resolve_name(name)
         self.connection.delete_object(ct.name, oname)
         return True
- 
+
 
     @handle_swiftclient_exception
     def purge_cdn_object(self, container, name, email_addresses=[]):
@@ -288,7 +316,11 @@ class Client(object):
         cont = self.get_container(container)
         with utils.SelfDeletingTempfile() as tmp:
             with file(tmp, "wb") as tmpfile:
-                tmpfile.write(data)
+                try:
+                    tmpfile.write(data)
+                except UnicodeEncodeError:
+                    udata = data.encode("utf-8")
+                    tmpfile.write(udata)
             with file(tmp, "rb") as tmpfile:
                 return self.connection.put_object(cont.name, obj_name,
                         contents=tmpfile, content_type=content_type, etag=etag)
@@ -372,7 +404,7 @@ class Client(object):
             hdr = {"X-Object-Meta-Manifest": "%s." % fname}
             return self.connection.put_object(cont.name, fname,
                     contents=None, headers=hdr)
-            
+
         ispath = isinstance(file_or_path, basestring)
         if ispath:
             # Make sure it exists
@@ -457,7 +489,7 @@ class Client(object):
 
         Note: if 'chunk_size' is defined, you must fully read the object's
         contents before making another request.
-        
+
         When 'include_meta' is True, what is returned from this method is a 2-tuple:
             Element 0: a dictionary containing metadata about the file.
             Element 1: a stream of bytes representing the object's contents.
@@ -512,9 +544,11 @@ class Client(object):
 
 
     @handle_swiftclient_exception
-    def get_container_object_names(self, container):
+    def get_container_object_names(self, container, marker=None, limit=None, prefix=None,
+            delimiter=None, full_listing=False):
         cname = self._resolve_name(container)
-        hdrs, objs = self.connection.get_container(cname)
+        hdrs, objs = self.connection.get_container(cname, marker=marker, limit=limit,
+                prefix=prefix, delimiter=delimiter, full_listing=full_listing)
         cont = self.get_container(cname)
         return [obj["name"] for obj in objs]
 
@@ -543,7 +577,7 @@ class Client(object):
     @handle_swiftclient_exception
     def list_containers_info(self, limit=None, marker=None, **parms):
         """Returns a list of info on Containers.
-        
+
         For each container, a dict containing the following keys is returned:
             name - the name of the container
             count - the number of objects in the container

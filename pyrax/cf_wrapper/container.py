@@ -88,13 +88,20 @@ class Container(object):
 
     def delete_object(self, obj):
         """Deletes the specified object from this container."""
+        self.remove_from_cache(obj)
         return self.client.delete_object(self, obj)
 
 
     def delete_all_objects(self):
-        """Deletes the specified object from this container."""
+        """Deletes all objects from this container."""
         for obj_name in self.client.get_container_object_names(self):
             self.client.delete_object(self, obj_name)
+
+
+    def remove_from_cache(self, obj):
+        """Removes the object from the cache."""
+        nm = self.client._resolve_name(obj)
+        self._object_cache.pop(nm, None)
 
 
     def delete(self, del_objects=False):
@@ -104,6 +111,24 @@ class Container(object):
         case, each object will be deleted first, and then the container.
         """
         return self.client.delete_container(self.name, del_objects=del_objects)
+
+
+    def fetch_object(self, obj_name, include_meta=False, chunk_size=None):
+        """
+        Fetches the object from storage.
+
+        If 'include_meta' is False, only the bytes representing the
+        file is returned.
+
+        Note: if 'chunk_size' is defined, you must fully read the object's
+        contents before making another request.
+
+        When 'include_meta' is True, what is returned from this method is a 2-tuple:
+            Element 0: a dictionary containing metadata about the file.
+            Element 1: a stream of bytes representing the object's contents.
+        """
+        return self.client.fetch_object(self, obj_name, include_meta=include_meta,
+                chunk_size=chunk_size)
 
 
     def get_metadata(self):

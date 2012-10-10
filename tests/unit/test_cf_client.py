@@ -589,7 +589,7 @@ class CF_ClientTest(unittest.TestCase):
         client.get_container.side_effect = _swift_client.ClientException(
                 "Container GET failed: some_container 404")
         # Note: we're using delete_object because its first call is get_container
-        self.assertRaises(exc.NoSuchContainer, client.delete_object, "some_container", "some_object") 
+        self.assertRaises(exc.NoSuchContainer, client.delete_object, "some_container", "some_object")
         client.get_container = gc
 
     def test_handle_swiftclient_exception_upload(self):
@@ -599,7 +599,7 @@ class CF_ClientTest(unittest.TestCase):
         client.get_container.side_effect = _swift_client.ClientException(
                 "Object PUT failed: foo/bar/baz 422 Unprocessable Entity")
         # Note: we're using delete_object because its first call is get_container
-        self.assertRaises(exc.UploadFailed, client.delete_object, "some_container", "some_object") 
+        self.assertRaises(exc.UploadFailed, client.delete_object, "some_container", "some_object")
         client.get_container = gc
 
     def test_handle_swiftclient_exception_others(self):
@@ -609,7 +609,7 @@ class CF_ClientTest(unittest.TestCase):
         client.get_container.side_effect = _swift_client.ClientException(
                 "Some other sort of error message")
         # Note: we're using delete_object because its first call is get_container
-        self.assertRaises(_swift_client.ClientException, client.delete_object, "some_container", "some_object") 
+        self.assertRaises(_swift_client.ClientException, client.delete_object, "some_container", "some_object")
         client.get_container = gc
 
 
