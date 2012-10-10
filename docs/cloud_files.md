@@ -1,6 +1,10 @@
 # Working with Cloud Files
 
 
+# WARNING #
+###Please note the pyrax is still in the early stages of development, and will almost certainly be changing in ways that will break any applications you might build using it. Feel free to play with it and test things out, but do not use it for production applications.
+
+----
 ## Basic Concepts
 Rackspace Cloud Files allows you to store files in a scalable, redundant manner, and optionally make them available globally using the Akamai CDN network. Unlike a typical computer OS, though, Cloud Files consists of Containers, each of which can store millions of objects, but which cannot be nested within other Containers, as you can with directories on your computer. However, you can simulate a nested folder structure by naming your objects with names that resemble traditional path notation; e.g., "photos/vacations/2012/cancun/beach.jpg". So while all your files will be at the base level of their containers, you can retrieve them based on the "path" prefix.
 

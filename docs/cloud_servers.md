@@ -1,6 +1,10 @@
 ## Working with Cloud Servers
 Once you are authenticated, you can easily interact with Rackspace Cloud Servers.
 
+# WARNING #
+###Please note the pyrax is still in the early stages of development, and will almost certainly be changing in ways that will break any applications you might build using it. Feel free to play with it and test things out, but do not use it for production applications.
+
+----
 ### Listing Servers
 Let's start by listing all the servers in our account:
 
