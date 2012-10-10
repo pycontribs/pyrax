@@ -73,7 +73,8 @@ class Container(object):
         Creates a new object in this container, and populates it with
         the given data.
         """
-        return self.client.store_object(self, obj_name, data, content_type=content_type)
+        self.client.store_object(self, obj_name, data, content_type=content_type)
+        return self.get_object(obj_name)
 
 
     def upload_file(self, file_or_path, obj_name=None, content_type=None):

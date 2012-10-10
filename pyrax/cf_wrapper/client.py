@@ -322,8 +322,9 @@ class Client(object):
                     udata = data.encode("utf-8")
                     tmpfile.write(udata)
             with file(tmp, "rb") as tmpfile:
-                return self.connection.put_object(cont.name, obj_name,
+                self.connection.put_object(cont.name, obj_name,
                         contents=tmpfile, content_type=content_type, etag=etag)
+        return self.get_object(container, obj_name)
 
 
     @handle_swiftclient_exception
@@ -419,9 +420,10 @@ class Client(object):
         if ispath and os.path.isfile(file_or_path):
             # Need to wrap the call in a context manager
             with file(file_or_path, "rb") as ff:
-                return upload(ff, content_type, etag)
+                upload(ff, content_type, etag)
         else:
-            return upload(file_or_path, content_type, etag)
+            upload(file_or_path, content_type, etag)
+        return self.get_object(container, obj_name)
 
 
     def upload_folder(self, folder_path, container=None, ignore=None):
