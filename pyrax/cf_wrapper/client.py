@@ -283,22 +283,6 @@ class Client(object):
         return True
 
 
-    @handle_swiftclient_exception
-    def purge_cdn_object(self, container, name, email_addresses=[]):
-        ct = self.get_container(container)
-        oname = self._resolve_name(name)
-        if not ct.cdn_enabled:
-            raise exc.NotCDNEnabled("The object '%s' is not in a CDN-enabled container." % oname)
-        hdrs = {}
-        if email_addresses:
-            if not isinstance(email_addresses, (list, tuple)):
-                email_addresses = [email_addresses]
-            emls = ", ".join(email_addresses)
-            hdrs = {"X-Purge-Email": emls}
-        self.connection.cdn_request("DELETE", ct.name, oname, hdrs=hdrs)
-        return True
-
-
     def get_object(self, container, obj_name):
         """Returns a StorageObject instance for the object in the container."""
         cont = self.get_container(container)
@@ -562,12 +546,6 @@ class Client(object):
         return (hdrs["x-account-container-count"], hdrs["x-account-bytes-used"])
 
 
-    def get_container_streaming_uri(self, container):
-        """Returns the URI for streaming content, or None if CDN is not enabled."""
-        cont = self.get_container(container)
-        return cont.cdn_streaming_uri
-
-
     @handle_swiftclient_exception
     def list_containers(self, limit=None, marker=None, **parms):
         """Returns a list of all container names as strings."""
@@ -642,6 +620,12 @@ class Client(object):
         ct.cdn_log_retention = enabled
 
 
+    def get_container_streaming_uri(self, container):
+        """Returns the URI for streaming content, or None if CDN is not enabled."""
+        cont = self.get_container(container)
+        return cont.cdn_streaming_uri
+
+
     def set_container_web_index_page(self, container, page):
         """
         Sets the header indicating the index page in a container
@@ -664,6 +648,22 @@ class Client(object):
         """
         hdr = {"X-Container-Meta-Web-Error": page}
         return self.set_container_metadata(container, hdr, clear=False)
+
+
+    @handle_swiftclient_exception
+    def purge_cdn_object(self, container, name, email_addresses=[]):
+        ct = self.get_container(container)
+        oname = self._resolve_name(name)
+        if not ct.cdn_enabled:
+            raise exc.NotCDNEnabled("The object '%s' is not in a CDN-enabled container." % oname)
+        hdrs = {}
+        if email_addresses:
+            if not isinstance(email_addresses, (list, tuple)):
+                email_addresses = [email_addresses]
+            emls = ", ".join(email_addresses)
+            hdrs = {"X-Purge-Email": emls}
+        self.connection.cdn_request("DELETE", ct.name, oname, hdrs=hdrs)
+        return True
 
 
     def _get_user_agent(self):
