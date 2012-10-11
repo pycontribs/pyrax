@@ -4,7 +4,9 @@
 import fnmatch
 import hashlib
 import os
+import random
 import shutil
+import string
 import tempfile
 
 import pyrax.exceptions as exc
@@ -49,6 +51,14 @@ def get_checksum(content):
     md = hashlib.md5()
     md.update(txt)
     return md.hexdigest()
+
+
+def random_name(length=20):
+    """Generate a random name; useful for testing."""
+    base_chars = string.ascii_letters
+    mult = (length / len(base_chars)) + 1
+    chars = base_chars * mult
+    return "".join(random.sample(chars, length))
 
 
 def coerce_string_to_list(val):

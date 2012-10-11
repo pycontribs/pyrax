@@ -84,17 +84,18 @@ class Client(object):
         self.connection._make_cdn_connection(cdn_url)
 
 
-    def _ensure_prefix(self, dct, prfx):
+    def _massage_metakeys(self, dct, prfx):
         """
-        Returns a copy of the supplied dictionary, prefixing
-        any keys that do not begin with the specified prefix accordingly.
+        Returns a copy of the supplied dictionary, prefixing any keys that do not
+        begin with the specified prefix accordingly. Also lowercases all of the keys
+        since that's what is returned by the API.
         """
         lowprefix = prfx.lower()
         ret = {}
         for k, v in dct.iteritems():
             if not k.lower().startswith(lowprefix):
                 k = "%s%s" % (prfx, k)
-            ret[k] = v
+            ret[k.lower()] = v
         return ret
 
 
@@ -137,7 +138,7 @@ class Client(object):
         here update the container's metadata.
         """
         # Add the metadata prefix, if needed.
-        massaged = self._ensure_prefix(metadata, self.container_meta_prefix)
+        massaged = self._massage_metakeys(metadata, self.container_meta_prefix)
         cname = self._resolve_name(container)
         new_meta = {}
         if clear:
@@ -156,7 +157,7 @@ class Client(object):
         """
         meta_dict = {key: ""}
         # Add the metadata prefix, if needed.
-        massaged = self._ensure_prefix(meta_dict, self.container_meta_prefix)
+        massaged = self._massage_metakeys(meta_dict, self.container_meta_prefix)
         cname = self._resolve_name(container)
         self.connection.post_container(cname, massaged)
 
@@ -220,7 +221,7 @@ class Client(object):
         here update the object's metadata.
         """
         # Add the metadata prefix, if needed.
-        massaged = self._ensure_prefix(metadata, self.object_meta_prefix)
+        massaged = self._massage_metakeys(metadata, self.object_meta_prefix)
         cname = self._resolve_name(container)
         oname = self._resolve_name(obj)
         new_meta = {}
@@ -229,8 +230,17 @@ class Client(object):
         # whereas for containers you need to set the values to an empty
         # string to delete them.
         if not clear:
-            new_meta = self.get_object_metadata(cname, oname)
+            new_meta = self._massage_metakeys(self.get_object_metadata(cname, oname),
+                    self.object_meta_prefix)
         new_meta.update(massaged)
+        # Remove any empty values, since the object metadata API will 
+        # store them.
+        to_pop = []
+        for key, val in new_meta.iteritems():
+            if not val:
+                to_pop.append(key)
+        for key in to_pop:
+            new_meta.pop(key)
         self.connection.post_object(cname, oname, new_meta)
 
 
@@ -240,17 +250,13 @@ class Client(object):
         Removes the specified key from the storage object's metadata. If the key
         does not exist in the metadata, nothing is done.
         """
-        meta_dict = {key: ""}
-        # Add the metadata prefix, if needed.
-        massaged = self._ensure_prefix(meta_dict, self.object_meta_prefix)
-        cname = self._resolve_name(container)
-        oname = self._resolve_name(obj)
-        self.connection.post_object(cname, oname, massaged)
+        self.set_object_metadata(container, obj, {key: ""})
 
 
     @handle_swiftclient_exception
     def create_container(self, name):
         """Creates a container with the specified name."""
+        name = self._resolve_name(name)
         self.connection.put_container(name)
         return self.get_container(name)
 
@@ -264,6 +270,7 @@ class Client(object):
         the container's objects will be deleted before the container is
         deleted.
         """
+        self._remove_container_from_cache(container)
         cname = self._resolve_name(container)
         if del_objects:
             objs = self.get_container_object_names(cname)
@@ -271,6 +278,12 @@ class Client(object):
                 self.delete_object(cname, obj)
         self.connection.delete_container(cname)
         return True
+
+
+    def _remove_container_from_cache(self, container):
+        """Removes the container from the cache."""
+        nm = self._resolve_name(container)
+        self._container_cache.pop(nm, None)
 
 
     @handle_swiftclient_exception
@@ -608,6 +621,7 @@ class Client(object):
             if hdr[0].lower() == "x-cdn-uri":
                 ct.cdn_uri = hdr[1]
                 break
+        self._remove_container_from_cache(container)
 
 
     def set_cdn_log_retention(self, container, enabled):
