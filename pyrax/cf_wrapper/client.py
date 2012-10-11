@@ -625,13 +625,22 @@ class Client(object):
 
 
     def set_cdn_log_retention(self, container, enabled):
-        ct = self.get_container(container)
-        hdrs = {"X-Log-Retention": enabled}
-        response = self.connection.cdn_request("POST", [ct.name], hdrs=hdrs)
+        """
+        Defer the logic to the container. It will end up calling
+        _set_cdn_log_retention() to change it on Cloud Files.
+        """
+        cont = self.get_container(container)
+        cont.cdn_log_retention = enabled
+
+
+    def _set_cdn_log_retention(self, container, enabled):
+        """This does the actual call to the Cloud Files API."""
+        hdrs = {"X-Log-Retention": "%s" % enabled}
+        cname = self._resolve_name(container)
+        response = self.connection.cdn_request("POST", [cname], hdrs=hdrs)
         status = response.status
         if not 200 <= status < 300:
             raise exc.CDNFailed("Bad response: (%s) %s" % (status, response.reason))
-        ct.cdn_log_retention = enabled
 
 
     def get_container_streaming_uri(self, container):
@@ -665,7 +674,7 @@ class Client(object):
 
 
     @handle_swiftclient_exception
-    def purge_cdn_object(self, container, name, email_addresses=[]):
+    def purge_cdn_object(self, container, name, email_addresses=None):
         ct = self.get_container(container)
         oname = self._resolve_name(name)
         if not ct.cdn_enabled:

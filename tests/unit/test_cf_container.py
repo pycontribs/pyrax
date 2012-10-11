@@ -107,7 +107,7 @@ class CF_ContainerTest(unittest.TestCase):
         cont.client.get_object = Mock(return_value=self.fake_object)
         content = "something"
         etag = utils.get_checksum(content)
-        obj = cont.client.store_object("testcont", "testobj", content,
+        obj = cont.store_object(self.obj_name, content,
                 content_type="test/test", etag=etag)
         self.assertEqual(cont.client.connection.put_object.call_count, 1)
         cont.client.get_object = gobj
@@ -126,7 +126,7 @@ class CF_ContainerTest(unittest.TestCase):
                 tmp.write(small_file_contents)
             fname = os.path.basename(tmpname)
             fake_type = "test/test"
-            cont.client.upload_file(cont, tmpname, content_type=fake_type)
+            cont.upload_file(tmpname, content_type=fake_type)
             self.assertEqual(cont.client.connection.put_object.call_count, 1)
         cont.client.get_object = gobj
 

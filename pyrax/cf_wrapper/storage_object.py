@@ -75,6 +75,14 @@ class StorageObject(object):
         self.client.set_object_metadata(self.container, self, metadata, clear=clear)
 
 
+    def remove_metadata_key(self, key):
+        """
+        Removes the specified key from the storage object's metadata. If the key
+        does not exist in the metadata, nothing is done.
+        """
+        self.client.remove_object_metadata_key(self.container, self, key)
+
+
     def __repr__(self):
         return "<Object '%s' (%s)>" % (self.name, self.content_type)
 

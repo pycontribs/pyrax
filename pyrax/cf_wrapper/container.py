@@ -15,7 +15,7 @@ class Container(object):
         self.cdn_ttl = client.default_cdn_ttl
         self.cdn_ssl_uri = None
         self.cdn_streaming_uri = None
-        self.cdn_log_retention = False
+        self._cdn_log_retention = False
         self._fetch_cdn_data()
         self._object_cache = {}
 
@@ -34,7 +34,7 @@ class Container(object):
                 if hdr[0].lower() == "x-cdn-streaming-uri":
                     self.cdn_streaming_uri = hdr[1]
                 if hdr[0].lower() == "x-log-retention":
-                    self.cdn_log_retention = (hdr[1] == "True")
+                    self._cdn_log_retention = (hdr[1] == "True")
 
 
     def get_objects(self, marker=None, limit=None, prefix=None, delimiter=None,
@@ -68,23 +68,23 @@ class Container(object):
         return ret
 
 
-    def store_object(self, obj_name, data, content_type=None):
+    def store_object(self, obj_name, data, content_type=None, etag=None):
         """
         Creates a new object in this container, and populates it with
         the given data.
         """
-        self.client.store_object(self, obj_name, data, content_type=content_type)
-        return self.get_object(obj_name)
+        return self.client.store_object(self, obj_name, data, content_type=content_type,
+                etag=etag)
 
 
-    def upload_file(self, file_or_path, obj_name=None, content_type=None):
+    def upload_file(self, file_or_path, obj_name=None, content_type=None, etag=None):
         """
         Uploads the specified file to this container. If no name is supplied, the
         file's name will be used. Either a file path or an open file-like object
         may be supplied.
         """
         return self.client.upload_file(self, file_or_path, obj_name=obj_name,
-                content_type=content_type)
+                content_type=content_type, etag=etag)
 
 
     def delete_object(self, obj):
@@ -140,6 +140,14 @@ class Container(object):
         return self.client.set_container_metadata(self, metadata, clear=clear)
 
 
+    def remove__metadata_key(self, key):
+        """
+        Removes the specified key from the container's metadata. If the key
+        does not exist in the metadata, nothing is done.
+        """
+        return self.client.remove_container_metadata_key(self, key)
+
+
     def set_web_index_page(self, page):
         """
         Sets the header indicating the index page for this container
@@ -178,6 +186,16 @@ class Container(object):
     @property
     def cdn_enabled(self):
         return bool(self.cdn_uri)
+
+
+    def _get_cdn_log_retention(self):
+        return self._cdn_log_retention
+
+    def _set_cdn_log_retention(self, enabled):
+        self.client._set_cdn_log_retention(self, enabled)
+        self._cdn_log_retention = enabled
+
+    cdn_log_retention = property(_get_cdn_log_retention, _set_cdn_log_retention)
 
 
     def __repr__(self):
