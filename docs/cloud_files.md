@@ -372,9 +372,26 @@ After running this, you should see:
 	Updated metadata: {'x-container-meta-x-account-meta-city': 'Springfield',
 	'x-container-meta-famous-family': 'Simpsons'}
 
+You can update the metadata for a container at any time by calling `cf.set_container_metadata()` again with a dict containing your new key/value pairs. That method takes an additional parameter 'clear' which defaults to False; if you pass clear=True, any existing metadata is deleted, and only the metadata you pass in will remain. If you leave the default clear=False, the key/value pairs you pass will simply update the existing metadata.
 
+Metadata for storage objects works exactly the same, using the analogous methods `cf.get_object_metadata(container, obj)` and `cf.set_object_metadata(container, obj, metadata, clear=False)`.
 
+## CDN Support
+Cloud Files makes it easy to publish your stored objects over the high-speed Akamai CDN. Content is made available at the container level; you can't make individual files within a public container private. This may affect your storage design, so that only files you wish to have accessible to the public are stored in public containers.
 
+To publish a container to CDN, simply make the following call:
+
+	pyrax.cloudfiles.make_container_public("example", ttl=900)
+
+This makes the 'example' container public, and sets the TTL, or Time To Live, to 15 minutes (900 seconds). This is the minimum TTL supported.
+
+Once a container is made public, you can access its CDN-related properties
+
+	cf = pyrax.cloudfiles
+	cont = cf.get_container("example")
+	print "cdn_enabled", cont.cdn_enabled	print "cdn_ttl", cont.cdn_ttl	print "cdn_log_retention", cont.cdn_log_retention	print "cdn_uri", cont.cdn_uri	print "cdn_ssl_uri", cont.cdn_ssl_uri	print "cdn_streaming_uri", cont.cdn_streaming_uri
+
+#Need to make an example script with this.
 
 
 
