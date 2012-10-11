@@ -134,7 +134,7 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj.client.connection.head_object = Mock(return_value={})
         obj.set_metadata({"newkey": "newval"})
         obj.client.connection.post_object.assert_called_with(obj.container.name, obj.name,
-                {"X-Object-Meta-newkey": "newval"})
+                {"x-object-meta-newkey": "newval"})
 
 
 if __name__ == "__main__":

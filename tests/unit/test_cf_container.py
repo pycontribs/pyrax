@@ -14,6 +14,7 @@ import pyrax.exceptions as exc
 from tests.unit.fakes import FakeContainer
 from tests.unit.fakes import FakeIdentity
 from tests.unit.fakes import FakeResponse
+from tests.unit.fakes import FakeStorageObject
 
 
 
@@ -44,7 +45,11 @@ class CF_ContainerTest(unittest.TestCase):
         pyrax.connect_to_cloudfiles()
         self.client = pyrax.cloudfiles
         self.client.connection.head_container = Mock()
-        self.container = self.client.get_container("testcont")
+        self.cont_name = utils.random_name()
+        self.container = self.client.get_container(self.cont_name)
+        self.obj_name = utils.random_name()
+        self.fake_object = FakeStorageObject(self.client, self.cont_name,
+                self.obj_name)
         self.client._container_cache = {}
         self.container.object_cache = {}
 
@@ -98,18 +103,22 @@ class CF_ContainerTest(unittest.TestCase):
         cont = self.container
         cont.client.connection.head_container = Mock()
         cont.client.connection.put_object = Mock()
+        gobj = cont.client.get_object
+        cont.client.get_object = Mock(return_value=self.fake_object)
         content = "something"
         etag = utils.get_checksum(content)
         obj = cont.client.store_object("testcont", "testobj", content,
                 content_type="test/test", etag=etag)
-        cont.client.connection.put_object.assert_called_with("testcont", "testobj",
-                contents=content, content_type="test/test", etag=etag)
+        self.assertEqual(cont.client.connection.put_object.call_count, 1)
+        cont.client.get_object = gobj
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_upload_file(self):
         cont = self.container
         cont.client.connection.head_container = Mock()
         cont.client.connection.put_object = Mock()
+        gobj = cont.client.get_object
+        cont.client.get_object = Mock(return_value=self.fake_object)
         with utils.SelfDeletingTempfile() as tmpname:
             small_file_contents = "Test Value " * 25
             cont.client.max_file_size = len(small_file_contents) + 1
@@ -119,6 +128,7 @@ class CF_ContainerTest(unittest.TestCase):
             fake_type = "test/test"
             cont.client.upload_file(cont, tmpname, content_type=fake_type)
             self.assertEqual(cont.client.connection.put_object.call_count, 1)
+        cont.client.get_object = gobj
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_delete_object(self):
@@ -126,14 +136,14 @@ class CF_ContainerTest(unittest.TestCase):
         client = cont.client
         cont.client.connection.head_container = Mock()
         cont.client.connection.delete_object = Mock()
-        cont.delete_object("testobj")
-        cont.client.connection.delete_object.assert_called_with("testcont", "testobj")
+        cont.delete_object(self.obj_name)
+        cont.client.connection.delete_object.assert_called_with(self.cont_name, self.obj_name)
 
     def test_delete(self):
         cont = self.container
         cont.client.connection.delete_container = Mock()
         cont.delete()
-        cont.client.connection.delete_container.assert_called_with("testcont")
+        cont.client.connection.delete_container.assert_called_with(self.cont_name)
 
     def test_get_metadata(self):
         cont = self.container
@@ -148,21 +158,21 @@ class CF_ContainerTest(unittest.TestCase):
         cont = self.container
         cont.client.connection.post_container = Mock()
         cont.set_metadata({"newkey": "newval"})
-        cont.client.connection.post_container.assert_called_with(cont.name, {"X-Container-Meta-newkey": "newval"})
+        cont.client.connection.post_container.assert_called_with(cont.name, {"x-container-meta-newkey": "newval"})
 
     def test_set_web_index_page(self):
         cont = self.container
         page = "test_index.html"
         cont.client.connection.post_container = Mock()
         cont.set_web_index_page(page)
-        cont.client.connection.post_container.assert_called_with(cont.name, {"X-Container-Meta-Web-Index": page})
+        cont.client.connection.post_container.assert_called_with(cont.name, {"x-container-meta-web-index": page})
 
     def test_set_web_error_page(self):
         cont = self.container
         page = "test_error.html"
         cont.client.connection.post_container = Mock()
         cont.set_web_error_page(page)
-        cont.client.connection.post_container.assert_called_with(cont.name, {"X-Container-Meta-Web-Error": page})
+        cont.client.connection.post_container.assert_called_with(cont.name, {"x-container-meta-web-error": page})
 
     def test_make_public(self, ttl=None):
         cont = self.container
@@ -174,7 +184,7 @@ class CF_ContainerTest(unittest.TestCase):
         resp.headers = [("x-cdn-uri", example), ("c", "d")]
         cont.client.connection.cdn_request.return_value = resp
         cont.make_public(ttl)
-        cont.client.connection.cdn_request.assert_called_with("PUT", [cont.name],
+        cont.client.connection.cdn_request.assert_called_with("POST", [cont.name],
                 hdrs={"X-TTL": str(ttl), "X-CDN-Enabled": "True"})
 
     def test_make_private(self):

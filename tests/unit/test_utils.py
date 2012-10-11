@@ -59,6 +59,12 @@ class CF_UtilsTest(unittest.TestCase):
                 received = utils.get_checksum(testfile)
         self.assertEqual(expected, received)
 
+    def test_random_name(self):
+        nm = utils.random_name(33)
+        self.assertEqual(len(nm), 33)
+        nm = utils.random_name(9999)
+        self.assertEqual(len(nm), 9999)
+
     def test_folder_size_bad_folder(self):
         self.assertRaises(exc.FolderNotFound, utils.folder_size, "/doesnt_exist")
 

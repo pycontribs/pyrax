@@ -16,6 +16,7 @@ from tests.unit.fakes import FakeContainer
 from tests.unit.fakes import FakeFolderUploader
 from tests.unit.fakes import FakeIdentity
 from tests.unit.fakes import FakeResponse
+from tests.unit.fakes import FakeStorageObject
 
 
 
@@ -40,6 +41,10 @@ class CF_ClientTest(unittest.TestCase):
         pyrax.connect_to_cloudfiles()
         self.client = pyrax.cloudfiles
         self.client._container_cache = {}
+        self.cont_name = utils.random_name()
+        self.obj_name = utils.random_name()
+        self.fake_object = FakeStorageObject(self.client, self.cont_name,
+                self.obj_name)
 
     def tearDown(self):
         self.client = None
@@ -63,7 +68,7 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.head_container = Mock()
         client.connection.head_container.return_value = {"X-Container-Meta-Foo": "yes",
                 "Some-Other-Key": "no"}
-        meta = client.get_container_metadata("testcont")
+        meta = client.get_container_metadata(self.cont_name)
         self.assert_(len(meta) == 1)
         self.assert_("X-Container-Meta-Foo" in meta)
 
@@ -72,7 +77,7 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.head_object = Mock()
         client.connection.head_object.return_value = {"X-Object-Meta-Foo": "yes",
                 "Some-Other-Key": "no"}
-        meta = client.get_object_metadata("testcont", "testobj")
+        meta = client.get_object_metadata(self.cont_name, self.obj_name)
         self.assert_(len(meta) == 1)
         self.assert_("X-Object-Meta-Foo" in meta)
 
@@ -82,8 +87,8 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.head_container.return_value = {"X-Container-Meta-Foo": "yes",
                 "Some-Other-Key": "no"}
         client.connection.post_container = Mock()
-        client.set_container_metadata("testcont", {"newkey": "newval"})
-        client.connection.post_container.assert_called_with("testcont", {"X-Container-Meta-newkey": "newval"})
+        client.set_container_metadata(self.cont_name, {"newkey": "newval"})
+        client.connection.post_container.assert_called_with(self.cont_name, {"x-container-meta-newkey": "newval"})
 
     def test_set_object_metadata(self):
         client = self.client
@@ -91,15 +96,15 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.head_object.return_value = {"X-Object-Meta-Foo": "yes",
                 "Some-Other-Key": "no"}
         client.connection.post_object = Mock()
-        client.set_object_metadata("testcont", "testobj", {"newkey": "newval"})
-        client.connection.post_object.assert_called_with("testcont", "testobj",
-                {"X-Object-Meta-newkey": "newval", "X-Object-Meta-Foo": "yes"})
+        client.set_object_metadata(self.cont_name, self.obj_name, {"newkey": "newval"})
+        client.connection.post_object.assert_called_with(self.cont_name, self.obj_name,
+                {"x-object-meta-newkey": "newval", "x-object-meta-foo": "yes"})
 
-    def test_ensure_prefix(self):
+    def test_massage_metakeys(self):
         prefix = "ABC-"
         orig = {"ABC-yyy": "ok", "zzz": "change"}
-        expected = {"ABC-yyy": "ok", "ABC-zzz": "change"}
-        fixed = self.client._ensure_prefix(orig, prefix)
+        expected = {"abc-yyy": "ok", "abc-zzz": "change"}
+        fixed = self.client._massage_metakeys(orig, prefix)
         self.assertEqual(fixed, expected)
 
     def test_resolve_name(self):
@@ -117,7 +122,7 @@ class CF_ClientTest(unittest.TestCase):
         resp = FakeResponse()
         resp.headers = [("a", "b"), ("c", "d")]
         client.connection.cdn_request.return_value = resp
-        returned = client.get_container_cdn_metadata("testcont")
+        returned = client.get_container_cdn_metadata(self.cont_name)
         expected = {"a": "b", "c": "d"}
         self.assertEqual(expected, returned)
 
@@ -127,20 +132,20 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.put_container = Mock()
         client.connection.head_container = Mock()
         meta = {"X-TTL": "9999", "X-NotAllowed": "0"}
-        self.assertRaises(exc.InvalidCDNMetada, client.set_container_cdn_metadata, "testcont", meta)
+        self.assertRaises(exc.InvalidCDNMetada, client.set_container_cdn_metadata, self.cont_name, meta)
         meta = {"X-TTL": "9999"}
         client.connection.cdn_request = Mock()
-        client.set_container_cdn_metadata("testcont", meta)
-        client.connection.cdn_request.assert_called_with("POST", ["testcont"], hdrs=meta)
+        client.set_container_cdn_metadata(self.cont_name, meta)
+        client.connection.cdn_request.assert_called_with("POST", [self.cont_name], hdrs=meta)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_create_container(self):
         client = self.client
         client.connection.put_container = Mock()
         client.connection.head_container = Mock()
-        ret = client.create_container("testcont")
+        ret = client.create_container(self.cont_name)
         self.assert_(isinstance(ret, FakeContainer))
-        self.assertEqual(ret.name, "testcont")
+        self.assertEqual(ret.name, self.cont_name)
 
     def test_delete_container(self):
         client = self.client
@@ -148,43 +153,43 @@ class CF_ClientTest(unittest.TestCase):
         client.get_container_object_names = Mock()
         client.get_container_object_names.return_value = ["o1", "o2", "o3"]
         client.delete_object = Mock()
-        client.delete_container("testcont")
+        client.delete_container(self.cont_name)
         self.assertEqual(client.get_container_object_names.call_count, 0)
-        client.connection.delete_container.assert_called_with("testcont")
+        client.connection.delete_container.assert_called_with(self.cont_name)
         # Now call with del_objects=True
-        client.delete_container("testcont", True)
+        client.delete_container(self.cont_name, True)
         self.assertEqual(client.get_container_object_names.call_count, 1)
         self.assertEqual(client.delete_object.call_count, 3)
-        client.connection.delete_container.assert_called_with("testcont")
+        client.connection.delete_container.assert_called_with(self.cont_name)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_delete_object(self):
         client = self.client
         client.connection.head_container = Mock()
         client.connection.delete_object = Mock()
-        client.delete_object("testcont", "testobj")
-        client.connection.delete_object.assert_called_with("testcont", "testobj")
+        client.delete_object(self.cont_name, self.obj_name)
+        client.connection.delete_object.assert_called_with(self.cont_name, self.obj_name)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_purge_cdn_object(self):
         client = self.client
         client.connection.head_container = Mock()
-        self.assertRaises(exc.NotCDNEnabled, client.purge_cdn_object, "testcont", "testobj")
-        client.get_container("testcont").cdn_uri = "http://example.com"
+        self.assertRaises(exc.NotCDNEnabled, client.purge_cdn_object, self.cont_name, self.obj_name)
+        client.get_container(self.cont_name).cdn_uri = "http://example.com"
         client.connection.cdn_request = Mock()
         emls = ["foo@example.com", "bar@example.com"]
-        client.purge_cdn_object("testcont", "testobj", emls)
-        client.connection.cdn_request.assert_called_with("DELETE", "testcont", "testobj",
+        client.purge_cdn_object(self.cont_name, self.obj_name, emls)
+        client.connection.cdn_request.assert_called_with("DELETE", self.cont_name, self.obj_name,
                 hdrs={"X-Purge-Email": "foo@example.com, bar@example.com"})
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_object(self):
         client = self.client
         client.connection.head_container = Mock()
-        cont = client.get_container("testcont")
+        cont = client.get_container(self.cont_name)
         cont.client.connection.get_container = Mock()
         cont.client.connection.get_container.return_value = ({}, [{"name": "o1"}, {"name": "o2"}])
-        obj = client.get_object("testcont", "o1")
+        obj = client.get_object(self.cont_name, "o1")
         self.assertEqual(obj.name, "o1")
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
@@ -192,19 +197,23 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         client.connection.head_container = Mock()
         client.connection.put_object = Mock()
+        gobj = client.get_object
+        client.get_object = Mock(return_value=self.fake_object)
         content = "something"
         etag = utils.get_checksum(content)
-        obj = client.store_object("testcont", "testobj", content,
+        obj = client.store_object(self.cont_name, self.obj_name, content,
                 content_type="test/test", etag=etag)
-        client.connection.put_object.assert_called_with("testcont", "testobj",
-                contents=content, content_type="test/test", etag=etag)
+        self.assertEqual(client.connection.put_object.call_count, 1)
+        client.get_object = gobj
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_upload_file(self):
         client = self.client
         client.connection.head_container = Mock()
         client.connection.put_object = Mock()
-        cont = client.get_container("testcont")
+        gobj = client.get_object
+        client.get_object = Mock(return_value=self.fake_object)
+        cont = client.get_container(self.cont_name)
         with utils.SelfDeletingTempfile() as tmpname:
             small_file_contents = "Test Value " * 25
             client.max_file_size = len(small_file_contents) + 1
@@ -214,13 +223,17 @@ class CF_ClientTest(unittest.TestCase):
             fake_type = "test/test"
             client.upload_file(cont, tmpname, content_type=fake_type)
             self.assertEqual(client.connection.put_object.call_count, 1)
+        client.get_object = gobj
+
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_upload_large_file(self):
         client = self.client
         client.connection.head_container = Mock()
         client.connection.put_object = Mock()
-        cont = client.get_container("testcont")
+        cont = client.get_container(self.cont_name)
+        gobj = client.get_object
+        client.get_object = Mock(return_value=self.fake_object)
         with utils.SelfDeletingTempfile() as tmpname:
             small_file_contents = "Test Value " * 25
             client.max_file_size = len(small_file_contents) - 1
@@ -232,6 +245,7 @@ class CF_ClientTest(unittest.TestCase):
             # Large files require 1 call for manifest, plus one for each
             # segment. This should be a 2-segment file upload.
             self.assertEqual(client.connection.put_object.call_count, 3)
+        client.get_object = gobj
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_upload_folder_bad_folder(self):
@@ -319,69 +333,54 @@ class CF_ClientTest(unittest.TestCase):
         up = client.upload_file
         client.upload_file = Mock()
         client.connection.head_container = Mock()
-        cont = client.get_container("testcont")
         client.connection.put_container = Mock()
+        cont_name = utils.random_name()
+        cont = client.create_container(cont_name)
+        gobj = client.get_object
+        client.get_object = Mock(return_value=self.fake_object)
         num_files = 10
         with utils.SelfDeletingTempDirectory() as tmpdir:
             for idx in xrange(num_files):
                 nm = "file%s" % idx
                 pth = os.path.join(tmpdir, nm)
                 file(pth, "w").write("test")
-            uploader = FakeFolderUploader(tmpdir, "fake_cont", "", client)
+            uploader = FakeFolderUploader(tmpdir, cont, "", client)
             # Note that the fake moved the actual run() code to a different method
             uploader.actual_run()
             self.assertEqual(client.upload_file.call_count, num_files)
+        client.get_object = gobj
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_copy_object(self):
         client = self.client
         client.connection.head_container = Mock()
-        cont = client.get_container("testcont")
+        cont = client.get_container(self.cont_name)
         client.connection.put_object = Mock()
         cont.client.connection.get_container = Mock()
         cont.client.connection.get_container.return_value = ({}, [{"name": "o1"}, {"name": "o2"}])
-        client.copy_object("testcont", "o1", "newcont")
+        client.copy_object(self.cont_name, "o1", "newcont")
         client.connection.put_object.assert_called_with("newcont", "o1", contents=None,
-                headers={"X-Copy-From": "/testcont/o1"})
+                headers={"X-Copy-From": "/%s/o1" % self.cont_name})
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_move_object(self):
         client = self.client
         client.connection.head_container = Mock()
-        cont = client.get_container("testcont")
+        cont = client.get_container(self.cont_name)
         client.connection.put_object = Mock(return_value="0000")
         cont.client.connection.get_container = Mock()
         cont.client.connection.get_container.return_value = ({}, [{"name": "o1"}, {"name": "o2"}])
         client.delete_object = Mock()
-        client.move_object("testcont", "o1", "newcont")
+        client.move_object(self.cont_name, "o1", "newcont")
         client.connection.put_object.assert_called_with("newcont", "o1", contents=None,
-                headers={"X-Copy-From": "/testcont/o1"})
-        client.delete_object.assert_called_with("testcont", "o1")
-
-    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
-    def test_upload_file(self):
-        client = self.client
-        client.connection.head_container = Mock()
-        cont = client.get_container("testcont")
-        client.connection.put_object = Mock(return_value="0000")
-        with utils.SelfDeletingTempfile() as tmpname:
-            with file(tmpname, "wb") as tmp:
-                tmp.write("Some dummy file content")
-            client.connection.put_object = Mock(return_value="0000")
-            client.upload_file("testcont", tmpname)
-            fname = os.path.basename(tmpname)
-            ccpo = client.connection.put_object
-            self.assertEqual(len(ccpo.call_args[0]), 2)
-            self.assertEqual(len(ccpo.call_args[1]), 3)
-            self.assertEqual(ccpo.call_args[0], ("testcont", fname))
-            self.assert_("contents" in ccpo.call_args[1])
-            self.assert_("content_type" in ccpo.call_args[1])
+                headers={"X-Copy-From": "/%s/o1" % self.cont_name})
+        client.delete_object.assert_called_with(self.cont_name, "o1")
 
     def test_fetch_object(self):
         client = self.client
         text = "file_contents"
         client.connection.get_object = Mock(return_value=({}, text))
-        resp = client.fetch_object("testcont", "testobj", include_meta=True)
+        resp = client.fetch_object(self.cont_name, self.obj_name, include_meta=True)
         self.assertEqual(len(resp), 2)
         self.assertEqual(resp[1], text)
 
@@ -389,7 +388,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_get_all_containers(self):
         client = self.client
         client.connection.head_container = Mock()
-        cont_list = [{"name": "testcont", "count": "2", "bytes": "12345"},
+        cont_list = [{"name": self.cont_name, "count": "2", "bytes": "12345"},
                 {"name": "anothercont", "count": "1", "bytes": "67890"}]
         client.connection.get_container = Mock()
         client.connection.get_container.return_value = ({}, cont_list)
@@ -398,7 +397,9 @@ class CF_ClientTest(unittest.TestCase):
         self.assertEqual(len(conts), 2)
         cont_names = [ct.name for ct in conts]
         cont_names.sort()
-        self.assertEqual(cont_names, ["anothercont", "testcont"])
+        expected_names = [self.cont_name, "anothercont"]
+        expected_names.sort()
+        self.assertEqual(cont_names, expected_names)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_container(self):
@@ -406,8 +407,8 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.head_container = Mock()
         client.connection.head_container.return_value={"x-container-object-count": 3, "x-container-bytes-used": 1234}
         self.assertRaises(exc.MissingName, client.get_container, "")
-        cont = client.get_container("testcont")
-        self.assertEqual(cont.name, "testcont")
+        cont = client.get_container(self.cont_name)
+        self.assertEqual(cont.name, self.cont_name)
         self.assertEqual(cont.object_count, 3)
         self.assertEqual(cont.total_bytes, 1234)
 
@@ -417,9 +418,9 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.head_container = Mock()
         dct = [{"name": "o1", "bytes": 111}, {"name": "o2", "bytes": 2222}]
         client.connection.get_container = Mock(return_value=({}, dct))
-        objs = client.get_container_objects("testcont")
+        objs = client.get_container_objects(self.cont_name)
         self.assertEqual(len(objs), 2)
-        self.assertEqual(objs[0].container.name, "testcont")
+        self.assertEqual(objs[0].container.name, self.cont_name)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_container_object_names(self):
@@ -427,7 +428,7 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.head_container = Mock()
         dct = [{"name": "o1", "bytes": 111}, {"name": "o2", "bytes": 2222}]
         client.connection.get_container = Mock(return_value=({}, dct))
-        obj_names = client.get_container_object_names("testcont")
+        obj_names = client.get_container_object_names(self.cont_name)
         self.assertEqual(len(obj_names), 2)
         self.assert_("o1" in obj_names)
         self.assert_("o2" in obj_names)
@@ -447,21 +448,21 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         client.connection.head_container = Mock()
         example_uri = "http://example.com"
-        client.get_container("testcont").cdn_streaming_uri = example_uri
-        uri = client.get_container_streaming_uri("testcont")
+        client.get_container(self.cont_name).cdn_streaming_uri = example_uri
+        uri = client.get_container_streaming_uri(self.cont_name)
         self.assertEqual(uri, example_uri)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_list_containers(self):
         client = self.client
         client.connection.get_container = Mock()
-        cont_list = [{"name": "testcont", "count": "2", "bytes": "12345"},
+        cont_list = [{"name": self.cont_name, "count": "2", "bytes": "12345"},
                 {"name": "anothercont", "count": "1", "bytes": "67890"}]
         client.connection.get_container = Mock()
         client.connection.get_container.return_value = ({}, cont_list)
         resp = client.list_containers()
         self.assertEqual(len(resp), 2)
-        self.assert_("testcont" in resp)
+        self.assert_(self.cont_name in resp)
         self.assert_("anothercont" in resp)
 
 
@@ -469,7 +470,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_list_containers_info(self):
         client = self.client
         client.connection.get_container = Mock()
-        cont_list = [{"name": "testcont", "count": "2", "bytes": "12345"},
+        cont_list = [{"name": self.cont_name, "count": "2", "bytes": "12345"},
                 {"name": "anothercont", "count": "1", "bytes": "67890"}]
         client.connection.get_container = Mock()
         client.connection.get_container.return_value = ({}, cont_list)
@@ -499,7 +500,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_make_container_public(self):
         client = self.client
         client.connection.head_container = Mock()
-        cont = client.get_container("testcont")
+        cont = client.get_container(self.cont_name)
         cont.cdn_uri = None
         client.connection.cdn_request = Mock()
         example = "http://example.com"
@@ -507,17 +508,17 @@ class CF_ClientTest(unittest.TestCase):
         resp.headers = [("x-cdn-uri", example), ("c", "d")]
         resp.status = 500
         client.connection.cdn_request.return_value = resp
-        self.assertRaises(exc.CDNFailed, client.make_container_public, "testcont")
+        self.assertRaises(exc.CDNFailed, client.make_container_public, self.cont_name)
         resp.status = 204
-        client.make_container_public("testcont", ttl=6666)
-        client.connection.cdn_request.assert_called_with("PUT", ["testcont"],
+        client.make_container_public(self.cont_name, ttl=6666)
+        client.connection.cdn_request.assert_called_with("PUT", [self.cont_name],
                 hdrs={"X-TTL": "6666", "X-CDN-Enabled": "True"})
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_make_container_private(self):
         client = self.client
         client.connection.head_container = Mock()
-        cont = client.get_container("testcont")
+        cont = client.get_container(self.cont_name)
         cont.cdn_uri = None
         client.connection.cdn_request = Mock()
         example = "http://example.com"
@@ -525,10 +526,10 @@ class CF_ClientTest(unittest.TestCase):
         resp.headers = [("x-cdn-uri", example), ("c", "d")]
         resp.status = 500
         client.connection.cdn_request.return_value = resp
-        self.assertRaises(exc.CDNFailed, client.make_container_public, "testcont")
+        self.assertRaises(exc.CDNFailed, client.make_container_public, self.cont_name)
         resp.status = 204
-        client.make_container_private("testcont")
-        client.connection.cdn_request.assert_called_with("PUT", ["testcont"],
+        client.make_container_private(self.cont_name)
+        client.connection.cdn_request.assert_called_with("PUT", [self.cont_name],
                 hdrs={"X-CDN-Enabled": "False"})
 
 
@@ -536,7 +537,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_set_cdn_log_retention(self):
         client = self.client
         client.connection.head_container = Mock()
-        cont = client.get_container("testcont")
+        cont = client.get_container(self.cont_name)
         client.connection.cdn_request = Mock()
         resp = FakeResponse()
         client.connection.cdn_request.return_value = resp
@@ -552,23 +553,23 @@ class CF_ClientTest(unittest.TestCase):
     def test_set_container_web_index_page(self):
         client = self.client
         client.connection.head_container = Mock()
-        cont = client.get_container("testcont")
+        cont = client.get_container(self.cont_name)
         client.connection.post_container = Mock()
         pg = "index.html"
         client.set_container_web_index_page(cont, pg)
-        client.connection.post_container.assert_called_with("testcont",
-                {"X-Container-Meta-Web-Index": pg})
+        client.connection.post_container.assert_called_with(self.cont_name,
+                {"x-container-meta-web-index": pg})
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_set_container_web_error_page(self):
         client = self.client
         client.connection.head_container = Mock()
-        cont = client.get_container("testcont")
+        cont = client.get_container(self.cont_name)
         client.connection.post_container = Mock()
         pg = "error.html"
         client.set_container_web_error_page(cont, pg)
-        client.connection.post_container.assert_called_with("testcont",
-                {"X-Container-Meta-Web-Error": pg})
+        client.connection.post_container.assert_called_with(self.cont_name,
+                {"x-container-meta-web-error": pg})
 
     def test_cdn_request(self):
         client = self.client

@@ -5,6 +5,7 @@ import json
 
 from pyrax.cf_wrapper.client import FolderUploader
 from pyrax.cf_wrapper.container import Container
+from pyrax.cf_wrapper.storage_object import StorageObject
 import pyrax.exceptions as exc
 from pyrax.rax_identity import Identity
 
@@ -22,14 +23,32 @@ class FakeResponse(object):
         return "Line1\nLine2"
 
 
+class FakeClient(object):
+    user_agent = "Fake"
+    USER_AGENT = "Fake"
+
+
 class FakeContainer(Container):
     def _fetch_cdn_data(self):
         pass
 
 
-class FakeClient(object):
-    user_agent = "Fake"
-    USER_AGENT = "Fake"
+class FakeStorageObject(StorageObject):
+    def __init__(self, client, container, name=None, total_bytes=None, content_type=None,
+            last_modified=None, etag=None, attdict=None):
+        """
+        The object can either be initialized with individual params, or by
+        passing the dict that is returned by swiftclient.
+        """
+        self.client = client
+        self.container = container
+        self.name = name
+        self.total_bytes = total_bytes
+        self.content_type = content_type
+        self.last_modified = last_modified
+        self.etag = etag
+        if attdict:
+            self._read_attdict(attdict)
 
 
 class FakeService(object):
