@@ -11,18 +11,33 @@ creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cf = pyrax.cloudfiles
 
-# Ensure that that 'example' folder exists. If it does, this will
-# have no effect.
-cont = cf.create_container("example")
+cont_name = pyrax.utils.random_name()
+cont = cf.create_container(cont_name)
 
+text = """First Line
+    Indented Second Line
+Last Line"""
 # pyrax has a utility for creating temporary local files that clean themselves up.
 with utils.SelfDeletingTempfile() as tmpname:
+    print "Creating text file with the following content:"
+    print "-" * 44
+    print text
+    print "-" * 44
     with file(tmpname, "w") as tmp:
-        tmp.write("This is some text.")
-    cf.upload_file("example", tmpname, content_type="text/text")
+        tmp.write(text)
+    nm = os.path.basename(tmpname)
+    print
+    print "Uploading file: %s" % nm
+    cf.upload_file(cont, tmpname, content_type="text/text")
 # Let's verify that the file is there
-nm = os.path.basename(tmpname)
 obj = cont.get_object(nm)
-print "Object:", obj
+print
+print "Stored Object:", obj
 # Get the contents
-print "Content:", obj.get()
+print "Retrieved Content:"
+print "-" * 44
+print obj.get()
+print "-" * 44
+
+# Clean up
+cont.delete(True)

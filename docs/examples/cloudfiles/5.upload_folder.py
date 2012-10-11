@@ -12,6 +12,9 @@ creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cf = pyrax.cloudfiles
 
+cont_name = pyrax.utils.random_name()
+cont = cf.create_container(cont_name)
+
 # pyrax has a utility for creating temporary local directories that clean themselves up.
 with utils.SelfDeletingTempDirectory() as tmpfolder:
     # Create a bunch of files
@@ -35,7 +38,8 @@ with utils.SelfDeletingTempDirectory() as tmpfolder:
     # named 'upfolder'. We'll have it skip all files ending in the digits
     # '2', '6' or '0'.
     ignore = ["*2", "*6", "*0"]
-    cf.upload_folder(tmpfolder, "upfolder", ignore=ignore)
+    print "Beginning Folder Uplaod"
+    cf.upload_folder(tmpfolder, cont, ignore=ignore)
     # Since upload_folder happens in the background, we need to stay in this
     # block until the upload is complete, or the SelfDeletingTempDirectory
     # will be deleted, and the upload won't find the files it needs.
@@ -45,9 +49,12 @@ with utils.SelfDeletingTempDirectory() as tmpfolder:
         time.sleep(1)
 
 # OK, the upload is complete. Let's verify what's in 'upfolder'.
-print
 folder_name = os.path.basename(tmpfolder)
+print 
 print "Temp folder name:", folder_name
-nms = cf.get_container_object_names("upfolder", prefix=folder_name)
+nms = cf.get_container_object_names(cont, prefix=folder_name)
 print "Number of files in container:", len(nms)
 print nms
+
+# Clean up
+cont.delete(True)

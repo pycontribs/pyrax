@@ -11,9 +11,9 @@ creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cf = pyrax.cloudfiles
 
-cname = "delete_object_test"
+cont_name = pyrax.utils.random_name()
+cont = cf.create_container(cont_name)
 fname = "soon_to_vanish.txt"
-cont = cf.create_container(cname)
 text = "File Content"
 
 # Create a file in the container
@@ -24,7 +24,7 @@ obj = cont.get_object(fname)
 print "Object present, size =", obj.total_bytes
 
 # Delete it!
-cont.delete_object(fname)
+obj.delete()
 start = time.time()
 
 # See if it's still there; if not, this should raise an exception
@@ -40,3 +40,5 @@ while obj:
         print "Object '%s' has been deleted" % fname
         print "It took %4.2f seconds to appear as deleted." % (time.time() - start)
 
+# Clean up
+cont.delete(True)

@@ -66,7 +66,7 @@ Given the name of a container, you can get the corresponding Container object ea
 	print "Container:", cont
 	=> Container: <Container 'example'>
 
-Note that if there is no existing container with the name you supply, a **NoSuchContainer** exception will be raised.
+Note that if there is no existing container with the name you supply, a **NoSuchContainer** exception will be raised. A "safer" option is the `create_container()` method, which will act like get_container() if the specified container exists, and if not, will create it first and return a matching Container object.
 
 
 ## Storing Objects in Cloud Files
@@ -105,18 +105,18 @@ If you have a container object, you can call store_object() directly on it to st
 	cont = cf.get_container("example")
 	text = "This is a random collection of words."
 	chksum = pyrax.utils.get_checksum(text)
-	obj_etag = cont.store_object("new_object.txt", text, etag=chksum)
+	obj = cont.store_object("new_object.txt", text, etag=chksum)
 	print "Calculated checksum:", chksum
-	print "Stored object etag:", obj_etag
+	print "Stored object etag:", obj.etag
 
 Most of the time, though, you won't have raw text in your code to store; the more likely situation is that you want to store files that exist on your computer into Cloud Files. The way to do that is essentially the same, except that you call `upload_file()`, and pass the full path to the file you want to upload. Additionally, you do not need to specify a name for the object; pyrax will use the name of the file as the object name. Of course, if you want to store it under a different name, pass that as the obj_name parameter, and the file will be stored with that new name. Of course, upload_file() accepts the same 'etag' parameter that store_object() does, and etag verification works the same way.
 
 	cf = pyrax.cloudfiles
 	pth = "/home/me/path/to/myfile.txt"
 	chksum = pyrax.utils.get_checksum(pth)
-	obj_etag = cf.upload_file("example", pth, etag=chksum)
+	obj = cf.upload_file("example", pth, etag=chksum)
 	print "Calculated checksum:", chksum
-	print "Stored object etag:", obj_etag
+	print "Stored object etag:", obj.etag
 
 And just as with store_object(), you can call upload_file() directly on a Container object.
 
@@ -136,8 +136,7 @@ Here is some sample code that creates a stored object containing some unicode te
 	cf = pyrax.cloudfiles
 	
 	text = "This is some text containing unicode like é, ü and ˚¬∆ç"
-	obj_etag = cf.store_object("example", "new_object.txt", text)
-	obj = cf.get_object("example", "new_object.txt")
+	obj = cf.store_object("example", "new_object.txt", text)
 	
 	# Make sure that the content stored is identical
 	print "Using obj.get()"
@@ -218,15 +217,15 @@ The first limit is the default for Cloud Files: only the first 10,000 objects wi
 
 There are also two ways to filter your results: the 'prefix' and 'delimiter' parameters to get_objects(). 'prefix' works by only returning objects whose names begin with the value you set it to. 'delimiter' takes a single character, and excludes any object whose name contains that character.
 
-To illustrate these uses, let's start by creating a new folder, and populating it with 20 objects. The first 10 will have names starting with 'series_' followed by an integer between 0 and 9; the second 10 will simulate items in a nested folder. They will have a names that are a single character repeated. The content of the objects isn't important, as get_objects() works only on the names.
+To illustrate these uses, let's start by creating a new folder, and populating it with 10 objects. The first 5 will have names starting with 'series_' followed by an integer between 0 and 4; the second 5 will simulate items in a nested folder. They will have a names that are a single character repeated. The content of the objects isn't important, as get_objects() works only on the names.
 
 	cf = pyrax.cloudfiles
 	cont = cf.create_container("my_objects")
-	for idx in xrange(10):
+	for idx in xrange(5):
 	fname = "series_%s" % idx
 		cf.store_object(cont, fname, "some text")
 	start = ord("a")
-	for idx in xrange(start, start+10):
+	for idx in xrange(start, start+5):
 		chars = chr(idx) * 4
 		fname = "stuff/%s" % chars
 		cont.store_object(fname, "some text")
@@ -244,25 +243,15 @@ This returns:
 	series_2
 	series_3
 	series_4
-	series_5
-	series_6
-	series_7
-	series_8
-	series_9
 	stuff/aaaa
 	stuff/bbbb
 	stuff/cccc
 	stuff/dddd
 	stuff/eeee
-	stuff/ffff
-	stuff/gggg
-	stuff/hhhh
-	stuff/iiii
-	stuff/jjjj
 
 Now let's try paginating the results:
 
-	limit = 6
+	limit = 4
 	marker = ""
 	objs = cont.get_objects(limit=limit, marker=marker)
 	print "Objects:", [obj.name for obj in objs]	while objs:
@@ -272,10 +261,9 @@ Now let's try paginating the results:
 
 The results show simple pagination in action:
 
-	Objects: ['series_0', 'series_1', 'series_2', 'series_3', 'series_4', 'series_5']
-	Objects: ['series_6', 'series_7', 'series_8', 'series_9', 'stuff/aaaa', 'stuff/bbbb']
-	Objects: ['stuff/cccc', 'stuff/dddd', 'stuff/eeee', 'stuff/ffff', 'stuff/gggg', 'stuff/hhhh']
-	Objects: ['stuff/iiii', 'stuff/jjjj']
+	Objects: ['series_0', 'series_1', 'series_2', 'series_3']
+	Objects: ['series_4', 'stuff/aaaa', 'stuff/bbbb', 'stuff/cccc']
+	Objects: ['stuff/dddd', 'stuff/eeee']
 	Objects: []
 
 You can use the prefix parameter to only retrieve objects whose names start with that prefix:
@@ -283,9 +271,9 @@ You can use the prefix parameter to only retrieve objects whose names start with
 	objs = cont.get_objects(prefix="stuff")
 	print "Objects:", [obj.name for obj in objs]
 
-This returns only the 10 'stuff/...' objects:
+This returns only the 5 'stuff/...' objects:
 
-	Objects: ['stuff/aaaa', 'stuff/bbbb', 'stuff/cccc', 'stuff/dddd', 'stuff/eeee', 'stuff/ffff', 'stuff/gggg', 'stuff/hhhh', 'stuff/iiii', 'stuff/jjjj']
+	Objects: ['stuff/aaaa', 'stuff/bbbb', 'stuff/cccc', 'stuff/dddd', 'stuff/eeee']
 
 The 'delimiter' parameter takes a single character and acts to filter out those files containing that character. The most common usage is to use the slash character to skip objects in nested folders within a container.
 
@@ -294,7 +282,7 @@ The 'delimiter' parameter takes a single character and acts to filter out those 
 
 This excludes all the objects in the nested 'stuff' folder:
 
-	Objects: ['series_0', 'series_1', 'series_2', 'series_3', 'series_4', 'series_5', 'series_6', 'series_7', 'series_8', 'series_9']
+	Objects: ['series_0', 'series_1', 'series_2', 'series_3', 'series_4']
 
 
 ## Deleting Objects
@@ -311,13 +299,12 @@ Here's some code that illustrates object deletion:
 	fname = "soon_to_vanish.txt"
 	cont = cf.create_container(cname)
 	text = "File Content"
+	print "Text size:", len(text)
 	
 	# Create a file in the container
-	cont.store_object(fname, text)
-	
-	# Verify that it's there.
-	obj = cont.get_object(fname)
-	print "Object present, size =", obj.total_bytes
+	obj = cont.store_object(fname, text)
+	# Verify that it's the same size
+	print "Object size =", obj.total_bytes
 	
 	# Delete it!
 	cont.delete_object(fname)
@@ -344,7 +331,7 @@ Both methods take the parameters: `container, obj_name, new_container, new_obj_n
 
 
 ## Metadata for Containers and Objects
-Cloud Files allows you to set and retrieve arbitrary metadata on containers and storage objects. Metadata are simple key/value pairs, with both key and value being strings. The content of the metadata can be anything that is useful to you; the only requirement is that the keys begin with "X-Container-Meta-" and "X-Object-Meta-", respectively, for containers and storage objects. However, to make things easy for you, pyrax will automatically prefix your metadata headers with those strings if they aren't already present.
+Cloud Files allows you to set and retrieve arbitrary metadata on containers and storage objects. Metadata are simple key/value pairs, with both key and value being strings. Keys are case-insensitive, and are always returned in lowercase. The content of the metadata can be anything that is useful to you; the only requirement is that the keys begin with "X-Container-Meta-" and "X-Object-Meta-", respectively, for containers and storage objects. However, to make things easy for you, pyrax will automatically prefix your metadata headers with those strings if they aren't already present.
 
 	cf = pyrax.cloudfiles	
 	cname = "example"
@@ -374,28 +361,98 @@ After running this, you should see:
 
 You can update the metadata for a container at any time by calling `cf.set_container_metadata()` again with a dict containing your new key/value pairs. That method takes an additional parameter 'clear' which defaults to False; if you pass clear=True, any existing metadata is deleted, and only the metadata you pass in will remain. If you leave the default clear=False, the key/value pairs you pass will simply update the existing metadata.
 
-Metadata for storage objects works exactly the same, using the analogous methods `cf.get_object_metadata(container, obj)` and `cf.set_object_metadata(container, obj, metadata, clear=False)`.
+To remove a single key from a container's metadata, you can call either `cf.remove_container_metadata_key(cont, key)` or `cont.remove_metadata_key(key)`. Both methods do the same thing.
+
+Metadata for storage objects works exactly the same, using the analogous methods `cf.get_object_metadata(container, obj)`, `cf.set_object_metadata(container, obj, metadata, clear=False)` and `obj.remove_metadata_key(key)`.
 
 ## CDN Support
 Cloud Files makes it easy to publish your stored objects over the high-speed Akamai CDN. Content is made available at the container level; you can't make individual files within a public container private. This may affect your storage design, so that only files you wish to have accessible to the public are stored in public containers.
 
+### Publishing a Container to CDN
 To publish a container to CDN, simply make the following call:
 
 	pyrax.cloudfiles.make_container_public("example", ttl=900)
 
 This makes the 'example' container public, and sets the TTL, or Time To Live, to 15 minutes (900 seconds). This is the minimum TTL supported.
 
-Once a container is made public, you can access its CDN-related properties
+Once a container is made public, you can access its CDN-related properties. You can see this in action by running the following code:
 
-	cf = pyrax.cloudfiles
-	cont = cf.get_container("example")
-	print "cdn_enabled", cont.cdn_enabled	print "cdn_ttl", cont.cdn_ttl	print "cdn_log_retention", cont.cdn_log_retention	print "cdn_uri", cont.cdn_uri	print "cdn_ssl_uri", cont.cdn_ssl_uri	print "cdn_streaming_uri", cont.cdn_streaming_uri
+	cf = pyrax.cloudfiles	
+	cont_name = pyrax.utils.random_name()
+	
+	cont = cf.create_container(cont_name)
+	print "Before Making Public"
+	print "cdn_enabled", cont.cdn_enabled
+	print "cdn_ttl", cont.cdn_ttl
+	print "cdn_log_retention", cont.cdn_log_retention
+	print "cdn_uri", cont.cdn_uri
+	print "cdn_ssl_uri", cont.cdn_ssl_uri
+	print "cdn_streaming_uri", cont.cdn_streaming_uri
+	
+	# Make it public
+	cont.make_public(ttl=1200)
+	
+	# Now re-check the container's attributes
+	cont = cf.get_container(cont_name)
+	print
+	print "After Making Public"
+	print "cdn_enabled", cont.cdn_enabled
+	print "cdn_ttl", cont.cdn_ttl
+	print "cdn_log_retention", cont.cdn_log_retention
+	print "cdn_uri", cont.cdn_uri
+	print "cdn_ssl_uri", cont.cdn_ssl_uri
+	print "cdn_streaming_uri", cont.cdn_streaming_uri
+	
+	# clean up
+	cont.delete()
 
-#Need to make an example script with this.
+Running this returns the following:
 
+	Before Making Public
+	cdn_enabled False
+	cdn_ttl 86400
+	cdn_log_retention False
+	cdn_uri None
+	cdn_ssl_uri None
+	cdn_streaming_uri None
+	
+	After Making Public
+	cdn_enabled True
+	cdn_ttl 1200
+	cdn_log_retention False
+	cdn_uri http://6cface6ba364a8b14147-0a7948bc1fe3dbb60c24b92b61e4818f.r83.cf1.rackcdn.com
+	cdn_ssl_uri https://8f03601ca5bfb714a8b2-0a7948bc1fe3dbb60c24b92b61e4818f.ssl.cf1.rackcdn.com
+	cdn_streaming_uri http://882ea271eef0a907997b-0a7948bc1fe3dbb60c24b92b61e4818f.r83.stream.cf1.rackcdn.com
 
+To remove a container from the public CDN, simply call:
 
+	cont.make_private()
+	
+One thing to keep in mind is that even though the container is updated immediately, it will remain on the CDN for a period of time, depending on the value of the TTL.
 
+### CDN Log Retention
+Setting this to True will result in the CDN log files being retained in a container in your Cloud Files account. By default it is turned off on public containers; in order to turn it on, call:
 
+	cf.set_cdn_log_retention(container, True)
 
+Or if you have a container reference, just set its property directly:
+
+	cont.cdn_log_retention = True
+
+You can turn off log retention at any time by using the above commands and passing False instead of True.
+
+### Purging CDN Objects
+Normally, deleting an object from a public container will cause it to be eventually deleted from the CDN network, subject to the container's TTL. In some cases, though, you may need to have an object removed from public access due to personal, business or security concerns. Currently the CDN limits this to 25 such purge requests per day; anything more than that will require you open a ticket with Rackspace to handle the request.
+
+If you wish to purge an object from the CDN network, you need to run:
+
+	cf.purge_cdn_object(container, obj, email_addresses=None)
+
+The container and object are obvious enough; the optional parameter 'email_addresses' takes either a single valid email address or a list of addresses; if that parameter is provided, an email will be sent to each address upon the successful purge of the object from the CDN network.
+
+If you have a StorageObject instance, you can call it directly instead:
+
+	obj.purge(email_addresses=None)
+
+You are responsible for deleting the purged object from the container separately; these calls only affect the object on the CDN network.
 
