@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import ConfigParser
 import os
 
 import exceptions as exc
@@ -35,6 +36,8 @@ print "pyrax is under active development and subject to substantial change."
 print "Do not use it for application development, as your applications will"
 print "very likely break with future updates to this package."
 print "=" * 80
+print
+print
 
 # Default to the rax_identity class.
 identity_class = _rax_identity.Identity
@@ -49,17 +52,47 @@ identity = identity_class()
 cloudservers = None
 cloudfiles = None
 keystone = None
-cloud_lbs = None
-cloud_lb_node = None
-cloud_lb_vip = None
+cloud_loadbalancers = None
+cloud_loadbalancer_node = None
+cloud_loadbalancer_vip = None
 cloud_dns = None
-cloud_db = None
+cloud_databases = None
 # Default region for all services. Can be individually overridden if needed
 default_region = None
 # Some services require a region. If the user doesn't specify one, use DFW.
 FALLBACK_REGION = "DFW"
 # Value to plug into the user-agent headers
 USER_AGENT = "pyrax/%s" % version.version
+services_to_start = {
+        "servers": True,
+        "files": True,
+        "keystone": True,
+        "loadbalancers": True,
+        "dns": True,
+        "databases": False,
+        "blockstorage": False,
+        }
+
+# Read in the configuration file, if any
+config_file = os.path.expanduser("~/.pyrax.cfg")
+if os.path.exists(config_file):
+    cfg = ConfigParser.SafeConfigParser()
+    try:
+        cfg.read(config_file)
+    except ConfigParser.MissingSectionHeaderError as e:
+        # The file exists, but doesn't have the correct format.
+        raise exc.InvalidConfigurationFile(e)
+
+    def safe_get(section, option):
+        try:
+            return cfg.get(section, option)
+        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+            return None
+
+    default_region = safe_get("settings", "region") or default_region
+    svc_dict = dict(cfg.items("services"))
+    for svc, status in svc_dict.items():
+        services_to_start[svc] = (status == "True")
 
 
 def _require_auth(fnc):
@@ -117,17 +150,17 @@ def authenticate():
 
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
-    global identity, cloudservers, cloudfiles, keystone, cloud_lbs, cloud_lb_node, cloud_lb_vip
-    global cloud_dns, cloud_db, default_region
+    global identity, cloudservers, cloudfiles, keystone, cloud_loadbalancers, cloud_loadbalancer_node, cloud_loadbalancer_vip
+    global cloud_dns, cloud_databases, default_region
     identity = identity_class()
     cloudservers = None
     cloudfiles = None
     keystone = None
-    cloud_lbs = None
-    cloud_lb_node = None
-    cloud_lb_vip = None
+    cloud_loadbalancers = None
+    cloud_loadbalancer_node = None
+    cloud_loadbalancer_vip = None
     cloud_dns = None
-    cloud_db = None
+    cloud_databases = None
     default_region = None
 
 
@@ -143,12 +176,18 @@ def _make_agent_name(base):
 @_require_auth
 def connect_to_services():
     """Establish authenticated connections to the various cloud APIs."""
-    connect_to_cloudservers()
-    connect_to_cloudfiles()
-    connect_to_keystone()
-    connect_to_cloud_lbs()
-    connect_to_cloud_dns()
-    connect_to_cloud_db()
+    if services_to_start["servers"]:
+        connect_to_cloudservers()
+    if services_to_start["files"]:
+        connect_to_cloudfiles()
+    if services_to_start["keystone"]:
+        connect_to_keystone()
+    if services_to_start["loadbalancers"]:
+        connect_to_cloud_loadbalancers()
+    if services_to_start["dns"]:
+        connect_to_cloud_dns()
+    if services_to_start["databases"]:
+        connect_to_cloud_databases()
 
 
 @_require_auth
@@ -191,15 +230,15 @@ def connect_to_keystone():
 
 
 @_require_auth
-def connect_to_cloud_lbs(region=None):
-    global cloud_lbs, cloud_lb_node, cloud_lb_vip
+def connect_to_cloud_loadbalancers(region=None):
+    global cloud_loadbalancers, cloud_loadbalancer_node, cloud_loadbalancer_vip
     if region is None:
         region = default_region or FALLBACK_REGION
     _cloudlb.consts.USER_AGENT = _make_agent_name(_cloudlb.consts.USER_AGENT)
     _clb = _cloudlb.CloudLoadBalancer(identity.username, identity.api_key, region)
-    cloud_lbs = _clb.loadbalancers
-    cloud_lb_node = _cloudlb.Node
-    cloud_lb_vip = _cloudlb.VirtualIP
+    cloud_loadbalancers = _clb.loadbalancers
+    cloud_loadbalancer_node = _cloudlb.Node
+    cloud_loadbalancer_vip = _cloudlb.VirtualIP
 
 
 @_require_auth
@@ -214,18 +253,23 @@ def connect_to_cloud_dns(region=None):
 
 
 @_require_auth
-def connect_to_cloud_db(region=None):
+def connect_to_cloud_databases(region=None):
     if not _USE_DB:
         return
-    global cloud_db
+    global cloud_databases
     if region is None:
         region = default_region or FALLBACK_REGION
     _cdb.consts.USER_AGENT = _make_agent_name(_cdb.consts.USER_AGENT)
-    cloud_db = _cdb.CloudDB(identity.username, identity.api_key, region)
-    cloud_db.authenticate()
+    cloud_databases = _cdb.CloudDB(identity.username, identity.api_key, region)
+    cloud_databases.authenticate()
 
 
 def _dev_only_auth():
+    """
+    Shortcut method for doing a quick authentication while developing
+    this SDK. Not guaranteed to remain in the code, so do not use this in
+    your applications.
+    """
     creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
     set_credential_file(creds_file)
 
