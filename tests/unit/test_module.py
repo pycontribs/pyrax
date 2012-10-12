@@ -20,12 +20,15 @@ from tests.unit.fakes import FakeService
 class PyraxInitTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         reload(pyrax)
+        # Override any config settings that turn off services.
+        for key, val in pyrax.services_to_start.items():
+            pyrax.services_to_start[key] = True
         self.orig_connect_to_cloudservers = pyrax.connect_to_cloudservers
         self.orig_connect_to_cloudfiles = pyrax.connect_to_cloudfiles
         self.orig_connect_to_keystone = pyrax.connect_to_keystone
-        self.orig_connect_to_cloud_lbs = pyrax.connect_to_cloud_lbs
+        self.orig_connect_to_cloud_loadbalancers = pyrax.connect_to_cloud_loadbalancers
         self.orig_connect_to_cloud_dns = pyrax.connect_to_cloud_dns
-        self.orig_connect_to_cloud_db = pyrax.connect_to_cloud_db
+        self.orig_connect_to_cloud_databases = pyrax.connect_to_cloud_databases
         super(PyraxInitTest, self).__init__(*args, **kwargs)
         self.username = "fakeuser"
         self.api_key = "fakeapikey"
@@ -37,17 +40,17 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.connect_to_cloudservers = Mock()
         pyrax.connect_to_cloudfiles = Mock()
         pyrax.connect_to_keystone = Mock()
-        pyrax.connect_to_cloud_lbs = Mock()
+        pyrax.connect_to_cloud_loadbalancers = Mock()
         pyrax.connect_to_cloud_dns = Mock()
-        pyrax.connect_to_cloud_db = Mock()
+        pyrax.connect_to_cloud_databases = Mock()
 
     def tearDown(self):
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
         pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
         pyrax.connect_to_keystone = self.orig_connect_to_keystone
-        pyrax.connect_to_cloud_lbs = self.orig_connect_to_cloud_lbs
+        pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
         pyrax.connect_to_cloud_dns = self.orig_connect_to_cloud_dns
-        pyrax.connect_to_cloud_db = self.orig_connect_to_cloud_db
+        pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
 
     def test_require_auth(self):
         pyrax.identity.authenticated = True
@@ -92,11 +95,11 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.cloudservers = object()
         pyrax.cloudfiles = object()
         pyrax.keystone = object()
-        pyrax.cloud_lbs = object()
-        pyrax.cloud_lb_node = object()
-        pyrax.cloud_lb_vip = object()
+        pyrax.cloud_loadbalancers = object()
+        pyrax.cloud_loadbalancer_node = object()
+        pyrax.cloud_loadbalancer_vip = object()
         pyrax.cloud_dns = object()
-        pyrax.cloud_db = object()
+        pyrax.cloud_databases = object()
         default_region = object()
         self.assert_(pyrax.identity.authenticated)
         self.assertIsNotNone(pyrax.cloudfiles)
@@ -107,11 +110,11 @@ class PyraxInitTest(unittest.TestCase):
         self.assertIsNone(pyrax.cloudservers)
         self.assertIsNone(pyrax.cloudfiles)
         self.assertIsNone(pyrax.keystone)
-        self.assertIsNone(pyrax.cloud_lbs)
-        self.assertIsNone(pyrax.cloud_lb_node)
-        self.assertIsNone(pyrax.cloud_lb_vip)
+        self.assertIsNone(pyrax.cloud_loadbalancers)
+        self.assertIsNone(pyrax.cloud_loadbalancer_node)
+        self.assertIsNone(pyrax.cloud_loadbalancer_vip)
         self.assertIsNone(pyrax.cloud_dns)
-        self.assertIsNone(pyrax.cloud_db)
+        self.assertIsNone(pyrax.cloud_databases)
 
     def test_set_default_region(self):
         orig_region = pyrax.default_region
@@ -130,9 +133,9 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.connect_to_cloudservers.assert_called_once_with()
         pyrax.connect_to_cloudfiles.assert_called_once_with()
         pyrax.connect_to_keystone.assert_called_once_with()
-        pyrax.connect_to_cloud_lbs.assert_called_once_with()
+        pyrax.connect_to_cloud_loadbalancers.assert_called_once_with()
         pyrax.connect_to_cloud_dns.assert_called_once_with()
-        pyrax.connect_to_cloud_db.assert_called_once_with()
+        pyrax.connect_to_cloud_databases.assert_called_once_with()
 
     @patch('pyrax._cs_client.Client', new=FakeService)
     def test_connect_to_cloudservers(self):
@@ -156,15 +159,15 @@ class PyraxInitTest(unittest.TestCase):
        self.assertIsNotNone(pyrax.keystone)
 
     @patch('pyrax._cloudlb.CloudLoadBalancer', new=FakeService)
-    def test_connect_to_cloud_lbs(self):
-       pyrax.cloud_lbs = None
-       pyrax.cloud_lb_node = None
-       pyrax.cloud_vip = None
-       pyrax.connect_to_cloud_lbs = self.orig_connect_to_cloud_lbs
-       pyrax.connect_to_cloud_lbs() 
-       self.assertIsNotNone(pyrax.cloud_lbs)
-       self.assertIsNotNone(pyrax.cloud_lb_node)
-       self.assertIsNotNone(pyrax.cloud_lb_vip)
+    def test_connect_to_cloud_loadbalancers(self):
+       pyrax.cloud_loadbalancers = None
+       pyrax.cloud_loadbalancer_node = None
+       pyrax.cloud_loadbalancer_vip = None
+       pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
+       pyrax.connect_to_cloud_loadbalancers() 
+       self.assertIsNotNone(pyrax.cloud_loadbalancers)
+       self.assertIsNotNone(pyrax.cloud_loadbalancer_node)
+       self.assertIsNotNone(pyrax.cloud_loadbalancer_vip)
 
     @patch('pyrax._cdns.Connection', new=FakeService)
     def test_connect_to_cloud_dns(self):
@@ -174,11 +177,11 @@ class PyraxInitTest(unittest.TestCase):
        self.assertIsNotNone(pyrax.cloud_dns)
 
     @patch('pyrax._cdb.CloudDB', new=FakeService)
-    def test_connect_to_cloud_db(self):
-       pyrax.cloud_db = None
-       pyrax.connect_to_cloud_db = self.orig_connect_to_cloud_db
-       pyrax.connect_to_cloud_db() 
-       self.assertIsNotNone(pyrax.cloud_db)
+    def test_connect_to_cloud_databases(self):
+       pyrax.cloud_databases = None
+       pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
+       pyrax.connect_to_cloud_databases() 
+       self.assertIsNotNone(pyrax.cloud_databases)
 
 
 if __name__ == "__main__":

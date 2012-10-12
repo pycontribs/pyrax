@@ -179,6 +179,8 @@ A very common use case is needing to upload an entire folder, including subfolde
 
 You can also specify one or more file name patterns to ignore; pyrax will skip any of the files that match any of the patterns. This is useful if there are files that you don't wish to retain (e.g., .pyc files in a Python project). You can pass either a single string pattern, or a list of strings to use.
 
+`upload_folder()` returns a 2-tuple: the key for the upload process, and the total bytes to be uploaded. You can use the key to query pyrax.cloudfiles for the status of the upload, or to cancel it if necessary.
+
 Here are some examples, using the local folder **"/home/me/projects/cool_project/"**:
 
 	cf = pyrax.cloudfiles
@@ -186,24 +188,25 @@ Here are some examples, using the local folder **"/home/me/projects/cool_project
 
 	# This will create a new container named 'cool_project', and
 	# upload the contents of the target folder to it
-	cf.upload_folder(folder)
+	upload_key, total_bytes = cf.upload_folder(folder)
 
 	# This will upload the contents of the target folder to a container
 	# named 'software'. If that container doesn't exist, it will be created.
-	cf.upload_folder(folder, container="software")
+	upload_key, total_bytes = cf.upload_folder(folder, container="software")
 
 	# This is the same as above, but will ignore any files ending in '.pyc'
-	cf.upload_folder(folder, container="software", ignore="*.pyc")
+	upload_key, total_bytes = cf.upload_folder(folder, container="software",
+			ignore="*.pyc")
 
 	# Same as above, but will skip several different file name patterns
-	cf.upload_folder(folder, container="software", ignore=["*.pyc",
-			"*.tgz", "tmp*"])
+	upload_key, total_bytes = cf.upload_folder(folder, container="software",
+			ignore=["*.pyc", "*.tgz", "tmp*"])
 
 ### Monitoring Folder Uploads
-Since a folder upload can take a while, the uploading happens in a background thread. If you'd like to follow the progress of the upload, you can query the 'progress' attribute of cloudfiles: this is a 2-tuple, with the first element the number of bytes uploaded, and the second the total bytes to be uploaded. This makes it simple to calculate the percentage of the upload that has completed.
+Since a folder upload can take a while, the uploading happens in a background thread. If you'd like to follow the progress of the upload, you can call `pyrax.cloudfiles.get_uploaded(upload_key)` to get the current number of bytes uploaded for this process. Combined with the total number of bytes returned by the initial call to upload_folder(), it is simple to calculate the percentage of the upload that has completed.
 
 ### Interrupting Folder Uploads
-Sometimes it is necessary to stop a folder upload before it has completed. To do this, call `cloudfiles.cancel_folder_upload()`, which will cause the background thread to stop uploading.
+Sometimes it is necessary to stop a folder upload before it has completed. To do this, call `cloudfiles.cancel_folder_upload(upload_key)`, which will cause the background thread to stop uploading.
 
 
 ## Listing Objects in a Container

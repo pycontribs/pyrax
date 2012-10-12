@@ -39,13 +39,15 @@ with utils.SelfDeletingTempDirectory() as tmpfolder:
     # '2', '6' or '0'.
     ignore = ["*2", "*6", "*0"]
     print "Beginning Folder Uplaod"
-    cf.upload_folder(tmpfolder, cont, ignore=ignore)
+    upload_key, total_bytes = cf.upload_folder(tmpfolder, cont, ignore=ignore)
     # Since upload_folder happens in the background, we need to stay in this
     # block until the upload is complete, or the SelfDeletingTempDirectory
     # will be deleted, and the upload won't find the files it needs.
-    print "Total bytes to upload:", cf.progress[1]
-    while cf.progress[0] < cf.progress[1]:
-        print "Progress: %4.2f%%" % ((cf.progress[0] * 100.0) / cf.progress[1])
+    print "Total bytes to upload:", total_bytes
+    uploaded = 0
+    while uploaded < total_bytes:
+        uploaded = cf.get_uploaded(upload_key)
+        print "Progress: %4.2f%%" % ((uploaded * 100.0) / total_bytes)
         time.sleep(1)
 
 # OK, the upload is complete. Let's verify what's in 'upfolder'.

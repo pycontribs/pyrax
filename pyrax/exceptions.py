@@ -17,6 +17,9 @@ class InvalidConfigurationFile(Exception):
 class UploadFailed(Exception):
     pass
 
+class InvalidUploadID(Exception):
+    pass
+
 class InvalidCDNMetada(Exception):
     pass
 

@@ -25,17 +25,17 @@ class CF_ClientTest(unittest.TestCase):
         reload(pyrax)
         self.orig_connect_to_cloudservers = pyrax.connect_to_cloudservers
         self.orig_connect_to_keystone = pyrax.connect_to_keystone
-        self.orig_connect_to_cloud_lbs = pyrax.connect_to_cloud_lbs
+        self.orig_connect_to_cloud_loadbalancers = pyrax.connect_to_cloud_loadbalancers
         self.orig_connect_to_cloud_dns = pyrax.connect_to_cloud_dns
-        self.orig_connect_to_cloud_db = pyrax.connect_to_cloud_db
+        self.orig_connect_to_cloud_databases = pyrax.connect_to_cloud_databases
         super(CF_ClientTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
         pyrax.connect_to_cloudservers = Mock()
         pyrax.connect_to_keystone = Mock()
-        pyrax.connect_to_cloud_lbs = Mock()
+        pyrax.connect_to_cloud_loadbalancers = Mock()
         pyrax.connect_to_cloud_dns = Mock()
-        pyrax.connect_to_cloud_db = Mock()
+        pyrax.connect_to_cloud_databases = Mock()
         pyrax.identity = FakeIdentity()
         pyrax.set_credentials("fakeuser", "fakeapikey")
         pyrax.connect_to_cloudfiles()
@@ -50,9 +50,9 @@ class CF_ClientTest(unittest.TestCase):
         self.client = None
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
         pyrax.connect_to_keystone = self.orig_connect_to_keystone
-        pyrax.connect_to_cloud_lbs = self.orig_connect_to_cloud_lbs
+        pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
         pyrax.connect_to_cloud_dns = self.orig_connect_to_cloud_dns
-        pyrax.connect_to_cloud_db = self.orig_connect_to_cloud_db
+        pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
 
     def test_account_metadata(self):
         client = self.client
@@ -262,10 +262,10 @@ class CF_ClientTest(unittest.TestCase):
         # Test string and list of ignores
         pat1 = "*.foo"
         pat2 = "*.bar"
-        client.upload_folder(test_folder, ignore=pat1)
-        client._upload_folder_in_background.assert_called_with(test_folder, None, [pat1])
-        client.upload_folder(test_folder, ignore=[pat1, pat2])
-        client._upload_folder_in_background.assert_called_with(test_folder, None, [pat1, pat2])
+        upload_key, total_bytes = client.upload_folder(test_folder, ignore=pat1)
+        client._upload_folder_in_background.assert_called_with(test_folder, None, [pat1], upload_key)
+        upload_key, total_bytes = client.upload_folder(test_folder, ignore=[pat1, pat2])
+        client._upload_folder_in_background.assert_called_with(test_folder, None, [pat1, pat2], upload_key)
         client._upload_folder_in_background = bg
         os.path.isdir = opi
 
@@ -280,9 +280,8 @@ class CF_ClientTest(unittest.TestCase):
         fake_size = 1234
         utils.folder_size = Mock(return_value=fake_size)
         test_folder = "testfolder"
-        client.upload_folder(test_folder)
-        expected = (0, fake_size)
-        self.assertEqual(client.progress, expected)
+        key, total_bytes = client.upload_folder(test_folder)
+        self.assertEqual(total_bytes, fake_size)
         client._upload_folder_in_background = bg
         utils.folder_size = ufs
         os.path.isdir = opi
@@ -295,7 +294,8 @@ class CF_ClientTest(unittest.TestCase):
         FakeFolderUploader.start = Mock()
         client.connection.put_container = Mock()
         client.connection.head_container = Mock()
-        client._upload_folder_in_background("folder/path", "cont_name", [])
+        fake_upload_key = "abcd"
+        client._upload_folder_in_background("folder/path", "cont_name", [], fake_upload_key)
         FakeFolderUploader.start.assert_called_with()
         FakeFolderUploader.start = start
 
@@ -303,7 +303,8 @@ class CF_ClientTest(unittest.TestCase):
     def test_folder_name_from_path(self):
         self.client.connection.put_container = Mock()
         self.client.connection.head_container = Mock()
-        uploader = FakeFolderUploader("root", "cont", None, self.client)
+        fake_upload_key = "abcd"
+        uploader = FakeFolderUploader("root", "cont", None, fake_upload_key, self.client)
         path1 = "/foo/bar/baz"
         path2 = "/foo/bar/baz"
         nm1 = uploader.folder_name_from_path(path1)
@@ -315,7 +316,8 @@ class CF_ClientTest(unittest.TestCase):
     def test_uploader_consider(self):
         self.client.connection.put_container = Mock()
         self.client.connection.head_container = Mock()
-        uploader = FakeFolderUploader("root", "cont", "*.bad", self.client)
+        fake_upload_key = "abcd"
+        uploader = FakeFolderUploader("root", "cont", "*.bad", fake_upload_key, self.client)
         self.assertFalse(uploader.consider("some.bad"))
         self.assertTrue(uploader.consider("some.good"))
 
@@ -323,7 +325,8 @@ class CF_ClientTest(unittest.TestCase):
     def test_uploader_bad_dirname(self):
         self.client.connection.put_container = Mock()
         self.client.connection.head_container = Mock()
-        uploader = FakeFolderUploader("root", "cont", "*.bad", self.client)
+        fake_upload_key = "abcd"
+        uploader = FakeFolderUploader("root", "cont", "*.bad", fake_upload_key, self.client)
         ret = uploader.upload_files_in_folder(None, "folder.bad", ["a", "b"])
         self.assertFalse(ret)
 
@@ -338,17 +341,24 @@ class CF_ClientTest(unittest.TestCase):
         cont = client.create_container(cont_name)
         gobj = client.get_object
         client.get_object = Mock(return_value=self.fake_object)
+        safu = client._should_abort_folder_upload
+        client._should_abort_folder_upload = Mock(return_value=False)
+        upprog = client._update_progress
+        client._update_progress = Mock()
         num_files = 10
+        fake_upload_key = "abcd"
         with utils.SelfDeletingTempDirectory() as tmpdir:
             for idx in xrange(num_files):
                 nm = "file%s" % idx
                 pth = os.path.join(tmpdir, nm)
                 file(pth, "w").write("test")
-            uploader = FakeFolderUploader(tmpdir, cont, "", client)
+            uploader = FakeFolderUploader(tmpdir, cont, "", fake_upload_key, client)
             # Note that the fake moved the actual run() code to a different method
             uploader.actual_run()
             self.assertEqual(client.upload_file.call_count, num_files)
         client.get_object = gobj
+        client._should_abort_folder_upload = safu
+        client._update_progress = upprog
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_copy_object(self):

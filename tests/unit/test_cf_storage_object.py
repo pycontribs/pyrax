@@ -22,25 +22,25 @@ class CF_StorageObjectTest(unittest.TestCase):
         self.orig_connect_to_cloudservers = pyrax.connect_to_cloudservers
         self.orig_connect_to_cloudfiles = pyrax.connect_to_cloudfiles
         self.orig_connect_to_keystone = pyrax.connect_to_keystone
-        self.orig_connect_to_cloud_lbs = pyrax.connect_to_cloud_lbs
+        self.orig_connect_to_cloud_loadbalancers = pyrax.connect_to_cloud_loadbalancers
         self.orig_connect_to_cloud_dns = pyrax.connect_to_cloud_dns
-        self.orig_connect_to_cloud_db = pyrax.connect_to_cloud_db
+        self.orig_connect_to_cloud_databases = pyrax.connect_to_cloud_databases
         super(CF_StorageObjectTest, self).__init__(*args, **kwargs)
         self.obj_name = "testobj"
         self.container_name = "testcont"
         pyrax.connect_to_cloudservers = Mock()
         pyrax.connect_to_keystone = Mock()
-        pyrax.connect_to_cloud_lbs = Mock()
+        pyrax.connect_to_cloud_loadbalancers = Mock()
         pyrax.connect_to_cloud_dns = Mock()
-        pyrax.connect_to_cloud_db = Mock()
+        pyrax.connect_to_cloud_databases = Mock()
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def setUp(self):
         pyrax.connect_to_cloudservers = Mock()
         pyrax.connect_to_keystone = Mock()
-        pyrax.connect_to_cloud_lbs = Mock()
+        pyrax.connect_to_cloud_loadbalancers = Mock()
         pyrax.connect_to_cloud_dns = Mock()
-        pyrax.connect_to_cloud_db = Mock()
+        pyrax.connect_to_cloud_databases = Mock()
         pyrax.identity_class = FakeIdentity
         pyrax.clear_credentials()
         pyrax.set_credentials("fakeuser", "fakeapikey")
@@ -66,9 +66,9 @@ class CF_StorageObjectTest(unittest.TestCase):
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
         pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
         pyrax.connect_to_keystone = self.orig_connect_to_keystone
-        pyrax.connect_to_cloud_lbs = self.orig_connect_to_cloud_lbs
+        pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
         pyrax.connect_to_cloud_dns = self.orig_connect_to_cloud_dns
-        pyrax.connect_to_cloud_db = self.orig_connect_to_cloud_db
+        pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
 
     def test_read_attdict(self):
         tname = "something"

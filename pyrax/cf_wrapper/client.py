@@ -10,6 +10,7 @@ import socket
 import threading
 import urllib
 import urlparse
+import uuid
 
 from swiftclient import client as _swift_client
 from pyrax.cf_wrapper.container import Container
@@ -59,11 +60,10 @@ class Client(object):
     _container_cache = {}
     # Upload size limit
     max_file_size = 5368709119  # 5GB - 1
-    # Flag to interrupt folder uploads
-    _stop_folder_upload = False
-    # Tuple used for tracking folder upload
-    # Elements are (bytes_uploaded, total_bytes)
-    progress = (0, 0)
+    # Folder upload status dict. Each upload will generate its own UUID key.
+    # The app can use that key query the status of the upload. This dict
+    # will also be used to hold the flag to interrupt uploads in progress.
+    folder_upload_status = {}
 
 
     def __init__(self, auth_endpoint, username, api_key, tenant_name,
@@ -446,37 +446,69 @@ class Client(object):
         all files ending in 'pyc', such as 'program.pyc' and 'abcpyc'.
 
         The upload will happen asynchronously; in other words, the call to upload_folder()
-        will return immediately, and the uploading will happen in the background. As it
-        progresses, the value of pyrax.cloudfiles.progress will be updated with a 2-tuple,
-        representing (bytes_uploaded, total_bytes). You can query that to check on the
-        progress of the upload.
+        will generate a UUID and return a 2-tuple of (UUID, total_bytes) immediately.
+        Uploading will happen in the background; your app can call get_uploaded(uuid) to get
+        the current status of the upload. When the upload is complete, the value returned
+        by get_uploaded(uuid) will match the total_bytes for the upload.
 
-        If you start an upload and need to cancel it, call cancel_folder_upload(). It will
-        then be up to you to either keep or delete the partially-uploaded content.
+        If you start an upload and need to cancel it, call cancel_folder_upload(uuid), passing
+        the uuid returned by the initial call. It will then be up to you to either keep or delete
+        the partially-uploaded content.
         """
         if not os.path.isdir(folder_path):
             raise exc.FolderNotFound("No such folder: '%s'" % folder_path)
 
         ignore = utils.coerce_string_to_list(ignore)
-        self._stop_folder_upload = False
         total_bytes = utils.folder_size(folder_path, ignore)
-        self.progress = (0, total_bytes)
+        upload_key = str(uuid.uuid4())
+        self.folder_upload_status[upload_key] = {"continue": True,
+                "total_bytes": total_bytes,
+                "uploaded": 0,
+                }
+        self._upload_folder_in_background(folder_path, container, ignore, upload_key)
+        return (upload_key, total_bytes)
 
-        self._upload_folder_in_background(folder_path, container, ignore)
 
-
-    def _upload_folder_in_background(self, folder_path, container, ignore):
+    def _upload_folder_in_background(self, folder_path, container, ignore, upload_key):
         """Runs the folder upload in the background."""
-        uploader = FolderUploader(folder_path, container, ignore, self)
+        uploader = FolderUploader(folder_path, container, ignore, upload_key, self)
         uploader.start()
 
 
-    def cancel_folder_upload(self):
+    def _valid_upload_key(fnc):
+        def wrapped(self, upload_key, *args, **kwargs):
+            try:
+                self.folder_upload_status[upload_key]
+            except KeyError:
+                raise exc.InvalidUploadID("There is no folder upload with the key '%s'." % upload_key)
+            return fnc(self, upload_key, *args, **kwargs)
+        return wrapped
+
+
+    @_valid_upload_key
+    def _update_progress(self, upload_key, size):
+        self.folder_upload_status[upload_key]["uploaded"] += size
+
+
+    @_valid_upload_key
+    def get_uploaded(self, upload_key):
+        """Returns the number of bytes uploaded for the specified process."""
+        return self.folder_upload_status[upload_key]["uploaded"]
+
+
+    @_valid_upload_key
+    def cancel_folder_upload(self, upload_key):
         """
         Cancels any folder upload happening in the background. If there is no such
         upload in progress, calling this method has no effect.
         """
-        self._stop_folder_upload = True
+        self.folder_upload_status[upload_key]["continue"] = False
+
+
+    @_valid_upload_key
+    def _should_abort_folder_upload(self, upload_key):
+        """Returns True if the user has canceled upload; returns False otherwise."""
+        return not self.folder_upload_status[upload_key]["continue"]
 
 
     def fetch_object(self, container, obj_name, include_meta=False, chunk_size=None):
@@ -778,13 +810,14 @@ class Connection(_swift_client.Connection):
 
 class FolderUploader(threading.Thread):
     """Threading class to allow for uploading multiple files in the background."""
-    def __init__(self, root_folder, container, ignore, client):
+    def __init__(self, root_folder, container, ignore, upload_key, client):
         self.root_folder = root_folder.rstrip("/")
         if container:
             self.container = client.create_container(container)
         else:
             self.container = None
         self.ignore = utils.coerce_string_to_list(ignore)
+        self.upload_key = upload_key
         self.client = client
         threading.Thread.__init__(self)
 
@@ -802,7 +835,7 @@ class FolderUploader(threading.Thread):
         if not self.consider(dirname):
             return False
         for fname in (nm for nm in fnames if self.consider(nm)):
-            if self.client._stop_folder_upload:
+            if self.client._should_abort_folder_upload(self.upload_key):
                 return
             full_path = os.path.join(dirname, fname)
             if os.path.isdir(full_path):
@@ -811,8 +844,7 @@ class FolderUploader(threading.Thread):
             obj_name = os.path.relpath(full_path, self.base_path)
             obj_size = os.stat(full_path).st_size
             self.client.upload_file(self.container, full_path, obj_name=obj_name)
-            curr_total, total = self.client.progress
-            self.client.progress = (curr_total + obj_size, total)
+            self.client._update_progress(self.upload_key, obj_size)
 
     def run(self):
         root_path, folder_name = os.path.split(self.root_folder)
