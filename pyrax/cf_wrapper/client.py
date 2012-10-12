@@ -233,7 +233,7 @@ class Client(object):
             new_meta = self._massage_metakeys(self.get_object_metadata(cname, oname),
                     self.object_meta_prefix)
         new_meta.update(massaged)
-        # Remove any empty values, since the object metadata API will 
+        # Remove any empty values, since the object metadata API will
         # store them.
         to_pop = []
         for key, val in new_meta.iteritems():

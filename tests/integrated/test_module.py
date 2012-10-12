@@ -14,8 +14,8 @@ creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 
 class TestCase(unittest.TestCase):
     def setUp(self):
-        pyrax.set_credential_file(creds_file)    
-    
+        pyrax.set_credential_file(creds_file)
+
     def tearDown(self):
         pyrax.clear_credentials()
 

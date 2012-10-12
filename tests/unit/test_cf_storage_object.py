@@ -74,7 +74,7 @@ class CF_StorageObjectTest(unittest.TestCase):
         tname = "something"
         ttype = "foo/bar"
         tbytes = 12345
-        tlastmodified = "2222-02-22T22:22:22.222222" 
+        tlastmodified = "2222-02-22T22:22:22.222222"
         tetag = "123123123"
         dct = {"name": tname, "content_type": ttype, "bytes": tbytes,
                 "last_modified": tlastmodified, "hash": tetag}

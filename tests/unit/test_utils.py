@@ -100,7 +100,7 @@ class CF_UtilsTest(unittest.TestCase):
                 with file(pth, "w") as ff:
                     ff.write(content)
             # ignore odd files
-            ignore = ["*1", "*3", "*5", "*7", "*9"] 
+            ignore = ["*1", "*3", "*5", "*7", "*9"]
             fsize = utils.folder_size(tmpdir, ignore=ignore)
         self.assertEqual(fsize, 500)
 

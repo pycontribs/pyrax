@@ -59,13 +59,13 @@ class PyraxInitTest(unittest.TestCase):
         self.assertRaises(exc.NotAuthenticated, pyrax.connect_to_services)
 
     def test_set_credentials(self):
-        pyrax.set_credentials(self.username, self.api_key)    
+        pyrax.set_credentials(self.username, self.api_key)
         self.assertEqual(pyrax.identity.username, self.username)
         self.assertEqual(pyrax.identity.api_key, self.api_key)
         self.assert_(pyrax.identity.authenticated)
 
     def test_set_bad_credentials(self):
-        self.assertRaises(exc.AuthenticationFailed, pyrax.set_credentials, "bad", "creds")    
+        self.assertRaises(exc.AuthenticationFailed, pyrax.set_credentials, "bad", "creds")
         self.assertFalse(pyrax.identity.authenticated)
 
     def test_set_credential_file(self):
@@ -141,21 +141,21 @@ class PyraxInitTest(unittest.TestCase):
     def test_connect_to_cloudservers(self):
        pyrax.cloudservers = None
        pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
-       pyrax.connect_to_cloudservers() 
+       pyrax.connect_to_cloudservers()
        self.assertIsNotNone(pyrax.cloudservers)
 
     @patch('pyrax._cf.Client', new=FakeService)
     def test_connect_to_cloudfiles(self):
        pyrax.cloudfiles = None
        pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
-       pyrax.connect_to_cloudfiles() 
+       pyrax.connect_to_cloudfiles()
        self.assertIsNotNone(pyrax.cloudfiles)
 
     @patch('pyrax._ks_client.Client', new=FakeService)
     def test_connect_to_keystone(self):
        pyrax.keystone = None
        pyrax.connect_to_keystone = self.orig_connect_to_keystone
-       pyrax.connect_to_keystone() 
+       pyrax.connect_to_keystone()
        self.assertIsNotNone(pyrax.keystone)
 
     @patch('pyrax._cloudlb.CloudLoadBalancer', new=FakeService)
@@ -164,7 +164,7 @@ class PyraxInitTest(unittest.TestCase):
        pyrax.cloud_loadbalancer_node = None
        pyrax.cloud_loadbalancer_vip = None
        pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
-       pyrax.connect_to_cloud_loadbalancers() 
+       pyrax.connect_to_cloud_loadbalancers()
        self.assertIsNotNone(pyrax.cloud_loadbalancers)
        self.assertIsNotNone(pyrax.cloud_loadbalancer_node)
        self.assertIsNotNone(pyrax.cloud_loadbalancer_vip)
@@ -173,14 +173,14 @@ class PyraxInitTest(unittest.TestCase):
     def test_connect_to_cloud_dns(self):
        pyrax.cloud_dns = None
        pyrax.connect_to_cloud_dns = self.orig_connect_to_cloud_dns
-       pyrax.connect_to_cloud_dns() 
+       pyrax.connect_to_cloud_dns()
        self.assertIsNotNone(pyrax.cloud_dns)
 
     @patch('pyrax._cdb.CloudDB', new=FakeService)
     def test_connect_to_cloud_databases(self):
        pyrax.cloud_databases = None
        pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
-       pyrax.connect_to_cloud_databases() 
+       pyrax.connect_to_cloud_databases()
        self.assertIsNotNone(pyrax.cloud_databases)
 
 

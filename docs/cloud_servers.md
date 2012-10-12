@@ -1,11 +1,13 @@
-## Working with Cloud Servers
+# Working with Cloud Servers
 Once you are authenticated, you can easily interact with Rackspace Cloud Servers.
 
+----
 # WARNING #
 ###Please note the pyrax is still in the early stages of development, and will almost certainly be changing in ways that will break any applications you might build using it. Feel free to play with it and test things out, but do not use it for production applications.
 
 ----
-### Listing Servers
+
+## Listing Servers
 Let's start by listing all the servers in our account:
 
 	import pyrax
@@ -17,11 +19,10 @@ If you already have Cloud Servers, you will get back a list of server objects. B
 
 To do that, we'll need to specify the operating system image to use for our new server, as well as the flavor. "Flavor" refers to the combination of RAM and disk size for the new server.
 
-### Listing Images
+## Listing Images
 To get a list of available images, run:
 
 	print cs.images.list()
-
 
 Here's what I got:
 
@@ -72,7 +73,7 @@ This is the output:
 	Fedora 16 (Verne)   -- ID: bca91446-e60e-42e7-9e39-0582e7e20fb9
 	Debian 6 (Squeeze)   -- ID: a10eacf7-ac15-4225-b533-5744f1fe47c1
 
-### Listing Flavors
+## Listing Flavors
 Let's do the same for flavors:
 
 	flvs = cs.flavors.list()
@@ -121,7 +122,7 @@ This returns:
 	  Disk: 1200
 	  VCPUs: 8
 
-OK, so now we have the available images and flavors. Let's create a **512MB Ubuntu 12.04** server; to do this, we can use the find() method and the exact name of the image. This is difficult, since the exact name is 'Ubuntu 12.04 LTS (Precise Pangolin)', which you probably wouldn't have guessed. So the easiest way to do this is to check in a less restrictive manner:
+So now we have the available images and flavors. Let's create a **512MB Ubuntu 12.04** server; to do this, we can use the find() method and the exact name of the image. This is difficult, since the exact name is 'Ubuntu 12.04 LTS (Precise Pangolin)', which you probably wouldn't have guessed. So the easiest way to do this is to check in a less restrictive manner:
 
 	ubu_image = [img for img in cs.images.list()
 			if "Ubuntu 12.04" in img.name][0]
@@ -133,8 +134,8 @@ We can do something similar to get the 512MB flavor:
 
 Note that these calls are somewhat inefficient, so if you're going to be working with images and flavors a lot, it's best to make the listing call once and store the results locally. Images and flavors typically don't change very often.
 
-### Creating a Server
-OK, now that we have the image and flavor objects we want (actually, it's their **id** attributes we really need), we're ready to spin up our new cloud server! To do this, we call the create() method, passing in the name we want to give the new server, along with the IDs for the desired image and flavor.
+## Creating a Server
+Now that we have the image and flavor objects we want (actually, it's their **id** attributes we really need), we're ready to spin up our new cloud server! To do this, we call the create() method, passing in the name we want to give the new server, along with the IDs for the desired image and flavor.
 
 	server = cs.servers.create("first_server", ubu_image.id, flavor_512.id)
 
@@ -164,14 +165,7 @@ The get(id) method takes the ID of the desired server and returns a Server objec
 	print server.networks
 	=> {u'private': [u'10.179.xxx.xxx'], u'public': [u'198.101.xxx.xxx', u'2001:4800:780d:0509:8ca7:b42c:xxxx:xxxx']}
 
-Finally, when you are done with this server, you can easily delete it:
-
-	server.delete()
-
-Note that the server isn't deleted immediately (though it usually does happen pretty quickly). If you try refreshing your server object just after calling delete(), the call will probably succeed. But trying again a few seconds later will result in a `NotFound` exception being raised.
-
-
-#### Additional parameters to create()
+### Additional parameters to create()
 There are several optional parameters that you can include when creating a server. Here are the two most common:
 
 `meta` - This is an arbitrary dict of up to 5 key/value pairs that can be stored with the server. Note that the keys and values must be simple strings, and not numbers, datetimes, tuples, etc.
@@ -195,12 +189,46 @@ Run that code, and then wait for the server to finish building. When it does, us
 
 Disconnect from the server, and then use the server's ID to get a server object. Check its 'metadata' attribute to verify that it contains the same key/value pairs we specified.
 
-----
+## Deleting a Server
+Finally, when you are done with a server, you can easily delete it:
 
-### Deleting all servers
+	server.delete()
+
+Note that the server isn't deleted immediately (though it usually does happen pretty quickly). If you try refreshing your server object just after calling delete(), the call will probably succeed. But trying again a few seconds later will result in a `NotFound` exception being raised.
+
+## Deleting All Servers
 Since each server object has a delete() method, it's simple to delete all the servers that you've created:
 
 	for server in cs.servers.list():
 		server.delete()
 
+## Create an Image of a Server
+If you have a Server object and want to create an image of that server, you can call its `create_image()` method, passing in the name of the image to create, along with any optional metadata for the image.
 
+	cs = pyrax.cloudservers
+	server = cs.get(id_of_server)
+	server.create_image("my_image_name")
+
+Another option is to use call create_image() directly on the module, passing in either the name of ID of the server from which you want to create the image, along with the image name and optional metadata.
+
+	cs = pyrax.cloudservers
+	cs.servers.create_image("my_awesome_server", "my_image_name")
+
+## Resizing a Server
+Resizing a server is the process of changing the amount of resources allocated to the server. In Cloud Servers terms, it means changing the Flavor of the server: i.e., changing the RAM and disk space allocated to that server.
+
+Resizing is a multi-step process. First, determine the desired Flavor to which the server is to be resized. Then call the `resize()` method on the server, passing in the new flavor. The server's status will then be set to "RESIZE".
+
+	cs = pyrax.cloudservers
+	server = cs.get(id_of_server)
+	server.resize(new_flavor_ID)
+
+On the host, a new server instance with the new flavor size will be created based on your existing server. When it is ready, the ID, name, networking, etc., for the current server instance will be transferred to the new instance. At that point, `get(ID)` will return the new instance, and it will have a status of "CONFIRM_RESIZE". At this point you will need to determine if the resize was successful, and that the server is functioning properly. If so, call:
+
+	server.confirm_resize()
+	
+and the old instance will be deleted, and the new server's status will be set to "ACTIVE". If, however, there are any problems with the new server, call:
+
+	server.revert_resize()
+
+and the original server will be restored, and the resized version will be deleted.
