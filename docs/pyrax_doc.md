@@ -1,29 +1,41 @@
-# Pyrax – Python Bindings for the Rackspace Cloud
+# pyrax – Python Bindings for the Rackspace Cloud
 
 ----
 
 
 # WARNING #
-###Please note the pyrax is still in the early stages of development, and will almost certainly be changing in ways that will break any applications you might build using it. Feel free to play with it and test things out, but do not use it for production applications.
+###Please note that pyrax is still in the early stages of development, and will almost certainly be changing in ways that will break any applications you might build using it. Feel free to play with it and test things out, but do not use it for production applications.
 
 ----
 
+## Getting Started With pyrax
+**pyrax** is the Python language binding for the **Rackspace Cloud**. By installing pyrax, you have the ability to build on the Rackspace Cloud using standard Python objects and code.
+
+Because the Rackspace Cloud is powered by OpenStack, most of pyrax will work with any standard OpenStack-based cloud. The main difference is in authentication: pyrax is focused on Rackspace's authentication mechanism, but still allows you to substitute another provider's authentication system.
+
+
+## Prerequisites
+You will need Python 2.7 or later to run pyrax. As of this writing pyrax has not been extensively tested with earlier versions of Python, nor has it been tested with Python 3.x, but such testing is planned for the near future. If you run pyrax with any of these versions and encounter a problem, please report it on [https://github.com/rackspace/pyrax/issues](https://github.com/rackspace/pyrax/issues).
+
+The documentation assumes that you are experienced with programming in Python, and have a basic understanding of cloud computing concepts. If you'd like to brush up on cloud computing, you should visit the [Rackspace Knowledge Center](http://www.rackspace.com/knowledge_center/)
+
+
 ## Installing pyrax
-No surprises here: pyrax is installed like any other third-party Python module. Just run:
+You install pyrax like any other third-party Python module. Just run:
 
 	pip install pyrax
 
-You will probably need to do this as an admin (i.e., using sudo) unless you are installing into a virtualenv. Pip will pull in all of the other modules and client libraries that pyrax needs.
+You will probably need to do this as root/administrator (i.e., using `sudo`) unless you are installing into a [virtualenv](http://www.virtualenv.org/en/latest/). `pip` will pull in all of the other modules and client libraries that pyrax needs.
 
 
-## Set up authentication
-To authenticate, you will need to submit your Rackspace Cloud username and API key. You can do this in one of two ways: explicitly pass them to pyrax, or create a file containing those credentials and pass that file path to pyrax. The file is a standard configuration file, with the format:
+## Set up Authentication
+You will need to submit your Rackspace Cloud username and API key in order to authenticate. You can do this in one of two ways: explicitly pass them to pyrax, or create a file containing those credentials and pass that file path to pyrax. The file is a standard configuration file, with the format:
 
     [rackspace_cloud]
     username = myusername
     api_key = 01234567890abcdef
 
-To authenticate, run the following code; note that you only need to use one of either `set_credentials()` or `set_credential_file()`; the choice depends on your preference for passing credentials. 
+To authenticate, run the following code using one of either `set_credentials()` or `set_credential_file()`. Which method you choose depends on your preference for passing credentials. 
 
 	import pyrax
 	
@@ -44,9 +56,9 @@ You don't have to log into each service separately; pyrax handles that for you.
 
 ## The Identity Class
 
-pyrax has a class named 'Identity' that is used to handle authentication and cache credentials; you can access it with `pyrax.identity`. It stores your credentials and authentication token information. In most cases you will not need to interact with this object directly; pyrax uses it to handle authentication tasks for you, but it's available in case you need more fine-grained control of the authentication process.
+pyrax has an `Identity` class that is used to handle authentication and cache credentials. You can access it in your code using the reference `pyrax.identity`.  Once authenticated, it will store your credentials and authentication token information. In most cases you will not need to interact with this object directly; pyrax uses it to handle authentication tasks for you. But it's available in case you need more fine-grained control of the authentication process, such as querying endpoints in different regions, or getting a list of user roles.
 
-You can query its 'authenticated' attribute to determine if authentication was successful; if so, its 'token' and 'expires' will contain the returned authentication information, and its 'services' attribute will contain a dict with all the service endpoint information. Here's an example of the contents of 'services' after authentication (with identifying information obscured):
+You can check its 'authenticated' attribute to determine if authentication was successful; if so, its 'token' and 'expires' will contain the returned authentication information, and its 'services' attribute will contain a dict with all the service endpoint information. Here's an example of the contents of 'services' after authentication (with identifying information obscured):
 
 	{u'access':
 	        {u'serviceCatalog': [

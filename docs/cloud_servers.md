@@ -3,32 +3,32 @@ Once you are authenticated, you can easily interact with Rackspace Cloud Servers
 
 ----
 # WARNING #
-###Please note the pyrax is still in the early stages of development, and will almost certainly be changing in ways that will break any applications you might build using it. Feel free to play with it and test things out, but do not use it for production applications.
+###Please note that pyrax is still in the early stages of development, and will almost certainly be changing in ways that will break any applications you might build using it. Feel free to play with it and test things out, but do not use it for production applications.
 
 ----
 
 ## Listing Servers
-Let's start by listing all the servers in our account:
+Start by listing all the servers in your account:
 
 	import pyrax
 	pyrax.set_credential_file("/path/to/credential/file")
 	cs = pyrax.cloudservers
 	print cs.servers.list()
 
-If you already have Cloud Servers, you will get back a list of server objects. But let's assume that you've just started with the Rackspace Cloud, and you got back an empty list, which isn't terribly interesting, so creating a new cloud server would be a good first step.
+If you already have Cloud Servers, you will get back a list of `Server` objects. But if you are just getting started with the Rackspace Cloud, and you got back an empty list, creating a new cloud server would be a good first step.
 
-To do that, we'll need to specify the operating system image to use for our new server, as well as the flavor. "Flavor" refers to the combination of RAM and disk size for the new server.
+To do that, you'll need to specify the operating system image to use for your new server, as well as the flavor. `Flavor` is a class that represents the combination of RAM and disk size for the new server.
 
 ## Listing Images
 To get a list of available images, run:
 
 	print cs.images.list()
 
-Here's what I got:
+This returns a list of available images:
 
 	[<Image: Windows Server 2012 (with updates) + SQL Server 2012 Web>, <Image: Windows Server 2012 (with updates) + SQL Server 2012 Standard>, <Image: Windows Server 2012 + SQL Server 2012 Web>, <Image: Windows Server 2012 + SQL Server 2012 Standard>, <Image: Windows Server 2012 (with updates)>, <Image: CentOS 5.8>, <Image: Arch 2012.08>, <Image: Gentoo 12.3>, <Image: Windows Server 2008 R2 SP1 + SharePoint Foundation 2010 SP1 & SQL Server 2008 R2 SP1 Std>, <Image: Windows Server 2008 R2 SP1 + SharePoint Foundation 2010 SP1 & SQL Server 2008 R2 SP1 Express>, <Image: Windows Server 2012>, <Image: Ubuntu 10.04 LTS (Lucid Lynx)>, <Image: Windows Server 2008 R2 SP1 + SQL Server 2008 R2 Standard>, <Image: Windows Server 2008 R2 SP1 (with updates) + SQL Server 2008 R2 SP1 Web>, <Image: Windows Server 2008 R2 SP1 (with updates) + SQL Server 2008 R2 SP1 Standard>, <Image: Windows Server 2008 R2 SP1 (with updates) + SQL Server 2012 Web>, <Image: Windows Server 2008 R2 SP1 + SQL Server 2008 R2 Web>, <Image: Windows Server 2008 R2 SP1 + SQL Server 2012 Web>, <Image: Windows Server 2008 R2 SP1 (with updates) + SQL Server 2012 Standard>, <Image: Windows Server 2008 R2 SP1 + SQL Server 2012 Standard>, <Image: Windows Server 2008 R2 SP1 (with updates)>, <Image: Windows Server 2008 R2 SP1>, <Image: CentOS 6.3>, <Image: FreeBSD 9>, <Image: Red Hat Enterprise Linux 6.1>, <Image: Ubuntu 11.10 (Oneiric Oncelot)>, <Image: Ubuntu 12.04 LTS (Precise Pangolin)>, <Image: Fedora 17 (Beefy Miracle)>, <Image: CentOS 6.2>, <Image: CentOS 6.0>, <Image: CentOS 5.6>, <Image: Ubuntu 11.04 (Natty Narwhal)>, <Image: Red Hat Enterprise Linux 5.5>, <Image: openSUSE 12.1>, <Image: Fedora 16 (Verne)>, <Image: Debian 6 (Squeeze)>]
 
-Note that this is a list of image *objects*, not just a bunch of name strings. So let's get some more information this time:
+Note that this is a list of `Image` *objects*, not just a bunch of name strings. You can get the image name and ID as follows:
 
 	imgs = cs.images.list()
 	for img in imgs:
@@ -122,57 +122,64 @@ This returns:
 	  Disk: 1200
 	  VCPUs: 8
 
-So now we have the available images and flavors. Let's create a **512MB Ubuntu 12.04** server; to do this, we can use the find() method and the exact name of the image. This is difficult, since the exact name is 'Ubuntu 12.04 LTS (Precise Pangolin)', which you probably wouldn't have guessed. So the easiest way to do this is to check in a less restrictive manner:
+So you now have the available images and flavors. Suppose you want to create a **512MB Ubuntu 12.04** server; to do this, you can use the `find()` method and the exact name of the image. This is difficult, since the exact name is 'Ubuntu 12.04 LTS (Precise Pangolin)', which you probably wouldn't have guessed. So the easiest way to do this is to check in a less restrictive manner:
 
 	ubu_image = [img for img in cs.images.list()
 			if "Ubuntu 12.04" in img.name][0]
 
-We can do something similar to get the 512MB flavor:
+You can do something similar to get the 512MB flavor:
 
 	flavor_512 = [flavor for flavor in cs.flavors.list()
 			if flavor.ram == 512][0]
 
-Note that these calls are somewhat inefficient, so if you're going to be working with images and flavors a lot, it's best to make the listing call once and store the results locally. Images and flavors typically don't change very often.
+Note that these calls are somewhat inefficient, so if you are going to be working with images and flavors a lot, it is best to make the listing call once and store the results locally. Images and flavors typically do not change very often.
 
 ## Creating a Server
-Now that we have the image and flavor objects we want (actually, it's their **id** attributes we really need), we're ready to spin up our new cloud server! To do this, we call the create() method, passing in the name we want to give the new server, along with the IDs for the desired image and flavor.
+Now that you have the image and flavor objects you want (actually, it's their `id` attributes you really need), you are ready to create your new cloud server! To do this, call the `create()` method, passing in the name we want to give to the new server, along with the IDs for the desired image and flavor.
 
 	server = cs.servers.create("first_server", ubu_image.id, flavor_512.id)
 
-This returns a new server object; you can test it out with:
+This returns a new `Server` object. You can test it out using the following code:
 
-	print server.id
-	=> u'afbabf55-a9b5-4e77-82bd-d57ab69f2992'
-	print server.status
-	=> u'BUILD'
-	print server.adminPass
-	=> u'73hgYoBnwoXu'
-	print server.networks
-	=> {}
+	print "ID:", server.id
+	print "Status:", server.status
+	print "Admin password:", server.adminPass
+	print "Networks:", server.networks
 
-Wait - the server has no network addresses? How useful is that? How are you supposed to work with a cloud server that's not on a network?
+Running this code returns:
 
-Relax! If you ran that code, you noticed that it returned almost immediately. What happened is that the cloud API recorded your request, and returned as much information as it could about the server that it was *going to create*. The networking for the server hadn't been created yet, so it couldn't provide that information.
+	ID: u'afbabf55-a9b5-4e77-82bd-d57ab69f2992'
+	Status: u'BUILD'
+	Admin password: u'73hgYoBnwoXu'
+	Networks: {}
 
-One important bit of information is the __adminPass__ – without that, you won't be able to shell into your server. It is *only* supplied with the server object returned from the initial create() request; after that you can no longer retrieve it. Note: if this does happen, you can call the change_password() method of the server object to set a new root password on the server.
+Wait - the server has no network addresses? How useful is that? How are you supposed to work with a cloud server that is not on a network?
 
-This brings up an important point: the server objects you get back are essentially snapshots of that server at the moment you requested the information. Your object's 'BUILD' status won't change no matter how long you wait; you'll have to refresh it to see any changes. In other words, these objects are not dynamic. Fortunately, refreshing the object is simple enough to do:
+If you ran that code, you noticed that it returned almost immediately. What happened is that the cloud API recorded your request, and returned as much information as it could about the server that it was *going to create*. The networking for the server had not yet been created, so it could not provide that information.
+
+One important piece of information is the __adminPass__ – without that, you won't be able to log into your server. It is *only* supplied with the `Server` object returned from the initial `create()` request. After that you can no longer retrieve it. Note: if this does happen, you can call the `change_password()` method of the `Server` object to set a new root password on the server.
+
+This brings up an important point: the `Server` objects you get back are essentially snapshots of that server at the moment you requested the information. Your object's 'BUILD' status won't change no matter how long you wait. You will have to refresh it to see any changes. In other words, these objects are not dynamic. Fortunately, refreshing the object is simple enough to do:
 
 	server = cs.servers.get(server.id)
 
-The get(id) method takes the ID of the desired server and returns a Server object with the latest information about that server. Try getting the network addresses again with the newly-fetched object:
+The `get(id)` method takes the ID of the desired server and returns a `Server` object with the current information about that server. Try getting the network addresses again with the newly-fetched object:
 
 	print server.networks
-	=> {u'private': [u'10.179.xxx.xxx'], u'public': [u'198.101.xxx.xxx', u'2001:4800:780d:0509:8ca7:b42c:xxxx:xxxx']}
+
+This should return something like:
+
+	{u'private': [u'10.179.xxx.xxx'], u'public': [u'198.101.xxx.xxx', u'2001:4800:780d:0509:8ca7:b42c:xxxx:xxxx']}
+
 
 ### Additional parameters to create()
 There are several optional parameters that you can include when creating a server. Here are the two most common:
 
-`meta` - This is an arbitrary dict of up to 5 key/value pairs that can be stored with the server. Note that the keys and values must be simple strings, and not numbers, datetimes, tuples, etc.
+`meta` - An arbitrary dict of up to 5 key/value pairs that can be stored with the server. Note that the keys and values must be simple strings, and not numbers, datetimes, tuples, or anything else.
 
-`files` - A dict of up to 5 files that will be written to the server upon creation. The keys for this dict is the absolute file path on the server where the file will be written, and the values are the contents for those files. Values can either be a string, or a file-like object that will be read. File sizes are limited to 10K; binary files are not supported (i.e., text only).
+`files` - A dict of up to 5 files that will be written to the server upon creation. The keys for this dict are the absolute file paths on the server where these files will be written, and the values are the contents for those files. Values can either be a string, or a file-like object that will be read. File sizes are limited to 10K, and binary files are not supported (text only).
 
-Let's create a server with those two options; the setup code is the same as in the previous examples; here is the part that we need to change:
+Now create a server using the `meta` and `files` options. The setup code is the same as in the previous examples; here is the part that you need to change:
 
 	meta = {"test_key": "test_value",
 			"meaning_of_life": "42"}
@@ -185,50 +192,52 @@ Let's create a server with those two options; the setup code is the same as in t
 	server = cs.servers.create("meta_server", ubuid, flavor_512.id,
 			meta=meta, files=files)
 
-Run that code, and then wait for the server to finish building. When it does, use the admin password to ssh into the server, and then do a directory listing of /root. You should see a file named 'testfile'; run `cat testfile` to verify that the content of the file matches what we had in the script.
+Run that code, and then wait for the server to finish building. When it does, use the admin password to ssh into the server, and then do a directory listing of the home root directory (`ls /root`). You should see a file named `testfile`; run `cat testfile` to verify that the content of the file matches what you had in the script.
 
-Disconnect from the server, and then use the server's ID to get a server object. Check its 'metadata' attribute to verify that it contains the same key/value pairs we specified.
+Disconnect from the server, and then use the server's ID to get a `Server` object. Check its `metadata` attribute to verify that it contains the same key/value pairs you specified.
 
 ## Deleting a Server
 Finally, when you are done with a server, you can easily delete it:
 
 	server.delete()
 
-Note that the server isn't deleted immediately (though it usually does happen pretty quickly). If you try refreshing your server object just after calling delete(), the call will probably succeed. But trying again a few seconds later will result in a `NotFound` exception being raised.
+Note that the server isn't deleted immediately (though it usually does happen pretty quickly). If you try refreshing your server object just after calling `delete()`, the call will probably succeed. But trying again a few seconds later will result in a `NotFound` exception being raised.
 
 ## Deleting All Servers
-Since each server object has a delete() method, it's simple to delete all the servers that you've created:
+Since each `Server` object has a `delete()` method, it is simple to delete all the servers that you've created:
 
 	for server in cs.servers.list():
 		server.delete()
 
-## Create an Image of a Server
-If you have a Server object and want to create an image of that server, you can call its `create_image()` method, passing in the name of the image to create, along with any optional metadata for the image.
+
+## Creating an Image of a Server
+If you have a `Server` object and want to create an image of that server, you can call its `create_image()` method, passing in the name of the image to create, along with any optional metadata for the image.
 
 	cs = pyrax.cloudservers
 	server = cs.get(id_of_server)
 	server.create_image("my_image_name")
 
-Another option is to use call create_image() directly on the module, passing in either the name of ID of the server from which you want to create the image, along with the image name and optional metadata.
+Another option is to use call `pyrax.servers.create_image()`, passing in either the name of ID of the server from which you want to create the image, along with the image name and optional metadata.
 
 	cs = pyrax.cloudservers
 	cs.servers.create_image("my_awesome_server", "my_image_name")
 
-## Resizing a Server
-Resizing a server is the process of changing the amount of resources allocated to the server. In Cloud Servers terms, it means changing the Flavor of the server: i.e., changing the RAM and disk space allocated to that server.
 
-Resizing is a multi-step process. First, determine the desired Flavor to which the server is to be resized. Then call the `resize()` method on the server, passing in the new flavor. The server's status will then be set to "RESIZE".
+## Resizing a Server
+Resizing a server is the process of changing the amount of resources allocated to the server. In Cloud Servers terms, it means changing the Flavor of the server: that is, changing the RAM and disk space allocated to that server.
+
+Resizing is a multi-step process. First, determine the desired `Flavor` to which the server is to be resized. Then call the `resize()` method on the server, passing in the ID of the desired `Flavor`. The server's status will then be set to "RESIZE".
 
 	cs = pyrax.cloudservers
 	server = cs.get(id_of_server)
 	server.resize(new_flavor_ID)
 
-On the host, a new server instance with the new flavor size will be created based on your existing server. When it is ready, the ID, name, networking, etc., for the current server instance will be transferred to the new instance. At that point, `get(ID)` will return the new instance, and it will have a status of "CONFIRM_RESIZE". At this point you will need to determine if the resize was successful, and that the server is functioning properly. If so, call:
+On the host, a new server instance with the new flavor size will be created based on your existing server. When it is ready, the ID, name, networking, and so forth for the current server instance will be transferred to the new instance. At that point, `get(ID)` will return the new instance, and it will have a status of "CONFIRM_RESIZE". Now you will need to determine if the resize was successful, and that the server is functioning properly. If all is well, call:
 
 	server.confirm_resize()
 	
-and the old instance will be deleted, and the new server's status will be set to "ACTIVE". If, however, there are any problems with the new server, call:
+and the old instance will be deleted, and the new server's status will be set to "ACTIVE". However, if there are any problems with the new server, call:
 
 	server.revert_resize()
 
-and the original server will be restored, and the resized version will be deleted.
+to restore the original server, and delete the resized version.
