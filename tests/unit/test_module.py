@@ -95,9 +95,8 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.cloudservers = object()
         pyrax.cloudfiles = object()
         pyrax.keystone = object()
+        pyrax.cloud_lb = object()
         pyrax.cloud_loadbalancers = object()
-        pyrax.cloud_loadbalancer_node = object()
-        pyrax.cloud_loadbalancer_vip = object()
         pyrax.cloud_dns = object()
         pyrax.cloud_databases = object()
         default_region = object()
@@ -111,8 +110,6 @@ class PyraxInitTest(unittest.TestCase):
         self.assertIsNone(pyrax.cloudfiles)
         self.assertIsNone(pyrax.keystone)
         self.assertIsNone(pyrax.cloud_loadbalancers)
-        self.assertIsNone(pyrax.cloud_loadbalancer_node)
-        self.assertIsNone(pyrax.cloud_loadbalancer_vip)
         self.assertIsNone(pyrax.cloud_dns)
         self.assertIsNone(pyrax.cloud_databases)
 
@@ -161,13 +158,9 @@ class PyraxInitTest(unittest.TestCase):
     @patch('pyrax._cloudlb.CloudLoadBalancer', new=FakeService)
     def test_connect_to_cloud_loadbalancers(self):
        pyrax.cloud_loadbalancers = None
-       pyrax.cloud_loadbalancer_node = None
-       pyrax.cloud_loadbalancer_vip = None
        pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
        pyrax.connect_to_cloud_loadbalancers()
        self.assertIsNotNone(pyrax.cloud_loadbalancers)
-       self.assertIsNotNone(pyrax.cloud_loadbalancer_node)
-       self.assertIsNotNone(pyrax.cloud_loadbalancer_vip)
 
     @patch('pyrax._cdns.Connection', new=FakeService)
     def test_connect_to_cloud_dns(self):

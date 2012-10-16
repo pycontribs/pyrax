@@ -53,8 +53,6 @@ cloudservers = None
 cloudfiles = None
 keystone = None
 cloud_loadbalancers = None
-cloud_loadbalancer_node = None
-cloud_loadbalancer_vip = None
 cloud_dns = None
 cloud_databases = None
 # Default region for all services. Can be individually overridden if needed
@@ -150,15 +148,14 @@ def authenticate():
 
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
-    global identity, cloudservers, cloudfiles, keystone, cloud_loadbalancers, cloud_loadbalancer_node, cloud_loadbalancer_vip
+    global identity, cloudservers, cloudfiles, keystone, cloud_lb, cloud_loadbalancers
     global cloud_dns, cloud_databases, default_region
     identity = identity_class()
     cloudservers = None
     cloudfiles = None
     keystone = None
+    cloud_lb = None
     cloud_loadbalancers = None
-    cloud_loadbalancer_node = None
-    cloud_loadbalancer_vip = None
     cloud_dns = None
     cloud_databases = None
     default_region = None
@@ -231,14 +228,17 @@ def connect_to_keystone():
 
 @_require_auth
 def connect_to_cloud_loadbalancers(region=None):
-    global cloud_loadbalancers, cloud_loadbalancer_node, cloud_loadbalancer_vip
+    global cloud_lb, cloud_loadbalancers
     if region is None:
         region = default_region or FALLBACK_REGION
     _cloudlb.consts.USER_AGENT = _make_agent_name(_cloudlb.consts.USER_AGENT)
-    _clb = _cloudlb.CloudLoadBalancer(identity.username, identity.api_key, region)
-    cloud_loadbalancers = _clb.loadbalancers
-    cloud_loadbalancer_node = _cloudlb.Node
-    cloud_loadbalancer_vip = _cloudlb.VirtualIP
+    _mgr = _cloudlb.CloudLoadBalancer(identity.username, identity.api_key, region)
+    cloud_loadbalancers = _mgr.loadbalancers
+    cloud_loadbalancers.Node = _cloudlb.Node
+    cloud_loadbalancers.VirtualIP = _cloudlb.VirtualIP
+    cloud_loadbalancers.protocols = _mgr.get_protocols()
+    cloud_loadbalancers.algorithms = _mgr.get_algorithms()
+    cloud_loadbalancers.get_usage = _mgr.get_usage
 
 
 @_require_auth

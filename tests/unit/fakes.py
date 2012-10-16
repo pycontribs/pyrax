@@ -51,17 +51,39 @@ class FakeStorageObject(StorageObject):
             self._read_attdict(attdict)
 
 
+class FakeNode(object):
+    pass
+
+
+class FakeVirtualIP(object):
+    pass
+
+
+class FakeLoadBalancers(object):
+    pass
+
+
 class FakeService(object):
     user_agent = "FakeService"
     USER_AGENT = "FakeService"
-    loadbalancers = object()
 
     def __init__(self, *args, **kwargs):
         self.client = FakeClient()
+        self.Node = FakeNode
+        self.VirtualIP = FakeVirtualIP
+        self.loadbalancers = FakeLoadBalancers()
 
     def authenticate(self):
         pass
 
+    def get_protocols(self):
+        return ["HTTP"]
+
+    def get_algorithms(self):
+        return ["RANDOM"]
+
+    def get_usage(self):
+        pass
 
 
 class FakeFolderUploader(FolderUploader):
