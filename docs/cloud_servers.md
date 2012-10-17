@@ -122,7 +122,7 @@ This returns:
 	  Disk: 1200
 	  VCPUs: 8
 
-So you now have the available images and flavors. Suppose you want to create a **512MB Ubuntu 12.04** server; to do this, you can use the `find()` method and the exact name of the image. This is difficult, since the exact name is 'Ubuntu 12.04 LTS (Precise Pangolin)', which you probably wouldn't have guessed. So the easiest way to do this is to check in a less restrictive manner:
+So you now have the available images and flavors. Suppose you want to create a **512MB Ubuntu 12.04** server; to do this, you can use the `find()` method and the exact name of the image. This is difficult, since the exact name is 'Ubuntu 12.04 LTS (Precise Pangolin)', which you probably would not have guessed. So the easiest way to do this is to check in a less restrictive manner:
 
 	ubu_image = [img for img in cs.images.list()
 			if "Ubuntu 12.04" in img.name][0]
@@ -135,7 +135,7 @@ You can do something similar to get the 512MB flavor:
 Note that these calls are somewhat inefficient, so if you are going to be working with images and flavors a lot, it is best to make the listing call once and store the results locally. Images and flavors typically do not change very often.
 
 ## Creating a Server
-Now that you have the image and flavor objects you want (actually, it's their `id` attributes you really need), you are ready to create your new cloud server! To do this, call the `create()` method, passing in the name we want to give to the new server, along with the IDs for the desired image and flavor.
+Now that you have the image and flavor objects you want (actually, it's their `id` attributes you really need), you are ready to create your new cloud server! To do this, call the `create()` method, passing in the name you want to give to the new server, along with the IDs for the desired image and flavor.
 
 	server = cs.servers.create("first_server", ubu_image.id, flavor_512.id)
 
@@ -157,7 +157,7 @@ Wait - the server has no network addresses? How useful is that? How are you supp
 
 If you ran that code, you noticed that it returned almost immediately. What happened is that the cloud API recorded your request, and returned as much information as it could about the server that it was *going to create*. The networking for the server had not yet been created, so it could not provide that information.
 
-One important piece of information is the __adminPass__ – without that, you won't be able to log into your server. It is *only* supplied with the `Server` object returned from the initial `create()` request. After that you can no longer retrieve it. Note: if this does happen, you can call the `change_password()` method of the `Server` object to set a new root password on the server.
+One important piece of information is the __adminPass__ – without that, you will not be able to log into your server. It is *only* supplied with the `Server` object returned from the initial `create()` request. After that you can no longer retrieve it. Note: if this does happen, you can call the `change_password()` method of the `Server` object to set a new root password on the server.
 
 This brings up an important point: the `Server` objects you get back are essentially snapshots of that server at the moment you requested the information. Your object's 'BUILD' status won't change no matter how long you wait. You will have to refresh it to see any changes. In other words, these objects are not dynamic. Fortunately, refreshing the object is simple enough to do:
 

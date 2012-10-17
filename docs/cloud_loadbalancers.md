@@ -17,7 +17,7 @@ To get a list of all the load balancers in your cloud, run:
 This will return a list of `LoadBalancer` objects. You can then interact with the individual `LoadBalancer` objects. Assuming that you are just starting out and do not have any load balancers configured yet, you will get back an empty list. A good first step, then, would be to create a typical setup: two servers behind a load balancer that will distribute web traffic to these two servers.
 
 
-### Create the servers
+### Create the Servers
 The document on Cloud Servers explains how to get the image and flavor IDs necessary to create a server, but for the sake of brevity the code below uses the IDs previously obtained. Note: these ID values are not constants, so make sure you get the actual IDs for when your system is running.
 
     cs = pyrax.cloudservers
@@ -38,7 +38,7 @@ The document on Cloud Servers explains how to get the image and flavor IDs neces
         server2 = cs.servers.get(s2_id)
 
 
-### Create the nodes
+### Create the Nodes
 Next you need to create the `Nodes` that represent these servers. `Nodes` require that you must specify a `condition`. The value of `condition` must be one of the following:
 
 | Name | Description |
@@ -87,7 +87,7 @@ You can get a list of all your load balancers as above, or you can get a specifi
 
 	lb = clb.get(82663)
 
-Once you have a `LoadBalancer` object, you can use its attributes to get information about its status, nodes, virtual ips, algorithm and protocol.
+Once you have a `LoadBalancer` object, you can use its attributes to get information about its status, nodes, virtual ips, algorithm, and protocol.
 
 	print "Load Balancer:", lb.name
 	print "ID:", lb.id
@@ -174,7 +174,7 @@ You can get load balancer usage data for your entire account by calling `pyrax.c
 	  'startTime': datetime.datetime(2012, 10, 15, 13, 0),
 	  'vipType': u'PUBLIC'}
 
-This output was for a test load balancer that isn't getting any traffic. If this had been for an actual load balancer in production use, the values reported would not be all zeroes.
+This output is for a test load balancer that is not getting any traffic. If this had been for an actual load balancer in production use, the values reported would not be all zeroes.
 
 
 
