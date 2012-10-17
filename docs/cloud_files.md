@@ -8,7 +8,7 @@
 ## Basic Concepts
 Rackspace Cloud Files allows you to store files in a scalable, redundant manner, and optionally make them available globally using the Akamai CDN network. Unlike a typical computer OS, though, Cloud Files consists of containers, each of which can store millions of objects. But unlike directories on your computer, you cannot nest containers within other containers: they exist only at the root level. However, you can simulate a nested folder structure by naming your objects with names that resemble traditional path notation; for example: "photos/vacations/2012/cancun/beach.jpg". So while all your files will be at the base level of their containers, you can retrieve them based on the "path" prefix.
 
-In pyrax, Cloud Files is represented by `Container` and `StorageObject` classes. Once you're authenticated with pyrax, you can interact with Cloud Files via the `pyrax.cloudfiles` object. All of the example code that follows assumes that you've already imported pyrax and authenticated.
+In pyrax, Cloud Files is represented by `Container` and `StorageObject` classes. Once you're authenticated with pyrax, you can interact with Cloud Files via the `pyrax.cloudfiles` object. All of the example code that follows assumes that you have already imported pyrax and authenticated.
 
 
 ## General Account Information
@@ -37,11 +37,11 @@ And this outputs:
 	Name: example
 	# of objects: 0
 
-Please note that if you call `create_container()` more than once with the same name, the request is ignored, and a reference to the existing container with that name is returned. This is useful for cases where you want to get a reference to a container, creating it if it doesn't yet exist.
+Please note that if you call `create_container()` more than once with the same name, the request is ignored, and a reference to the existing container with that name is returned. This is useful for cases where you want to get a reference to a container, creating it if it does not yet exist.
 
 
 ## Listing All Containers
-You can also query `pyrax.cloudfiles` for all the containers on the system. There are two methods for this: `list_containers()` and `get_all_containers()`. The difference between these methods is that `list_containers()` returns a list of the *names* of all containers, while `get_all_containers()` returns a list of Container *objects* representing each container:
+You can also query `pyrax.cloudfiles` for all the containers on the system. There are two methods for this: `list_containers()` and `get_all_containers()`. The difference between these methods is that `list_containers()` returns a list of the *names* of all containers, while `get_all_containers()` returns a list of `Container` *objects* representing each container:
 
 	print "list_containers:", cf.list_containers()
 	print "get_all_containers:", cf.get_all_containers()
@@ -102,7 +102,7 @@ To make this a simpler process, pyrax includes a utility method for calculating 
 	print "Calculated checksum:", chksum
 	print "Stored object etag:", obj.etag
 
-If all went well, the two values will match. If not, an UploadFailed exception would have been raised, and the object would not be stored in Cloud Files.
+If all went well, the two values will match. If not, an `UploadFailed` exception would have been raised, and the object would not be stored in Cloud Files.
 
 If you have a `Container` object, you can call `store_object()` directly on it to store an object into that container:
 
@@ -196,7 +196,7 @@ Here are some examples, using the local folder **"/home/me/projects/cool_project
 	upload_key, total_bytes = cf.upload_folder(folder)
 
 	# This will upload the contents of the target folder to a container
-	# named 'software'. If that container doesn't exist, it will be created.
+	# named 'software'. If that container does not exist, it will be created.
 	upload_key, total_bytes = cf.upload_folder(folder, container="software")
 
 	# This is the same as above, but will ignore any files ending in '.pyc'
@@ -227,7 +227,7 @@ The first limit is the default for Cloud Files: only the first 10,000 objects wi
 
 There are also two ways to filter your results: the `prefix` and `delimiter` parameters to `get_objects()`. `prefix` works by only returning objects whose names begin with the value you set it to. `delimiter` takes a single character, and excludes any object whose name contains that character.
 
-To illustrate these uses, start by creating a new folder, and populating it with 10 objects. The first 5 will have names starting with "series_" followed by an integer between 0 and 4; the second 5 will simulate items in a nested folder. They will have names that are a single repeated character. The content of the objects isn't important, as `get_objects()` works only on the names.
+To illustrate these uses, start by creating a new folder, and populating it with 10 objects. The first 5 will have names starting with "series_" followed by an integer between 0 and 4; the second 5 will simulate items in a nested folder. They will have names that are a single repeated character. The content of the objects is not important, as `get_objects()` works only on the names.
 
 	cf = pyrax.cloudfiles
 	cont = cf.create_container("my_objects")
