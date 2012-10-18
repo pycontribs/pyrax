@@ -10,11 +10,6 @@ import version
 
 import cf_wrapper.client as _cf
 try:
-    import clouddb as _cdb
-    _USE_DB = True
-except ImportError:
-    _USE_DB = False
-try:
     import clouddns as _cdns
     _USE_DNS = True
 except ImportError:
@@ -22,6 +17,12 @@ except ImportError:
 import cloudlb as _cloudlb
 from keystoneclient.v2_0 import client as _ks_client
 from novaclient.v1_1 import client as _cs_client
+
+import client
+import client.cloud_databases
+print dir(client.cloud_databases)
+from client.cloud_databases import CloudDatabaseClient
+
 
 # These require Libcloud
 #import rackspace_monitoring.providers as mon_providers
@@ -187,17 +188,33 @@ def connect_to_services():
         connect_to_cloud_databases()
 
 
+def _get_service_endpoint(svc, region=None):
+    if region is None:
+        region = default_region or FALLBACK_REGION
+    region = safe_region(region)
+    ep = identity.services.get(svc, {}).get("endpoints", {}).get(region, {}).get("public_url")
+    if not ep:
+        # Try the "ALL" region, and substitute the actual region
+        ep = identity.services.get(svc, {}).get("endpoints", {}).get("ALL", {}).get("public_url")
+        ep = ep.replace("//", "//%s." % region.lower())
+        print "ALLLL"
+        print ep
+    return ep
+
+
+def safe_region(region=None):
+    """Value to use when no region is specified."""
+    return region or default_region or FALLBACK_REGION
+
+
 @_require_auth
 def connect_to_cloudservers(region=None):
     global cloudservers
-    if region is None:
-        region = default_region or FALLBACK_REGION
-    mgt_url = identity.services.get("compute", {}).get("endpoints", {}).get(region, {}).get("public_url")
-    if not mgt_url:
-        # Try the 'ALL' region
-        mgt_url = identity.services.get("compute", {}).get("endpoints", {}).get("ALL", {}).get("public_url")
-    cloudservers = _cs_client.Client(identity.username, identity.api_key, identity.tenant_name,
-            identity.auth_endpoint, bypass_url=mgt_url, auth_system="rackspace",
+    region = safe_region(region)
+    mgt_url = _get_service_endpoint("compute", region)
+    cloudservers = _cs_client.Client(identity.username, identity.api_key,
+            project_id=identity.tenant_name, auth_url=identity.auth_endpoint,
+            bypass_url=mgt_url, auth_system="rackspace",
             region_name=region, service_type="compute")
     cloudservers.client.USER_AGENT = _make_agent_name(cloudservers.client.USER_AGENT)
 
@@ -205,10 +222,9 @@ def connect_to_cloudservers(region=None):
 @_require_auth
 def connect_to_cloudfiles(region=None):
     global cloudfiles
-    if region is None:
-        region = default_region or FALLBACK_REGION
-    cf_url = identity.services.get("object_store", {}).get("endpoints", {}).get(region, {}).get("public_url")
-    cdn_url = identity.services.get("object_cdn", {}).get("endpoints", {}).get(region, {}).get("public_url")
+    region = safe_region(region)
+    cf_url = _get_service_endpoint("object_store", region)
+    cdn_url = _get_service_endpoint("object_cdn", region)
     opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token, "endpoint_type": "publicURL",
             "tenant_name": identity.tenant_name, "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
@@ -229,8 +245,7 @@ def connect_to_keystone():
 @_require_auth
 def connect_to_cloud_loadbalancers(region=None):
     global cloud_lb, cloud_loadbalancers
-    if region is None:
-        region = default_region or FALLBACK_REGION
+    region = safe_region(region)
     _cloudlb.consts.USER_AGENT = _make_agent_name(_cloudlb.consts.USER_AGENT)
     _mgr = _cloudlb.CloudLoadBalancer(identity.username, identity.api_key, region)
     cloud_loadbalancers = _mgr.loadbalancers
@@ -254,14 +269,10 @@ def connect_to_cloud_dns(region=None):
 
 @_require_auth
 def connect_to_cloud_databases(region=None):
-    if not _USE_DB:
-        return
     global cloud_databases
-    if region is None:
-        region = default_region or FALLBACK_REGION
-    _cdb.consts.USER_AGENT = _make_agent_name(_cdb.consts.USER_AGENT)
-    cloud_databases = _cdb.CloudDB(identity.username, identity.api_key, region)
-    cloud_databases.authenticate()
+    cloud_databases = CloudDatabaseClient(identity.username, identity.api_key)
+    cloud_databases.user_agent = _make_agent_name(cloud_databases.user_agent)
+
 
 
 def _dev_only_auth():
