@@ -18,10 +18,10 @@
 #    under the License.
 
 
-from pyrax.client.client import BaseClient
-from pyrax.client.manager import BaseManager
-from pyrax.client.manager import getid
-from pyrax.client.resource import BaseResource
+from pyrax.client import BaseClient
+from pyrax.manager import BaseManager
+from pyrax.manager import getid
+from pyrax.resource import BaseResource
 
 
 
@@ -33,7 +33,7 @@ class CloudDatabase(BaseResource):
 class CloudDatabaseManager(BaseManager):
     resource_class = CloudDatabase
 
-    def list(self, detailed=True):
+    def list(self, detailed=False):
         """
         Get a list of all instances.
 

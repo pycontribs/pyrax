@@ -18,10 +18,7 @@ import cloudlb as _cloudlb
 from keystoneclient.v2_0 import client as _ks_client
 from novaclient.v1_1 import client as _cs_client
 
-import client
-import client.cloud_databases
-print dir(client.cloud_databases)
-from client.cloud_databases import CloudDatabaseClient
+from cloud_databases import CloudDatabaseClient
 
 
 # These require Libcloud

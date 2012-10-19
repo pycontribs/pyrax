@@ -6,9 +6,6 @@ import time
 import pyrax
 pyrax._dev_only_auth()
 
-import pudb
-trace = pudb.set_trace
-
 cs = pyrax.cloudservers
 clb = pyrax.cloud_loadbalancers
 img_id = "5cebb13a-f783-4f8c-8058-c4182c724ccd"
@@ -19,7 +16,6 @@ s1_id = server1.id
 server2 = cs.servers.create("server2", img_id, flavor_id)
 s2_id = server2.id
 
-trace()
 # The servers won't have their networks assigned immediately, so
 # wait until they do.
 print "Waiting for server networks.",

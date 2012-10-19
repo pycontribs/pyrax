@@ -20,9 +20,6 @@
 OpenStack Client interface. Handles the REST calls and responses.
 """
 
-import pudb
-trace = pudb.set_trace
-
 import logging
 import os
 import time
@@ -50,7 +47,7 @@ if not hasattr(urlparse, "parse_qsl"):
 
 from manager import BaseManager
 import pyrax.exceptions as exc
-import service_catalog
+import pyrax.service_catalog as service_catalog
 import pyrax.utils as utils
 
 
@@ -192,9 +189,6 @@ class BaseClient(httplib2.Http):
         return resp, body
 
     def _cs_request(self, url, method, **kwargs):
-
-        trace()
-        
         if not all((self.management_url, self.auth_token, self.tenant_id)):
             self.authenticate()
 
