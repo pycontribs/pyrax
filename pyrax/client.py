@@ -46,6 +46,7 @@ if not hasattr(urlparse, "parse_qsl"):
     urlparse.parse_qsl = cgi.parse_qsl
 
 from manager import BaseManager
+from resource import BaseResource
 import pyrax.exceptions as exc
 import pyrax.service_catalog as service_catalog
 import pyrax.utils as utils
@@ -67,10 +68,9 @@ class BaseClient(httplib2.Http):
     def __init__(self, user, password, tenant_name=None,
             tenant_id=None, auth_url=None, region_name=None,
             endpoint_type="publicURL", management_url=None,
-            auth_token=None,
-            service_type=None, service_name=None, timings=False,
-            no_cache=False, http_log_debug=False, timeout=None,
-            auth_system="rackspace"):
+            auth_token=None, service_type=None, service_name=None,
+            timings=False, no_cache=False, http_log_debug=False,
+            timeout=None, auth_system="rackspace"):
         super(BaseClient, self).__init__(timeout=timeout)
         self.user = user
         self.password = password
@@ -85,17 +85,15 @@ class BaseClient(httplib2.Http):
         self.service_name = service_name
         self.management_url = management_url
         self.auth_token = auth_token
+        # TODO: simplify by removing these next few atts
+        self.proxy_token = None
+        self.proxy_tenant_id = None
 
-#        self.volume_service_name = volume_service_name
         self.timings = timings
-#        self.bypass_url = bypass_url
 #        self.no_cache = no_cache
         self.http_log_debug = http_log_debug
 
         self.times = []  # [("item", starttime, endtime), ...]
-
-#        self.proxy_token = proxy_token
-#        self.proxy_tenant_id = proxy_tenant_id
         self.used_keyring = False
 
         # httplib2 overrides
@@ -109,8 +107,25 @@ class BaseClient(httplib2.Http):
             ch = logging.StreamHandler()
             self._logger.setLevel(logging.DEBUG)
             self._logger.addHandler(ch)
-        # Hook method for subclasses to configure their manager(s).
-        self._configure_managers()
+        self._manager = None
+        # Hook method for subclasses to create their manager instance
+        # without having to override __init__().
+        self._configure_manager()
+
+
+    def __getattr__(self, att):
+        """
+        Generally, magic methods such as this are to be avoided, but in this
+        case it allows for pass-through to the public methods of the manager.
+        This avoids the call having to know the internals of this client; e.g.,
+        code can call:
+            pyrax.FooClient.list()
+        instead of:
+            pyrax.FooClient.manager.list()
+        """
+        if hasattr(self._manager, att):
+            return getattr(self._manager, att)
+        raise AttributeError("'%s' object has no attribute '%s'" % (self.__class__, att)) 
 
 
     def use_token_cache(self, use_it):
@@ -213,16 +228,16 @@ class BaseClient(httplib2.Http):
             except exc.Unauthorized:
                 raise ex
 
-    def get(self, url, **kwargs):
+    def method_get(self, url, **kwargs):
         return self._cs_request(url, "GET", **kwargs)
 
-    def post(self, url, **kwargs):
+    def method_post(self, url, **kwargs):
         return self._cs_request(url, "POST", **kwargs)
 
-    def put(self, url, **kwargs):
+    def method_put(self, url, **kwargs):
         return self._cs_request(url, "PUT", **kwargs)
 
-    def delete(self, url, **kwargs):
+    def method_delete(self, url, **kwargs):
         return self._cs_request(url, "DELETE", **kwargs)
 
     def _extract_service_catalog(self, url, resp, body, extract_token=True):
@@ -275,14 +290,12 @@ class BaseClient(httplib2.Http):
 
         # GET ...:5001/v2.0/tokens/#####/endpoints
         url = "/".join([url, "tokens", "%s?belongsTo=%s"
-                        % (self.proxy_token, self.proxy_tenant_id)])
+                % (self.proxy_token, self.proxy_tenant_id)])
         self._logger.debug("Using Endpoint URL: %s" % url)
-        print "TOK"*22
-        print self.auth_token
-        resp, body = self._time_request(
-            url, "GET", headers={"X-Auth_Token": self.auth_token})
+        resp, body = self._time_request(url, "GET",
+                headers={"X-Auth_Token": self.proxy_token})
         return self._extract_service_catalog(url, resp, body,
-                                             extract_token=False)
+                extract_token=False)
 
     def authenticate(self):
         if has_keyring:
@@ -361,9 +374,6 @@ class BaseClient(httplib2.Http):
                     auth_url = auth_url + "/v2.0"
                 self._v2_auth(auth_url)
 
-        if self.bypass_url:
-            self.set_management_url(self.bypass_url)
-
         # Store the token/mgmt url in the keyring for later requests.
         if has_keyring and not self.no_cache:
             try:
@@ -429,35 +439,10 @@ class BaseClient(httplib2.Http):
         finally:
             self.follow_all_redirects = tmp_follow_all_redirects
 
+        import pudb
+        pudb.set_trace()
         return self._extract_service_catalog(url, resp, body)
 
     @property
     def projectid(self):
         return self.tenant_id
-
-
-
-#class BaseClient(object):
-#    def __init__(self, user, password, tenant_name=None,
-#            tenant_id=None, auth_url=None, region_name=None,
-#            endpoint_type="publicURL", management_url=None,
-#            service_type=None, service_name=None, timings=False,
-#            no_cache=False, http_log_debug=False,
-#            auth_system="rackspace", timeout=None):
-#
-#        self.http_client = HTTPClient(user, password, tenant_name=tenant_name,
-#            tenant_id=tenant_id, auth_url=auth_url, region_name=region_name,
-#            endpoint_type=endpoint_type, management_url=management_url,
-#            service_type=service_type, service_name=service_name,
-#            timings=timings, no_cache=no_cache, http_log_debug=http_log_debug,
-#            auth_system=auth_system, timeout=timeout)
-
-
-
-#    def _get_user_agent(self):
-#        return self.http_client.USER_AGENT
-#
-#    def _set_user_agent(self, val):
-#        self.http_client.USER_AGENT = val
-#
-#    user_agent = property(_get_user_agent, _set_user_agent)

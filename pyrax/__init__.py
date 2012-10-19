@@ -269,7 +269,9 @@ def connect_to_cloud_databases(region=None):
     ep = _get_service_endpoint("database", region)
     cloud_databases = CloudDatabaseClient(identity.username, identity.api_key,
             region_name=region, management_url=ep, auth_token=identity.token,
-            tenant_id=identity.tenant_id)
+            tenant_id=identity.tenant_id, service_type="rax:database",
+            http_log_debug = True,
+            )
     cloud_databases.user_agent = _make_agent_name(cloud_databases.user_agent)
 
 
@@ -281,6 +283,40 @@ def _dev_only_auth():
     """
     creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
     set_credential_file(creds_file)
+
+
+def test_deletedb():
+    insts = cloud_databases.list()
+    lastid = insts[-1].id
+    print "ID", lastid, "NAME", insts[-1].name
+    cloud_databases.delete(lastid)
+
+#REQ: curl -i https://ord.databases.api.rackspacecloud.com/v1.0/728829ea5fe106-c8e3-466f-8cfe-fdfb9936a290 DELETE -H 'X-Auth-Project-Id: 728829' -H 'User-Agent: pyrax:pyrax/0.4.1' -H 'Accept: application/json' -H 'X-Auth-Token: b9b51ede-62c6-4e78-aea6-1880c4409b7b'
+#
+#RESP:{'date': 'Fri, 19 Oct 2012 20:34:25 GMT', 'status': '401', 'content-length': '276', 'content-type': 'application/json; charset=UTF-8'} {"unauthorized": {"message": "This server could not verify that you are authorized to access the document you requested. Either you supplied the wrong credentials (e.g., bad password), or your browser does not understand how to supply the credentials required.", "code": 401}}
+
+
+
+def test_createdb():
+    nm = "inst_%s" % utils.random_name(6)
+#    dbs = [{"name": "db_%s" % utils.random_name(5),
+#            "character_set": "utf8"},
+#            {"name:": "db_%s" % utils.random_name(5)}]
+#    dbs = [{"name:": "TESTDB"}]
+    dbs = []
+
+    users = [{"name": "ededededed", "password": "simplePass", "databases": []}]
+
+    cloud_databases.create(nm, databases=dbs, flavor="m1.tiny", users=users)
+
+#REQ: curl -i https://ord.databases.api.rackspacecloud.com/v1.0/728829/instances -X POST -H 'X-Auth-Project-Id: 728829' -H 'User-Agent: pyrax:pyrax/0.4.1' -H 'Content-Type: application/json' -H 'Accept: application/json' -H 'X-Auth-Token: b9b51ede-62c6-4e78-aea6-1880c4409b7b'
+#
+#REQ BODY: {"instance": {"volume": {"size": 1}, "users": [], "flavorRef": "https://ord.databases.api.rackspacecloud.com/v1.0/728829/flavors/3", "name": "inst_ScWmGP", "databases": [{"name:": "TESTDB"}]}}
+#
+#RESP:{'date': 'Fri, 19 Oct 2012 19:31:52 GMT', 'status': '400', 'connection': 'close', 'content-type': 'application/json; charset=UTF-8', 'content-length': '75'} {"badRequest": {"message": "'' is not a valid database name", "code": 400}}
+
+
+
 
 
 if __name__ == "__main__":

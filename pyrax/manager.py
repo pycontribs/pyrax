@@ -48,27 +48,68 @@ def getid(obj):
         return obj
 
 
-#class BaseManager(utils.HookableMixin):
+
 class BaseManager(object):
     """
     Managers interact with a particular type of API (servers, databases, dns,
     etc.) and provide CRUD operations for them.
     """
     resource_class = None
+    response_key = None
+    plural_response_key = None
+    uri_base = None
+    _hooks_map = {}
 
-    def __init__(self, api):
+
+    def __init__(self, api, resource_class=None, response_key=None,
+            plural_response_key=None, uri_base=None):
         self.api = api
-
-    def _list(self, url, response_key, obj_class=None, body=None):
-        if body:
-            _resp, body = self.api.post(url, body=body)
+        self.resource_class = resource_class
+        self.response_key = response_key
+        if self.plural_response_key:
+            self.plural_response_key = plural_response_key
         else:
-            _resp, body = self.api.get(url)
+            # Default to adding 's'
+            self.plural_response_key = "%ss" % response_key
+        self.uri_base = uri_base
+
+
+    def list(self):
+        """Get a list of all items."""
+        return self._list("/%s" % self.uri_base)
+
+
+    def get(self, item):
+        """Get a specific item."""
+        uri = "/%s/%s" % (self.uri_base, getid(item))
+        return self._get(uri)
+
+
+    def create(self, *args, **kwargs):
+        """
+        Subclasses need to implement the _create_body() method
+        to return a dict that will be used for the API request
+        body.
+        """
+        body = self.api._create_body(*args, **kwargs)
+        return self._create("/%s" % self.uri_base, body) 
+
+
+    def delete(self, item):
+        """Delete the specified item."""
+        uri = "/%s/%s" % (self.uri_base, getid(item))
+        return self._delete(uri)
+
+    def _list(self, url, obj_class=None, body=None):
+        if body:
+            _resp, body = self.api.method_post(url, body=body)
+        else:
+            _resp, body = self.api.method_get(url)
 
         if obj_class is None:
             obj_class = self.resource_class
 
-        data = body[response_key]
+        data = body[self.plural_response_key]
         # NOTE(ja): keystone returns values as list as {'values': [ ... ]}
         #           unlike other services which just return the list...
         if isinstance(data, dict):
@@ -81,6 +122,7 @@ class BaseManager(object):
             with self.completion_cache('uuid', obj_class, mode="w"):
                 return [obj_class(self, res, loaded=True)
                         for res in data if res]
+
 
     @contextlib.contextmanager
     def completion_cache(self, cache_type, obj_class, mode):
@@ -135,35 +177,38 @@ class BaseManager(object):
                 cache.close()
                 delattr(self, cache_attr)
 
+
     def write_to_completion_cache(self, cache_type, val):
         cache = getattr(self, "_%s_cache" % cache_type, None)
         if cache:
             cache.write("%s\n" % val)
 
-    def _get(self, url, response_key=None):
-        _resp, body = self.api.get(url)
-        if response_key:
-            return self.resource_class(self, body[response_key], loaded=True)
-        else:
-            return self.resource_class(self, body, loaded=True)
 
-    def _create(self, url, body, response_key, return_raw=False, **kwargs):
+    def _get(self, url):
+        _resp, body = self.api.method_get(url)
+        return self.resource_class(self, body[self.response_key], loaded=True)
+
+
+    def _create(self, url, body, return_raw=False, **kwargs):
         self.run_hooks('modify_body_for_create', body, **kwargs)
-        _resp, body = self.api.post(url, body=body)
+        _resp, body = self.api.method_post(url, body=body)
         if return_raw:
-            return body[response_key]
+            return body[self.response_key]
 
         with self.completion_cache('human_id', self.resource_class, mode="a"):
             with self.completion_cache('uuid', self.resource_class, mode="a"):
-                return self.resource_class(self, body[response_key])
+                return self.resource_class(self, body[self.response_key])
+
 
     def _delete(self, url):
-        _resp, _body = self.api.delete(url)
+        _resp, _body = self.api.method_delete(url)
+
 
     def _update(self, url, body, **kwargs):
         self.run_hooks('modify_body_for_update', body, **kwargs)
-        _resp, body = self.api.put(url, body=body)
+        _resp, body = self.api.method_put(url, body=body)
         return body
+
 
     def find(self, **kwargs):
         """
@@ -181,6 +226,7 @@ class BaseManager(object):
             raise exc.NoUniqueMatch
         else:
             return matches[0]
+
 
     def findall(self, **kwargs):
         """
@@ -202,5 +248,16 @@ class BaseManager(object):
 
         return found
 
-    def list(self):
-        raise NotImplementedError
+
+    @classmethod
+    def add_hook(cls, hook_type, hook_func):
+        if hook_type not in cls._hooks_map:
+            cls._hooks_map[hook_type] = []
+
+        cls._hooks_map[hook_type].append(hook_func)
+
+    @classmethod
+    def run_hooks(cls, hook_type, *args, **kwargs):
+        hook_funcs = cls._hooks_map.get(hook_type) or []
+        for hook_func in hook_funcs:
+            hook_func(*args, **kwargs)

@@ -17,7 +17,7 @@
 # limitations under the License.
 
 
-import rack_exceptions
+import pyrax.exceptions as exc
 
 
 class ServiceCatalog(object):
@@ -45,7 +45,7 @@ class ServiceCatalog(object):
                             (endpoint.get("versionId") in (None, "1.1", "2"))):
                         matching_endpoints.append(endpoint)
             if not matching_endpoints:
-                raise rack_exceptions.EndpointNotFound()
+                raise exc.EndpointNotFound()
 
         # We don't always get a service catalog back ...
         if not "serviceCatalog" in self.catalog["access"]:
@@ -77,9 +77,9 @@ class ServiceCatalog(object):
                     matching_endpoints.append(endpoint)
 
         if not matching_endpoints:
-            raise rack_exceptions.EndpointNotFound()
+            raise exc.EndpointNotFound()
         elif len(matching_endpoints) > 1:
-            raise rack_exceptions.AmbiguousEndpoints(
+            raise exc.AmbiguousEndpoints(
                     endpoints=matching_endpoints)
         else:
             return matching_endpoints[0][endpoint_type]

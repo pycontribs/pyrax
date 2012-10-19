@@ -17,6 +17,9 @@ class CDNFailed(Exception):
 class EndpointNotFound(Exception):
      pass
 
+class FlavorNotFound(Exception):
+     pass
+
 class FileNotFound(Exception):
      pass
 

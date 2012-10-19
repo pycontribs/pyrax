@@ -321,24 +321,6 @@ def _format_servers_list_networks(server):
     return '; '.join(output)
 
 
-class HookableMixin(object):
-    """Mixin so classes can register and run hooks."""
-    _hooks_map = {}
-
-    @classmethod
-    def add_hook(cls, hook_type, hook_func):
-        if hook_type not in cls._hooks_map:
-            cls._hooks_map[hook_type] = []
-
-        cls._hooks_map[hook_type].append(hook_func)
-
-    @classmethod
-    def run_hooks(cls, hook_type, *args, **kwargs):
-        hook_funcs = cls._hooks_map.get(hook_type) or []
-        for hook_func in hook_funcs:
-            hook_func(*args, **kwargs)
-
-
 def safe_issubclass(*args):
     """Like issubclass, but will just return False if not a class."""
 
