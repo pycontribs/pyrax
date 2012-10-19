@@ -61,9 +61,9 @@ class BaseManager(object):
 
     def _list(self, url, response_key, obj_class=None, body=None):
         if body:
-            _resp, body = self.api.client.post(url, body=body)
+            _resp, body = self.api.post(url, body=body)
         else:
-            _resp, body = self.api.client.get(url)
+            _resp, body = self.api.get(url)
 
         if obj_class is None:
             obj_class = self.resource_class
@@ -141,7 +141,7 @@ class BaseManager(object):
             cache.write("%s\n" % val)
 
     def _get(self, url, response_key=None):
-        _resp, body = self.api.client.get(url)
+        _resp, body = self.api.get(url)
         if response_key:
             return self.resource_class(self, body[response_key], loaded=True)
         else:
@@ -149,7 +149,7 @@ class BaseManager(object):
 
     def _create(self, url, body, response_key, return_raw=False, **kwargs):
         self.run_hooks('modify_body_for_create', body, **kwargs)
-        _resp, body = self.api.client.post(url, body=body)
+        _resp, body = self.api.post(url, body=body)
         if return_raw:
             return body[response_key]
 
@@ -158,11 +158,11 @@ class BaseManager(object):
                 return self.resource_class(self, body[response_key])
 
     def _delete(self, url):
-        _resp, _body = self.api.client.delete(url)
+        _resp, _body = self.api.delete(url)
 
     def _update(self, url, body, **kwargs):
         self.run_hooks('modify_body_for_update', body, **kwargs)
-        _resp, body = self.api.client.put(url, body=body)
+        _resp, body = self.api.put(url, body=body)
         return body
 
     def find(self, **kwargs):

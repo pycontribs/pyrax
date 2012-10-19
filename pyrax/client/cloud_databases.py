@@ -20,6 +20,7 @@
 
 from pyrax.client.client import BaseClient
 from pyrax.client.manager import BaseManager
+from pyrax.client.manager import getid
 from pyrax.client.resource import BaseResource
 
 
@@ -32,7 +33,27 @@ class CloudDatabase(BaseResource):
 class CloudDatabaseManager(BaseManager):
     resource_class = CloudDatabase
 
+    def list(self, detailed=True):
+        """
+        Get a list of all instances.
+
+        :rtype: list of :class:`CloudDatabase`.
+        """
+        if detailed is True:
+            return self._list("/instances/detail", "instances")
+        else:
+            return self._list("/instances", "instances")
+
+    def get(self, instance):
+        """
+        Get a specific instance.
+
+        :param instance: The ID of the :class:`CloudDatabase` to get.
+        :rtype: :class:`CloudDatabase`
+        """
+        return self._get("/instances/%s" % getid(instance), "instances")
 
 
 class CloudDatabaseClient(BaseClient):
-    pass
+    def _configure_managers(self):
+        self.manager = CloudDatabaseManager(self)

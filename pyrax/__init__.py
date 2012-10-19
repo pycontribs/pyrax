@@ -197,8 +197,6 @@ def _get_service_endpoint(svc, region=None):
         # Try the "ALL" region, and substitute the actual region
         ep = identity.services.get(svc, {}).get("endpoints", {}).get("ALL", {}).get("public_url")
         ep = ep.replace("//", "//%s." % region.lower())
-        print "ALLLL"
-        print ep
     return ep
 
 
@@ -270,9 +268,12 @@ def connect_to_cloud_dns(region=None):
 @_require_auth
 def connect_to_cloud_databases(region=None):
     global cloud_databases
-    cloud_databases = CloudDatabaseClient(identity.username, identity.api_key)
+    region = safe_region(region)
+    ep = _get_service_endpoint("database", region)
+    cloud_databases = CloudDatabaseClient(identity.username, identity.api_key,
+            region_name=region, management_url=ep, auth_token=identity.token,
+            tenant_id=identity.tenant_id)
     cloud_databases.user_agent = _make_agent_name(cloud_databases.user_agent)
-
 
 
 def _dev_only_auth():

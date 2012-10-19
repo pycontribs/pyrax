@@ -49,7 +49,7 @@ if not hasattr(urlparse, "parse_qsl"):
     urlparse.parse_qsl = cgi.parse_qsl
 
 from manager import BaseManager
-import exceptions as exc
+import pyrax.exceptions as exc
 import service_catalog
 import pyrax.utils as utils
 
@@ -63,21 +63,21 @@ def get_auth_system_url(auth_system):
     raise exc.AuthSystemNotFound(auth_system)
 
 
-class HTTPClient(httplib2.Http):
+class BaseClient(httplib2.Http):
 
-    USER_AGENT = "pyrax"
+    user_agent = "pyrax"
 
-    def __init__(self, user, password, projectid, auth_url=None,
-            insecure=False, timeout=None, proxy_tenant_id=None,
-            proxy_token=None, region_name=None,
-            endpoint_type="publicURL", service_type=None,
-            service_name=None, volume_service_name=None,
-            timings=False, bypass_url=None, no_cache=False,
-            http_log_debug=False, auth_system="keystone"):
-        super(HTTPClient, self).__init__(timeout=timeout)
+    def __init__(self, user, password, tenant_name=None,
+            tenant_id=None, auth_url=None, region_name=None,
+            endpoint_type="publicURL", management_url=None,
+            auth_token=None,
+            service_type=None, service_name=None, timings=False,
+            no_cache=False, http_log_debug=False, timeout=None,
+            auth_system="rackspace"):
+        super(BaseClient, self).__init__(timeout=timeout)
         self.user = user
         self.password = password
-        self.projectid = projectid
+        self.tenant_id = tenant_id
         if not auth_url and auth_system and auth_system != "keystone":
             auth_url = get_auth_system_url(auth_system)
         self.auth_url = auth_url.rstrip("/")
@@ -86,23 +86,24 @@ class HTTPClient(httplib2.Http):
         self.endpoint_type = endpoint_type
         self.service_type = service_type
         self.service_name = service_name
-        self.volume_service_name = volume_service_name
+        self.management_url = management_url
+        self.auth_token = auth_token
+
+#        self.volume_service_name = volume_service_name
         self.timings = timings
-        self.bypass_url = bypass_url
-        self.no_cache = no_cache
+#        self.bypass_url = bypass_url
+#        self.no_cache = no_cache
         self.http_log_debug = http_log_debug
 
         self.times = []  # [("item", starttime, endtime), ...]
 
-        self.management_url = None
-        self.auth_token = None
-        self.proxy_token = proxy_token
-        self.proxy_tenant_id = proxy_tenant_id
+#        self.proxy_token = proxy_token
+#        self.proxy_tenant_id = proxy_tenant_id
         self.used_keyring = False
 
         # httplib2 overrides
         self.force_exception_to_status_code = True
-        self.disable_ssl_certificate_validation = insecure
+#        self.disable_ssl_certificate_validation = insecure
 
         self.auth_system = auth_system
 
@@ -111,6 +112,9 @@ class HTTPClient(httplib2.Http):
             ch = logging.StreamHandler()
             self._logger.setLevel(logging.DEBUG)
             self._logger.addHandler(ch)
+        # Hook method for subclasses to configure their manager(s).
+        self._configure_managers()
+
 
     def use_token_cache(self, use_it):
         # One day I"ll stop using negative naming.
@@ -157,14 +161,14 @@ class HTTPClient(httplib2.Http):
 
     def request(self, *args, **kwargs):
         kwargs.setdefault("headers", kwargs.get("headers", {}))
-        kwargs["headers"]["User-Agent"] = self.USER_AGENT
+        kwargs["headers"]["User-Agent"] = self.user_agent
         kwargs["headers"]["Accept"] = "application/json"
         if "body" in kwargs:
             kwargs["headers"]["Content-Type"] = "application/json"
             kwargs["body"] = json.dumps(kwargs["body"])
 
         self.http_log_req(args, kwargs)
-        resp, body = super(HTTPClient, self).request(*args, **kwargs)
+        resp, body = super(BaseClient, self).request(*args, **kwargs)
         self.http_log_resp(resp, body)
 
         if body:
@@ -188,7 +192,10 @@ class HTTPClient(httplib2.Http):
         return resp, body
 
     def _cs_request(self, url, method, **kwargs):
-        if not self.management_url:
+
+        trace()
+        
+        if not all((self.management_url, self.auth_token, self.tenant_id)):
             self.authenticate()
 
         # Perform the request once. If we get a 401 back then it
@@ -196,8 +203,8 @@ class HTTPClient(httplib2.Http):
         # re-authenticate and try again. If it still fails, bail.
         try:
             kwargs.setdefault("headers", {})["X-Auth-Token"] = self.auth_token
-            if self.projectid:
-                kwargs["headers"]["X-Auth-Project-Id"] = self.projectid
+            if self.tenant_id:
+                kwargs["headers"]["X-Auth-Project-Id"] = self.tenant_id
 
             resp, body = self._time_request(self.management_url + url, method,
                                             **kwargs)
@@ -237,7 +244,6 @@ class HTTPClient(httplib2.Http):
                 if extract_token:
                     self.auth_token = self.service_catalog.get_token()
 
-                trace()
                 management_url = self.service_catalog.url_for(
                     attr="region",
                     filter_value=self.region_name,
@@ -380,8 +386,8 @@ class HTTPClient(httplib2.Http):
 
         headers = {"X-Auth-User": self.user,
                    "X-Auth-Key": self.password}
-        if self.projectid:
-            headers["X-Auth-Project-Id"] = self.projectid
+        if self.tenant_id:
+            headers["X-Auth-Project-Id"] = self.tenant_id
 
         resp, body = self._time_request(url, "GET", headers=headers)
         if resp.status in (200, 204):  # in some cases we get No Content
@@ -411,8 +417,8 @@ class HTTPClient(httplib2.Http):
                 "passwordCredentials": {"username": self.user,
                                         "password": self.password}}}
 
-        if self.projectid:
-            body["auth"]["tenantName"] = self.projectid
+        if self.tenant_id:
+            body["auth"]["tenantName"] = self.tenant_id
 
         self._authenticate(url, body)
 
@@ -431,29 +437,33 @@ class HTTPClient(httplib2.Http):
 
         return self._extract_service_catalog(url, resp, body)
 
+    @property
+    def projectid(self):
+        return self.tenant_id
 
 
-class BaseClient(object):
-    def __init__(self, user, password, projectid=None, auth_url=None,
-            insecure=False, timeout=None, proxy_tenant_id=None,
-            proxy_token=None, region_name=None,
-            endpoint_type="publicURL", service_type=None,
-            service_name=None, volume_service_name=None,
-            timings=False, bypass_url=None, no_cache=False,
-            http_log_debug=False, auth_system="rackspace"):
 
-        self.http_client = HTTPClient(user, password, projectid, auth_url=auth_url,
-            insecure=insecure, timeout=timeout, proxy_tenant_id=proxy_tenant_id,
-            proxy_token=proxy_token, region_name=region_name,
-            endpoint_type=endpoint_type, service_type=service_type,
-            service_name=service_name, volume_service_name=volume_service_name,
-            timings=timings, bypass_url=bypass_url, no_cache=no_cache,
-            http_log_debug=http_log_debug, auth_system=auth_system)
+#class BaseClient(object):
+#    def __init__(self, user, password, tenant_name=None,
+#            tenant_id=None, auth_url=None, region_name=None,
+#            endpoint_type="publicURL", management_url=None,
+#            service_type=None, service_name=None, timings=False,
+#            no_cache=False, http_log_debug=False,
+#            auth_system="rackspace", timeout=None):
+#
+#        self.http_client = HTTPClient(user, password, tenant_name=tenant_name,
+#            tenant_id=tenant_id, auth_url=auth_url, region_name=region_name,
+#            endpoint_type=endpoint_type, management_url=management_url,
+#            service_type=service_type, service_name=service_name,
+#            timings=timings, no_cache=no_cache, http_log_debug=http_log_debug,
+#            auth_system=auth_system, timeout=timeout)
 
-    def _get_user_agent(self):
-        return self.http_client.USER_AGENT
 
-    def _set_user_agent(self, val):
-        self.http_client.USER_AGENT = val
 
-    user_agent = property(_get_user_agent, _set_user_agent)
+#    def _get_user_agent(self):
+#        return self.http_client.USER_AGENT
+#
+#    def _set_user_agent(self, val):
+#        self.http_client.USER_AGENT = val
+#
+#    user_agent = property(_get_user_agent, _set_user_agent)
