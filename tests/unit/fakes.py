@@ -22,6 +22,9 @@ class FakeResponse(object):
     def read(self):
         return "Line1\nLine2"
 
+    def get(self, arg):
+        pass
+
 
 class FakeClient(object):
     user_agent = "Fake"
@@ -95,6 +98,33 @@ class FakeFolderUploader(FolderUploader):
 
     def fake_run(self):
         pass
+
+
+class FakeEntryPoint(object):
+    def __init__(self, name):
+        self.name = name
+
+    def load(self):
+        def dummy(*args, **kwargs):
+            return self.name
+        return dummy
+
+fakeEntryPoints = [FakeEntryPoint("a"), FakeEntryPoint("b"), FakeEntryPoint("c")]
+
+
+class FakeManager(object):
+    def list(self):
+        pass
+    def get(self, item):
+        pass
+    def delete(self, item):
+        pass
+    def create(self, *args, **kwargs):
+        pass
+
+
+class FakeException(BaseException):
+    pass
 
 
 class FakeIdentity(Identity):
