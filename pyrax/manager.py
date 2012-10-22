@@ -100,6 +100,7 @@ class BaseManager(object):
         uri = "/%s/%s" % (self.uri_base, getid(item))
         return self._delete(uri)
 
+
     def _list(self, url, obj_class=None, body=None):
         if body:
             _resp, body = self.api.method_post(url, body=body)
@@ -219,7 +220,7 @@ class BaseManager(object):
         """
         matches = self.findall(**kwargs)
         num_matches = len(matches)
-        if num_matches == 0:
+        if not num_matches:
             msg = "No %s matching %s." % (self.resource_class.__name__, kwargs)
             raise exc.NotFound(404, msg)
         elif num_matches > 1:
@@ -241,11 +242,10 @@ class BaseManager(object):
         for obj in self.list():
             try:
                 if all(getattr(obj, attr) == value
-                                    for (attr, value) in searches):
+                        for (attr, value) in searches):
                     found.append(obj)
             except AttributeError:
                 continue
-
         return found
 
 
@@ -255,6 +255,7 @@ class BaseManager(object):
             cls._hooks_map[hook_type] = []
 
         cls._hooks_map[hook_type].append(hook_func)
+
 
     @classmethod
     def run_hooks(cls, hook_type, *args, **kwargs):
