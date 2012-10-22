@@ -65,9 +65,8 @@ class BaseClient(httplib2.Http):
 
     user_agent = "pyrax"
 
-    def __init__(self, user, password, tenant_name=None,
-            tenant_id=None, auth_url=None, region_name=None,
-            endpoint_type="publicURL", management_url=None,
+    def __init__(self, user, password, tenant_id=None, auth_url=None,
+            region_name=None, endpoint_type="publicURL", management_url=None,
             auth_token=None, service_type=None, service_name=None,
             timings=False, no_cache=False, http_log_debug=False,
             timeout=None, auth_system="rackspace"):
@@ -90,7 +89,7 @@ class BaseClient(httplib2.Http):
         self.proxy_tenant_id = None
 
         self.timings = timings
-#        self.no_cache = no_cache
+        self.no_cache = no_cache
         self.http_log_debug = http_log_debug
 
         self.times = []  # [("item", starttime, endtime), ...]
@@ -113,24 +112,29 @@ class BaseClient(httplib2.Http):
         self._configure_manager()
 
 
-    def __getattr__(self, att):
-        """
-        Generally, magic methods such as this are to be avoided, but in this
-        case it allows for pass-through to the public methods of the manager.
-        This avoids the call having to know the internals of this client; e.g.,
-        code can call:
-            pyrax.FooClient.list()
-        instead of:
-            pyrax.FooClient.manager.list()
-        """
-        if hasattr(self._manager, att):
-            return getattr(self._manager, att)
-        raise AttributeError("'%s' object has no attribute '%s'" % (self.__class__, att)) 
+    def _configure_manager(self):
+        """Must be overridden in base classes."""
+        raise NotImplementedError
+
+
+    # The next 4 methods are simple pass-through to the manager.
+    def list(self):
+        return self._manager.list()
+
+    def get(self, item):
+        return self._manager.get(item)
+
+    def create(self, *args, **kwargs):
+        return self._manager.create(*args, **kwargs)
+
+    def delete(self, item):
+        return self._manager.delete(item)
 
 
     def use_token_cache(self, use_it):
         # One day I"ll stop using negative naming.
         self.no_cache = not use_it
+
 
     def unauthenticate(self):
         """Forget all of our authentication information."""
@@ -138,14 +142,18 @@ class BaseClient(httplib2.Http):
         self.auth_token = None
         self.used_keyring = False
 
+
     def set_management_url(self, url):
         self.management_url = url
+
 
     def get_timings(self):
         return self.times
 
+
     def reset_timings(self):
         self.times = []
+
 
     def http_log_req(self, args, kwargs):
         if not self.http_log_debug:
@@ -166,10 +174,12 @@ class BaseClient(httplib2.Http):
         if "body" in kwargs:
             self._logger.debug("REQ BODY: %s\n" % (kwargs["body"]))
 
+
     def http_log_resp(self, resp, body):
         if not self.http_log_debug:
             return
         self._logger.debug("RESP:%s %s\n", resp, body)
+
 
     def request(self, *args, **kwargs):
         kwargs.setdefault("headers", kwargs.get("headers", {}))
