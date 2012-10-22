@@ -38,6 +38,9 @@ class InvalidCredentialFile(Exception):
 class InvalidUploadID(Exception):
      pass
 
+class InvalidVolumeResize(Exception):
+     pass
+
 class MissingName(Exception):
      pass
 

@@ -13,6 +13,11 @@ import tempfile
 import uuid
 
 import prettytable
+try:
+    import pudb
+except ImportError:
+    import pdb as pudb
+trace = pudb.set_trace
 
 import pyrax.exceptions as exc
 
