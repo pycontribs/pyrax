@@ -34,7 +34,7 @@ class BaseResource(object):
     :param loaded: prevent lazy-loading if set to True
     """
     HUMAN_ID = False
-    NAME_ATTR = 'name'
+    NAME_ATTR = "name"
 
     def __init__(self, manager, info, loaded=False):
         self.manager = manager
@@ -45,12 +45,13 @@ class BaseResource(object):
         # NOTE(sirp): ensure `id` is already present because if it isn't we'll
         # enter an infinite loop of __getattr__ -> get -> __init__ ->
         # __getattr__ -> ...
-        if 'id' in self.__dict__ and len(str(self.id)) == 36:
-            self.manager.write_to_completion_cache('uuid', self.id)
+        if "id" in self.__dict__ and len(str(self.id)) == 36:
+            self.manager.write_to_completion_cache("uuid", self.id)
 
         human_id = self.human_id
         if human_id:
-            self.manager.write_to_completion_cache('human_id', human_id)
+            self.manager.write_to_completion_cache("human_id", human_id)
+
 
     @property
     def human_id(self):
@@ -61,50 +62,55 @@ class BaseResource(object):
             return utils.slugify(getattr(self, self.NAME_ATTR))
         return None
 
+
     def _add_details(self, info):
-        for (k, v) in info.iteritems():
+        for (key, val) in info.iteritems():
             try:
-                setattr(self, k, v)
+                setattr(self, key, val)
             except AttributeError:
                 # In this case we already defined the attribute on the class
                 pass
 
-    def __getattr__(self, k):
-        if k not in self.__dict__:
+
+    def __getattr__(self, key):
+        if key not in self.__dict__:
             #NOTE(bcwaldon): disallow lazy-loading if already loaded once
             if not self.is_loaded():
                 self.get()
-                return self.__getattr__(k)
-
-            raise AttributeError(k)
+                return self.__getattr__(key)
+            raise AttributeError(key)
         else:
-            return self.__dict__[k]
+            return self.__dict__[key]
+
 
     def __repr__(self):
-        reprkeys = sorted(k for k in self.__dict__.keys() if k[0] != '_' and
-                                                                k != 'manager')
-        info = ", ".join("%s=%s" % (k, getattr(self, k)) for k in reprkeys)
+        reprkeys = sorted(key for key in self.__dict__.keys()
+               if (key[0] != "_") and (key != "manager"))
+        info = ", ".join("%s=%s" % (key, getattr(self, key)) for key in reprkeys)
         return "<%s %s>" % (self.__class__.__name__, info)
+
 
     def get(self):
         # set_loaded() first ... so if we have to bail, we know we tried.
         self.set_loaded(True)
-        if not hasattr(self.manager, 'get'):
+        if not hasattr(self.manager, "get"):
             return
-
         new = self.manager.get(self.id)
         if new:
             self._add_details(new._info)
 
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        if hasattr(self, 'id') and hasattr(other, 'id'):
+        if hasattr(self, "id") and hasattr(other, "id"):
             return self.id == other.id
         return self._info == other._info
 
+
     def is_loaded(self):
         return self._loaded
+
 
     def set_loaded(self, val):
         self._loaded = val
