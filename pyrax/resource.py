@@ -75,7 +75,7 @@ class BaseResource(object):
     def __getattr__(self, key):
         if key not in self.__dict__:
             #NOTE(bcwaldon): disallow lazy-loading if already loaded once
-            if not self.is_loaded():
+            if not self.loaded:
                 self.get()
                 return self.__getattr__(key)
             raise AttributeError(key)
@@ -91,8 +91,8 @@ class BaseResource(object):
 
 
     def get(self):
-        # set_loaded() first ... so if we have to bail, we know we tried.
-        self.set_loaded(True)
+        # set 'loaded' first ... so if we have to bail, we know we tried.
+        self.loaded = True
         if not hasattr(self.manager, "get"):
             return
         new = self.manager.get(self.id)
@@ -107,10 +107,23 @@ class BaseResource(object):
             return self.id == other.id
         return self._info == other._info
 
+ 
+    def reload(self):
+        """
+        Since resource objects are essentially snapshots of the entity they
+        represent at the time they are created, they do not update as the
+        entity updates. For example, the 'status' attribute can change, but
+        the instance's value for 'status' will not. This method will refresh
+        the instance with the current state of the underlying entity.
+        """
+        new_obj = self.manager.api.get(self.id)
+        self._add_details(new_obj._info)
 
-    def is_loaded(self):
+
+    def _get_loaded(self):
         return self._loaded
 
-
-    def set_loaded(self, val):
+    def _set_loaded(self, val):
         self._loaded = val
+
+    loaded = property(_get_loaded, _set_loaded)
