@@ -85,14 +85,15 @@ class BaseManager(object):
         return self._get(uri)
 
 
-    def create(self, *args, **kwargs):
+    def create(self, return_none=False, return_raw=False, *args, **kwargs):
         """
         Subclasses need to implement the _create_body() method
         to return a dict that will be used for the API request
         body.
         """
         body = self.api._create_body(*args, **kwargs)
-        return self._create("/%s" % self.uri_base, body) 
+        return self._create("/%s" % self.uri_base, body, return_none=return_none,
+                return_raw=return_raw) 
 
 
     def delete(self, item):
@@ -121,7 +122,7 @@ class BaseManager(object):
 
         with self.completion_cache('human_id', obj_class, mode="w"):
             with self.completion_cache('uuid', obj_class, mode="w"):
-                return [obj_class(self, res, loaded=True)
+                return [obj_class(self, res, loaded=False)
                         for res in data if res]
 
 
@@ -190,12 +191,14 @@ class BaseManager(object):
         return self.resource_class(self, body[self.response_key], loaded=True)
 
 
-    def _create(self, url, body, return_raw=False, **kwargs):
+    def _create(self, url, body, return_none=False, return_raw=False, **kwargs):
         self.run_hooks('modify_body_for_create', body, **kwargs)
         _resp, body = self.api.method_post(url, body=body)
+        if return_none:
+            # No response body
+            return
         if return_raw:
             return body[self.response_key]
-
         with self.completion_cache('human_id', self.resource_class, mode="a"):
             with self.completion_cache('uuid', self.resource_class, mode="a"):
                 return self.resource_class(self, body[self.response_key])
