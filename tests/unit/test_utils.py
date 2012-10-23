@@ -3,6 +3,8 @@
 
 import hashlib
 import os
+import StringIO
+import sys
 import unittest
 
 from mock import patch
@@ -10,12 +12,13 @@ from mock import MagicMock as Mock
 
 import pyrax.utils as utils
 import pyrax.exceptions as exc
+from tests.unit import fakes
 
 
 
-class CF_UtilsTest(unittest.TestCase):
+class UtilsTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(CF_UtilsTest, self).__init__(*args, **kwargs)
+        super(UtilsTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
         pass
@@ -103,6 +106,40 @@ class CF_UtilsTest(unittest.TestCase):
             ignore = ["*1", "*3", "*5", "*7", "*9"]
             fsize = utils.folder_size(tmpdir, ignore=ignore)
         self.assertEqual(fsize, 500)
+
+    def test_env(self):
+        args = ("foo", "bar")
+        ret = utils.env(*args)
+        self.assertFalse(ret)
+        os.environ["bar"] = "test"
+        ret = utils.env(*args)
+        self.assertEqual(ret, "test")
+
+    def test_unauthenticated(self):
+        def dummy(): pass
+        utils.unauthenticated(dummy)
+        self.assertTrue(hasattr(dummy, "unauthenticated"))
+
+    def test_isunauthenticated(self):
+        def dummy(): pass
+        self.assertFalse(utils.isunauthenticated(dummy))
+        utils.unauthenticated(dummy)
+        self.assertTrue(utils.isunauthenticated(dummy))
+
+    def test_safe_issubclass_good(self):
+        ret = utils.safe_issubclass(fakes.FakeIdentity, fakes.Identity)
+        self.assertTrue(ret)
+
+    def test_safe_issubclass_bad(self):
+        fake = fakes.FakeEntity()
+        ret = utils.safe_issubclass(fake, None)
+        self.assertFalse(ret)
+
+    def test_slugify(self):
+        test = "SAMPLE test_with-hyphen"
+        expected = u"sample-test_with-hyphen"
+        ret = utils.slugify(test)
+        self.assertEqual(ret, expected)
 
 
 if __name__ == "__main__":
