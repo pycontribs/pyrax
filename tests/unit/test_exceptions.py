@@ -7,7 +7,6 @@ from mock import MagicMock as Mock
 
 import pyrax.utils as utils
 import pyrax.exceptions as exc
-from pyrax import manager
 
 from tests.unit import fakes
 
