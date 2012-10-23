@@ -30,48 +30,23 @@ class ServiceCatalog(object):
         return self.catalog["access"]["token"]["id"]
 
     def url_for(self, attr=None, filter_value=None,
-                    service_type=None, endpoint_type="publicURL",
-                    service_name=None, volume_service_name=None):
-        """Fetch the public URL from the Compute service for
+            service_type=None, endpoint_type="publicURL",
+            service_name=None, volume_service_name=None):
+        """Fetch the public URL from the given service for
         a particular endpoint attribute. If none given, return
         the first. See tests for sample service catalog."""
         matching_endpoints = []
-        if "endpoints" in self.catalog:
-            # We have a bastardized service catalog. Treat it special. :/
-            for endpoint in self.catalog["endpoints"]:
-                if not filter_value or endpoint[attr] == filter_value:
-                    # Ignore 1.0 compute endpoints
-                    if ((endpoint.get("type") == "compute") and
-                            (endpoint.get("versionId") in (None, "1.1", "2"))):
-                        matching_endpoints.append(endpoint)
-            if not matching_endpoints:
-                raise exc.EndpointNotFound()
-
         # We don't always get a service catalog back ...
         if not "serviceCatalog" in self.catalog["access"]:
             return None
 
         # Full catalog ...
         catalog = self.catalog["access"]["serviceCatalog"]
-
         for service in catalog:
             if service.get("type") != service_type:
                 continue
-
-            if (service_name and service_type == "compute" and
-                    service.get("name") != service_name):
-                continue
-
-            if (volume_service_name and service_type == "volume" and
-                    service.get("name") != volume_service_name):
-                continue
-
             endpoints = service["endpoints"]
             for endpoint in endpoints:
-                # Ignore 1.0 compute endpoints
-                if ((service.get("type") == "compute") and
-                        (endpoint.get("versionId", "2") not in ("1.1", "2"))):
-                    continue
                 if not filter_value or endpoint.get(attr) == filter_value:
                     endpoint["serviceName"] = service.get("name")
                     matching_endpoints.append(endpoint)
@@ -79,7 +54,6 @@ class ServiceCatalog(object):
         if not matching_endpoints:
             raise exc.EndpointNotFound()
         elif len(matching_endpoints) > 1:
-            raise exc.AmbiguousEndpoints(
-                    endpoints=matching_endpoints)
+            raise exc.AmbiguousEndpoints(endpoints=matching_endpoints)
         else:
             return matching_endpoints[0][endpoint_type]
