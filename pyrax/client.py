@@ -33,12 +33,12 @@ try:
 except ImportError:
     import simplejson as json
 
-has_keyring = False
 try:
     import keyring
     has_keyring = True
 except ImportError:
-    pass
+    keyring = None
+    has_keyring = False
 
 # Python 2.5 compat fix
 if not hasattr(urlparse, "parse_qsl"):
@@ -310,8 +310,7 @@ class BaseClient(httplib2.Http):
     def authenticate(self):
         if has_keyring:
             keys = [self.auth_url, self.user, self.region_name,
-                    self.endpoint_type, self.service_type, self.service_name,
-                    self.volume_service_name]
+                    self.endpoint_type, self.service_type, self.service_name]
             for index, key in enumerate(keys):
                 if key is None:
                     keys[index] = "?"
@@ -322,8 +321,7 @@ class BaseClient(httplib2.Http):
                 # If we come through again, it's because the old token
                 # was rejected.
                 try:
-                    block = keyring.get_password("novaclient_auth",
-                                                 keyring_key)
+                    block = keyring.get_password("novaclient_auth", keyring_key)
                     if block:
                         self.used_keyring = True
                         self.auth_token, self.management_url = block.split("|")
@@ -448,9 +446,6 @@ class BaseClient(httplib2.Http):
             resp, body = self._time_request(token_url, "POST", body=body)
         finally:
             self.follow_all_redirects = tmp_follow_all_redirects
-
-        import pudb
-        pudb.set_trace()
         return self._extract_service_catalog(url, resp, body)
 
     @property

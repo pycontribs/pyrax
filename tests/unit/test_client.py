@@ -184,7 +184,7 @@ class ClientTest(unittest.TestCase):
         clt._logger.debug.assert_called_once_with("RESP:%s %s\n", "resp", "body")
         clt._logger.debug = sav
 
-    def test_request(self):
+    def test_request_ok(self):
         clt = self.client
         clt.http_log_debug = False
         fakeresp = fakes.FakeResponse()
@@ -193,21 +193,434 @@ class ClientTest(unittest.TestCase):
         fakebody = json.dumps(body_content)
         sav = httplib2.Http.request
         httplib2.Http.request = Mock(return_value=(fakeresp, fakebody))
-        resp, body = clt.request()
+        resp, body = clt.request(body="text")
         self.assertTrue(isinstance(resp, fakes.FakeResponse))
         self.assertEqual(resp.status, 200)
         self.assertEqual(body, body_content)
+        httplib2.Http.request = sav
+
+    def test_request_400(self):
+        clt = self.client
+        clt.http_log_debug = False
+        fakeresp = fakes.FakeResponse()
         fakeresp.status = 400
+        body_content = {"one": 2, "three": 4}
+        fakebody = json.dumps(body_content)
+        sav = httplib2.Http.request
+        httplib2.Http.request = Mock(return_value=(fakeresp, fakebody))
         savexc = exc.from_response
         exc.from_response = Mock(side_effect=fakes.FakeException)
         self.assertRaises(fakes.FakeException, clt.request)
         exc.from_response = savexc
         httplib2.Http.request = sav
 
+    def test_request_no_json_resp(self):
+        clt = self.client
+        clt.http_log_debug = False
+        fakeresp = fakes.FakeResponse()
+        fakeresp.status = 400
+        body_content = {"one": 2, "three": 4}
+        fakebody = json.dumps(body_content)
+        sav = httplib2.Http.request
+        # Test non-json response
+        fakebody = "{{{{{{"
+        httplib2.Http.request = Mock(return_value=(fakeresp, fakebody))
+        savexc = exc.from_response
+        exc.from_response = Mock(side_effect=fakes.FakeException)
+        self.assertRaises(fakes.FakeException, clt.request)
+        exc.from_response = savexc
+        httplib2.Http.request = sav
 
+    def test_request_empty_body(self):
+        clt = self.client
+        clt.http_log_debug = False
+        fakeresp = fakes.FakeResponse()
+        fakeresp.status = 400
+        body_content = {"one": 2, "three": 4}
+        fakebody = json.dumps(body_content)
+        sav = httplib2.Http.request
+        fakebody = ""
+        httplib2.Http.request = Mock(return_value=(fakeresp, fakebody))
+        savexc = exc.from_response
+        exc.from_response = Mock(side_effect=fakes.FakeException)
+        self.assertRaises(fakes.FakeException, clt.request)
+        exc.from_response.assert_called_once_with(fakeresp, None)
+        exc.from_response = savexc
+        httplib2.Http.request = sav
 
+    def test_time_request(self):
+        clt = self.client
+        sav = clt.request
+        clt.request = Mock()
+        url = "http://example.com"
+        method = "PUT"
+        clt.request(url, method)
+        clt.request.assert_called_once_with(url, method)
+        clt.request = sav
 
+    def test_cs_request_not_authed(self):
+        clt = self.client
+        sav_auth = clt.authenticate
+        clt.authenticate = Mock()
+        sav_req = clt.request
+        clt.request = Mock(return_value=(1,1))
+        url = "http://example.com"
+        method = "PUT"
+        clt.unauthenticate()
+        clt.management_url = ""
+        clt._cs_request(url, method)
+        clt.authenticate.assert_called_once_with()
+        clt.request = sav_req
+        clt.authenticate = sav_auth
 
+    def test_cs_request_auth_failed(self):
+        clt = self.client
+        sav_auth = clt.authenticate
+        clt.authenticate = Mock()
+        sav_req = clt.request
+        clt.request = Mock(return_value=(1,1))
+        url = "http://example.com"
+        method = "PUT"
+        clt.request = Mock(side_effect=exc.Unauthorized(""))
+        clt.management_url = clt.auth_token = clt.tenant_id = "test"
+        self.assertRaises(exc.Unauthorized, clt._cs_request, url, method)
+        clt.request = sav_req
+        clt.authenticate = sav_auth
+
+    def test_method_get(self):
+        clt = self.client
+        sav = clt._cs_request
+        clt._cs_request = Mock()
+        url = "http://example.com"
+        clt.method_get(url)
+        clt._cs_request.assert_called_once_with(url, "GET")
+        clt._cs_request = sav
+
+    def test_method_post(self):
+        clt = self.client
+        sav = clt._cs_request
+        clt._cs_request = Mock()
+        url = "http://example.com"
+        clt.method_post(url)
+        clt._cs_request.assert_called_once_with(url, "POST")
+        clt._cs_request = sav
+
+    def test_method_put(self):
+        clt = self.client
+        sav = clt._cs_request
+        clt._cs_request = Mock()
+        url = "http://example.com"
+        clt.method_put(url)
+        clt._cs_request.assert_called_once_with(url, "PUT")
+        clt._cs_request = sav
+
+    def test_method_delete(self):
+        clt = self.client
+        sav = clt._cs_request
+        clt._cs_request = Mock()
+        url = "http://example.com"
+        clt.method_delete(url)
+        clt._cs_request.assert_called_once_with(url, "DELETE")
+        clt._cs_request = sav
+
+    @patch('pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
+    def test_extract_service_catalog_ok(self):
+        clt = self.client
+        url = "http://example.com"
+        resp = fakes.FakeResponse()
+        body = ""
+        clt._extract_service_catalog(url, resp, body)
+        self.assertEqual(clt.management_url, "http://example.com")
+
+    @patch('pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
+    def test_extract_service_catalog_ambiguous_ep(self):
+        clt = self.client
+        url = "http://example.com"
+        resp = fakes.FakeResponse()
+        body = ""
+        clt.region_name = "ALL"
+        self.assertRaises(exc.AmbiguousEndpoints, clt._extract_service_catalog, url, resp, body)
+
+    @patch('pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
+    def test_extract_service_catalog_key_error(self):
+        clt = self.client
+        url = "http://example.com"
+        resp = fakes.FakeResponse()
+        body = ""
+        clt.region_name = "KEY"
+        self.assertRaises(exc.AuthorizationFailure, clt._extract_service_catalog, url, resp, body)
+
+    @patch('pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
+    def test_extract_service_catalog_ep_not_found(self):
+        clt = self.client
+        url = "http://example.com"
+        resp = fakes.FakeResponse()
+        body = ""
+        clt.region_name = "EP"
+        self.assertRaises(exc.EndpointNotFound, clt._extract_service_catalog, url, resp, body)
+
+    def test_extract_service_catalog_proxy_resp(self):
+        clt = self.client
+        url = "http://example.com"
+        resp = fakes.FakeResponse()
+        resp.status = 305
+        resp["location"] = "TEST"
+        body = ""
+        ret = clt._extract_service_catalog(url, resp, body)
+        self.assertEqual(ret, resp["location"])
+
+    def test_extract_service_catalog_other_status(self):
+        clt = self.client
+        url = "http://example.com"
+        resp = fakes.FakeResponse()
+        resp.status = 666
+        body = ""
+        savexc = exc.from_response
+        exc.from_response = Mock(side_effect=fakes.FakeException)
+        self.assertRaises(fakes.FakeException, clt._extract_service_catalog, url, resp, body)
+        exc.from_response.assert_called_once_with(resp, "")
+        exc.from_response = savexc
+
+    def test_fetch_endpoints_from_auth(self):
+        clt = self.client
+        sav_tr = clt._time_request
+        clt._time_request = Mock(return_value=("resp", "body"))
+        sav_ex = clt._extract_service_catalog
+        clt._extract_service_catalog = Mock(return_value="TEST")
+        url = "http://example.com"
+        ret = clt._fetch_endpoints_from_auth(url)
+        self.assertEqual(ret, "TEST")
+
+    def test_authenticate_with_keyring(self):
+        clt = self.client
+        sav_has = client.has_keyring
+        client.has_keyring = True
+        sav_kr = client.keyring
+        client.keyring = fakes.FakeKeyring()
+        clt.no_cache = False
+        clt.used_keyring = False
+        clt.authenticate()
+        self.assertEqual(clt.auth_token, "FAKE_TOKEN")
+        self.assertEqual(clt.management_url, "FAKE_URL")
+        client.has_keyring = sav_has
+        client.keyring = sav_kr
+
+    def test_authenticate_v2(self):
+        clt = self.client
+        sav_has = client.has_keyring
+        client.has_keyring = False
+        clt.auth_url = "http://example.com"
+        clt.version = "v2.0"
+        sav_v2 = clt._v2_auth
+        clt._v2_auth = Mock(return_value=None)
+        sav_fetch = clt._fetch_endpoints_from_auth
+        clt._fetch_endpoints_from_auth = Mock()
+        clt.auth_system = None
+        clt.proxy_token = "TOKEN"
+        clt.authenticate()
+        self.assertEqual(clt.auth_token, "TOKEN")
+        clt._fetch_endpoints_from_auth = sav_fetch
+        clt._v2_auth = sav_v2
+        client.has_keyring = sav_has
+
+    def test_authenticate_plugin(self):
+        clt = self.client
+        sav_has = client.has_keyring
+        client.has_keyring = False
+        clt.auth_url = "http://example.com"
+        clt.version = "v2.0"
+        sav_plug = clt._plugin_auth
+        clt._plugin_auth = Mock(return_value=None)
+        sav_fetch = clt._fetch_endpoints_from_auth
+        clt._fetch_endpoints_from_auth = Mock()
+        clt.auth_system = "test"
+        clt.authenticate()
+        self.assertEqual(clt.auth_token, None)
+        clt._fetch_endpoints_from_auth = sav_fetch
+        clt._plugin_auth = sav_plug
+        client.has_keyring = sav_has
+
+    def test_authenticate_v1(self):
+        clt = self.client
+        sav_has = client.has_keyring
+        client.has_keyring = False
+        clt.auth_url = "http://example.com"
+        clt.version = "v1.1"
+        sav_v1 = clt._v1_auth
+        clt._v1_auth = Mock(return_value=None)
+        sav_fetch = clt._fetch_endpoints_from_auth
+        clt._fetch_endpoints_from_auth = Mock()
+        clt.authenticate()
+        self.assertEqual(clt.auth_token, None)
+        clt._fetch_endpoints_from_auth = sav_fetch
+        clt._v1_auth = sav_v1
+        client.has_keyring = sav_has
+
+    def test_authenticate_v1_fail(self):
+        clt = self.client
+        sav_has = client.has_keyring
+        client.has_keyring = False
+        clt.auth_url = "http://example.com"
+        clt.version = "v1.1"
+        sav_v1 = clt._v1_auth
+        sav_v2 = clt._v2_auth
+        clt._v1_auth = Mock(side_effect=exc.AuthorizationFailure)
+        clt._v2_auth = Mock()
+        sav_fetch = clt._fetch_endpoints_from_auth
+        clt._fetch_endpoints_from_auth = Mock()
+        clt.authenticate()
+        self.assertEqual(clt.auth_token, None)
+        clt._fetch_endpoints_from_auth = sav_fetch
+        clt._v1_auth = sav_v1
+        clt._v2_auth = sav_v2
+        client.has_keyring = sav_has
+
+    def test_authenticate_store_keyring(self):
+        clt = self.client
+        sav_has = client.has_keyring
+        client.has_keyring = True
+        sav_kr = client.keyring
+        client.keyring = fakes.FakeKeyring()
+        client.keyring.get_password = Mock(side_effect=Exception)
+        sav_no = clt.no_cache
+        clt.no_cache = False
+        clt.auth_url = "http://example.com"
+        clt.version = "v1.1"
+        sav_v1 = clt._v1_auth
+        clt._v1_auth = Mock(return_value=None)
+        clt.authenticate()
+        self.assertTrue(client.keyring.password_set)
+        clt._v1_auth = sav_v1
+        clt.no_cache = sav_no
+        client.has_keyring = sav_has
+        client.keyring = sav_kr
+
+    def test_authenticate_store_keyring_exc(self):
+        clt = self.client
+        sav_has = client.has_keyring
+        client.has_keyring = True
+        sav_kr = client.keyring
+        client.keyring = fakes.FakeKeyring()
+        sav_spw = client.keyring.set_password
+        client.keyring.set_password = Mock(side_effect=Exception)
+        sav_no = clt.no_cache
+        clt.no_cache = False
+        clt.auth_url = "http://example.com"
+        clt.version = "v1.1"
+        sav_v1 = clt._v1_auth
+        clt._v1_auth = Mock(return_value=None)
+        clt.authenticate()
+        self.assertFalse(client.keyring.password_set)
+        clt._v1_auth = sav_v1
+        clt.no_cache = sav_no
+        client.keyring.set_password = sav_spw
+        client.has_keyring = sav_has
+        client.keyring = sav_kr
+
+    def test_v1_auth_with_token(self):
+        clt = self.client
+        clt.proxy_token = "TOKEN"
+        self.assertRaises(exc.NoTokenLookupException, clt._v1_auth, "")
+
+    def test_v1_auth_ok(self):
+        clt = self.client
+        clt.proxy_token = None
+        sav_tr = clt._time_request
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status = 200
+        fake_resp["x-server-management-url"] = "http://example.com"
+        fake_resp["x-auth-token"] = "TOKEN"
+        fake_body = "body"
+        fake_url = "http://identity.example.com"
+        clt._time_request = Mock(return_value=(fake_resp, fake_body))
+        clt._v1_auth(fake_url)
+        self.assertEqual(clt.auth_url, fake_url)
+        clt._time_request = sav_tr
+
+    def test_v1_auth_fail(self):
+        clt = self.client
+        clt.proxy_token = None
+        sav_tr = clt._time_request
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status = 200
+        fake_body = "body"
+        fake_url = "http://identity.example.com"
+        clt._time_request = Mock(return_value=(fake_resp, fake_body))
+        self.assertRaises(exc.AuthorizationFailure, clt._v1_auth, fake_url)
+        clt._time_request = sav_tr
+
+    def test_v1_auth_305(self):
+        clt = self.client
+        clt.proxy_token = None
+        sav_tr = clt._time_request
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status = 305
+        fake_resp["location"] = "TEST"
+        fake_body = "body"
+        fake_url = "http://identity.example.com"
+        clt._time_request = Mock(return_value=(fake_resp, fake_body))
+        ret = clt._v1_auth(fake_url)
+        self.assertEqual(ret, "TEST")
+        clt._time_request = sav_tr
+
+    def test_v1_auth_other_status(self):
+        clt = self.client
+        clt.proxy_token = None
+        sav_tr = clt._time_request
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status = 666
+        fake_body = "body"
+        fake_url = "http://identity.example.com"
+        clt._time_request = Mock(return_value=(fake_resp, fake_body))
+        sav_fr = exc.from_response
+        exc.from_response = Mock(side_effect=exc.Unauthorized(""))
+        self.assertRaises(exc.Unauthorized, clt._v1_auth, fake_url)
+        exc.from_response = sav_fr
+        clt._time_request = sav_tr
+
+    def test_plugin_auth(self):
+        clt = self.client
+        save_priep = pkg_resources.iter_entry_points
+        pkg_resources.iter_entry_points = Mock()
+        pkg_resources.iter_entry_points.return_value = fakes.fakeEntryPoints
+        sav_au = clt.auth_system
+        clt.auth_system = "b"
+        ret = clt._plugin_auth("http://example.com")
+        self.assertEqual(ret, "b")
+        pkg_resources.iter_entry_points = save_priep
+
+    def test_plugin_auth_not_found(self):
+        clt = self.client
+        save_priep = pkg_resources.iter_entry_points
+        pkg_resources.iter_entry_points = Mock()
+        pkg_resources.iter_entry_points.return_value = fakes.fakeEntryPoints
+        sav_au = clt.auth_system
+        clt.auth_system = "b"
+        self.assertRaises(exc.AuthSystemNotFound, client.get_auth_system_url, "z")
+        pkg_resources.iter_entry_points = save_priep
+
+    def test_v2_auth(self):
+        clt = self.client
+        clt.tenant_id = "FAKE_TENANT"
+        sav_au = clt._authenticate
+        clt._authenticate = Mock()
+        ret = clt._v2_auth("http://example.com")
+        self.assertIsNone(ret)
+        clt._authenticate = sav_au
+
+    def test_authenticate(self):
+        clt = self.client
+        sav_tr = clt._time_request
+        clt._time_request = Mock(return_value=("resp", "body"))
+        sav_esc = clt._extract_service_catalog
+        clt._extract_service_catalog = Mock(return_value=None)
+        ret = clt._authenticate("url", "body")
+        self.assertIsNone(ret)
+
+    def test_project_id(self):
+        clt = self.client
+        clt.tenant_id = "FAKE"
+        self.assertEqual(clt.projectid, "FAKE")
 
 
 if __name__ == "__main__":
