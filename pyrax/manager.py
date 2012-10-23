@@ -112,78 +112,17 @@ class BaseManager(object):
             obj_class = self.resource_class
 
         data = body[self.plural_response_key]
-        # NOTE(ja): keystone returns values as list as {'values': [ ... ]}
+        # NOTE(ja): keystone returns values as list as {"values": [ ... ]}
         #           unlike other services which just return the list...
         if isinstance(data, dict):
             try:
-                data = data['values']
+                data = data["values"]
             except KeyError:
                 pass
-
-        with self.completion_cache('human_id', obj_class, mode="w"):
-            with self.completion_cache('uuid', obj_class, mode="w"):
-                return [obj_class(self, res, loaded=False)
-                        for res in data if res]
+        return [obj_class(self, res, loaded=False)
+                for res in data if res]
 
 
-    @contextlib.contextmanager
-    def completion_cache(self, cache_type, obj_class, mode):
-        """
-        The completion cache store items that can be used for bash
-        autocompletion, like UUIDs or human-friendly IDs.
-
-        A resource listing will clear and repopulate the cache.
-
-        A resource create will append to the cache.
-
-        Delete is not handled because listings are assumed to be performed
-        often enough to keep the cache reasonably up-to-date.
-        """
-        base_dir = utils.env('NOVACLIENT_UUID_CACHE_DIR',
-                             default="~/.novaclient")
-
-        # NOTE(sirp): Keep separate UUID caches for each username + endpoint
-        # pair
-        username = utils.env('OS_USERNAME', 'NOVA_USERNAME')
-        url = utils.env('OS_URL', 'NOVA_URL')
-        uniqifier = hashlib.md5(username + url).hexdigest()
-
-        cache_dir = os.path.expanduser(os.path.join(base_dir, uniqifier))
-
-        try:
-            os.makedirs(cache_dir, 0755)
-        except OSError:
-            # NOTE(kiall): This is typicaly either permission denied while
-            #              attempting to create the directory, or the directory
-            #              already exists. Either way, don't fail.
-            pass
-
-        resource = obj_class.__name__.lower()
-        filename = "%s-%s-cache" % (resource, cache_type.replace('_', '-'))
-        path = os.path.join(cache_dir, filename)
-
-        cache_attr = "_%s_cache" % cache_type
-
-        try:
-            setattr(self, cache_attr, open(path, mode))
-        except IOError:
-            # NOTE(kiall): This is typicaly a permission denied while
-            #              attempting to write the cache file.
-            pass
-
-        try:
-            yield
-        finally:
-            cache = getattr(self, cache_attr, None)
-            if cache:
-                cache.close()
-                delattr(self, cache_attr)
-
-
-    def write_to_completion_cache(self, cache_type, val):
-        cache = getattr(self, "_%s_cache" % cache_type, None)
-        if cache:
-            cache.write("%s\n" % val)
 
 
     def _get(self, url):
@@ -192,16 +131,14 @@ class BaseManager(object):
 
 
     def _create(self, url, body, return_none=False, return_raw=False, **kwargs):
-        self.run_hooks('modify_body_for_create', body, **kwargs)
+        self.run_hooks("modify_body_for_create", body, **kwargs)
         _resp, body = self.api.method_post(url, body=body)
         if return_none:
             # No response body
             return
         if return_raw:
             return body[self.response_key]
-        with self.completion_cache('human_id', self.resource_class, mode="a"):
-            with self.completion_cache('uuid', self.resource_class, mode="a"):
-                return self.resource_class(self, body[self.response_key])
+        return self.resource_class(self, body[self.response_key])
 
 
     def _delete(self, url):
@@ -209,7 +146,7 @@ class BaseManager(object):
 
 
     def _update(self, url, body, **kwargs):
-        self.run_hooks('modify_body_for_update', body, **kwargs)
+        self.run_hooks("modify_body_for_update", body, **kwargs)
         _resp, body = self.api.method_put(url, body=body)
         return body
 
@@ -224,10 +161,11 @@ class BaseManager(object):
         matches = self.findall(**kwargs)
         num_matches = len(matches)
         if not num_matches:
-            msg = "No %s matching %s." % (self.resource_class.__name__, kwargs)
+            msg = "No %s matching: %s." % (self.resource_class.__name__, kwargs)
             raise exc.NotFound(404, msg)
         elif num_matches > 1:
-            raise exc.NoUniqueMatch
+            msg = "More than one %s matching: %s." % (self.resource_class.__name__, kwargs)
+            raise exc.NoUniqueMatch(400, msg)
         else:
             return matches[0]
 
