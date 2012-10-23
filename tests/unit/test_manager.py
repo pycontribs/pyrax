@@ -1,18 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import datetime
-import httplib2
-import json
-import os
-import pkg_resources
 import unittest
-import urllib2
 
-from mock import patch
 from mock import MagicMock as Mock
 
-import pyrax.utils as utils
 import pyrax.exceptions as exc
 from pyrax import manager
 
@@ -252,11 +244,6 @@ class ManagerTest(unittest.TestCase):
         mgr.add_hook("test", tfunc)
         mgr.run_hooks("test", "dummy_arg")
         tfunc.assert_called_once_with("dummy_arg")
-
-
-
-
-
 
 
 
