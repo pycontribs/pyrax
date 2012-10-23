@@ -42,16 +42,6 @@ class BaseResource(object):
         self._add_details(info)
         self._loaded = loaded
 
-        # NOTE(sirp): ensure `id` is already present because if it isn't we'll
-        # enter an infinite loop of __getattr__ -> get -> __init__ ->
-        # __getattr__ -> ...
-        if "id" in self.__dict__ and len(str(self.id)) == 36:
-            self.manager.write_to_completion_cache("uuid", self.id)
-
-        human_id = self.human_id
-        if human_id:
-            self.manager.write_to_completion_cache("human_id", human_id)
-
 
     @property
     def human_id(self):
@@ -65,22 +55,17 @@ class BaseResource(object):
 
     def _add_details(self, info):
         for (key, val) in info.iteritems():
-            try:
-                setattr(self, key, val)
-            except AttributeError:
-                # In this case we already defined the attribute on the class
-                pass
+            setattr(self, key, val)
 
 
     def __getattr__(self, key):
-        if key not in self.__dict__:
-            #NOTE(bcwaldon): disallow lazy-loading if already loaded once
-            if not self.loaded:
-                self.get()
-                return self.__getattr__(key)
-            raise AttributeError(key)
-        else:
+        if not self.loaded:
+            self.get()
+        # Attribute should be set; if not, it's not valid
+        try:
             return self.__dict__[key]
+        except KeyError:
+            raise AttributeError("'%s' object has no attribute '%s'." % (self.__class__, key))
 
 
     def __repr__(self):
@@ -116,7 +101,7 @@ class BaseResource(object):
         the instance's value for 'status' will not. This method will refresh
         the instance with the current state of the underlying entity.
         """
-        new_obj = self.manager.api.get(self.id)
+        new_obj = self.manager.get(self.id)
         self._add_details(new_obj._info)
 
 
