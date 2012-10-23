@@ -125,6 +125,14 @@ class NotFound(ClientException):
     message = "Not found"
 
 
+class NoUniqueMatch(ClientException):
+    """
+    HTTP 400 - Bad Request
+    """
+    http_status = 400
+    message = "Not Unique"
+
+
 class OverLimit(ClientException):
     """
     HTTP 413 - Over limit: you're over the API limits for this time period.

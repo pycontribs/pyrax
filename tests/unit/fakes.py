@@ -152,6 +152,10 @@ class FakeKeyring(object):
         self.password_set = True
 
 
+class FakeEntity(object):
+    def __init__(self, *args, **kwargs):
+        pass
+
 class FakeIdentity(Identity):
     """Class that returns canned authentication responses."""
     def __init__(self, *args, **kwargs):
