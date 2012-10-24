@@ -5,11 +5,22 @@ import fnmatch
 import hashlib
 import os
 import random
+import re
 import shutil
 import string
+import sys
 import tempfile
+import uuid
+
+import prettytable
+try:
+    import pudb
+except ImportError:
+    import pdb as pudb
+trace = pudb.set_trace
 
 import pyrax.exceptions as exc
+
 
 
 class SelfDeletingTempfile(object):
@@ -104,3 +115,72 @@ def folder_size(pth, ignore=None):
     total = [0]
     os.path.walk(pth, get_size, total)
     return total[0]
+
+
+def env(*args, **kwargs):
+    """
+    returns the first environment variable set
+    if none are non-empty, defaults to "" or keyword arg default
+    """
+    for arg in args:
+        value = os.environ.get(arg, None)
+        if value:
+            return value
+    return kwargs.get("default", "")
+
+
+def unauthenticated(fnc):
+    """
+    Adds 'unauthenticated' attribute to decorated function.
+    Usage:
+        @unauthenticated
+        def mymethod(fnc):
+            ...
+    """
+    fnc.unauthenticated = True
+    return fnc
+
+
+def isunauthenticated(fnc):
+    """
+    Checks to see if the function is marked as not requiring authentication
+    with the @unauthenticated decorator. Returns True if decorator is
+    set to True, False otherwise.
+    """
+    return getattr(fnc, "unauthenticated", False)
+
+
+def safe_issubclass(*args):
+    """Like issubclass, but will just return False if not a class."""
+    try:
+        if issubclass(*args):
+            return True
+    except TypeError:
+        pass
+    return False
+
+
+def import_class(import_str):
+    """Returns a class from a string including module and class."""
+    mod_str, _sep, class_str = import_str.rpartition(".")
+    __import__(mod_str)
+    return getattr(sys.modules[mod_str], class_str)
+
+
+# http://code.activestate.com/recipes/
+#   577257-slugify-make-a-string-usable-in-a-url-or-filename/
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+
+    From Django's "django/template/defaultfilters.py".
+    """
+    import unicodedata
+    _slugify_strip_re = re.compile(r"[^\w\s-]")
+    _slugify_hyphenate_re = re.compile(r"[-\s]+")
+    if not isinstance(value, unicode):
+        value = unicode(value)
+    value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore")
+    value = unicode(_slugify_strip_re.sub("", value).strip().lower())
+    return _slugify_hyphenate_re.sub("-", value)

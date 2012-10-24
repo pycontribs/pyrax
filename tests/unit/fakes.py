@@ -10,7 +10,7 @@ import pyrax.exceptions as exc
 from pyrax.rax_identity import Identity
 
 
-class FakeResponse(object):
+class FakeResponse(dict):
     headers = {}
     body = ""
     status = 200
@@ -21,6 +21,9 @@ class FakeResponse(object):
 
     def read(self):
         return "Line1\nLine2"
+
+    def get(self, arg):
+        pass
 
 
 class FakeClient(object):
@@ -97,6 +100,62 @@ class FakeFolderUploader(FolderUploader):
         pass
 
 
+class FakeEntryPoint(object):
+    def __init__(self, name):
+        self.name = name
+
+    def load(self):
+        def dummy(*args, **kwargs):
+            return self.name
+        return dummy
+
+fakeEntryPoints = [FakeEntryPoint("a"), FakeEntryPoint("b"), FakeEntryPoint("c")]
+
+
+class FakeManager(object):
+    def list(self):
+        pass
+    def get(self, item):
+        pass
+    def delete(self, item):
+        pass
+    def create(self, *args, **kwargs):
+        pass
+
+
+class FakeException(BaseException):
+    pass
+
+
+class FakeServiceCatalog(object):
+    def __init__(self, *args, **kwargs):
+        pass
+    def get_token(self):
+        return "fake_token"
+    def url_for(self, attr=None, filter_value=None,
+            service_type=None, endpoint_type="publicURL",
+            service_name=None, volume_service_name=None):
+        if filter_value == "ALL":
+            raise exc.AmbiguousEndpoints
+        elif filter_value == "KEY":
+            raise KeyError
+        elif filter_value == "EP":
+            raise exc.EndpointNotFound
+        return "http://example.com"
+
+
+class FakeKeyring(object):
+    password_set = False
+    def get_password(self, *args, **kwargs):
+        return "FAKE_TOKEN|FAKE_URL"
+    def set_password(self, *args, **kwargs):
+        self.password_set = True
+
+
+class FakeEntity(object):
+    def __init__(self, *args, **kwargs):
+        pass
+
 class FakeIdentity(Identity):
     """Class that returns canned authentication responses."""
     def __init__(self, *args, **kwargs):
@@ -116,7 +175,6 @@ class FakeIdentity(Identity):
         return self.token
     def fake_response(self):
         return fake_identity_response
-
 
 
 class FakeIdentityResponse(FakeResponse):
