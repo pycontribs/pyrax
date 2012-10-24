@@ -49,7 +49,7 @@ Once you have authenticated, you now have access to Cloud Servers, Cloud Files, 
 
 	pyrax.cloudservers
 	pyrax.cloudfiles
-	pyrax.cloud_lb
+	pyrax.cloud_loadbalancers
 
 You don't have to log into each service separately; pyrax handles that for you.
 
