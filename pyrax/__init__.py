@@ -19,6 +19,11 @@ from keystoneclient.v2_0 import client as _ks_client
 from novaclient.v1_1 import client as _cs_client
 
 from cloud_databases import CloudDatabaseClient
+from cloud_databases import CloudDatabaseDatabase
+from cloud_databases import CloudDatabaseFlavor
+from cloud_databases import CloudDatabaseInstance
+from cloud_databases import CloudDatabaseUser
+
 
 
 # These require Libcloud

@@ -123,8 +123,6 @@ class BaseManager(object):
                 for res in data if res]
 
 
-
-
     def _get(self, url):
         _resp, body = self.api.method_get(url)
         return self.resource_class(self, body[self.response_key], loaded=True)

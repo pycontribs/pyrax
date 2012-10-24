@@ -6,8 +6,11 @@ import json
 from pyrax.cf_wrapper.client import FolderUploader
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
+from pyrax.cloud_databases import CloudDatabaseClient
+from pyrax.cloud_databases import CloudDatabaseInstance
 import pyrax.exceptions as exc
 from pyrax.rax_identity import Identity
+import pyrax.utils as utils
 
 
 class FakeResponse(dict):
@@ -113,6 +116,7 @@ fakeEntryPoints = [FakeEntryPoint("a"), FakeEntryPoint("b"), FakeEntryPoint("c")
 
 
 class FakeManager(object):
+    api = FakeClient()
     def list(self):
         pass
     def get(self, item):
@@ -155,6 +159,24 @@ class FakeKeyring(object):
 class FakeEntity(object):
     def __init__(self, *args, **kwargs):
         pass
+    def get(self, *args, **kwargs):
+        pass
+
+
+class FakeDatabaseInstance(CloudDatabaseInstance):
+    def __init__(self, *args, **kwargs):
+        self.id = utils.random_name()
+        self.volume = FakeEntity()
+        self.manager = FakeManager()
+        self._database_manager = FakeManager()
+        self._user_manager = FakeManager()
+
+
+class FakeDatabaseClient(CloudDatabaseClient):
+    def __init__(self, *args, **kwargs):
+        super(FakeDatabaseClient, self).__init__("fakeuser",
+                "fakepassword", *args, **kwargs)
+
 
 class FakeIdentity(Identity):
     """Class that returns canned authentication responses."""

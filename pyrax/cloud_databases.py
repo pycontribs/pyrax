@@ -26,7 +26,7 @@ import pyrax.utils as utils
 
 def assure_instance(fnc):
     def _wrapped(self, instance, *args, **kwargs):
-        if not isinstance(instance, CloudDatabaseUser):
+        if not isinstance(instance, CloudDatabaseInstance):
             # Must be the ID
             instance = self._manager.get(instance)
         return fnc(self, instance, *args, **kwargs)
@@ -141,7 +141,7 @@ class CloudDatabaseInstance(BaseResource):
         """Change the size of the volume for this instance."""
         curr_size = self.volume.get("size")
         if size <= curr_size:
-            raise InvalidVolumeResize("The new volume size must be larger than the current volume size of '%s'." % curr_size) 
+            raise exc.InvalidVolumeResize("The new volume size must be larger than the current volume size of '%s'." % curr_size) 
         uri = "/instances/%s/action" % self.id
         body = {"resize": {"volume": {"size": size}}}
         self.manager.api.method_post(uri, body=body)
