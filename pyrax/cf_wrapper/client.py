@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import fnmatch
+from functools import wraps
 import httplib
 import math
 import os
@@ -25,6 +26,7 @@ no_such_container_pattern = re.compile(r"Container GET|HEAD failed: .+/(.+) 404"
 etag_failed_pattern = re.compile(r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity")
 
 def handle_swiftclient_exception(fnc):
+    @wraps(fnc)
     def _wrapped(*args, **kwargs):
         try:
             return fnc(*args, **kwargs)

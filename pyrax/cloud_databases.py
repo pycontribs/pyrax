@@ -17,6 +17,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from functools import wraps
 from pyrax.client import BaseClient
 import pyrax.exceptions as exc
 from pyrax.manager import BaseManager
@@ -25,6 +26,7 @@ import pyrax.utils as utils
 
 
 def assure_instance(fnc):
+    @wraps(fnc)
     def _wrapped(self, instance, *args, **kwargs):
         if not isinstance(instance, CloudDatabaseInstance):
             # Must be the ID
@@ -52,6 +54,32 @@ class CloudDatabaseInstance(BaseResource):
     def list_users(self):
         """Returns a list of the names of all users for this instance."""
         return self._user_manager.list()
+
+
+    def get_database(self, name):
+        """
+        Finds the database in this instance with the specified name, and
+        returns a CloudDatabaseDatabase object. If no match is found, a
+        NoSuchDatabase exception is raised.
+        """
+        try:
+            return [db for db in self.list_databases()
+                    if db.name == name][0]
+        except IndexError:
+            raise exc.NoSuchDatabase("No database by the name '%s' exists." % name)
+
+
+    def get_user(self, name):
+        """
+        Finds the user in this instance with the specified name, and
+        returns a CloudDatabaseUser object. If no match is found, a
+        NoSuchDatabaseUser exception is raised.
+        """
+        try:
+            return [user for user in self.list_users()
+                    if user.name == name][0]
+        except IndexError:
+            raise exc.NoSuchDatabaseUser("No user by the name '%s' exists." % name)
 
 
     def create_database(self, name, character_set=None, collate=None):
@@ -96,21 +124,36 @@ class CloudDatabaseInstance(BaseResource):
         return self._user_manager.find(name=name)
 
 
-    def delete_database(self, name):
+    def _get_name(self, name_or_obj):
+        """
+        Methods that can take either an object or the name of the object
+        as a parameter need the name to send to the API.
+        """
+        if isinstance(name_or_obj, basestring):
+            return name_or_obj
+        try:
+            return name_or_obj.name
+        except AttributeError:
+            raise exc.MissingName("The object '%s' does not have a 'name' attribute.")
+
+
+    def delete_database(self, name_or_obj):
         """
         Deletes the specified database. If no database by that name
         exists, no exception will be raised; instead, nothing at all
         is done.
         """
+        name = self._get_name(name_or_obj)
         self._database_manager.delete(name)
 
 
-    def delete_user(self, name):
+    def delete_user(self, name_or_obj):
         """
         Deletes the specified user. If no user by that name
         exists, no exception will be raised; instead, nothing at all
         is done.
         """
+        name = self._get_name(name_or_obj)
         self._user_manager.delete(name)
 
 
@@ -174,11 +217,15 @@ class CloudDatabaseInstance(BaseResource):
 
 
 class CloudDatabaseDatabase(BaseResource):
-    pass
+    def delete(self):
+        """This class doesn't have an 'id', so pass the name."""
+        self.manager.delete(self.name)
 
 
 class CloudDatabaseUser(BaseResource):
-    pass
+    def delete(self):
+        """This class doesn't have an 'id', so pass the name."""
+        self.manager.delete(self.name)
 
 
 class CloudDatabaseFlavor(BaseResource):
@@ -208,6 +255,16 @@ class CloudDatabaseClient(BaseClient):
 
 
     @assure_instance
+    def get_database(self, instance, name):
+        """
+        Finds the database in the given instance with the specified name, and
+        returns a CloudDatabaseDatabase object. If no match is found, a
+        NoSuchDatabase exception is raised.
+        """
+        return instance.get_database(name)
+
+
+    @assure_instance
     def delete_database(self, instance, name):
         """Deletes the database by name on the given instance."""
         return instance.delete_database(name)
@@ -226,6 +283,16 @@ class CloudDatabaseClient(BaseClient):
         """
         return instance.create_user(name=name, password=password,
                 database_names=database_names)
+
+
+    @assure_instance
+    def get_user(self, instance, name):
+        """
+        Finds the user in the given instance with the specified name, and
+        returns a CloudDatabaseUser object. If no match is found, a
+        NoSuchUser exception is raised.
+        """
+        return instance.get_user(name)
 
 
     @assure_instance

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import ConfigParser
+from functools import wraps
 import os
 
 import exceptions as exc
@@ -98,6 +99,7 @@ if os.path.exists(config_file):
 
 def _require_auth(fnc):
     """Authentication decorator."""
+    @wraps(fnc)
     def _wrapped(*args, **kwargs):
         if not identity.authenticated:
             msg = "Authentication required before calling '%s'." % fnc.__name__
@@ -173,7 +175,6 @@ def _make_agent_name(base):
     return "%s:%s" % (base, USER_AGENT)
 
 
-@_require_auth
 def connect_to_services():
     """Establish authenticated connections to the various cloud APIs."""
     if services_to_start["servers"]:
