@@ -26,22 +26,10 @@ from cloud_databases import CloudDatabaseInstance
 from cloud_databases import CloudDatabaseUser
 
 
-
 # These require Libcloud
 #import rackspace_monitoring.providers as mon_providers
 #import rackspace_monitoring.types as mon_types
 
-# print a warning not to use this library in applications in
-# its current state of development.
-print
-print
-print "=" * 80
-print "pyrax is under active development and subject to substantial change."
-print "Do not use it for application development, as your applications will"
-print "very likely break with future updates to this package."
-print "=" * 80
-print
-print
 
 # Default to the rax_identity class.
 identity_class = _rax_identity.Identity
