@@ -17,78 +17,80 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+class PyraxException(Exception):
+    pass
 
-class AuthenticationFailed(Exception):
-     pass
+class AuthenticationFailed(PyraxException):
+    pass
 
-class AuthorizationFailure(Exception):
-     pass
+class AuthorizationFailure(PyraxException):
+    pass
 
-class AuthSystemNotFound(Exception):
-     pass
+class AuthSystemNotFound(PyraxException):
+    pass
 
-class CDNFailed(Exception):
-     pass
+class CDNFailed(PyraxException):
+    pass
 
-class EndpointNotFound(Exception):
-     pass
+class EndpointNotFound(PyraxException):
+    pass
 
-class FlavorNotFound(Exception):
-     pass
+class FlavorNotFound(PyraxException):
+    pass
 
-class FileNotFound(Exception):
-     pass
+class FileNotFound(PyraxException):
+    pass
 
-class FolderNotFound(Exception):
-     pass
+class FolderNotFound(PyraxException):
+    pass
 
-class InvalidCDNMetada(Exception):
-     pass
+class InvalidCDNMetada(PyraxException):
+    pass
 
-class InvalidConfigurationFile(Exception):
-     pass
+class InvalidConfigurationFile(PyraxException):
+    pass
 
-class InvalidCredentialFile(Exception):
-     pass
+class InvalidCredentialFile(PyraxException):
+    pass
 
-class InvalidUploadID(Exception):
-     pass
+class InvalidUploadID(PyraxException):
+    pass
 
-class InvalidVolumeResize(Exception):
-     pass
+class InvalidVolumeResize(PyraxException):
+    pass
 
-class MissingName(Exception):
-     pass
+class MissingName(PyraxException):
+    pass
 
-class NoSuchContainer(Exception):
-     pass
+class NoSuchContainer(PyraxException):
+    pass
 
-class NoSuchDatabase(Exception):
-     pass
+class NoSuchDatabase(PyraxException):
+    pass
 
-class NoSuchDatabaseUser(Exception):
-     pass
+class NoSuchDatabaseUser(PyraxException):
+    pass
 
-class NoSuchObject(Exception):
-     pass
+class NoSuchObject(PyraxException):
+    pass
 
-class NotAuthenticated(Exception):
-     pass
+class NotAuthenticated(PyraxException):
+    pass
 
-class NotCDNEnabled(Exception):
-     pass
+class NotCDNEnabled(PyraxException):
+    pass
 
-class NoTokenLookupException(Exception):
-     pass
+class NoTokenLookupException(PyraxException):
+    pass
 
-class Unauthorized(Exception):
-     pass
+class Unauthorized(PyraxException):
+    pass
 
-class UploadFailed(Exception):
-     pass
+class UploadFailed(PyraxException):
+    pass
 
 
-class AmbiguousEndpoints(Exception):
+class AmbiguousEndpoints(PyraxException):
     """Found more than one matching endpoint in Service Catalog."""
     def __init__(self, endpoints=None):
         self.endpoints = endpoints
@@ -97,7 +99,7 @@ class AmbiguousEndpoints(Exception):
         return "AmbiguousEndpoints: %s" % repr(self.endpoints)
 
 
-class ClientException(Exception):
+class ClientException(PyraxException):
     """
     The base exception class for all exceptions this library raises.
     """

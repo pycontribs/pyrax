@@ -42,7 +42,7 @@ You should get back something like this:
 
 The RAM available is listed in MB, so the 'm1.tiny' flavor would create an instance with 512MB of RAM.
 
-Assuming that you want to create an instance using the m1.tiny flavor and 2GB of disk space, you would run the following:
+Assuming that you want to create an instance using the `m1.tiny` flavor and 2GB of disk space, run the following code:
 
 	cdb = pyrax.cloud_databases
 	inst = cdb.create("first_instance", flavor="m1.tiny", volume=2)
@@ -52,13 +52,18 @@ Assuming that all went well, you should see your new instance:
 
 	<CloudDatabaseInstance created=2012-10-24T20:43:39, hostname=37f6114e50e8767af7b85b7923c619e8063a505e.rackspaceclouddb.com, id=11f604c4-19c6-4653-9a74-104f79a5124e, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000/instances/11f604c4-19c6-4653-9a74-104f79a5124e', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/instances/11f604c4-19c6-4653-9a74-104f79a5124e', u'rel': u'bookmark'}], name=first_instance, status=BUILD, updated=2012-10-24T20:43:39, volume={u'size': 2}>
 
-If you are planning on using your Cloud Database instance from one of your Cloud Servers, you will need the `hostname` attribute of that instance. In this case, it is `37f6114e50e8767af7b85b7923c619e8063a505e.rackspaceclouddb.com`. Since this host is not public, only Cloud Servers within the same region can access this instance.
+If you are planning on using your Cloud Database instance from one of your Cloud Servers, you will need the `hostname` attribute of that instance. In this case, it is `37f6114e50e8767af7b85b7923c619e8063a505e.rackspaceclouddb.com`. Since this host is not publicly accessible, only Cloud Servers and Cloud Load Balancers within the same region can access this instance.
+
+## Resizing an Instance
+Resizing an instance refers to changing the amount of RAM allocated to your instance. To do this, call the instance's `resize()` method, passing in the flavor of the desired size.
+
+	inst.resize("m1.medium")
 
 
 ## Create a Database
 Once you have an instance, you need to create a database. You must specify a name for the new database, as well as the optional parameters for `character_set` and `collate`. If these are not specified, the defaults of `utf8` and `utf8_general_ci` will be used, respectively.
 
-There are two variations: calling the `create_database()` method of a `CloudDatabaseInstance` object, or by calling the `create_database()` method of the cloud_databases module itself. With the second version, you must specify the instance in which the database will be created. The method is flexible enough that you can pass in an `CloudDatabaseInstance` object, or the ID of the instance. Assuming that `inst` is a reference to the instance you created above, here are both versions:
+There are two variations: calling the `create_database()` method of a `CloudDatabaseInstance` object, or by calling the `create_database()` method of the cloud_databases module itself. With the second version, you must specify the instance in which the database will be created. Either a `CloudDatabaseInstance` object or its `id` will work. Assuming that `inst` is a reference to the instance you created above, here are both versions:
 
 	db = inst.create_database("db_name")
 	print "DB:", db
@@ -73,6 +78,7 @@ Both calls will return an object representing the newly-created database:
 
 	DB: <CloudDatabaseDatabase name=db_name>
 
+
 ## Create a User
 You can create a user on an instance with its own username/password credentials, with access to one or more databases on that instance. Similar to database creation, you can call create_user either on the instance object, or on the module. To simplify these examples only the call on the instance will be displayed.
 
@@ -86,11 +92,42 @@ This will print out:
 	User: <CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>
 
 
+## List Databases or Users in an Instance
+Instances have a `list_databases()` and a `list_users` command:
+
+	dbs = inst.list_databases()
+	users = inst.list_users()
+	print "DBs:", dbs
+	print "Users:", users
+
+which will output:
+
+	DBs: [<CloudDatabaseDatabase name=db_name>]
+	Users: [<CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>]
 
 
+## Get a Database or User Object
+You can get a database or user object from an instance object by supplying the name:
+
+	db = inst.get_database("db_name")
+	user = inst.get_user("groucho")
+	print "DB:", db
+	print "User:", user
+
+which will output:
+
+	DB: <CloudDatabaseDatabase name=db_name>
+	User: <CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>
 
 
+## Working with Database and User Objects
+These objects are essentially read-only representations of the underlying MySQL database running in your instance. You cannot update the attributes of these objects and expect them to change anything in the instance. They are useful mostly to determine the state of your databse. The one method they have is `delete()`, which will cause them to be deleted from their instance.
 
+Note that there is a bug in the underlying Python library for the API that affect user names that contain a period. With such users, the API will truncate the name at the first period, and attempt to delete the shortened name. Example: if you have two users with the names `"john.doe"` and `"john"`, and you call:
+
+	inst.delete("john.doe")
+
+the API will actually delete the user `"john"`, and `"john.doe"` will be untouched! The best way to avoid this problem is to not create user names with periods. If you must include periods, do not use pyrax or any other cloud API-based tool to delete them. Instead, use any one of the many MySQL admin tools available.
 
 
 
