@@ -234,6 +234,10 @@ class CloudDatabaseFlavor(BaseResource):
 
 class CloudDatabaseClient(BaseClient):
     def _configure_manager(self):
+        """
+        Create the manager to handle the instances, and also another
+        to handle flavors.
+        """
         self._manager = BaseManager(self, resource_class=CloudDatabaseInstance,
                response_key="instance", uri_base="instances")
         self._flavor_manager = BaseManager(self,
@@ -243,6 +247,7 @@ class CloudDatabaseClient(BaseClient):
 
     @assure_instance
     def list_databases(self, instance):
+        """Return all databases for the specified instance."""
         return instance.list_databases()
 
 
@@ -272,6 +277,7 @@ class CloudDatabaseClient(BaseClient):
 
     @assure_instance
     def list_users(self, instance):
+        """Return all users for the specified instance."""
         return instance.list_users()
 
 
@@ -333,6 +339,13 @@ class CloudDatabaseClient(BaseClient):
 
 
     def _get_flavor_ref(self, flavor):
+        """
+        Flavors are odd in that the API expects an href link, not
+        an ID, as with nearly every other resource. This method
+        takes either a CloudDatabaseFlavor object, a flavor ID,
+        a RAM size, or a flavor name, and uses that to determine
+        the appropriate href.
+        """
         flavor_obj = None
         if isinstance(flavor, CloudDatabaseFlavor):
             flavor_obj = flavor

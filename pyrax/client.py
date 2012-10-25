@@ -62,7 +62,9 @@ def get_auth_system_url(auth_system):
 
 
 class BaseClient(httplib2.Http):
-
+    """
+    This is the base class for all pyrax clients.
+    """
     user_agent = "pyrax"
 
     def __init__(self, user, password, tenant_id=None, auth_url=None,
@@ -113,49 +115,53 @@ class BaseClient(httplib2.Http):
 
 
     def _configure_manager(self):
-        """Must be overridden in base classes."""
+        """
+        This must be overridden in base classes to create
+        the required manager class and configure it as needed.
+        """
         raise NotImplementedError
 
 
     # The next 4 methods are simple pass-through to the manager.
     def list(self):
+        """Return a list of all resources."""
         return self._manager.list()
 
     def get(self, item):
+        """Get a specific resource."""
         return self._manager.get(item)
 
     def create(self, *args, **kwargs):
+        """Create a new resource."""
         return self._manager.create(*args, **kwargs)
 
     def delete(self, item):
+        """Delete a specific resource."""
         return self._manager.delete(item)
 
 
-    def use_token_cache(self, use_it):
-        # One day I"ll stop using negative naming.
-        self.no_cache = not use_it
-
-
     def unauthenticate(self):
-        """Forget all of our authentication information."""
+        """Clear all of our authentication information."""
         self.management_url = None
         self.auth_token = None
         self.used_keyring = False
 
 
-    def set_management_url(self, url):
-        self.management_url = url
-
-
     def get_timings(self):
+        """Returns a list of all execution timings."""
         return self.times
 
 
     def reset_timings(self):
+        """Clears the timing history."""
         self.times = []
 
 
     def http_log_req(self, args, kwargs):
+        """
+        When self.http_log_debug is True, outputs the equivalent `curl`
+        command for the API request being made.
+        """
         if not self.http_log_debug:
             return
 
@@ -176,12 +182,20 @@ class BaseClient(httplib2.Http):
 
 
     def http_log_resp(self, resp, body):
+        """
+        When self.http_log_debug is True, outputs the response received
+        from the API request.
+        """
         if not self.http_log_debug:
             return
         self._logger.debug("RESP:%s %s\n", resp, body)
 
 
     def request(self, *args, **kwargs):
+        """
+        Formats the request into a dict representing the headers
+        and body that will be used to make the API call.
+        """
         kwargs.setdefault("headers", kwargs.get("headers", {}))
         kwargs["headers"]["User-Agent"] = self.user_agent
         kwargs["headers"]["Accept"] = "application/json"
@@ -207,6 +221,7 @@ class BaseClient(httplib2.Http):
         return resp, body
 
     def _time_request(self, url, method, **kwargs):
+        """Wraps the request call and records the elapsed time."""
         start_time = time.time()
         resp, body = self.request(url, method, **kwargs)
         self.times.append(("%s %s" % (method, url),
@@ -214,6 +229,11 @@ class BaseClient(httplib2.Http):
         return resp, body
 
     def _cs_request(self, url, method, **kwargs):
+        """
+        Manages the request by adding any auth information, and retries
+        the request after authenticating if the initial request returned
+        and Unauthorized exception.
+        """
         if not all((self.management_url, self.auth_token, self.tenant_id)):
             self.authenticate()
 
@@ -239,27 +259,31 @@ class BaseClient(httplib2.Http):
                 raise ex
 
     def method_get(self, url, **kwargs):
+        """Method used to make GET requests."""
         return self._cs_request(url, "GET", **kwargs)
 
     def method_post(self, url, **kwargs):
+        """Method used to make POST requests."""
         return self._cs_request(url, "POST", **kwargs)
 
     def method_put(self, url, **kwargs):
+        """Method used to make PUT requests."""
         return self._cs_request(url, "PUT", **kwargs)
 
     def method_delete(self, url, **kwargs):
+        """Method used to make DELETE requests."""
         return self._cs_request(url, "DELETE", **kwargs)
 
     def _extract_service_catalog(self, url, resp, body, extract_token=True):
-        """See what the auth service told us and process the response.
-        We may get redirected to another site, fail or actually get
-        back a service catalog with a token and our endpoints."""
-
+        """
+        See what the auth service told us and process the response.
+        We may get redirected to another site, fail, or actually get
+        back a service catalog with a token and our endpoints.
+        """
         if resp.status == 200:  # content must always present
             try:
                 self.auth_url = url
-                self.service_catalog = \
-                    service_catalog.ServiceCatalog(body)
+                self.service_catalog = service_catalog.ServiceCatalog(body)
                 if extract_token:
                     self.auth_token = self.service_catalog.get_token()
 
@@ -272,8 +296,7 @@ class BaseClient(httplib2.Http):
                 self.management_url = management_url.rstrip("/")
                 return None
             except exc.AmbiguousEndpoints:
-                print "Found more than one valid endpoint. Use a more " \
-                      "restrictive filter"
+                print "Found more than one valid endpoint. Use a more restrictive filter"
                 raise
             except KeyError:
                 raise exc.AuthorizationFailure()
@@ -286,8 +309,10 @@ class BaseClient(httplib2.Http):
         else:
             raise exc.from_response(resp, body)
 
+
     def _fetch_endpoints_from_auth(self, url):
-        """We have a token, but don't know the final endpoint for
+        """
+        We have a token, but don't know the final endpoint for
         the region. We have to go back to the auth service and
         ask again. This request requires an admin-level token
         to work. The proxy token supplied could be from a low-level enduser.
@@ -297,7 +322,6 @@ class BaseClient(httplib2.Http):
 
         This will overwrite our admin token with the user token.
         """
-
         # GET ...:5001/v2.0/tokens/#####/endpoints
         url = "/".join([url, "tokens", "%s?belongsTo=%s"
                 % (self.proxy_token, self.proxy_tenant_id)])
@@ -307,7 +331,15 @@ class BaseClient(httplib2.Http):
         return self._extract_service_catalog(url, resp, body,
                 extract_token=False)
 
+
     def authenticate(self):
+        """
+        Handles all aspects of authentication against the cloud provider.
+        Currently this has only been tested with Rackspace auth; if you wish
+        to use this library with a different OpenStack provider, you may have
+        to modify this method. Please post your findings on GitHub so that
+        others can benefit.
+        """
         if has_keyring:
             keys = [self.auth_url, self.user, self.region_name,
                     self.endpoint_type, self.service_type, self.service_name]
@@ -392,7 +424,9 @@ class BaseClient(httplib2.Http):
             except Exception:
                 pass
 
+
     def _v1_auth(self, url):
+        """The original auth system for OpenStack. Probably not used anymore."""
         if self.proxy_token:
             raise exc.NoTokenLookupException()
 
@@ -415,6 +449,7 @@ class BaseClient(httplib2.Http):
         else:
             raise exc.from_response(resp, body)
 
+
     def _plugin_auth(self, auth_url):
         """Load plugin-based authentication"""
         ep_name = "openstack.client.authenticate"
@@ -423,16 +458,16 @@ class BaseClient(httplib2.Http):
                 return ep.load()(self, auth_url)
         raise exc.AuthSystemNotFound(self.auth_system)
 
+
     def _v2_auth(self, url):
         """Authenticate against a v2.0 auth service."""
         body = {"auth": {
                 "passwordCredentials": {"username": self.user,
                                         "password": self.password}}}
-
         if self.tenant_id:
             body["auth"]["tenantName"] = self.tenant_id
-
         self._authenticate(url, body)
+
 
     def _authenticate(self, url, body):
         """Authenticate and extract the service catalog."""
@@ -448,6 +483,8 @@ class BaseClient(httplib2.Http):
             self.follow_all_redirects = tmp_follow_all_redirects
         return self._extract_service_catalog(url, resp, body)
 
+
     @property
     def projectid(self):
+        """The older parts of this code used 'projectid'; this wraps that reference."""
         return self.tenant_id

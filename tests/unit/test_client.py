@@ -121,25 +121,12 @@ class ClientTest(unittest.TestCase):
         mgr.create.assert_called_once_with("val")
         mgr.create = sav
 
-    def test_use_token_cache(self):
-        clt = self.client
-        clt.use_token_cache(True)
-        self.assertFalse(clt.no_cache)
-        clt.use_token_cache(False)
-        self.assertTrue(clt.no_cache)
-
     def test_unauthenticate(self):
         clt = self.client
         clt.unauthenticate()
         self.assertIsNone(clt.management_url)
         self.assertIsNone(clt.auth_token)
         self.assertFalse(clt.used_keyring)
-
-    def test_set_management_url(self):
-        clt = self.client
-        expected = utils.random_name()
-        clt.set_management_url(expected)
-        self.assertEqual(clt.management_url, expected)
 
     def test_get_timings(self):
         clt = self.client
