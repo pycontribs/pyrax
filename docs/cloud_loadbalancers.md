@@ -18,7 +18,7 @@ This will return a list of `LoadBalancer` objects. You can then interact with th
 
 
 ### Create the Servers
-The document on Cloud Servers explains how to get the image and flavor IDs necessary to create a server, but for the sake of brevity the code below uses the IDs previously obtained. Note: these ID values are not constants, so make sure you get the actual IDs for when your system is running.
+[Working with Cloud Servers](cloud_servers.md) explains how to get the image and flavor IDs necessary to create a server, but for the sake of brevity the code below uses the IDs previously obtained. Note: these ID values are not constants, so make sure you get the actual IDs for when your system is running.
 
     cs = pyrax.cloudservers
     clb = pyrax.cloud_loadbalancers

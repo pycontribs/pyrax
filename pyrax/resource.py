@@ -54,11 +54,21 @@ class BaseResource(object):
 
 
     def _add_details(self, info):
+        """
+        Takes the dict returned by the API call and sets the
+        corresponding attributes on the object.
+        """
         for (key, val) in info.iteritems():
             setattr(self, key, val)
 
 
     def __getattr__(self, key):
+        """
+        Many objects are lazy-loaded: only their most basic details
+        are initially returned. The first time any of the other attributes
+        are referenced, a GET is made to get the full details for the
+        object.
+        """
         if not self.loaded:
             self.get()
         # Attribute should be set; if not, it's not valid
@@ -76,16 +86,31 @@ class BaseResource(object):
 
 
     def get(self):
+        """Get the details for the object."""
         # set 'loaded' first ... so if we have to bail, we know we tried.
         self.loaded = True
         if not hasattr(self.manager, "get"):
             return
-        new = self.manager.get(self.id)
+        new = self.manager.get(self)
         if new:
             self._add_details(new._info)
 
 
+    def delete(self):
+        """Delete the object."""
+        # set 'loaded' first ... so if we have to bail, we know we tried.
+        self.loaded = True
+        if not hasattr(self.manager, "delete"):
+            return
+        self.manager.delete(self)
+
+
     def __eq__(self, other):
+        """
+        Two resource objects that represent the same entity in the cloud
+        should be considered equal if they have the same ID. If they
+        don't have IDs, but their attribute info matches, they are equal.
+        """
         if not isinstance(other, self.__class__):
             return False
         if hasattr(self, "id") and hasattr(other, "id"):

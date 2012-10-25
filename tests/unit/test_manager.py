@@ -7,6 +7,7 @@ from mock import MagicMock as Mock
 
 import pyrax.exceptions as exc
 from pyrax import manager
+import pyrax.utils as utils
 
 from tests.unit import fakes
 
@@ -64,7 +65,8 @@ class ManagerTest(unittest.TestCase):
         mgr._create = Mock()
         mgr.uri_base = "test"
         mgr.api._create_body = Mock(return_value="body")
-        mgr.create()
+        nm = utils.random_name()
+        mgr.create(nm)
         mgr._create.assert_called_once_with("/test", "body", return_none=False,
                 return_raw=False)
         mgr._create = sav

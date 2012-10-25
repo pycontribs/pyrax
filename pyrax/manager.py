@@ -85,13 +85,13 @@ class BaseManager(object):
         return self._get(uri)
 
 
-    def create(self, return_none=False, return_raw=False, *args, **kwargs):
+    def create(self, name, return_none=False, return_raw=False, *args, **kwargs):
         """
         Subclasses need to implement the _create_body() method
         to return a dict that will be used for the API request
         body.
         """
-        body = self.api._create_body(*args, **kwargs)
+        body = self.api._create_body(name, *args, **kwargs)
         return self._create("/%s" % self.uri_base, body, return_none=return_none,
                 return_raw=return_raw) 
 
@@ -103,6 +103,10 @@ class BaseManager(object):
 
 
     def _list(self, url, obj_class=None, body=None):
+        """
+        This handles the communication with the API when getting
+        a full listing of the resources managed by this class.
+        """
         if body:
             _resp, body = self.api.method_post(url, body=body)
         else:
@@ -124,11 +128,19 @@ class BaseManager(object):
 
 
     def _get(self, url):
+        """
+        This handles the communication with the API when getting
+        a specific resource managed by this class.
+        """
         _resp, body = self.api.method_get(url)
         return self.resource_class(self, body[self.response_key], loaded=True)
 
 
     def _create(self, url, body, return_none=False, return_raw=False, **kwargs):
+        """
+        This handles the communication with the API when creating a new
+        resource managed by this class.
+        """
         self.run_hooks("modify_body_for_create", body, **kwargs)
         _resp, body = self.api.method_post(url, body=body)
         if return_none:
@@ -140,10 +152,18 @@ class BaseManager(object):
 
 
     def _delete(self, url):
+        """
+        This handles the communication with the API when deleting
+        a specific resource managed by this class.
+        """
         _resp, _body = self.api.method_delete(url)
 
 
     def _update(self, url, body, **kwargs):
+        """
+        This handles the communication with the API when updating
+        a specific resource managed by this class.
+        """
         self.run_hooks("modify_body_for_update", body, **kwargs)
         _resp, body = self.api.method_put(url, body=body)
         return body

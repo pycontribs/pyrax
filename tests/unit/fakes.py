@@ -125,6 +125,8 @@ class FakeManager(object):
         pass
     def create(self, *args, **kwargs):
         pass
+    def find(self, *args, **kwargs):
+        pass
 
 
 class FakeException(BaseException):

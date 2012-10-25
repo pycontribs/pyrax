@@ -27,6 +27,14 @@ You install pyrax like any other third-party Python module. Just run:
 
 You will probably need to do this as root/administrator (that is, using `sudo`) unless you are installing into a [virtualenv](http://www.virtualenv.org/en/latest/). `pip` will pull in all of the other modules and client libraries that pyrax needs.
 
+You can also install directly from GitHub (where the pyrax source code is hosted). To do that, run:
+
+	pip install git+git://github.com/rackspace/pyrax.git
+
+The difference is that using the GitHub installation method will install the current trunk version, which will have the latest changes, but will also be less stable.
+
+To upgrade your installation in the future, re-run the same command, but this time add the `--upgrade` option to make sure that pyrax and any dependecies are updated to the newest available version.
+
 
 ## Set up Authentication
 You will need to submit your Rackspace Cloud username and API key in order to authenticate. You can do this in one of two ways: explicitly pass them to pyrax, or create a file containing those credentials and pass that file path to pyrax. The file is a standard configuration file, with the format:
@@ -54,8 +62,23 @@ Once you have authenticated, you now have access to Cloud Servers, Cloud Files, 
 You don't have to log into each service separately; pyrax handles that for you.
 
 
-## The `Identity` Class
+## Configuring pyrax
+You can control how pyrax operates by including the optional configuration file. The configuration file should be named `~/.pyrax.cfg`, and allows you to specify the default region, as well as control which services pyrax will connect to automatically after authenticating. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Here is a sample:
 
+	[settings]
+	region = ORD
+	
+	[services]
+	servers = True
+	files = True
+	loadbalancers = True
+	databases = True
+	keystone = False
+
+With the above example, pyrax will default to the `ORD` region, and will connect to all services except Keystone after authenticating.
+
+
+## The `Identity` Class
 pyrax has an `Identity` class that is used to handle authentication and cache credentials. You can access it in your code using the reference `pyrax.identity`.  Once authenticated, it will store your credentials and authentication token information. In most cases you will not need to interact with this object directly; pyrax uses it to handle authentication tasks for you. But it is available in case you need more fine-grained control of the authentication process, such as querying endpoints in different regions, or getting a list of user roles.
 
 You can check its `authenticated` attribute to determine if authentication was successful; if so, its `token` and `expires` attributes will contain the returned authentication information, and its `services` attribute will contain a dict with all the service endpoint information. Here is an example of the contents of `services` after authentication (with identifying information obscured):

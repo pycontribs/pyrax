@@ -68,10 +68,12 @@ class StorageObject(object):
 
 
     def get_metadata(self):
+        """Returns this object's metadata."""
         return self.client.get_object_metadata(self.container, self)
 
 
     def set_metadata(self, metadata, clear=False):
+        """Sets this object's metadata, optionally clearing existing metadata."""
         self.client.set_object_metadata(self.container, self, metadata, clear=clear)
 
 

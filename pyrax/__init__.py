@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import ConfigParser
+from functools import wraps
 import os
 
 import exceptions as exc
@@ -25,22 +26,10 @@ from cloud_databases import CloudDatabaseInstance
 from cloud_databases import CloudDatabaseUser
 
 
-
 # These require Libcloud
 #import rackspace_monitoring.providers as mon_providers
 #import rackspace_monitoring.types as mon_types
 
-# print a warning not to use this library in applications in
-# its current state of development.
-print
-print
-print "=" * 80
-print "pyrax is under active development and subject to substantial change."
-print "Do not use it for application development, as your applications will"
-print "very likely break with future updates to this package."
-print "=" * 80
-print
-print
 
 # Default to the rax_identity class.
 identity_class = _rax_identity.Identity
@@ -98,6 +87,7 @@ if os.path.exists(config_file):
 
 def _require_auth(fnc):
     """Authentication decorator."""
+    @wraps(fnc)
     def _wrapped(*args, **kwargs):
         if not identity.authenticated:
             msg = "Authentication required before calling '%s'." % fnc.__name__
@@ -173,7 +163,6 @@ def _make_agent_name(base):
     return "%s:%s" % (base, USER_AGENT)
 
 
-@_require_auth
 def connect_to_services():
     """Establish authenticated connections to the various cloud APIs."""
     if services_to_start["servers"]:
@@ -274,9 +263,7 @@ def connect_to_cloud_databases(region=None):
     ep = _get_service_endpoint("database", region)
     cloud_databases = CloudDatabaseClient(identity.username, identity.api_key,
             region_name=region, management_url=ep, auth_token=identity.token,
-            tenant_id=identity.tenant_id, service_type="rax:database",
-            http_log_debug = True,
-            )
+            tenant_id=identity.tenant_id, service_type="rax:database")
     cloud_databases.user_agent = _make_agent_name(cloud_databases.user_agent)
 
 
