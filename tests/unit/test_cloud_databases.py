@@ -48,6 +48,11 @@ class CloudDatabasesTest(unittest.TestCase):
         ret = client.test_method(self.instance.id)
         self.assertTrue(ret is self.instance)
 
+    @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
+    def test_instantiate_instance(self):
+        inst = CloudDatabaseInstance(fakes.FakeManager(), {"id": 42})
+        self.assertTrue(isinstance(inst, CloudDatabaseInstance))
+
     def test_list_databases(self):
         inst = self.instance
         sav = inst._database_manager.list
@@ -68,7 +73,7 @@ class CloudDatabasesTest(unittest.TestCase):
         inst = self.instance
         sav = inst._database_manager.create
         inst._database_manager.create = Mock()
-        inst.create_database(name="test")
+        db = inst.create_database(name="test")
         inst._database_manager.create.assert_called_once_with(name="test",
                 character_set="utf8", collate="utf8_general_ci", return_none=True)
         inst._database_manager.create = sav
@@ -251,11 +256,11 @@ class CloudDatabasesTest(unittest.TestCase):
     def test_root_user_status_for_instance(self):
         clt = self.client
         inst = self.instance
-        sav = inst.enable_root_user
-        inst.enable_root_user = Mock()
-        clt.enable_root_user(inst)
-        inst.enable_root_user.assert_called_once_with()
-        inst.enable_root_user = sav
+        sav = inst.root_user_status
+        inst.root_user_status = Mock()
+        clt.root_user_status(inst)
+        inst.root_user_status.assert_called_once_with()
+        inst.root_user_status = sav
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_resize_for_instance(self):

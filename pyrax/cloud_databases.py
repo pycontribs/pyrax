@@ -66,8 +66,11 @@ class CloudDatabaseInstance(BaseResource):
             collate = "utf8_general_ci"
         # Note that passing in non-None values is required for the create_body
         # method to distinguish between this and the request to create and instance.
-        return self._database_manager.create(name=name, character_set=character_set,
+        self._database_manager.create(name=name, character_set=character_set,
                 collate=collate, return_none=True)
+        # Since the API doesn't return the info for creating the database object, we
+        # have to do it manually.
+        return self._database_manager.find(name=name)
 
 
     def create_user(self, name, password, database_names):
@@ -81,10 +84,16 @@ class CloudDatabaseInstance(BaseResource):
         """
         if not isinstance(database_names, list):
             database_names = [database_names]
+        # The API only accepts names, not DB objects
+        database_names = [db if isinstance(db, basestring) else db.name
+                for db in database_names]
         # Note that passing in non-None values is required for the create_body
         # method to distinguish between this and the request to create and instance.
-        return self._user_manager.create(name=name, password=password,
+        self._user_manager.create(name=name, password=password,
                 database_names=database_names, return_none=True)
+        # Since the API doesn't return the info for creating the user object, we
+        # have to do it manually.
+        return self._user_manager.find(name=name)
 
 
     def delete_database(self, name):
