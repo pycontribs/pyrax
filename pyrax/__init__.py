@@ -275,9 +275,7 @@ def connect_to_cloud_databases(region=None):
     ep = _get_service_endpoint("database", region)
     cloud_databases = CloudDatabaseClient(identity.username, identity.api_key,
             region_name=region, management_url=ep, auth_token=identity.token,
-            tenant_id=identity.tenant_id, service_type="rax:database",
-            http_log_debug = True,
-            )
+            tenant_id=identity.tenant_id, service_type="rax:database")
     cloud_databases.user_agent = _make_agent_name(cloud_databases.user_agent)
 
 
