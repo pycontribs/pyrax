@@ -54,10 +54,22 @@ Assuming that all went well, you should see your new instance:
 
 If you are planning on using your Cloud Database instance from one of your Cloud Servers, you will need the `hostname` attribute of that instance. In this case, it is `37f6114e50e8767af7b85b7923c619e8063a505e.rackspaceclouddb.com`. Since this host is not publicly accessible, only Cloud Servers and Cloud Load Balancers within the same region can access this instance.
 
-## Resizing an Instance
-Resizing an instance refers to changing the amount of RAM allocated to your instance. To do this, call the instance's `resize()` method, passing in the flavor of the desired size.
 
+## Resizing an Instance
+Resizing an instance refers to changing the amount of RAM allocated to your instance. To do this, call the instance's `resize()` method, passing in the flavor of the desired size. This can be a `CloudDatabaseFlavor` object, the flavor name, flavor ID or RAM size of the new flavor. For example, the following 3 commands will all change the instance flavor to the `m1.medium` size:
+
+	# By name
 	inst.resize("m1.medium")
+	# By RAM
+	inst.resize(2048)
+	# By ID
+	inst.resize(3)
+
+
+## Resizing a Volume
+Resizing a volume refers to increasing the amount of disk space for your instance. To do this, call the instance's `resize_volume()` method, passing in the new volume size. Note that you cannot reduce the volume size. Trying to reduce the size of the volume will raise an `InvalidVolumeResize` exception.
+
+	inst.resize_volume(8)
 
 
 ## Create a Database

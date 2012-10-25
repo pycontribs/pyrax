@@ -168,6 +168,10 @@ class CloudDatabaseInstance(BaseResource):
 
 
     def root_user_status(self):
+        """
+        Returns True or False, depending on whether the root user
+        for this instance has been enabled.
+        """
         uri = "/instances/%s/root" % self.id
         resp, body = self.manager.api.method_get(uri)
         return body["rootEnabled"]

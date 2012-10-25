@@ -27,6 +27,7 @@ class ServiceCatalog(object):
         self.catalog = resource_dict
 
     def get_token(self):
+        """Extracts and returns the authentication token."""
         return self.catalog["access"]["token"]["id"]
 
     def url_for(self, attr=None, filter_value=None,
