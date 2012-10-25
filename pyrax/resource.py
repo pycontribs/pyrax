@@ -80,9 +80,17 @@ class BaseResource(object):
         self.loaded = True
         if not hasattr(self.manager, "get"):
             return
-        new = self.manager.get(self.id)
+        new = self.manager.get(self)
         if new:
             self._add_details(new._info)
+
+
+    def delete(self):
+        # set 'loaded' first ... so if we have to bail, we know we tried.
+        self.loaded = True
+        if not hasattr(self.manager, "delete"):
+            return
+        self.manager.delete(self)
 
 
     def __eq__(self, other):

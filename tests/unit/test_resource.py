@@ -94,6 +94,20 @@ class ResourceTest(unittest.TestCase):
         rsc.manager.get = sav_mgr
         rsc.__getattr__ = sav_ga
 
+    def test_delete(self):
+        rsc = self.resource
+        sav_mgr = rsc.manager.delete
+        rsc.manager.delete = Mock()
+        rsc.delete()
+        rsc.manager.delete.assert_called_once_with(rsc)
+        rsc.manager.delete = sav_mgr
+
+    def test_delete_no_mgr(self):
+        rsc = self.resource
+        rsc.manager = object()
+        ret = rsc.delete()
+        self.assertIsNone(ret)
+
     def test_not_eq(self):
         rsc = self.resource
         fake = object()

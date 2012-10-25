@@ -56,10 +56,12 @@ class PyraxInitTest(unittest.TestCase):
         pyrax._get_service_endpoint = self.orig_get_service_endpoint
 
     def test_require_auth(self):
+        @pyrax._require_auth
+        def testfunc(): pass
         pyrax.identity.authenticated = True
-        pyrax.connect_to_services()
+        testfunc()
         pyrax.identity.authenticated = False
-        self.assertRaises(exc.NotAuthenticated, pyrax.connect_to_services)
+        self.assertRaises(exc.NotAuthenticated, testfunc)
 
     def test_set_credentials(self):
         pyrax.set_credentials(self.username, self.api_key)

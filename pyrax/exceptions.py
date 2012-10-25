@@ -63,6 +63,12 @@ class MissingName(Exception):
 class NoSuchContainer(Exception):
      pass
 
+class NoSuchDatabase(Exception):
+     pass
+
+class NoSuchDatabaseUser(Exception):
+     pass
+
 class NoSuchObject(Exception):
      pass
 
