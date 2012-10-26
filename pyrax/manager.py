@@ -93,7 +93,7 @@ class BaseManager(object):
         """
         body = self.api._create_body(name, *args, **kwargs)
         return self._create("/%s" % self.uri_base, body, return_none=return_none,
-                return_raw=return_raw) 
+                return_raw=return_raw)
 
 
     def delete(self, item):

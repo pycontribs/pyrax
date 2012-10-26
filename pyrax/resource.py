@@ -117,7 +117,7 @@ class BaseResource(object):
             return self.id == other.id
         return self._info == other._info
 
- 
+
     def reload(self):
         """
         Since resource objects are essentially snapshots of the entity they
