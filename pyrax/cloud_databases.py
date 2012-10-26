@@ -104,7 +104,7 @@ class CloudDatabaseInstance(BaseResource):
     def create_user(self, name, password, database_names):
         """
         Creates a user with the specified name and password, and gives that
-        user access to the spcified database(s).
+        user access to the specified database(s).
 
         If a user with
         that name already exists, a BadRequest (400) exception will
@@ -197,7 +197,7 @@ class CloudDatabaseInstance(BaseResource):
         """Change the size of the volume for this instance."""
         curr_size = self.volume.get("size")
         if size <= curr_size:
-            raise exc.InvalidVolumeResize("The new volume size must be larger than the current volume size of '%s'." % curr_size) 
+            raise exc.InvalidVolumeResize("The new volume size must be larger than the current volume size of '%s'." % curr_size)
         uri = "/instances/%s/action" % self.id
         body = {"resize": {"volume": {"size": size}}}
         self.manager.api.method_post(uri, body=body)

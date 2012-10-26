@@ -5,19 +5,21 @@ This is a standalone, API-based, relational database service built on OpenStackÂ
 
 
 ## Terminology
-One potential source of confusion is the use of 'database' in multiple contexts. To clarify, the overall service is named '**Cloud Databases**'. Each deployment is referred to as an '**Instance**'. Each Instance can contain many '**databases**', which is a grouping of related tables in indexes for storing relational information.
+One potential source of confusion is the use of 'database' in multiple contexts. To clarify, the overall service is named 'Cloud Databases'. Each deployment is referred to as an 'Instance'. Each Instance can contain many 'databases', which is a grouping of related tables in indexes for storing relational information.
 
 To keep these concepts clear, the term 'database' by itself always refers to the relational entity in an instance. When referring to the overall service, the term 'Cloud Databases' will be used.
 
 
 ## Using Cloud Databases in pyrax
-Once you have authenticated and connected to the database service, you can reference the database module via `pyrax.cloud_databases`.
+Once you have authenticated and connected to the database service, you can reference the database module via `pyrax.cloud_databases`. That's a lot to type over and over in your code, so it is easier if you include the following line at the beginning of your code:
 
+	cdb = pyrax.cloud_databases
+
+Then you can simply use `cdb` to reference the module. All of the code samples in this document will assume that `cdb` has been defined this way.
 
 ## Listing Database Instances
 To get a list of all your instances, just run:
 
-	cdb = pyrax.cloud_databases
 	cdb.list()
 
 This will return a list of `CloudDatabaseInstance` objects. Assuming that you are just starting out and have not yet created any instances, you will get back an empty list. A good first step, then would be to create an instance.
@@ -30,21 +32,19 @@ To create an instance, you will need to specify the flavor and volume size for t
 ### List Available Flavors
 To get a list of all the available flavors, run the following:
 
-	cdb = pyrax.cloud_databases
 	cdb.list_flavors()
 
 You should get back something like this:
 
-	[<CloudDatabaseFlavor id=1, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/728829/flavors/1', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/1', u'rel': u'bookmark'}], name=m1.tiny, ram=512>,
-	 <CloudDatabaseFlavor id=2, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/728829/flavors/2', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/2', u'rel': u'bookmark'}], name=m1.small, ram=1024>,
-	 <CloudDatabaseFlavor id=3, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/728829/flavors/3', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/3', u'rel': u'bookmark'}], name=m1.medium, ram=2048>,
-	 <CloudDatabaseFlavor id=4, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/728829/flavors/4', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/4', u'rel': u'bookmark'}], name=m1.large, ram=4096>]
+	[<CloudDatabaseFlavor id=1, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000/flavors/1', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/1', u'rel': u'bookmark'}], name=m1.tiny, ram=512>,
+	 <CloudDatabaseFlavor id=2, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000/flavors/2', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/2', u'rel': u'bookmark'}], name=m1.small, ram=1024>,
+	 <CloudDatabaseFlavor id=3, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000/flavors/3', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/3', u'rel': u'bookmark'}], name=m1.medium, ram=2048>,
+	 <CloudDatabaseFlavor id=4, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000/flavors/4', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/4', u'rel': u'bookmark'}], name=m1.large, ram=4096>]
 
 The RAM available is listed in MB, so the 'm1.tiny' flavor would create an instance with 512MB of RAM.
 
 Assuming that you want to create an instance using the `m1.tiny` flavor and 2GB of disk space, run the following code:
 
-	cdb = pyrax.cloud_databases
 	inst = cdb.create("first_instance", flavor="m1.tiny", volume=2)
 	print inst
 
@@ -82,7 +82,6 @@ There are two variations: calling the `create_database()` method of a `CloudData
 
 or:
 
-	cdb = pyrax.cloud_databases
 	db = cdb.create_instance(inst, "db_name")
 	print "DB:", db
 
