@@ -26,20 +26,6 @@ from cloud_databases import CloudDatabaseInstance
 from cloud_databases import CloudDatabaseUser
 
 
-# These require Libcloud
-#import rackspace_monitoring.providers as mon_providers
-#import rackspace_monitoring.types as mon_types
-
-
-# Default to the rax_identity class.
-identity_class = _rax_identity.Identity
-# Allow for different identity classes.
-def set_identity_class(cls):
-    global identity_class
-    identity_class = cls
-
-# This can be changed for unit testing or for other identity managers.
-identity = identity_class()
 # Initiate the services to None until we are authenticated.
 cloudservers = None
 cloudfiles = None
@@ -47,6 +33,10 @@ keystone = None
 cloud_loadbalancers = None
 cloud_dns = None
 cloud_databases = None
+# Class used to handle auth/identity
+identity_class = None
+# Default identity type.
+default_identity_type = None
 # Default region for all services. Can be individually overridden if needed
 default_region = None
 # Some services require a region. If the user doesn't specify one, use DFW.
@@ -80,9 +70,23 @@ if os.path.exists(config_file):
             return None
 
     default_region = safe_get("settings", "region") or default_region
+    default_identity_type = safe_get("settings", "identity_type") or (
+            default_identity_type or "rackspace")
     svc_dict = dict(cfg.items("services"))
     for svc, status in svc_dict.items():
         services_to_start[svc] = (status == "True")
+
+# Allow for different identity classes.
+def set_identity_class(cls):
+    global identity_class
+    identity_class = cls
+
+if identity_class is None:
+    if default_identity_type == "rackspace":
+        # Default to the rax_identity class.
+        identity_class = _rax_identity.Identity
+# This can be changed for unit testing or for other identity managers.
+identity = identity_class()
 
 
 def _require_auth(fnc):
@@ -217,7 +221,7 @@ def connect_to_cloudfiles(region=None):
     opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token, "endpoint_type": "publicURL",
             "tenant_name": identity.tenant_name, "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
-    cloudfiles = _cf.Client(identity.auth_endpoint, identity.username, identity.api_key,
+    cloudfiles = _cf.CFClient(identity.auth_endpoint, identity.username, identity.api_key,
             tenant_name=identity.tenant_name, preauthurl=cf_url, preauthtoken=identity.token,
             auth_version="2", os_options=opts)
     cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)

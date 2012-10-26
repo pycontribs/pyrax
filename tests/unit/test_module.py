@@ -146,7 +146,7 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.connect_to_cloudservers()
         self.assertIsNotNone(pyrax.cloudservers)
 
-    @patch('pyrax._cf.Client', new=FakeService)
+    @patch('pyrax._cf.CFClient', new=FakeService)
     def test_connect_to_cloudfiles(self):
         pyrax.cloudfiles = None
         pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles

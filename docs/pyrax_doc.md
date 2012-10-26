@@ -3,11 +3,6 @@
 ----
 
 
-# WARNING #
-###Please note that pyrax is still in the early stages of development, and will almost certainly be changing in ways that will break any applications you might build using it. Feel free to play with it and test things out, but do not use it for production applications.
-
-----
-
 ## Getting Started With pyrax
 **pyrax** is the Python language binding for the **Rackspace Cloud**. By installing pyrax, you have the ability to build on the Rackspace Cloud using standard Python objects and code.
 
@@ -66,6 +61,7 @@ You don't have to log into each service separately; pyrax handles that for you.
 You can control how pyrax operates by including the optional configuration file. The configuration file should be named `~/.pyrax.cfg`, and allows you to specify the default region, as well as control which services pyrax will connect to automatically after authenticating. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Here is a sample:
 
 	[settings]
+	identity_type = rackspace
 	region = ORD
 	
 	[services]
@@ -73,9 +69,8 @@ You can control how pyrax operates by including the optional configuration file.
 	files = True
 	loadbalancers = True
 	databases = True
-	keystone = False
 
-With the above example, pyrax will default to the `ORD` region, and will connect to all services except Keystone after authenticating.
+With the above example, pyrax will default to Rackspace authentication, provision resources in the `ORD` region, and will connect to all services except Cloud Databases after authenticating.
 
 
 ## The `Identity` Class

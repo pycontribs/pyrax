@@ -44,7 +44,7 @@ def handle_swiftclient_exception(fnc):
     return _wrapped
 
 
-class Client(object):
+class CFClient(object):
     """
     Wraps the calls to swiftclient with objects representing Containers and StorageObjects.
 
