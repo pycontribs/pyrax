@@ -134,7 +134,8 @@ class CloudDatabaseInstance(BaseResource):
         try:
             return name_or_obj.name
         except AttributeError:
-            raise exc.MissingName("The object '%s' does not have a 'name' attribute.")
+            msg = "The object '%s' does not have a 'name' attribute." % name_or_obj
+            raise exc.MissingName(msg)
 
 
     def delete_database(self, name_or_obj):
