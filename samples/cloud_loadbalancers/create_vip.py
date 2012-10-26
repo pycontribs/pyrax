@@ -11,8 +11,5 @@ clb = pyrax.cloud_loadbalancers
 
 # You need to specify an address, port and condition
 vip = clb.VirtualIP(type="PUBLIC")
-print "Virtual IP:", vip.toDict()
-
-#Definition:n(self, weight=None, parent=None, address=None, port=None, condition=None, status=None, id=None, **kwargs)
-#Definition:v(self, address=None, ipVersion=None, type=None, id=None, parent=None, **kwargs)
-
+print "Virtual IP:", vip
+print "toDict:", vip.toDict()
