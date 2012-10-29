@@ -346,7 +346,7 @@ class CFClient(object):
     def move_object(self, container, obj_name, new_container, new_obj_name=None):
         """
         Works just like copy_object, except that the source object is deleted
-        after a succesful copy.
+        after a successful copy.
         """
         new_obj_etag = self.copy_object(container, obj_name, new_container,
                 new_obj_name=new_obj_name)
@@ -767,7 +767,7 @@ class Connection(_swift_client.Connection):
 
     def cdn_request(self, method, path=[], data="", hdrs=None):
         """
-        Given a method (i.e. GET, PUT, POST, etc), a path, data, header and
+        Given a method (i.e. GET, PUT, POST, etc.), a path, data, header and
         metadata dicts, performs an http request against the CDN service.
 
         Taken directly from the cloudfiles library and modified for use here.

@@ -28,10 +28,6 @@ class BaseResource(object):
     """
     A resource represents a particular instance of an object (server, flavor,
     etc). This is pretty much just a bag for attributes.
-
-    :param manager: Manager object
-    :param info: dictionary representing resource attributes
-    :param loaded: prevent lazy-loading if set to True
     """
     HUMAN_ID = False
     NAME_ATTR = "name"
@@ -45,7 +41,7 @@ class BaseResource(object):
 
     @property
     def human_id(self):
-        """Subclasses may override this provide a pretty ID which can be used
+        """Subclasses may override this to provide a pretty ID which can be used
         for bash completion.
         """
         if self.NAME_ATTR in self.__dict__ and self.HUMAN_ID:

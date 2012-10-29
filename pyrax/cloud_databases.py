@@ -290,7 +290,7 @@ class CloudDatabaseClient(BaseClient):
     def create_user(self, instance, name, password, database_names):
         """
         Creates a user with the specified name and password, and gives that
-        user access to the spcified database(s).
+        user access to the specified database(s).
         """
         return instance.create_user(name=name, password=password,
                 database_names=database_names)
@@ -334,7 +334,7 @@ class CloudDatabaseClient(BaseClient):
 
 
     def list_flavors(self):
-        """Return a list of all available Flavors."""
+        """Returns a list of all available Flavors."""
         return self._flavor_manager.list()
 
 
