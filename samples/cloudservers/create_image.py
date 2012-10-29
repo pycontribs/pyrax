@@ -22,18 +22,22 @@ import pyrax
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cs = pyrax.cloudservers
-server_name = pyrax.utils.random_name(8)
+servers = cs.servers.list()
+srv_dict = {}
+print "Select a server from which an image will be created."
+for pos, srv in enumerate(servers):
+    print "%s: %s" % (pos, srv.name)
+    srv_dict[str(pos)] = srv.id
+selection = None
+while selection not in srv_dict:
+    if selection is not None:
+        print "   -- Invalid choice"
+    selection = raw_input("Enter the number for your choice: ")
 
-ubu_image = [img for img in cs.images.list()
-		if "12.04" in img.name][0]
-print "Ubuntu Image:", ubu_image
-flavor_512 = [flavor for flavor in cs.flavors.list()
-		if flavor.ram == 512][0]
-print "512 Flavor:", flavor_512
+server_id = srv_dict[selection]
+print
+nm = raw_input("Enter a name for the image: ")
 
-server = cs.servers.create(server_name, ubu_image.id, flavor_512.id)
-print "Name:", server.name
-print "ID:", server.id
-print "Status:", server.status
-print "Admin Password:", server.adminPass
-print "Networks:", server.networks
+img_id = cs.servers.create_image(server_id, nm)
+
+print "Image '%s' is being created. Its ID is: %s" % (nm, img_id)

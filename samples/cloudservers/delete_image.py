@@ -17,23 +17,30 @@
 #    under the License.
 
 import os
+import sys
+
 import pyrax
 
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cs = pyrax.cloudservers
-server_name = pyrax.utils.random_name(8)
+all_images = cs.images.list()
+images = [img for img in all_images if hasattr(img, "server")]
+if not images:
+    print "There are no images to delete. Create one, and then re-run this script."
+    print
+    sys.exit()
+img_dict = {}
+print "Select an image to delete:"
+for pos, img in enumerate(images):
+    print "%s: %s" % (pos, img.name)
+    img_dict[str(pos)] = img
+selection = None
+while selection not in img_dict:
+    if selection is not None:
+        print "   -- Invalid choice"
+    selection = raw_input("Enter the number for your choice: ")
 
-ubu_image = [img for img in cs.images.list()
-		if "12.04" in img.name][0]
-print "Ubuntu Image:", ubu_image
-flavor_512 = [flavor for flavor in cs.flavors.list()
-		if flavor.ram == 512][0]
-print "512 Flavor:", flavor_512
-
-server = cs.servers.create(server_name, ubu_image.id, flavor_512.id)
-print "Name:", server.name
-print "ID:", server.id
-print "Status:", server.status
-print "Admin Password:", server.adminPass
-print "Networks:", server.networks
+image = img_dict.get(selection)
+cs.images.delete(image.id)
+print "Image '%s' has been deleted." % image.name
