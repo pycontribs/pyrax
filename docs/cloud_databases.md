@@ -11,7 +11,7 @@ To keep these concepts clear, the term 'database' by itself always refers to the
 
 
 ## Using Cloud Databases in pyrax
-Once you have authenticated and connected to the database service, you can reference the database module via `pyrax.cloud_databases`. That's a lot to type over and over in your code, so it is easier if you include the following line at the beginning of your code:
+Once you have authenticated and connected to the database service, you can reference the database module via `pyrax.cloud_databases`. That is a lot to type over and over in your code, so it is easier if you include the following line at the beginning of your code:
 
 	cdb = pyrax.cloud_databases
 
@@ -75,7 +75,7 @@ Resizing a volume refers to increasing the amount of disk space for your instanc
 ## Create a Database
 Once you have an instance, you need to create a database. You must specify a name for the new database, as well as the optional parameters for `character_set` and `collate`. If these are not specified, the defaults of `utf8` and `utf8_general_ci` will be used, respectively.
 
-There are two variations: calling the `create_database()` method of a `CloudDatabaseInstance` object, or by calling the `create_database()` method of the cloud_databases module itself. With the second version, you must specify the instance in which the database will be created. Either a `CloudDatabaseInstance` object or its `id` will work. Assuming that `inst` is a reference to the instance you created above, here are both versions:
+There are two variations: calling the `create_database()` method of a `CloudDatabaseInstance` object, or calling the `create_database()` method of the cloud_databases module itself. With the second version, you must specify the instance in which the database will be created. Either a `CloudDatabaseInstance` object or its `id` will work. Assuming that `inst` is a reference to the instance you created above, here are both versions:
 
 	db = inst.create_database("db_name")
 	print "DB:", db
@@ -91,7 +91,7 @@ Both calls will return an object representing the newly-created database:
 
 
 ## Create a User
-You can create a user on an instance with its own username/password credentials, with access to one or more databases on that instance. Similar to database creation, you can call create_user either on the instance object, or on the module. To simplify these examples only the call on the instance will be displayed.
+You can create a user on an instance with its own username/password credentials, with access to one or more databases on that instance. Similar to database creation, you can call create_user either on the instance object, or on the module. To simplify these examples, only the call on the instance will be displayed.
 
 Assuming that you have the references `inst` and `db` from the previous examples, you can create a user like this:
 
@@ -104,7 +104,7 @@ This will print out:
 
 
 ## List Databases or Users in an Instance
-Instances have a `list_databases()` and a `list_users` command:
+Instances have a `list_databases()` and a `list_users()` method:
 
 	dbs = inst.list_databases()
 	users = inst.list_users()
@@ -117,8 +117,8 @@ which will output:
 	Users: [<CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>]
 
 
-## Get a Database or User Object
-You can get a database or user object from an instance object by supplying the name:
+## Get a `CloudDatabaseDatabase` or `CloudDatabaseUser` Object
+You can get a `CloudDatabaseDatabase` or `CloudDatabaseUser` object from an `CloudDatabaseInstance` object by supplying the name:
 
 	db = inst.get_database("db_name")
 	user = inst.get_user("groucho")
@@ -131,10 +131,10 @@ which will output:
 	User: <CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>
 
 
-## Working with Database and User Objects
-These objects are essentially read-only representations of the underlying MySQL database running in your instance. You cannot update the attributes of these objects and expect them to change anything in the instance. They are useful mostly to determine the state of your databse. The one method they have is `delete()`, which will cause them to be deleted from their instance.
+## Working with `CloudDatabaseDatabase` and `CloudDatabaseUser` Objects
+These objects are essentially read-only representations of the underlying MySQL database running in your instance. You cannot update the attributes of these objects and expect them to change anything in the instance. They are useful mostly to determine the state of your database. The one method they have is `delete()`, which will cause them to be deleted from their instance.
 
-Note that there is a bug in the underlying Python library for the API that affect user names that contain a period. With such users, the API will truncate the name at the first period, and attempt to delete the shortened name. Example: if you have two users with the names `"john.doe"` and `"john"`, and you call:
+Note that there is a bug in the underlying Python library for the API that affects user names that contain a period. With such users, the API will truncate the name at the first period, and attempt to delete the shortened name. Example: if you have two users with the names `"john.doe"` and `"john"`, and you call:
 
 	inst.delete("john.doe")
 
