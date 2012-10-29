@@ -170,12 +170,14 @@ class FakeDatabaseInstance(CloudDatabaseInstance):
         self.id = utils.random_name()
         self.volume = FakeEntity()
         self.manager = FakeManager()
+        self.manager.api = FakeDatabaseClient()
         self._database_manager = FakeManager()
         self._user_manager = FakeManager()
 
 
 class FakeDatabaseClient(CloudDatabaseClient):
     def __init__(self, *args, **kwargs):
+        self._flavor_manager = FakeManager()
         super(FakeDatabaseClient, self).__init__("fakeuser",
                 "fakepassword", *args, **kwargs)
 
