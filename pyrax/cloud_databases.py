@@ -36,6 +36,9 @@ def assure_instance(fnc):
 
 
 class CloudDatabaseInstance(BaseResource):
+    """
+    This class represents a MySQL instance in the cloud. 
+    """
     def __init__(self, *args, **kwargs):
         super(CloudDatabaseInstance, self).__init__(*args, **kwargs)
         self._database_manager = BaseManager(self.manager.api,
@@ -222,22 +225,40 @@ class CloudDatabaseInstance(BaseResource):
 
 
 class CloudDatabaseDatabase(BaseResource):
+    """
+    This class represents a database on a CloudDatabaseInstance. It is not
+    a true cloud entity, but a convenience object for dealing with databases
+    on instances.
+    """
     def delete(self):
         """This class doesn't have an 'id', so pass the name."""
         self.manager.delete(self.name)
 
 
 class CloudDatabaseUser(BaseResource):
+    """
+    This class represents a user on a CloudDatabaseInstance. It is not
+    a true cloud entity, but a convenience object for dealing with users
+    for instances.
+    """
     def delete(self):
         """This class doesn't have an 'id', so pass the name."""
         self.manager.delete(self.name)
 
 
 class CloudDatabaseFlavor(BaseResource):
+    """
+    This class represents the available instance configurations, or 'flavors',
+    which you use to define the memory and CPU size of your instance. These
+    objects are read-only.
+    """
     pass
 
 
 class CloudDatabaseClient(BaseClient):
+    """
+    This is the primary class for interacting with Cloud Databases.
+    """
     def _configure_manager(self):
         """
         Create the manager to handle the instances, and also another

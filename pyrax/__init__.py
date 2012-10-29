@@ -1,6 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# For doxygen class doc generation:
+"""
+\mainpage Class Documenation for pyrax
+
+This module provides the Python Language Bindings for creating applications
+built on the Rackspace / OpenStack Cloud.<br />
+
+The source code for <b>pyrax</b> can be found at:
+
+http://github.com/rackspace/pyrax
+
+\package cf_wrapper
+
+This module wraps <b>swiftclient</b>, the Python client for OpenStack / Swift,
+providing an object-oriented interface to the Swift object store.
+
+It also adds in CDN functionality that is Rackspace-specific.
+"""
 import ConfigParser
 from functools import wraps
 import os

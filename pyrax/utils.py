@@ -24,6 +24,20 @@ import pyrax.exceptions as exc
 
 
 class SelfDeletingTempfile(object):
+    """
+    Convenience class for dealing with temporary files.
+
+    The temp file is created in a secure fashion, and is
+    automatically deleted when the context manager exits.
+
+    Usage:
+
+    with SelfDeletingTempfile() as tmp:
+        tmp.write( ... )
+        some_func(tmp)
+    # More code
+    # At this point, the tempfile has been erased.
+    """
     name = None
 
     def __enter__(self):
@@ -36,6 +50,27 @@ class SelfDeletingTempfile(object):
 
 
 class SelfDeletingTempDirectory(object):
+    """
+    Convenience class for dealing with temporary folders and the
+    files within them.
+
+    The temp folder is created in a secure fashion, and is
+    automatically deleted when the context manager exits, along
+    with any files that may be contained within. When you
+    instantiate this class, you receive the full path to the
+    temporary directory.
+
+    Usage:
+
+    with SelfDeletingTempDirectory() as tmpdir:
+        f1 = file(os.path.join(tmpdir, "my_file.txt", "w")
+        f1.write("blah...")
+        f1.close()
+        some_func(tmpdir)
+    # More code
+    # At this point, the directory 'tmpdir' has been deleted,
+    # as well as the file 'f1' within it.
+    """
     name = None
 
     def __enter__(self):
