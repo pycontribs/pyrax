@@ -208,12 +208,12 @@ class CloudDatabaseInstance(BaseResource):
         try:
             ret = self._flavor
         except AttributeError:
-            ret = self._flavor = CloudDatabaseFlavor(self.manager, {})
+            ret = self._flavor = CloudDatabaseFlavor(self.manager.api._flavor_manager, {})
         return ret
 
     def _set_flavor(self, flavor):
         if isinstance(flavor, dict):
-            self._flavor = CloudDatabaseFlavor(self.manager, flavor, True)
+            self._flavor = CloudDatabaseFlavor(self.manager.api._flavor_manager, flavor)
         else:
             # Must be an instance
             self._flavor = flavor

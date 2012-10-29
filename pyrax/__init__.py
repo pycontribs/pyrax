@@ -208,6 +208,7 @@ def connect_to_cloudservers(region=None):
     cloudservers = _cs_client.Client(identity.username, identity.api_key,
             project_id=identity.tenant_name, auth_url=identity.auth_endpoint,
             bypass_url=mgt_url, auth_system="rackspace",
+#            http_log_debug=True,
             region_name=region, service_type="compute")
     cloudservers.client.USER_AGENT = _make_agent_name(cloudservers.client.USER_AGENT)
 
@@ -267,20 +268,6 @@ def connect_to_cloud_databases(region=None):
     ep = _get_service_endpoint("database", region)
     cloud_databases = CloudDatabaseClient(identity.username, identity.api_key,
             region_name=region, management_url=ep, auth_token=identity.token,
+#            http_log_debug=True,
             tenant_id=identity.tenant_id, service_type="rax:database")
     cloud_databases.user_agent = _make_agent_name(cloud_databases.user_agent)
-
-
-def _dev_only_auth():
-    """
-    Shortcut method for doing a quick authentication while developing
-    this SDK. Not guaranteed to remain in the code, so do not use this in
-    your applications.
-    """
-    creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
-    set_credential_file(creds_file)
-
-
-if __name__ == "__main__":
-    _dev_only_auth()
-

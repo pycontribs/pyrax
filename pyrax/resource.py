@@ -37,10 +37,10 @@ class BaseResource(object):
     NAME_ATTR = "name"
 
     def __init__(self, manager, info, loaded=False):
+        self._loaded = loaded
         self.manager = manager
         self._info = info
         self._add_details(info)
-        self._loaded = loaded
 
 
     @property
