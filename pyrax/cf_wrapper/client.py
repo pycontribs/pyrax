@@ -610,7 +610,6 @@ class CFClient(object):
             name - the name of the container
             count - the number of objects in the container
             bytes - the total bytes in the container
-        \endocde
         """
         hdrs, conts = self.connection.get_container("")
         return conts
