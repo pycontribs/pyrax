@@ -32,11 +32,13 @@ class SelfDeletingTempfile(object):
 
     Usage:
 
+    \code
     with SelfDeletingTempfile() as tmp:
         tmp.write( ... )
         some_func(tmp)
     # More code
     # At this point, the tempfile has been erased.
+    \endcode
     """
     name = None
 
@@ -62,6 +64,7 @@ class SelfDeletingTempDirectory(object):
 
     Usage:
 
+    \code
     with SelfDeletingTempDirectory() as tmpdir:
         f1 = file(os.path.join(tmpdir, "my_file.txt", "w")
         f1.write("blah...")
@@ -70,6 +73,7 @@ class SelfDeletingTempDirectory(object):
     # More code
     # At this point, the directory 'tmpdir' has been deleted,
     # as well as the file 'f1' within it.
+    \endcode
     """
     name = None
 

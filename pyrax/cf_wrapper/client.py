@@ -606,9 +606,11 @@ class CFClient(object):
         """Returns a list of info on Containers.
 
         For each container, a dict containing the following keys is returned:
+        \code
             name - the name of the container
             count - the number of objects in the container
             bytes - the total bytes in the container
+        \endocde
         """
         hdrs, conts = self.connection.get_container("")
         return conts
@@ -824,6 +826,7 @@ class FolderUploader(threading.Thread):
         threading.Thread.__init__(self)
 
     def folder_name_from_path(self, pth):
+        """Convenience method that first strips and trailing path separators."""
         return os.path.basename(pth.rstrip(os.sep))
 
     def consider(self, nm):
@@ -834,6 +837,7 @@ class FolderUploader(threading.Thread):
         return True
 
     def upload_files_in_folder(self, arg, dirname, fnames):
+        """Handles the iteration across files within a folder."""
         if not self.consider(dirname):
             return False
         for fname in (nm for nm in fnames if self.consider(nm)):
@@ -849,6 +853,7 @@ class FolderUploader(threading.Thread):
             self.client._update_progress(self.upload_key, obj_size)
 
     def run(self):
+        """Starts the uplaoding thread."""
         root_path, folder_name = os.path.split(self.root_folder)
         if self.container is None:
             self.base_path = os.path.join(root_path, folder_name)
