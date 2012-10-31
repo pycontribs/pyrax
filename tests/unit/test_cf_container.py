@@ -22,25 +22,19 @@ class CF_ContainerTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         reload(pyrax)
         self.orig_connect_to_cloudservers = pyrax.connect_to_cloudservers
-        self.orig_connect_to_keystone = pyrax.connect_to_keystone
         self.orig_connect_to_cloud_loadbalancers = pyrax.connect_to_cloud_loadbalancers
-        self.orig_connect_to_cloud_dns = pyrax.connect_to_cloud_dns
         self.orig_connect_to_cloud_databases = pyrax.connect_to_cloud_databases
         super(CF_ContainerTest, self).__init__(*args, **kwargs)
         pyrax.identity = FakeIdentity()
         pyrax.connect_to_cloudservers = Mock()
-        pyrax.connect_to_keystone = Mock()
         pyrax.connect_to_cloud_loadbalancers = Mock()
-        pyrax.connect_to_cloud_dns = Mock()
         pyrax.connect_to_cloud_databases = Mock()
         pyrax.set_credentials("fakeuser", "fakeapikey")
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def setUp(self):
         pyrax.connect_to_cloudservers = Mock()
-        pyrax.connect_to_keystone = Mock()
         pyrax.connect_to_cloud_loadbalancers = Mock()
-        pyrax.connect_to_cloud_dns = Mock()
         pyrax.connect_to_cloud_databases = Mock()
         pyrax.connect_to_cloudfiles()
         self.client = pyrax.cloudfiles
@@ -57,9 +51,7 @@ class CF_ContainerTest(unittest.TestCase):
         self.client = None
         self.container = None
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
-        pyrax.connect_to_keystone = self.orig_connect_to_keystone
         pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
-        pyrax.connect_to_cloud_dns = self.orig_connect_to_cloud_dns
         pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
 
     def test_fetch_cdn(self):

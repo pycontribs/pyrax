@@ -28,13 +28,7 @@ import rax_identity as _rax_identity
 import version
 
 import cf_wrapper.client as _cf
-try:
-    import clouddns as _cdns
-    _USE_DNS = True
-except ImportError:
-    _USE_DNS = False
 import cloudlb as _cloudlb
-from keystoneclient.v2_0 import client as _ks_client
 from novaclient.v1_1 import client as _cs_client
 
 from cloud_databases import CloudDatabaseClient
@@ -47,9 +41,7 @@ from cloud_databases import CloudDatabaseUser
 # Initiate the services to None until we are authenticated.
 cloudservers = None
 cloudfiles = None
-keystone = None
 cloud_loadbalancers = None
-cloud_dns = None
 cloud_databases = None
 # Class used to handle auth/identity
 identity_class = None
@@ -64,9 +56,7 @@ USER_AGENT = "pyrax/%s" % version.version
 services_to_start = {
         "servers": True,
         "files": True,
-        "keystone": True,
         "loadbalancers": True,
-        "dns": True,
         "databases": False,
         "blockstorage": False,
         }
@@ -163,15 +153,13 @@ def authenticate():
 
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
-    global identity, cloudservers, cloudfiles, keystone, cloud_lb, cloud_loadbalancers
-    global cloud_dns, cloud_databases, default_region
+    global identity, cloudservers, cloudfiles, cloud_lb, cloud_loadbalancers
+    global cloud_databases, default_region
     identity = identity_class()
     cloudservers = None
     cloudfiles = None
-    keystone = None
     cloud_lb = None
     cloud_loadbalancers = None
-    cloud_dns = None
     cloud_databases = None
     default_region = None
 
@@ -191,12 +179,8 @@ def connect_to_services():
         connect_to_cloudservers()
     if services_to_start["files"]:
         connect_to_cloudfiles()
-    if services_to_start["keystone"]:
-        connect_to_keystone()
     if services_to_start["loadbalancers"]:
         connect_to_cloud_loadbalancers()
-    if services_to_start["dns"]:
-        connect_to_cloud_dns()
     if services_to_start["databases"]:
         connect_to_cloud_databases()
 
@@ -247,14 +231,6 @@ def connect_to_cloudfiles(region=None):
 
 
 @_require_auth
-def connect_to_keystone():
-    global keystone
-    _ks_client.Client.USER_AGENT = _make_agent_name(_ks_client.Client.USER_AGENT)
-    keystone = _ks_client.Client(token=identity.token, auth_url=identity.auth_endpoint,
-            tenant_name=identity.tenant_name, username=identity.username, password=identity.api_key)
-
-
-@_require_auth
 def connect_to_cloud_loadbalancers(region=None):
     global cloud_lb, cloud_loadbalancers
     region = safe_region(region)
@@ -268,17 +244,6 @@ def connect_to_cloud_loadbalancers(region=None):
     cloud_loadbalancers.get_usage = _mgr.get_usage
     # Fix a referencing inconsistency in the library
     _cloudlb.accesslist.AccessList.resource = _cloudlb.accesslist.NetworkItem
-
-
-@_require_auth
-def connect_to_cloud_dns(region=None):
-    if not _USE_DNS:
-        return
-    global cloud_dns
-    if region is None:
-        region = default_region or FALLBACK_REGION
-    cloud_dns = _cdns.Connection(identity.username, identity.api_key)
-    cloud_dns.user_agent = _make_agent_name(cloud_dns.user_agent)
 
 
 @_require_auth

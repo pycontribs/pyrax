@@ -24,17 +24,13 @@ class CF_ClientTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         reload(pyrax)
         self.orig_connect_to_cloudservers = pyrax.connect_to_cloudservers
-        self.orig_connect_to_keystone = pyrax.connect_to_keystone
         self.orig_connect_to_cloud_loadbalancers = pyrax.connect_to_cloud_loadbalancers
-        self.orig_connect_to_cloud_dns = pyrax.connect_to_cloud_dns
         self.orig_connect_to_cloud_databases = pyrax.connect_to_cloud_databases
         super(CF_ClientTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
         pyrax.connect_to_cloudservers = Mock()
-        pyrax.connect_to_keystone = Mock()
         pyrax.connect_to_cloud_loadbalancers = Mock()
-        pyrax.connect_to_cloud_dns = Mock()
         pyrax.connect_to_cloud_databases = Mock()
         pyrax.identity = FakeIdentity()
         pyrax.set_credentials("fakeuser", "fakeapikey")
@@ -49,9 +45,7 @@ class CF_ClientTest(unittest.TestCase):
     def tearDown(self):
         self.client = None
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
-        pyrax.connect_to_keystone = self.orig_connect_to_keystone
         pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
-        pyrax.connect_to_cloud_dns = self.orig_connect_to_cloud_dns
         pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
 
     def test_account_metadata(self):
