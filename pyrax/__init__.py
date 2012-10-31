@@ -266,6 +266,8 @@ def connect_to_cloud_loadbalancers(region=None):
     cloud_loadbalancers.protocols = _mgr.get_protocols()
     cloud_loadbalancers.algorithms = _mgr.get_algorithms()
     cloud_loadbalancers.get_usage = _mgr.get_usage
+    # Fix a referencing inconsistency in the library
+    _cloudlb.accesslist.AccessList.resource = _cloudlb.accesslist.NetworkItem
 
 
 @_require_auth
