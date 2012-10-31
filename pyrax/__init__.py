@@ -51,6 +51,13 @@ default_identity_type = None
 default_region = None
 # Some services require a region. If the user doesn't specify one, use DFW.
 FALLBACK_REGION = "DFW"
+
+
+def safe_region(region=None):
+    """Value to use when no region is specified."""
+    return region or default_region or FALLBACK_REGION
+
+
 # Value to plug into the user-agent headers
 USER_AGENT = "pyrax/%s" % version.version
 services_to_start = {
@@ -60,7 +67,6 @@ services_to_start = {
         "databases": False,
         "blockstorage": False,
         }
-
 # Read in the configuration file, if any
 config_file = os.path.expanduser("~/.pyrax.cfg")
 if os.path.exists(config_file):
@@ -84,17 +90,33 @@ if os.path.exists(config_file):
     for svc, status in svc_dict.items():
         services_to_start[svc] = (status == "True")
 
-# Allow for different identity classes.
+
 def set_identity_class(cls):
+    """
+    Different applications may require different classes to handle
+    identity management. This allows the app to configure itself
+    for its auth requirements.
+    """
     global identity_class
     identity_class = cls
+
+
+def create_identity():
+    """
+    Sets the 'identity' attribute to an instance of
+    the current identity_class.
+    """
+    global identity
+    identity = identity_class(region=safe_region())
+
 
 if identity_class is None:
     if default_identity_type == "rackspace":
         # Default to the rax_identity class.
         identity_class = _rax_identity.Identity
-# This can be changed for unit testing or for other identity managers.
-identity = identity_class()
+
+# Create an instance of the identity_class
+create_identity()
 
 
 def _require_auth(fnc):
@@ -110,6 +132,7 @@ def _require_auth(fnc):
 
 def set_credentials(username, api_key, authenticate=True):
     """Set the username and api_key directly, and then try to authenticate."""
+    identity.authenticated = False
     try:
         identity.set_credentials(username=username, api_key=api_key, authenticate=authenticate)
     except exc.AuthenticationFailed:
@@ -129,6 +152,7 @@ def set_credential_file(cred_file, authenticate=True):
     api_key = 1234567890abcdef
 
     """
+    identity.authenticated = False
     try:
         identity.set_credential_file(cred_file, authenticate=authenticate)
     except exc.AuthenticationFailed:
@@ -153,12 +177,11 @@ def authenticate():
 
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
-    global identity, cloudservers, cloudfiles, cloud_lb, cloud_loadbalancers
+    global identity, cloudservers, cloudfiles, cloud_loadbalancers
     global cloud_databases, default_region
     identity = identity_class()
     cloudservers = None
     cloudfiles = None
-    cloud_lb = None
     cloud_loadbalancers = None
     cloud_databases = None
     default_region = None
@@ -175,19 +198,20 @@ def _make_agent_name(base):
 
 def connect_to_services():
     """Establish authenticated connections to the various cloud APIs."""
+    global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
     if services_to_start["servers"]:
-        connect_to_cloudservers()
+        cloudservers = connect_to_cloudservers()
     if services_to_start["files"]:
-        connect_to_cloudfiles()
+        cloudfiles = connect_to_cloudfiles()
     if services_to_start["loadbalancers"]:
-        connect_to_cloud_loadbalancers()
+        cloud_loadbalancers = connect_to_cloud_loadbalancers()
     if services_to_start["databases"]:
-        connect_to_cloud_databases()
+        cloud_databases = connect_to_cloud_databases()
 
 
 def _get_service_endpoint(svc, region=None):
     if region is None:
-        region = default_region or FALLBACK_REGION
+        region = safe_region()
     region = safe_region(region)
     ep = identity.services.get(svc, {}).get("endpoints", {}).get(region, {}).get("public_url")
     if not ep:
@@ -197,14 +221,8 @@ def _get_service_endpoint(svc, region=None):
     return ep
 
 
-def safe_region(region=None):
-    """Value to use when no region is specified."""
-    return region or default_region or FALLBACK_REGION
-
-
 @_require_auth
 def connect_to_cloudservers(region=None):
-    global cloudservers
     region = safe_region(region)
     mgt_url = _get_service_endpoint("compute", region)
     cloudservers = _cs_client.Client(identity.username, identity.api_key,
@@ -213,11 +231,11 @@ def connect_to_cloudservers(region=None):
 #            http_log_debug=True,
             region_name=region, service_type="compute")
     cloudservers.client.USER_AGENT = _make_agent_name(cloudservers.client.USER_AGENT)
+    return cloudservers
 
 
 @_require_auth
 def connect_to_cloudfiles(region=None):
-    global cloudfiles
     region = safe_region(region)
     cf_url = _get_service_endpoint("object_store", region)
     cdn_url = _get_service_endpoint("object_cdn", region)
@@ -228,11 +246,11 @@ def connect_to_cloudfiles(region=None):
             tenant_name=identity.tenant_name, preauthurl=cf_url, preauthtoken=identity.token,
             auth_version="2", os_options=opts)
     cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)
+    return cloudfiles
 
 
 @_require_auth
 def connect_to_cloud_loadbalancers(region=None):
-    global cloud_lb, cloud_loadbalancers
     region = safe_region(region)
     _cloudlb.consts.USER_AGENT = _make_agent_name(_cloudlb.consts.USER_AGENT)
     _mgr = _cloudlb.CloudLoadBalancer(identity.username, identity.api_key, region)
@@ -244,11 +262,11 @@ def connect_to_cloud_loadbalancers(region=None):
     cloud_loadbalancers.get_usage = _mgr.get_usage
     # Fix a referencing inconsistency in the library
     _cloudlb.accesslist.AccessList.resource = _cloudlb.accesslist.NetworkItem
+    return cloud_loadbalancers
 
 
 @_require_auth
 def connect_to_cloud_databases(region=None):
-    global cloud_databases
     region = safe_region(region)
     ep = _get_service_endpoint("database", region)
     cloud_databases = CloudDatabaseClient(identity.username, identity.api_key,
@@ -256,3 +274,4 @@ def connect_to_cloud_databases(region=None):
 #            http_log_debug=True,
             tenant_id=identity.tenant_id, service_type="rax:database")
     cloud_databases.user_agent = _make_agent_name(cloud_databases.user_agent)
+    return cloud_databases

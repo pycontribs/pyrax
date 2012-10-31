@@ -131,28 +131,28 @@ class PyraxInitTest(unittest.TestCase):
     def test_connect_to_cloudservers(self):
         pyrax.cloudservers = None
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
-        pyrax.connect_to_cloudservers()
+        pyrax.cloudservers = pyrax.connect_to_cloudservers()
         self.assertIsNotNone(pyrax.cloudservers)
 
     @patch('pyrax._cf.CFClient', new=FakeService)
     def test_connect_to_cloudfiles(self):
         pyrax.cloudfiles = None
         pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
-        pyrax.connect_to_cloudfiles()
+        pyrax.cloudfiles = pyrax.connect_to_cloudfiles()
         self.assertIsNotNone(pyrax.cloudfiles)
 
     @patch('pyrax._cloudlb.CloudLoadBalancer', new=FakeService)
     def test_connect_to_cloud_loadbalancers(self):
         pyrax.cloud_loadbalancers = None
         pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
-        pyrax.connect_to_cloud_loadbalancers()
+        pyrax.cloud_loadbalancers = pyrax.connect_to_cloud_loadbalancers()
         self.assertIsNotNone(pyrax.cloud_loadbalancers)
 
     @patch('pyrax.CloudDatabaseClient', new=FakeService)
     def test_connect_to_cloud_databases(self):
         pyrax.cloud_databases = None
         pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
-        pyrax.connect_to_cloud_databases()
+        pyrax.cloud_databases = pyrax.connect_to_cloud_databases()
         self.assertIsNotNone(pyrax.cloud_databases)
 
 

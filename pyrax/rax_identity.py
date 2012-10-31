@@ -22,7 +22,8 @@ class Identity(object):
     This class handles all of the authentication requirements for working
     with the Rackspace Cloud.
     """
-    auth_endpoint = "https://identity.api.rackspacecloud.com/v2.0/"
+    us_auth_endpoint = "https://identity.api.rackspacecloud.com/v2.0/"
+    uk_auth_endpoint = "https://lon.identity.api.rackspacecloud.com/v2.0/"
     username = ""
     api_key = ""
     token = ""
@@ -32,12 +33,15 @@ class Identity(object):
     authenticated = False
     services = {}
 
+
     def __init__(self, username=None, api_key=None, token=None,
-            credential_file=None):
+            credential_file=None, region=None):
         self.username = username
         self.api_key = api_key
         self.token = token
         self._creds_file = credential_file
+        self.auth_endpoint = (self.uk_auth_endpoint
+                if region in ("LON", "lon") else self.us_auth_endpoint)
 
 
     def set_credentials(self, username, api_key, authenticate=False):
@@ -105,6 +109,8 @@ class Identity(object):
             if errcode == 401:
                 # Invalid authorization
                 raise exc.AuthenticationFailed("Incorrect/unauthorized credentials received")
+            else:
+                raise exc.AuthenticationFailed("Authentication Error: %s" % e)
         resp = json.loads(raw_resp.read())
         self._parse_response(resp)
         self.authenticated = True
