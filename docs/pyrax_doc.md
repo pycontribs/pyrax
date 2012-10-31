@@ -18,13 +18,13 @@ The documentation assumes that you are experienced with programming in Python, a
 ## Installing pyrax
 You install pyrax like any other third-party Python module. Just run:
 
-	pip install pyrax
+    pip install pyrax
 
 You will probably need to do this as root/administrator (that is, using `sudo`) unless you are installing into a [virtualenv](http://www.virtualenv.org/en/latest/). `pip` will pull in all of the other modules and client libraries that pyrax needs.
 
 You can also install directly from GitHub (where the pyrax source code is hosted). To do that, run:
 
-	pip install git+git://github.com/rackspace/pyrax.git
+    pip install git+git://github.com/rackspace/pyrax.git
 
 The difference is that using the GitHub installation method will install the current trunk version, which will have the latest changes, but will also be less stable.
 
@@ -38,21 +38,21 @@ You will need to submit your Rackspace Cloud username and API key in order to a
     username = myusername
     api_key = 01234567890abcdef
 
-To authenticate, run the following code using one of either `set_credentials()` or `set_credential_file()`. Which method you choose depends on your preference for passing credentials. 
+To authenticate, run the following code using one of either `set_credentials()` or `set_credential_file()`. Which method you choose depends on your preference for passing credentials.
 
-	import pyrax
-	
-	# Using direct method
-	pyrax.set_credentials("myusername", "01234567890abcdef")
-	
-	# Using credentials file
-	pyrax.set_credential_file("/path/to/credential/file")
+    import pyrax
+
+    # Using direct method
+    pyrax.set_credentials("myusername", "01234567890abcdef")
+
+    # Using credentials file
+    pyrax.set_credential_file("/path/to/credential/file")
 
 Once you have authenticated, you now have access to Cloud Servers, Cloud Files, and Cloud Load Balancers, using the following references:
 
-	pyrax.cloudservers
-	pyrax.cloudfiles
-	pyrax.cloud_loadbalancers
+    pyrax.cloudservers
+    pyrax.cloudfiles
+    pyrax.cloud_loadbalancers
 
 You don't have to log into each service separately; pyrax handles that for you.
 
@@ -60,15 +60,15 @@ You don't have to log into each service separately; pyrax handles that for you.
 ## Configuring pyrax
 You can control how pyrax operates by including the optional configuration file. The configuration file should be named `~/.pyrax.cfg`, and allows you to specify the default region, as well as control which services pyrax will connect to automatically after authenticating. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Here is a sample:
 
-	[settings]
-	identity_type = rackspace
-	region = ORD
-	
-	[services]
-	servers = True
-	files = True
-	loadbalancers = True
-	databases = True
+    [settings]
+    identity_type = rackspace
+    region = ORD
+
+    [services]
+    servers = True
+    files = True
+    loadbalancers = True
+    databases = True
 
 With the above example, pyrax will default to Rackspace authentication, provision resources in the `ORD` region, and will connect to all services except Cloud Databases after authenticating.
 
@@ -78,78 +78,78 @@ pyrax has an `Identity` class that is used to handle authentication and cache cr
 
 You can check its `authenticated` attribute to determine if authentication was successful; if so, its `token` and `expires` attributes will contain the returned authentication information, and its `services` attribute will contain a dict with all the service endpoint information. Here is an example of the contents of `services` after authentication (with identifying information obscured):
 
-	{u'access':
-	        {u'serviceCatalog': [
-	            {u'endpoints': [{u'publicURL': u'https://ord.loadbalancers.api.rackspacecloud.com/v1.0/000000',
-	                              u'region': u'ORD',
-	                              u'tenantId': u'000000'},
-	                             {u'publicURL': u'https://dfw.loadbalancers.api.rackspacecloud.com/v1.0/000000',
-	                              u'region': u'DFW',
-	                              u'tenantId': u'000000'}],
-	              u'name': u'cloudLoadBalancers',
-	              u'type': u'rax:load-balancer'},
-	             {u'endpoints': [{u'internalURL': u'https://snet-storage101.dfw1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
-	                              u'publicURL': u'https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
-	                              u'region': u'DFW',
-	                              u'tenantId': u'MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff'},
-	                             {u'internalURL': u'https://snet-storage101.ord1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
-	                              u'publicURL': u'https://storage101.ord1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
-	                              u'region': u'ORD',
-	                              u'tenantId': u'MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff'}],
-	              u'name': u'cloudFiles',
-	              u'type': u'object-store'},
-	             {u'endpoints': [{u'publicURL': u'https://dfw.servers.api.rackspacecloud.com/v2/000000',
-	                              u'region': u'DFW',
-	                              u'tenantId': u'000000',
-	                              u'versionId': u'2',
-	                              u'versionInfo': u'https://dfw.servers.api.rackspacecloud.com/v2',
-	                              u'versionList': u'https://dfw.servers.api.rackspacecloud.com/'},
-	                             {u'publicURL': u'https://ord.servers.api.rackspacecloud.com/v2/000000',
-	                              u'region': u'ORD',
-	                              u'tenantId': u'000000',
-	                              u'versionId': u'2',
-	                              u'versionInfo': u'https://ord.servers.api.rackspacecloud.com/v2',
-	                              u'versionList': u'https://ord.servers.api.rackspacecloud.com/'}],
-	              u'name': u'cloudServersOpenStack',
-	              u'type': u'compute'},
-	             {u'endpoints': [{u'publicURL': u'https://dns.api.rackspacecloud.com/v1.0/000000',
-	                              u'tenantId': u'000000'}],
-	              u'name': u'cloudDNS',
-	              u'type': u'rax:dns'},
-	             {u'endpoints': [{u'publicURL': u'https://dfw.databases.api.rackspacecloud.com/v1.0/000000',
-	                              u'region': u'DFW',
-	                              u'tenantId': u'000000'},
-	                             {u'publicURL': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000',
-	                              u'region': u'ORD',
-	                              u'tenantId': u'000000'}],
-	              u'name': u'cloudDatabases',
-	              u'type': u'rax:database'},
-	             {u'endpoints': [{u'publicURL': u'https://servers.api.rackspacecloud.com/v1.0/000000',
-	                              u'tenantId': u'000000',
-	                              u'versionId': u'1.0',
-	                              u'versionInfo': u'https://servers.api.rackspacecloud.com/v1.0',
-	                              u'versionList': u'https://servers.api.rackspacecloud.com/'}],
-	              u'name': u'cloudServers',
-	              u'type': u'compute'},
-	             {u'endpoints': [{u'publicURL': u'https://cdn1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
-	                              u'region': u'DFW',
-	                              u'tenantId': u'MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff'},
-	                             {u'publicURL': u'https://cdn2.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
-	                              u'region': u'ORD',
-	                              u'tenantId': u'MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff'}],
-	              u'name': u'cloudFilesCDN',
-	              u'type': u'rax:object-cdn'},
-	             {u'endpoints': [{u'publicURL': u'https://monitoring.api.rackspacecloud.com/v1.0/000000',
-	                              u'tenantId': u'000000'}],
-	              u'name': u'cloudMonitoring',
-	              u'type': u'rax:monitor'}],
-	u'token': {u'expires': u'2222-02-22T22:22:22.000-02:00',
-	    u'id': u'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
-	    u'tenant': {u'id': u'000000', u'name': u'000000'}},
-	u'user': {u'RAX-AUTH:defaultRegion': u'',
-	   u'id': u'123456',
-	   u'name': u'someuser',
-	   u'roles': [{u'description': u'User Admin Role.',
-	               u'id': u'3',
-	               u'name': u'identity:user-admin'}]}}}
+    {u'access':
+            {u'serviceCatalog': [
+                {u'endpoints': [{u'publicURL': u'https://ord.loadbalancers.api.rackspacecloud.com/v1.0/000000',
+                                  u'region': u'ORD',
+                                  u'tenantId': u'000000'},
+                                 {u'publicURL': u'https://dfw.loadbalancers.api.rackspacecloud.com/v1.0/000000',
+                                  u'region': u'DFW',
+                                  u'tenantId': u'000000'}],
+                  u'name': u'cloudLoadBalancers',
+                  u'type': u'rax:load-balancer'},
+                 {u'endpoints': [{u'internalURL': u'https://snet-storage101.dfw1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
+                                  u'publicURL': u'https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
+                                  u'region': u'DFW',
+                                  u'tenantId': u'MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff'},
+                                 {u'internalURL': u'https://snet-storage101.ord1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
+                                  u'publicURL': u'https://storage101.ord1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
+                                  u'region': u'ORD',
+                                  u'tenantId': u'MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff'}],
+                  u'name': u'cloudFiles',
+                  u'type': u'object-store'},
+                 {u'endpoints': [{u'publicURL': u'https://dfw.servers.api.rackspacecloud.com/v2/000000',
+                                  u'region': u'DFW',
+                                  u'tenantId': u'000000',
+                                  u'versionId': u'2',
+                                  u'versionInfo': u'https://dfw.servers.api.rackspacecloud.com/v2',
+                                  u'versionList': u'https://dfw.servers.api.rackspacecloud.com/'},
+                                 {u'publicURL': u'https://ord.servers.api.rackspacecloud.com/v2/000000',
+                                  u'region': u'ORD',
+                                  u'tenantId': u'000000',
+                                  u'versionId': u'2',
+                                  u'versionInfo': u'https://ord.servers.api.rackspacecloud.com/v2',
+                                  u'versionList': u'https://ord.servers.api.rackspacecloud.com/'}],
+                  u'name': u'cloudServersOpenStack',
+                  u'type': u'compute'},
+                 {u'endpoints': [{u'publicURL': u'https://dns.api.rackspacecloud.com/v1.0/000000',
+                                  u'tenantId': u'000000'}],
+                  u'name': u'cloudDNS',
+                  u'type': u'rax:dns'},
+                 {u'endpoints': [{u'publicURL': u'https://dfw.databases.api.rackspacecloud.com/v1.0/000000',
+                                  u'region': u'DFW',
+                                  u'tenantId': u'000000'},
+                                 {u'publicURL': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000',
+                                  u'region': u'ORD',
+                                  u'tenantId': u'000000'}],
+                  u'name': u'cloudDatabases',
+                  u'type': u'rax:database'},
+                 {u'endpoints': [{u'publicURL': u'https://servers.api.rackspacecloud.com/v1.0/000000',
+                                  u'tenantId': u'000000',
+                                  u'versionId': u'1.0',
+                                  u'versionInfo': u'https://servers.api.rackspacecloud.com/v1.0',
+                                  u'versionList': u'https://servers.api.rackspacecloud.com/'}],
+                  u'name': u'cloudServers',
+                  u'type': u'compute'},
+                 {u'endpoints': [{u'publicURL': u'https://cdn1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
+                                  u'region': u'DFW',
+                                  u'tenantId': u'MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff'},
+                                 {u'publicURL': u'https://cdn2.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
+                                  u'region': u'ORD',
+                                  u'tenantId': u'MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff'}],
+                  u'name': u'cloudFilesCDN',
+                  u'type': u'rax:object-cdn'},
+                 {u'endpoints': [{u'publicURL': u'https://monitoring.api.rackspacecloud.com/v1.0/000000',
+                                  u'tenantId': u'000000'}],
+                  u'name': u'cloudMonitoring',
+                  u'type': u'rax:monitor'}],
+    u'token': {u'expires': u'2222-02-22T22:22:22.000-02:00',
+        u'id': u'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+        u'tenant': {u'id': u'000000', u'name': u'000000'}},
+    u'user': {u'RAX-AUTH:defaultRegion': u'',
+       u'id': u'123456',
+       u'name': u'someuser',
+       u'roles': [{u'description': u'User Admin Role.',
+                   u'id': u'3',
+                   u'name': u'identity:user-admin'}]}}}
 
