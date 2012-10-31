@@ -188,11 +188,13 @@ def clear_credentials():
 
 
 def set_default_region(region):
+    """Change the default_region setting."""
     global default_region
     default_region = region
 
 
 def _make_agent_name(base):
+    """Appends pyrax information to the underlying library's user agent."""
     return "%s:%s" % (base, USER_AGENT)
 
 
@@ -210,6 +212,7 @@ def connect_to_services():
 
 
 def _get_service_endpoint(svc, region=None):
+    """Parses the services dict to get the proper endpoint for the given service."""
     if region is None:
         region = safe_region()
     region = safe_region(region)
@@ -223,6 +226,7 @@ def _get_service_endpoint(svc, region=None):
 
 @_require_auth
 def connect_to_cloudservers(region=None):
+    """Creates a client for working with cloud servers."""
     region = safe_region(region)
     mgt_url = _get_service_endpoint("compute", region)
     cloudservers = _cs_client.Client(identity.username, identity.api_key,
@@ -236,6 +240,7 @@ def connect_to_cloudservers(region=None):
 
 @_require_auth
 def connect_to_cloudfiles(region=None):
+    """Creates a client for working with cloud files."""
     region = safe_region(region)
     cf_url = _get_service_endpoint("object_store", region)
     cdn_url = _get_service_endpoint("object_cdn", region)
@@ -251,6 +256,7 @@ def connect_to_cloudfiles(region=None):
 
 @_require_auth
 def connect_to_cloud_loadbalancers(region=None):
+    """Creates a client for working with cloud load balancers."""
     region = safe_region(region)
     _cloudlb.consts.USER_AGENT = _make_agent_name(_cloudlb.consts.USER_AGENT)
     _mgr = _cloudlb.CloudLoadBalancer(identity.username, identity.api_key, region)
@@ -267,6 +273,7 @@ def connect_to_cloud_loadbalancers(region=None):
 
 @_require_auth
 def connect_to_cloud_databases(region=None):
+    """Creates a client for working with cloud databases."""
     region = safe_region(region)
     ep = _get_service_endpoint("database", region)
     cloud_databases = CloudDatabaseClient(identity.username, identity.api_key,
