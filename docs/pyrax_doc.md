@@ -72,6 +72,19 @@ You can control how pyrax operates by including the optional configuration file.
 
 With the above example, pyrax will default to Rackspace authentication, provision resources in the `ORD` region, and will connect to all services except Cloud Databases after authenticating.
 
+## Working with Multiple Regions
+Rackspace divides its cloud infrastructure into "regions", and some interactions are only possible if the entities share a region. For example, if you wish to access a Cloud Database from a Cloud Server, that is only possible if the two are in the same region. Furthermore, if you connect to a region and call `pyrax.cloudservers.servers.list()`, you will only get a list of servers in that region. To get a list of all your servers, you will have to query each region separately. This is simple to do in pyrax.
+
+As of this writing, Rackspace has two cloud regions in the US: "DFW" and "ORD". It also has one UK region: "LON", which has separate login credentials. To get a list of all your US servers, you can do the following
+
+    cs_dfw = pyrax.connect_to_cloudservers(region="DFW")
+    cs_ord = pyrax.connect_to_cloudservers(region="ORD")
+    dfw_servers = cs_dfw.servers.list()
+    ord_servers = cs_ord.servers.list()
+    all_servers = dfw_servers + ord_servers
+
+The important point to keep in mind when dealing with multiple regions is that all of pyrax's `connect_to_*` methods take a region parameter, and will return a region-specific object. If you do not explicitly include a region, the default region you defined in your config file will be used. If you did not define a default region, pyrax defaults to "DFW".
+
 
 ## The `Identity` Class
 pyrax has an `Identity` class that is used to handle authentication and cache credentials. You can access it in your code using the reference `pyrax.identity`.  Once authenticated, it will store your credentials and authentication token information. In most cases you will not need to interact with this object directly; pyrax uses it to handle authentication tasks for you. But it is available in case you need more fine-grained control of the authentication process, such as querying endpoints in different regions, or getting a list of user roles.
