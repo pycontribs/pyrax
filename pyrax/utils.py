@@ -10,6 +10,7 @@ import shutil
 import string
 import sys
 import tempfile
+import types
 import uuid
 
 import prettytable
@@ -154,6 +155,14 @@ def folder_size(pth, ignore=None):
     total = [0]
     os.path.walk(pth, get_size, total)
     return total[0]
+
+
+def add_method(obj, func, name=None):
+    """Adds an instance method to an object."""
+    if name is None:
+        name = func.func_name
+    method = types.MethodType(func, obj, obj.__class__)
+    setattr(obj, name, method)
 
 
 def env(*args, **kwargs):
