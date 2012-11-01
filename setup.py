@@ -21,7 +21,7 @@ setup(
         author_email = "ed.leafe@rackspace.com",
         url = "http://docs.rackspace.com/api/",
         classifiers = [
-                "Development Status :: 3 - Alpha",
+                "Development Status :: 4 - Beta",
                 "License :: OSI Approved :: Apache Software License",
                 "Programming Language :: Python :: 2",
                 ],

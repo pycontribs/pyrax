@@ -23,19 +23,26 @@ import ConfigParser
 from functools import wraps
 import os
 
-import exceptions as exc
-import rax_identity as _rax_identity
-import version
+# The following try block is only needed when first installing pyrax,
+# since importing the version info in setup.py tries to import this
+# entire module.
+try:
+    import exceptions as exc
+    import rax_identity as _rax_identity
+    import version
 
-import cf_wrapper.client as _cf
-import cloudlb as _cloudlb
-from novaclient.v1_1 import client as _cs_client
+    import cf_wrapper.client as _cf
+    import cloudlb as _cloudlb
+    from novaclient.v1_1 import client as _cs_client
 
-from cloud_databases import CloudDatabaseClient
-from cloud_databases import CloudDatabaseDatabase
-from cloud_databases import CloudDatabaseFlavor
-from cloud_databases import CloudDatabaseInstance
-from cloud_databases import CloudDatabaseUser
+    from cloud_databases import CloudDatabaseClient
+    from cloud_databases import CloudDatabaseDatabase
+    from cloud_databases import CloudDatabaseFlavor
+    from cloud_databases import CloudDatabaseInstance
+    from cloud_databases import CloudDatabaseUser
+except ImportError:
+    import inspect
+    print inspect.stack()
 
 
 # Initiate the services to None until we are authenticated.
