@@ -169,6 +169,16 @@ class BaseManager(object):
         return body
 
 
+    def _action(self, action, volume, info=None, **kwargs):
+        """
+        Perform a volume "action."
+        """
+        body = {action: info}
+        self.run_hooks('modify_body_for_action', body, **kwargs)
+        url = '/volumes/%s/action' % base.getid(volume)
+        return self.api.client.post(url, body=body)
+
+
     def find(self, **kwargs):
         """
         Finds a single item with attributes matching ``**kwargs``.
