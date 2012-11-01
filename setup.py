@@ -10,9 +10,6 @@ if version < "2.2.3":
 
 from pyrax.version import version
 
-doc_files = [fname.replace("docs/", "") for fname in glob.glob("docs/*md")]
-data_files = [("docs", doc_files)]
-
 setup(
         name = "pyrax",
         version = version,
@@ -31,7 +28,6 @@ setup(
                 "python-keystoneclient",
                 "python-cloudlb",
                 ],
-        data_files = data_files,
         packages = [
                 "pyrax",
                 "pyrax/cf_wrapper",
