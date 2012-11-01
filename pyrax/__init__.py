@@ -36,6 +36,8 @@ from cloud_databases import CloudDatabaseDatabase
 from cloud_databases import CloudDatabaseFlavor
 from cloud_databases import CloudDatabaseInstance
 from cloud_databases import CloudDatabaseUser
+from cloud_blockstorage import CloudBlockStorageClient
+from cloud_blockstorage import CloudBlockStorageVolume
 
 
 # Initiate the services to None until we are authenticated.
@@ -43,6 +45,7 @@ cloudservers = None
 cloudfiles = None
 cloud_loadbalancers = None
 cloud_databases = None
+cloud_blockstorage = None
 # Class used to handle auth/identity
 identity_class = None
 # Default identity type.
@@ -178,12 +181,13 @@ def authenticate():
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, cloudservers, cloudfiles, cloud_loadbalancers
-    global cloud_databases, default_region
+    global cloud_databases, cloud_blockstorage, default_region
     identity = identity_class()
     cloudservers = None
     cloudfiles = None
     cloud_loadbalancers = None
     cloud_databases = None
+    cloud_blockstorage = None
     default_region = None
 
 
@@ -195,12 +199,14 @@ def set_default_region(region):
 
 def _make_agent_name(base):
     """Appends pyrax information to the underlying library's user agent."""
+    if "pyrax" in base:
+        return base
     return "%s:%s" % (base, USER_AGENT)
 
 
 def connect_to_services():
     """Establish authenticated connections to the various cloud APIs."""
-    global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
+    global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases, cloud_blockstorage
     if services_to_start["servers"]:
         cloudservers = connect_to_cloudservers()
     if services_to_start["files"]:
@@ -209,7 +215,8 @@ def connect_to_services():
         cloud_loadbalancers = connect_to_cloud_loadbalancers()
     if services_to_start["databases"]:
         cloud_databases = connect_to_cloud_databases()
-
+    if services_to_start["blockstorage"]:
+        cloud_blockstorage = connect_to_cloud_blockstorage()
 
 def _get_service_endpoint(svc, region=None):
     """Parses the services dict to get the proper endpoint for the given service."""
@@ -282,3 +289,16 @@ def connect_to_cloud_databases(region=None):
             tenant_id=identity.tenant_id, service_type="rax:database")
     cloud_databases.user_agent = _make_agent_name(cloud_databases.user_agent)
     return cloud_databases
+
+
+@_require_auth
+def connect_to_cloud_blockstorage(region=None):
+    """Creates a client for working with cloud blockstorage."""
+    region = safe_region(region)
+    ep = _get_service_endpoint("volume", region)
+    cloud_blockstorage = CloudBlockStorageClient(identity.username, identity.api_key,
+            region_name=region, management_url=ep, auth_token=identity.token,
+            http_log_debug=True,
+            tenant_id=identity.tenant_id, service_type="volume")
+    cloud_blockstorage.user_agent = _make_agent_name(cloud_blockstorage.user_agent)
+    return cloud_blockstorage

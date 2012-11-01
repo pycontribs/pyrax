@@ -53,6 +53,9 @@ class InvalidConfigurationFile(PyraxException):
 class InvalidCredentialFile(PyraxException):
     pass
 
+class InvalidSize(PyraxException):
+    pass
+
 class InvalidUploadID(PyraxException):
     pass
 
