@@ -61,6 +61,8 @@ cloud_databases = None
 identity_class = None
 # Default identity type.
 default_identity_type = None
+# Identity object
+identity = None
 # Default region for all services. Can be individually overridden if needed
 default_region = None
 # Some services require a region. If the user doesn't specify one, use DFW.
@@ -120,9 +122,10 @@ def create_identity():
     Sets the 'identity' attribute to an instance of
     the current identity_class.
     """
-    global identity
-    if identity_class:
-        identity = identity_class(region=safe_region())
+    global identity, identity_class
+    if not identity_class:
+        identity_class = _rax_identity.Identity
+    identity = identity_class(region=safe_region())
 
 
 if identity_class is None:
