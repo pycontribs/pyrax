@@ -21,24 +21,36 @@ It also adds in CDN functionality that is Rackspace-specific.
 """
 import ConfigParser
 from functools import wraps
+import inspect
 import os
 
-import exceptions as exc
-import rax_identity as _rax_identity
-import version
+# The following try block is only needed when first installing pyrax,
+# since importing the version info in setup.py tries to import this
+# entire module.
+try:
+    import exceptions as exc
+    import rax_identity as _rax_identity
+    import version
 
-import cf_wrapper.client as _cf
-import cloudlb as _cloudlb
-from novaclient.v1_1 import client as _cs_client
+    import cf_wrapper.client as _cf
+    import cloudlb as _cloudlb
+    from novaclient.v1_1 import client as _cs_client
 
-from cloud_databases import CloudDatabaseClient
-from cloud_databases import CloudDatabaseDatabase
-from cloud_databases import CloudDatabaseFlavor
-from cloud_databases import CloudDatabaseInstance
-from cloud_databases import CloudDatabaseUser
-from cloud_blockstorage import CloudBlockStorageClient
-from cloud_blockstorage import CloudBlockStorageVolume
-
+    from cloud_databases import CloudDatabaseClient
+    from cloud_databases import CloudDatabaseDatabase
+    from cloud_databases import CloudDatabaseFlavor
+    from cloud_databases import CloudDatabaseInstance
+    from cloud_databases import CloudDatabaseUser
+except ImportError:
+    # See if this is the result of the importing of version.py in setup.py
+    callstack = inspect.stack()
+    in_setup = False
+    for stack in callstack:
+        if stack[1].endswith("/setup.py"):
+            in_setup = True
+    if not in_setup:
+        # This isn't a normal import problem during setup; re-raise
+        raise
 
 # Initiate the services to None until we are authenticated.
 cloudservers = None
@@ -110,7 +122,8 @@ def create_identity():
     the current identity_class.
     """
     global identity
-    identity = identity_class(region=safe_region())
+    if identity_class:
+        identity = identity_class(region=safe_region())
 
 
 if identity_class is None:
