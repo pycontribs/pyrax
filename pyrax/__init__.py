@@ -121,7 +121,6 @@ def create_identity():
     the current identity_class.
     """
     global identity
-    print "CREATING IDENTITY", identity_class
     if identity_class:
         identity = identity_class(region=safe_region())
 
