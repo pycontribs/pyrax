@@ -65,8 +65,12 @@ class FakeVirtualIP(object):
     pass
 
 
-class FakeLoadBalancers(object):
+class FakeLoadBalancerResource(object):
     pass
+
+
+class FakeLoadBalancers(object):
+    resource_class = FakeLoadBalancerResource
 
 
 class FakeService(object):
