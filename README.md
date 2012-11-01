@@ -32,6 +32,8 @@ The best way to install **pyrax** is by using [pip](http://www.pip-installer.org
 
 	pip install pyrax
 
+> Note: during the beta period, the above will not work. Use the github install below
+
 If you would like to work with the current development state of pyrax, you can install directly from trunk on GitHub:
 
 	pip install git+git://github.com/rackspace/pyrax.git
