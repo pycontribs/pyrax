@@ -21,6 +21,7 @@ It also adds in CDN functionality that is Rackspace-specific.
 """
 import ConfigParser
 from functools import wraps
+import inspect
 import os
 
 # The following try block is only needed when first installing pyrax,
@@ -41,9 +42,15 @@ try:
     from cloud_databases import CloudDatabaseInstance
     from cloud_databases import CloudDatabaseUser
 except ImportError:
-    import inspect
-    print inspect.stack()
-
+    # See if this is the result of the importing of version.py in setup.py
+    callstack = inspect.stack()
+    in_setup = False
+    for stack in callstack:
+        if stack[1].endswith("/setup.py"):
+            in_setup = True
+    if not in_setup:
+        # This isn't a normal import problem during setup; re-raise
+        raise
 
 # Initiate the services to None until we are authenticated.
 cloudservers = None
