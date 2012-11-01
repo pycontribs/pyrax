@@ -121,7 +121,8 @@ def create_identity():
     the current identity_class.
     """
     global identity
-    identity = identity_class(region=safe_region())
+    if identity_class:
+        identity = identity_class(region=safe_region())
 
 
 if identity_class is None:
