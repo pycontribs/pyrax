@@ -299,6 +299,18 @@ def connect_to_cloud_loadbalancers(region=None):
     # This will replace the current buggy version of get_usage.
     utils.add_method(_top_obj, get_usage_patch, "get_usage")
     cloud_loadbalancers.get_usage = _top_obj.get_usage
+    # We also need to patch the LoadBalancer resource class.
+    def get_usage_patch_resource(local_self, startTime=None, endTime=None):
+        """Patched version of get_usage() to work around a bug in the cloudlb library"""
+        if ((startTime and not hasattr(startTime, "isoformat")) or
+                (endTime and not hasattr(endTime, "isoformat"))):
+            raise ValueError("Usage start and end times must be python datetime values.")
+        ret = _cloudlb.usage.get_usage(local_self.manager.api.client, lbId=_cloudlb.base.getid(local_self),
+                startTime=startTime, endTime=endTime)
+        return ret
+    cloud_loadbalancers.resource_class.get_usage = get_usage_patch_resource
+    # End of hack
+
     return cloud_loadbalancers
 
 
