@@ -277,15 +277,28 @@ def connect_to_cloud_loadbalancers(region=None):
     """Creates a client for working with cloud load balancers."""
     region = safe_region(region)
     _cloudlb.consts.USER_AGENT = _make_agent_name(_cloudlb.consts.USER_AGENT)
-    _mgr = _cloudlb.CloudLoadBalancer(identity.username, identity.api_key, region)
-    cloud_loadbalancers = _mgr.loadbalancers
+    _top_obj = _cloudlb.CloudLoadBalancer(identity.username, identity.api_key, region)
+    cloud_loadbalancers = _top_obj.loadbalancers
     cloud_loadbalancers.Node = _cloudlb.Node
     cloud_loadbalancers.VirtualIP = _cloudlb.VirtualIP
-    cloud_loadbalancers.protocols = _mgr.get_protocols()
-    cloud_loadbalancers.algorithms = _mgr.get_algorithms()
-    cloud_loadbalancers.get_usage = _mgr.get_usage
+    cloud_loadbalancers.protocols = _top_obj.get_protocols()
+    cloud_loadbalancers.algorithms = _top_obj.get_algorithms()
+    cloud_loadbalancers.get_usage = _top_obj.get_usage
     # Fix a referencing inconsistency in the library
     _cloudlb.accesslist.AccessList.resource = _cloudlb.accesslist.NetworkItem
+
+    # NOTE: This is a good reason to move from python-cloudlb to a pyrax implementation
+    # There is a bug in the get_usage() method; this patches it.
+    def get_usage_patch(local_self, startTime=None, endTime=None):
+        """Patched version of get_usage() to work around a bug in the cloudlb library"""
+        if ((startTime and not hasattr(startTime, "isoformat")) or
+                (endTime and not hasattr(endTime, "isoformat"))):
+            raise ValueError("Usage start and end times must be python datetime values.")
+        ret = _cloudlb.usage.get_usage(local_self.client, startTime=startTime, endTime=endTime)
+        return ret
+    # This will replace the current buggy version of get_usage.
+    utils.add_method(_top_obj, get_usage_patch, "get_usage")
+    cloud_loadbalancers.get_usage = _top_obj.get_usage
     return cloud_loadbalancers
 
 

@@ -12,7 +12,7 @@ Once you have authenticated and connected to the load balancer service, you can 
 To get a list of all the load balancers in your cloud, run:
 
     clb = pyrax.cloud_loadbalancers
-    clb.loadbalancers.list()
+    clb.list()
 
 This will return a list of `LoadBalancer` objects. You can then interact with the individual `LoadBalancer` objects. Assuming that you are just starting out and do not have any load balancers configured yet, you will get back an empty list. A good first step, then, would be to create a typical setup: two servers behind a load balancer that will distribute web traffic to these two servers.
 
@@ -68,7 +68,7 @@ The `VirtualIP` class represents the interface for the `LoadBalancer`. It can be
 ### Create the Load Balancer
 Now that you have all the information you need, create the `LoadBalancer` as follows:
 
-    lb = clb.loadbalancers.create("example_lb", port=80, protocol="HTTP",
+    lb = clb.create("example_lb", port=80, protocol="HTTP",
             nodes=[node1, node2], virtualIps=[vip])
 
 
