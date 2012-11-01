@@ -25,7 +25,6 @@ setup(
         install_requires=[
                 "rackspace-novaclient",
                 "python-swiftclient",
-                "python-keystoneclient",
                 "python-cloudlb",
                 ],
         packages = [
