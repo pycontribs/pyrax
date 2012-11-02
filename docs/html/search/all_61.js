@@ -2,6 +2,7 @@ var searchData=
 [
   ['account_5fmeta_5fprefix',['account_meta_prefix',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#afc65c059b6cbdda2bf91e6f5b6608608',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['add_5fhook',['add_hook',['../classpyrax_1_1manager_1_1BaseManager.html#a59de7bcf6dec48b06d00ff9b771ef6b7',1,'pyrax::manager::BaseManager']]],
+  ['add_5fmethod',['add_method',['../namespacepyrax_1_1utils.html#aa8d6873854a2bde7479a7fbe44d1d60b',1,'pyrax::utils']]],
   ['all',['all',['../namespacepyrax_1_1manager.html#acedac857b1708c80eefe0a6c379bedec',1,'pyrax::manager']]],
   ['ambiguousendpoints',['AmbiguousEndpoints',['../classpyrax_1_1exceptions_1_1AmbiguousEndpoints.html',1,'pyrax::exceptions']]],
   ['api',['api',['../classpyrax_1_1manager_1_1BaseManager.html#a6da13b696f737097e0146e47cc0d0985',1,'pyrax::manager::BaseManager']]],

@@ -91,7 +91,7 @@ Both calls will return an object representing the newly-created database:
 
 
 ## Create a User
-You can create a user on an instance with its own username/password credentials, with access to one or more databases on that instance. Similar to database creation, you can call create_user either on the instance object, or on the module. To simplify these examples, only the call on the instance will be displayed.
+You can create a user on an instance with its own username/password credentials, with access to one or more databases on that instance. Similar to database creation, you can call `create_user()` either on the instance object, or on the module. To simplify these examples, only the call on the instance will be displayed.
 
 Assuming that you have the references `inst` and `db` from the previous examples, you can create a user like this:
 
@@ -138,7 +138,7 @@ Note that there is a bug in the underlying Python library for the API that affec
 
     inst.delete("john.doe")
 
-the API will actually delete the user `"john"`, and `"john.doe"` will be untouched! The best way to avoid this problem is to not create user names with periods. If you must include periods, do not use pyrax or any other cloud API-based tool to delete them. Instead, use any one of the many MySQL admin tools available.
+the API will actually delete the user `"john"`, and `"john.doe"` will be untouched! The best way to avoid this problem is to ensure that you do not use user names that contain periods. If you must include periods, do not use pyrax or any other cloud API-based tool to delete them. Instead, use any one of the many MySQL admin tools available.
 
 
 

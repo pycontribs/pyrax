@@ -126,7 +126,7 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.put_container = Mock()
         client.connection.head_container = Mock()
         meta = {"X-TTL": "9999", "X-NotAllowed": "0"}
-        self.assertRaises(exc.InvalidCDNMetada, client.set_container_cdn_metadata, self.cont_name, meta)
+        self.assertRaises(exc.InvalidCDNMetadata, client.set_container_cdn_metadata, self.cont_name, meta)
         meta = {"X-TTL": "9999"}
         client.connection.cdn_request = Mock()
         client.set_container_cdn_metadata(self.cont_name, meta)

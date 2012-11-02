@@ -223,7 +223,7 @@ This type of monitor simply checks if the load balancer's nodes are available fo
 
 
 ### Adding a Health Monitor for HTTP(S)
-These types of monitors checks if the load balancer's nodes can be reached via standard HTTP or HTTPS ports. They also require several more parameters to be defined for the monitor:
+These types of monitors check whether the load balancer's nodes can be reached via standard HTTP or HTTPS ports. They also require several more parameters to be defined for the monitor:
 
     clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]

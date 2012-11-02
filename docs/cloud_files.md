@@ -1,9 +1,6 @@
 # Working with Cloud Files
 
 ----
-# WARNING #
-###Please note that pyrax is still in the early stages of development, and will almost certainly be changing in ways that will break any applications you might build using it. Feel free to play with it and test things out, but do not use it for production applications.
-----
 
 ## Basic Concepts
 Rackspace Cloud Files allows you to store files in a scalable, redundant manner, and optionally make them available globally using the Akamai CDN network. Unlike a typical computer OS, though, Cloud Files consists of containers, each of which can store millions of objects. But unlike directories on your computer, you cannot nest containers within other containers: they exist only at the root level. However, you can simulate a nested folder structure by naming your objects with names that resemble traditional path notation; for example: "photos/vacations/2012/cancun/beach.jpg". So while all your files will be at the base level of their containers, you can retrieve them based on the "path" prefix.
@@ -456,7 +453,7 @@ You can turn off log retention at any time by using the above commands and passi
 
 
 ### Purging CDN Objects
-Normally, deleting an object from a public container will cause it to be eventually deleted from the CDN network, subject to the container's TTL. In some cases, though, you may need to have an object removed from public access due to personal, business, or security concerns. Currently the CDN limits this to 25 such purge requests per day. More than that will require you open a ticket with Rackspace to handle the request.
+Normally, deleting an object from a public container will cause it to be eventually deleted from the CDN network, subject to the container's TTL. In some cases, though, you may need to have an object removed from public access due to personal, business, or security concerns. Currently the CDN limits this to 25 such purge requests per day. More than that will require that you open a ticket with Rackspace to handle the request.
 
 If you wish to purge an object from the CDN network, you need to run:
 
