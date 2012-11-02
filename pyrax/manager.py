@@ -169,14 +169,14 @@ class BaseManager(object):
         return body
 
 
-    def _action(self, action, volume, info=None, **kwargs):
+    def action(self, item, action_type, body={}):
         """
-        Perform a volume "action."
+        Several API calls are lumped under the 'action' API. This
+        is the generic handler for such calls.
         """
-        body = {action: info}
-        self.run_hooks('modify_body_for_action', body, **kwargs)
-        url = '/volumes/%s/action' % base.getid(volume)
-        return self.api.client.post(url, body=body)
+        uri = "/%s/%s/action" % (self.uri_base, getid(item))
+        action_body = {action_type: body}
+        return self.api.method_post(uri, body=action_body)
 
 
     def find(self, **kwargs):
