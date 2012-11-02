@@ -350,6 +350,12 @@ class CloudDatabaseClient(BaseClient):
 
 
     @assure_instance
+    def restart(self, instance):
+        """Restarts the instance."""
+        return instance.restart()
+
+
+    @assure_instance
     def resize(self, instance, flavor):
         """Sets the size of the instance to a different flavor."""
         return instance.resize(flavor)
