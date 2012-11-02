@@ -55,22 +55,16 @@ class CloudBlockStorageVolume(BaseResource):
         Attaches this volume to a cloud server instance
         at the specified mountpoint
         """
-        uri = "/volumes/%s/action" % self.id
         instance_id = _resolve_id(instance)
-        body = {"os-attach": {
-                "instance_uuid": instance_id,
-                "mountpoint": mountpoint,
-                }}
-        return self.manager.api.method_post(uri, body=body)
+        body = {"instance_uuid": instance_id, "mountpoint": mountpoint}
+        return self.manager.action(self, "os-attach", body=body)
 
 
     def detach(self):
         """
         Detaches this volume from any device it may be attached to.
         """
-        uri = "/volumes/%s/action" % self.id
-        body = {"os-detach": {}}
-        return self.manager.api.method_post(uri, body=body)
+        return self.manager.action(self, "os-detach")
 
 
 

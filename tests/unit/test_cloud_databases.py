@@ -124,21 +124,19 @@ class CloudDatabasesTest(unittest.TestCase):
 
     def test_restart(self):
         inst = self.instance
-        fake_body = {"restart": {}}
-        inst.manager.api.method_post = Mock()
+        inst.manager.action = Mock()
         ret = inst.restart()
-        call_uri = "/instances/%s/action" % inst.id
-        inst.manager.api.method_post.assert_called_once_with(call_uri, body=fake_body)
+        inst.manager.action.assert_called_once_with(inst, "restart")
 
     def test_resize(self):
         inst = self.instance
         flavor_ref = utils.random_name()
         inst.manager.api._get_flavor_ref = Mock(return_value=flavor_ref)
-        fake_body = {"resize": {"flavorRef": flavor_ref}}
-        inst.manager.api.method_post = Mock()
+        fake_body = {"flavorRef": flavor_ref}
+        inst.manager.action = Mock()
         ret = inst.resize(42)
         call_uri = "/instances/%s/action" % inst.id
-        inst.manager.api.method_post.assert_called_once_with(call_uri, body=fake_body)
+        inst.manager.action.assert_called_once_with(inst, "resize", body=fake_body)
 
     def test_resize_volume_too_small(self):
         inst = self.instance
@@ -148,11 +146,10 @@ class CloudDatabasesTest(unittest.TestCase):
     def test_resize_volume(self):
         inst = self.instance
         inst.volume.get = Mock(return_value=1)
-        fake_body = {"resize": {"volume": {"size": 2}}}
-        inst.manager.api.method_post = Mock()
+        fake_body = {"volume": {"size": 2}}
+        inst.manager.action = Mock()
         ret = inst.resize_volume(2)
-        call_uri = "/instances/%s/action" % inst.id
-        inst.manager.api.method_post.assert_called_once_with(call_uri, body=fake_body)
+        inst.manager.action.assert_called_once_with(inst, "resize", body=fake_body)
 
     def test_get_flavor_property(self):
         inst = self.instance

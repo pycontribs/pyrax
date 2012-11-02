@@ -131,6 +131,8 @@ class FakeManager(object):
         pass
     def find(self, *args, **kwargs):
         pass
+    def action(self, item, action_type, body={}):
+        pass
 
 
 class FakeException(BaseException):

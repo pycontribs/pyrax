@@ -184,18 +184,15 @@ class CloudDatabaseInstance(BaseResource):
 
     def restart(self):
         """Restarts this instance."""
-        uri = "/instances/%s/action" % self.id
-        body = {"restart": {}}
-        self.manager.api.method_post(uri, body=body)
+        self.manager.action(self, "restart")
 
 
     def resize(self, flavor):
         """Set the size of this instance to a different flavor."""
-        uri = "/instances/%s/action" % self.id
         # We need the flavorRef, not the flavor or size.
         flavorRef = self.manager.api._get_flavor_ref(flavor)
-        body = {"resize": {"flavorRef": flavorRef}}
-        self.manager.api.method_post(uri, body=body)
+        body = {"flavorRef": flavorRef}
+        self.manager.action(self, "resize", body=body)
 
 
     def resize_volume(self, size):
@@ -203,9 +200,8 @@ class CloudDatabaseInstance(BaseResource):
         curr_size = self.volume.get("size")
         if size <= curr_size:
             raise exc.InvalidVolumeResize("The new volume size must be larger than the current volume size of '%s'." % curr_size)
-        uri = "/instances/%s/action" % self.id
-        body = {"resize": {"volume": {"size": size}}}
-        self.manager.api.method_post(uri, body=body)
+        body = {"volume": {"size": size}}
+        self.manager.action(self, "resize", body=body)
 
 
     def _get_flavor(self):
