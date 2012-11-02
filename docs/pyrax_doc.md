@@ -12,7 +12,7 @@ Because the Rackspace Cloud is powered by OpenStack, most of pyrax will work wit
 ## Prerequisites
 You will need Python 2.7 or later to run pyrax. As of this writing pyrax has not been extensively tested with earlier versions of Python, nor has it been tested with Python 3.x, but such testing is planned for the near future. If you run pyrax with any of these versions and encounter a problem, please report it on [https://github.com/rackspace/pyrax/issues](https://github.com/rackspace/pyrax/issues).
 
-The documentation assumes that you are experienced with programming in Python, and have a basic understanding of cloud computing concepts. If you would like to brush up on cloud computing, you should visit the [Rackspace Knowledge Center](http://www.rackspace.com/knowledge_center/)
+The documentation assumes that you are experienced with programming in Python, and have a basic understanding of cloud computing concepts. If you would like to brush up on cloud computing, you should visit the [Rackspace Knowledge Center](http://www.rackspace.com/knowledge_center/).
 
 
 ## Installing pyrax
@@ -68,7 +68,7 @@ You can control how pyrax operates by including the optional configuration file.
     servers = True
     files = True
     loadbalancers = True
-    databases = True
+    databases = False
 
 With the above example, pyrax will default to Rackspace authentication, provision resources in the `ORD` region, and will connect to all services except Cloud Databases after authenticating.
 

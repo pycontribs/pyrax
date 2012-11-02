@@ -82,7 +82,7 @@ class BaseResource(object):
 
 
     def get(self):
-        """Get the details for the object."""
+        """Gets the details for the object."""
         # set 'loaded' first ... so if we have to bail, we know we tried.
         self.loaded = True
         if not hasattr(self.manager, "get"):
@@ -93,7 +93,7 @@ class BaseResource(object):
 
 
     def delete(self):
-        """Delete the object."""
+        """Deletes the object."""
         # set 'loaded' first ... so if we have to bail, we know we tried.
         self.loaded = True
         if not hasattr(self.manager, "delete"):

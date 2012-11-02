@@ -33,8 +33,8 @@ class ServiceCatalog(object):
     def url_for(self, attr=None, filter_value=None,
             service_type=None, endpoint_type="publicURL",
             service_name=None, volume_service_name=None):
-        """Fetch the public URL from the given service for
-        a particular endpoint attribute. If none given, return
+        """Fetches the public URL from the given service for
+        a particular endpoint attribute. If none given, returns
         the first. See tests for sample service catalog."""
         matching_endpoints = []
         # We don't always get a service catalog back ...

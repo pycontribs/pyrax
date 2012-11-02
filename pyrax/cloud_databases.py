@@ -129,8 +129,9 @@ class CloudDatabaseInstance(BaseResource):
 
     def _get_name(self, name_or_obj):
         """
-        Methods that can take either an object or the name of the object
-        as a parameter need the name to send to the API.
+        For convenience, many methods accept either an object or the name
+        of the object as a parameter, but need the name to send to the
+        API. This method handles that conversion.
         """
         if isinstance(name_or_obj, basestring):
             return name_or_obj
@@ -163,7 +164,7 @@ class CloudDatabaseInstance(BaseResource):
 
     def enable_root_user(self):
         """
-        This enables login from any host for the root user and provides
+        Enables login from any host for the root user and provides
         the user with a generated root password.
         """
         uri = "/instances/%s/root" % self.id
@@ -198,7 +199,7 @@ class CloudDatabaseInstance(BaseResource):
 
 
     def resize_volume(self, size):
-        """Change the size of the volume for this instance."""
+        """Changes the size of the volume for this instance."""
         curr_size = self.volume.get("size")
         if size <= curr_size:
             raise exc.InvalidVolumeResize("The new volume size must be larger than the current volume size of '%s'." % curr_size)
@@ -261,7 +262,7 @@ class CloudDatabaseClient(BaseClient):
     """
     def _configure_manager(self):
         """
-        Create the manager to handle the instances, and also another
+        Creates a manager to handle the instances, and another
         to handle flavors.
         """
         self._manager = BaseManager(self, resource_class=CloudDatabaseInstance,
@@ -273,7 +274,7 @@ class CloudDatabaseClient(BaseClient):
 
     @assure_instance
     def list_databases(self, instance):
-        """Return all databases for the specified instance."""
+        """Returns all databases for the specified instance."""
         return instance.list_databases()
 
 
@@ -303,7 +304,7 @@ class CloudDatabaseClient(BaseClient):
 
     @assure_instance
     def list_users(self, instance):
-        """Return all users for the specified instance."""
+        """Returns all users for the specified instance."""
         return instance.list_users()
 
 
@@ -356,7 +357,7 @@ class CloudDatabaseClient(BaseClient):
 
     @assure_instance
     def resize(self, instance, flavor):
-        """Set the size of the instance to a different flavor."""
+        """Sets the size of the instance to a different flavor."""
         return instance.resize(flavor)
 
 

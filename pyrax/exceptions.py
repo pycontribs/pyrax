@@ -44,7 +44,7 @@ class FileNotFound(PyraxException):
 class FolderNotFound(PyraxException):
     pass
 
-class InvalidCDNMetada(PyraxException):
+class InvalidCDNMetadata(PyraxException):
     pass
 
 class InvalidConfigurationFile(PyraxException):

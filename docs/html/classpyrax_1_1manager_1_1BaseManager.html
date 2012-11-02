@@ -117,17 +117,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a list of all items.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a list of all items.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a specific item.  <a href="#a444a1328efb32d5d9d2dcb2efe855d3b"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a specific item.  <a href="#a444a1328efb32d5d9d2dcb2efe855d3b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a5b7ef0221e471e99fa7f0a87a28ba1ea">create</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Subclasses need to implement the _create_body() method to return a dict that will be used for the API request body.  <a href="#a5b7ef0221e471e99fa7f0a87a28ba1ea"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#ab48bde70a0927a83d62464cb0627c34b">delete</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete the specified item.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the specified item.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a01f90f57b7acd55e177611f5d0f7df23">find</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Find a single item with attributes matching ``**kwargs``.  <a href="#a01f90f57b7acd55e177611f5d0f7df23"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds a single item with attributes matching ``**kwargs``.  <a href="#a01f90f57b7acd55e177611f5d0f7df23"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a1bae9ed7d134ea1c1e9a39726adea1e1">findall</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Find all items with attributes matching ``**kwargs``.  <a href="#a1bae9ed7d134ea1c1e9a39726adea1e1"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds all items with attributes matching ``**kwargs``.  <a href="#a1bae9ed7d134ea1c1e9a39726adea1e1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a59de7bcf6dec48b06d00ff9b771ef6b7">add_hook</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#aac4d6a908dd774f73e389ad2b14b6968">run_hooks</a></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
@@ -306,7 +306,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Delete the specified item. </p>
+<p>Deletes the specified item. </p>
 
 </div>
 </div>
@@ -335,7 +335,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Find a single item with attributes matching ``**kwargs``. </p>
+<p>Finds a single item with attributes matching ``**kwargs``. </p>
 <p>This isn't very efficient: it loads the entire list then filters on the Python side. </p>
 
 </div>
@@ -365,7 +365,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Find all items with attributes matching ``**kwargs``. </p>
+<p>Finds all items with attributes matching ``**kwargs``. </p>
 <p>This isn't very efficient: it loads the entire list then filters on the Python side. </p>
 
 </div>
@@ -395,7 +395,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Get a specific item. </p>
+<p>Gets a specific item. </p>
 
 </div>
 </div>
@@ -414,7 +414,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Get a list of all items. </p>
+<p>Gets a list of all items. </p>
 
 </div>
 </div>
@@ -544,7 +544,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Oct 31 2012 20:53:56 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Nov 2 2012 15:56:34 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

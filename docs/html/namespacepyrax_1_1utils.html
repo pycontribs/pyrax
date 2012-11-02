@@ -116,13 +116,15 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a9e1881e14792f2c07dd799fd7b9d53d1">get_checksum</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the MD5 checksum in hex for the given content.  <a href="#a9e1881e14792f2c07dd799fd7b9d53d1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a15ae8eb19e0cbaf0281e950aebca0962">random_name</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a random name; useful for testing.  <a href="#a15ae8eb19e0cbaf0281e950aebca0962"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a random name; useful for testing.  <a href="#a15ae8eb19e0cbaf0281e950aebca0962"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a399c6b9652f5150282c3edb32d4d05f3">coerce_string_to_list</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">For parameters that can take either a single string or a list of strings, this function will ensure that the result is a list containing the passed values.  <a href="#a399c6b9652f5150282c3edb32d4d05f3"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a44e6cd242f9d12705e157706a6caddfe">folder_size</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the total bytes for the specified, optionally ignoring any files which match the 'ignore' parameter.  <a href="#a44e6cd242f9d12705e157706a6caddfe"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#aa8d6873854a2bde7479a7fbe44d1d60b">add_method</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an instance method to an object.  <a href="#aa8d6873854a2bde7479a7fbe44d1d60b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a9790d3a239a8e290bffbeef17c48f017">env</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the first environment variable set if none are non-empty, defaults to "" or keyword arg default  <a href="#a9790d3a239a8e290bffbeef17c48f017"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the first environment variable set if none are non-empty, defaults to "" or keyword arg default.  <a href="#a9790d3a239a8e290bffbeef17c48f017"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a662924ed2118b3ba66f1d1521a7c2b40">unauthenticated</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds 'unauthenticated' attribute to decorated function.  <a href="#a662924ed2118b3ba66f1d1521a7c2b40"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a14862219df8c591076486e8f4506baf0">isunauthenticated</a></td></tr>
@@ -138,6 +140,41 @@ Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a1ef4c4162762c60a00cf44b5969127c5">trace</a> = pudb.set_trace</td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
+<a class="anchor" id="aa8d6873854a2bde7479a7fbe44d1d60b"></a><!-- doxytag: member="pyrax::utils::add_method" ref="aa8d6873854a2bde7479a7fbe44d1d60b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1utils.html#aa8d6873854a2bde7479a7fbe44d1d60b">pyrax.utils.add_method</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>func</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Adds an instance method to an object. </p>
+
+</div>
+</div>
 <a class="anchor" id="a399c6b9652f5150282c3edb32d4d05f3"></a><!-- doxytag: member="pyrax::utils::coerce_string_to_list" ref="a399c6b9652f5150282c3edb32d4d05f3" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -182,7 +219,7 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>returns the first environment variable set if none are non-empty, defaults to "" or keyword arg default </p>
+<p>Returns the first environment variable set if none are non-empty, defaults to "" or keyword arg default. </p>
 
 </div>
 </div>
@@ -290,7 +327,7 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Generate a random name; useful for testing. </p>
+<p>Generates a random name; useful for testing. </p>
 
 </div>
 </div>
@@ -385,7 +422,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Oct 31 2012 20:53:56 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Nov 2 2012 15:56:34 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

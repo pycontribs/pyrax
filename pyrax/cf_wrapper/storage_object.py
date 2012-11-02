@@ -25,7 +25,7 @@ class StorageObject(object):
 
 
     def _read_attdict(self, dct):
-        """Populate the object attributes using the dict returned by swiftclient."""
+        """Populates the object attributes using the dict returned by swiftclient."""
         self.name = dct.get("name")
         if not self.name:
             # Could be a pseudo-subdirectory
