@@ -223,7 +223,7 @@ def _make_agent_name(base):
 
 
 def connect_to_services():
-    """Establish authenticated connections to the various cloud APIs."""
+    """Establishes authenticated connections to the various cloud APIs."""
     global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases, cloud_blockstorage
     if services_to_start["servers"]:
         cloudservers = connect_to_cloudservers()
