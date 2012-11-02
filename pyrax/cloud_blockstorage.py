@@ -28,13 +28,50 @@ import pyrax.utils as utils
 MIN_SIZE = 100
 MAX_SIZE = 1024
 
+def _resolve_id(val):
+    return val if isinstance(val, basestring) else val.id
 
-class CloudBlockStorageVolume(BaseResource):
-    pass
+def _resolve_name(val):
+    return val if isinstance(val, basestring) else val.name
+
+
+def assure_volume(fnc):
+    @wraps(fnc)
+    def _wrapped(self, volume, *args, **kwargs):
+        if not isinstance(volume, CloudBlockStorageVolume):
+            # Must be the ID
+            volume = self._manager.get(volume)
+        return fnc(self, volume, *args, **kwargs)
+    return _wrapped
 
 
 class CloudBlockStorageVolumeTypes(BaseResource):
     pass
+
+
+class CloudBlockStorageVolume(BaseResource):
+    def attach_to_instance(self, instance, mountpoint):
+        """
+        Attaches this volume to a cloud server instance
+        at the specified mountpoint
+        """
+        uri = "/volumes/%s/action" % self.id
+        instance_id = _resolve_id(instance)
+        body = {"os-attach": {
+                "instance_uuid": instance_id,
+                "mountpoint": mountpoint,
+                }}
+        return self.manager.api.method_post(uri, body=body)
+
+
+    def detach(self):
+        """
+        Detaches this volume from any device it may be attached to.
+        """
+        uri = "/volumes/%s/action" % self.id
+        body = {"os-detach": {}}
+        return self.manager.api.method_post(uri, body=body)
+
 
 
 class CloudBlockStorageClient(BaseClient):
@@ -82,19 +119,13 @@ class CloudBlockStorageClient(BaseClient):
         return body
 
 
-def attach(self, volume, instance_uuid, mountpoint):
-    """
-    Set attachment metadata.
+    @assure_volume
+    def attach_to_instance(self, volume, instance, mountpoint):
+        """Attaches the volume to the specified instance at the mountpoint."""
+        return volume.attach_to_instance(instance, mountpoint)
 
-    :param volume: The :class:`Volume` (or its ID)
-                   you would like to attach.
-    :param instance_uuid: uuid of the attaching instance.
-    :param mountpoint: mountpoint on the attaching instance.
-    """
-    return self._action('os-attach',
-                        volume,
-                        {'instance_uuid': instance_uuid,
-                         'mountpoint': mountpoint})
 
-def detach(self, volume):
-
+    @assure_volume
+    def detach(self, volume):
+        """Detaches the volume from whatever device it is attached to."""
+        return volume.detach()

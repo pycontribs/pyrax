@@ -41,6 +41,7 @@ try:
     from cloud_databases import CloudDatabaseFlavor
     from cloud_databases import CloudDatabaseInstance
     from cloud_databases import CloudDatabaseUser
+    from cloud_blockstorage import CloudBlockStorageClient
 except ImportError:
     # See if this is the result of the importing of version.py in setup.py
     callstack = inspect.stack()
