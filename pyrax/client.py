@@ -63,7 +63,7 @@ def get_auth_system_url(auth_system):
 
 class BaseClient(httplib2.Http):
     """
-    This is the base class for all pyrax clients.
+    The base class for all pyrax clients.
     """
     user_agent = "pyrax"
 
@@ -124,24 +124,24 @@ class BaseClient(httplib2.Http):
 
     # The next 4 methods are simple pass-through to the manager.
     def list(self):
-        """Return a list of all resources."""
+        """Returns a list of all resources."""
         return self._manager.list()
 
     def get(self, item):
-        """Get a specific resource."""
+        """Gets a specific resource."""
         return self._manager.get(item)
 
     def create(self, *args, **kwargs):
-        """Create a new resource."""
+        """Creates a new resource."""
         return self._manager.create(*args, **kwargs)
 
     def delete(self, item):
-        """Delete a specific resource."""
+        """Deletes a specific resource."""
         return self._manager.delete(item)
 
 
     def unauthenticate(self):
-        """Clear all of our authentication information."""
+        """Clears all of our authentication information."""
         self.management_url = None
         self.auth_token = None
         self.used_keyring = False
@@ -451,7 +451,7 @@ class BaseClient(httplib2.Http):
 
 
     def _plugin_auth(self, auth_url):
-        """Load plugin-based authentication"""
+        """Loads plugin-based authentication"""
         ep_name = "openstack.client.authenticate"
         for ep in pkg_resources.iter_entry_points(ep_name):
             if ep.name == self.auth_system:
@@ -460,7 +460,7 @@ class BaseClient(httplib2.Http):
 
 
     def _v2_auth(self, url):
-        """Authenticate against a v2.0 auth service."""
+        """Authenticates against a v2.0 auth service."""
         body = {"auth": {
                 "passwordCredentials": {"username": self.user,
                                         "password": self.password}}}
@@ -470,7 +470,7 @@ class BaseClient(httplib2.Http):
 
 
     def _authenticate(self, url, body):
-        """Authenticate and extract the service catalog."""
+        """Authenticates and extracts the service catalog."""
         token_url = url + "/tokens"
 
         # Make sure we follow redirects when trying to reach Keystone

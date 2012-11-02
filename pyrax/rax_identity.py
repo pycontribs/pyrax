@@ -45,7 +45,7 @@ class Identity(object):
 
 
     def set_credentials(self, username, api_key, authenticate=False):
-        """Set the username and api_key directly."""
+        """Sets the username and api_key directly."""
         self.username = username
         self.api_key = api_key
         if authenticate:
@@ -54,7 +54,7 @@ class Identity(object):
 
     def set_credential_file(self, credential_file, authenticate=False):
         """
-        Read in the credentials from the supplied file. It should be a standard
+        Reads in the credentials from the supplied file. It should be a standard
         config file in the format:
 
         [rackspace_cloud]
@@ -84,7 +84,7 @@ class Identity(object):
 
     def _get_credentials(self):
         """
-        Return the current credentials in the format expected by
+        Returns the current credentials in the format expected by
         the authentication service.
         """
         return {"auth": {"RAX-KSKEY:apiKeyCredentials":
@@ -94,8 +94,8 @@ class Identity(object):
 
     def authenticate(self):
         """
-        Using the supplied credentials, connect to the specified authentication
-        endpoint and attempt to log in. If successful, record the token information.
+        Using the supplied credentials, connects to the specified authentication
+        endpoint and attempts to log in. If successful, records the token information.
         """
         creds = self._get_credentials()
         url = urlparse.urljoin(self.auth_endpoint, "tokens")
@@ -117,7 +117,7 @@ class Identity(object):
 
 
     def _parse_response(self, resp):
-        """Get the authentication information from the returned JSON."""
+        """Gets the authentication information from the returned JSON."""
         access = resp["access"]
         token = access.get("token")
         self.token = token["id"]
@@ -150,7 +150,7 @@ class Identity(object):
 
 
     def get_token(self, force=False):
-        """Return the auth token, if it is valid. If not, call the auth endpoint
+        """Returns the auth token, if it is valid. If not, calls the auth endpoint
         to get a new token. Passing 'True' to 'force' will force a call for a new
         token, even if there already is a valid token.
         """

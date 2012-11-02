@@ -206,7 +206,7 @@ def clear_credentials():
 
 
 def set_default_region(region):
-    """Change the default_region setting."""
+    """Changes the default_region setting."""
     global default_region
     default_region = region
 
@@ -217,7 +217,7 @@ def _make_agent_name(base):
 
 
 def connect_to_services():
-    """Establish authenticated connections to the various cloud APIs."""
+    """Establishes authenticated connections to the various cloud APIs."""
     global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
     if services_to_start["servers"]:
         cloudservers = connect_to_cloudservers()

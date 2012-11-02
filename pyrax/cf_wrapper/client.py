@@ -193,7 +193,7 @@ class CFClient(object):
                 continue
             hdrs[mkey] = str(mval)
         if bad:
-            raise exc.InvalidCDNMetada("The only CDN metadata you can update are: X-Log-Retention, X-CDN-enabled, and X-TTL. "
+            raise exc.InvalidCDNMetadata("The only CDN metadata you can update are: X-Log-Retention, X-CDN-enabled, and X-TTL. "
                     "Received the following illegal item(s): %s" % ", ".join(bad))
         self.connection.cdn_request("POST", [ct.name], hdrs=hdrs)
 
@@ -588,7 +588,7 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def get_info(self):
-        """Return tuple for number of containers and total bytes in the account."""
+        """Returns a tuple for the number of containers and total bytes in the account."""
         hdrs = self.connection.head_container("")
         return (hdrs["x-account-container-count"], hdrs["x-account-bytes-used"])
 
@@ -788,7 +788,7 @@ class Connection(_swift_client.Connection):
             headers.update(hdrs)
 
         def retry_request():
-            """Re-connect and re-try a failed request once"""
+            """Re-connect and re-try a failed request once."""
             self._make_cdn_connection()
             self.cdn_connection.request(method, path, data, headers)
             return self.cdn_connection.getresponse()
@@ -825,11 +825,11 @@ class FolderUploader(threading.Thread):
         threading.Thread.__init__(self)
 
     def folder_name_from_path(self, pth):
-        """Convenience method that first strips and trailing path separators."""
+        """Convenience method that first strips trailing path separators."""
         return os.path.basename(pth.rstrip(os.sep))
 
     def consider(self, nm):
-        """If the name matches any of the ignore patterns, return False."""
+        """If the name matches any of the ignore patterns, returns False."""
         for pat in self.ignore:
             if fnmatch.fnmatch(nm, pat):
                 return False
@@ -852,7 +852,7 @@ class FolderUploader(threading.Thread):
             self.client._update_progress(self.upload_key, obj_size)
 
     def run(self):
-        """Starts the uplaoding thread."""
+        """Starts the uploading thread."""
         root_path, folder_name = os.path.split(self.root_folder)
         if self.container is None:
             self.base_path = os.path.join(root_path, folder_name)

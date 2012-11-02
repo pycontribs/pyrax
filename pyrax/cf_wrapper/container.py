@@ -21,7 +21,7 @@ class Container(object):
 
 
     def _fetch_cdn_data(self):
-        """Fetch the object's CDN data from the CDN service"""
+        """Fetches the object's CDN data from the CDN service"""
         response = self.client.connection.cdn_request("HEAD", [self.name])
         if 200 <= response.status < 300:
             for hdr in response.getheaders():
@@ -40,7 +40,7 @@ class Container(object):
     def get_objects(self, marker=None, limit=None, prefix=None, delimiter=None,
             full_listing=False):
         """
-        Return a list of StorageObjects representing the objects in the container.
+        Returns a list of StorageObjects representing the objects in the container.
         You can use the marker and limit params to handle pagination, and the prefix
         and delimiter params to filter the objects returned. Also, by default only
         the first 10,000 objects are returned; if you set full_listing to True, all

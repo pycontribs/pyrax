@@ -75,12 +75,12 @@ class BaseManager(object):
 
 
     def list(self):
-        """Get a list of all items."""
+        """Gets a list of all items."""
         return self._list("/%s" % self.uri_base)
 
 
     def get(self, item):
-        """Get a specific item."""
+        """Gets a specific item."""
         uri = "/%s/%s" % (self.uri_base, getid(item))
         return self._get(uri)
 
@@ -97,14 +97,14 @@ class BaseManager(object):
 
 
     def delete(self, item):
-        """Delete the specified item."""
+        """Deletes the specified item."""
         uri = "/%s/%s" % (self.uri_base, getid(item))
         return self._delete(uri)
 
 
     def _list(self, url, obj_class=None, body=None):
         """
-        This handles the communication with the API when getting
+        Handles the communication with the API when getting
         a full listing of the resources managed by this class.
         """
         if body:
@@ -129,7 +129,7 @@ class BaseManager(object):
 
     def _get(self, url):
         """
-        This handles the communication with the API when getting
+        Handles the communication with the API when getting
         a specific resource managed by this class.
         """
         _resp, body = self.api.method_get(url)
@@ -138,7 +138,7 @@ class BaseManager(object):
 
     def _create(self, url, body, return_none=False, return_raw=False, **kwargs):
         """
-        This handles the communication with the API when creating a new
+        Handles the communication with the API when creating a new
         resource managed by this class.
         """
         self.run_hooks("modify_body_for_create", body, **kwargs)
@@ -153,7 +153,7 @@ class BaseManager(object):
 
     def _delete(self, url):
         """
-        This handles the communication with the API when deleting
+        Handles the communication with the API when deleting
         a specific resource managed by this class.
         """
         _resp, _body = self.api.method_delete(url)
@@ -161,7 +161,7 @@ class BaseManager(object):
 
     def _update(self, url, body, **kwargs):
         """
-        This handles the communication with the API when updating
+        Handles the communication with the API when updating
         a specific resource managed by this class.
         """
         self.run_hooks("modify_body_for_update", body, **kwargs)
@@ -171,7 +171,7 @@ class BaseManager(object):
 
     def find(self, **kwargs):
         """
-        Find a single item with attributes matching ``**kwargs``.
+        Finds a single item with attributes matching ``**kwargs``.
 
         This isn't very efficient: it loads the entire list then filters on
         the Python side.
@@ -190,7 +190,7 @@ class BaseManager(object):
 
     def findall(self, **kwargs):
         """
-        Find all items with attributes matching ``**kwargs``.
+        Finds all items with attributes matching ``**kwargs``.
 
         This isn't very efficient: it loads the entire list then filters on
         the Python side.

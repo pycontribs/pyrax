@@ -105,7 +105,7 @@ def get_checksum(content):
 
 
 def random_name(length=20):
-    """Generate a random name; useful for testing."""
+    """Generates a random name; useful for testing."""
     base_chars = string.ascii_letters
     mult = (length / len(base_chars)) + 1
     chars = base_chars * mult
@@ -167,7 +167,7 @@ def add_method(obj, func, name=None):
 
 def env(*args, **kwargs):
     """
-    returns the first environment variable set
+    Returns the first environment variable set
     if none are non-empty, defaults to "" or keyword arg default
     """
     for arg in args:
