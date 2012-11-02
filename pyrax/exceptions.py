@@ -92,6 +92,9 @@ class Unauthorized(PyraxException):
 class UploadFailed(PyraxException):
     pass
 
+class VolumeNotAvailable(PyraxException):
+    pass
+
 
 class AmbiguousEndpoints(PyraxException):
     """Found more than one matching endpoint in Service Catalog."""

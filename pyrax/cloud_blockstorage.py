@@ -45,11 +45,35 @@ def assure_volume(fnc):
     return _wrapped
 
 
-class CloudBlockStorageVolumeTypes(BaseResource):
+def assure_snapshot(fnc):
+    @wraps(fnc)
+    def _wrapped(self, snapshot, *args, **kwargs):
+        if not isinstance(snapshot, CloudBlockStorageSnapshot):
+            # Must be the ID
+            snapshot = self._snaps_manager.get(snapshot)
+        return fnc(self, snapshot, *args, **kwargs)
+    return _wrapped
+
+
+class CloudBlockStorageSnapshot(BaseResource):
+    pass
+
+
+class CloudBlockStorageVolumeType(BaseResource):
     pass
 
 
 class CloudBlockStorageVolume(BaseResource):
+    """
+    This class represents a Block Storage volume.
+    """
+    def __init__(self, *args, **kwargs):
+        super(CloudBlockStorageVolume, self).__init__(*args, **kwargs)
+        self._snapshot_manager = BaseManager(self.manager.api,
+                resource_class=CloudBlockStorageSnapshot,
+                response_key="snapshot", uri_base="snapshots")
+
+
     def attach_to_instance(self, instance, mountpoint):
         """
         Attaches this volume to a cloud server instance
@@ -67,6 +91,31 @@ class CloudBlockStorageVolume(BaseResource):
         return self.manager.action(self, "os-detach")
 
 
+    def create_snapshot(self, name=None, description=None, force=False):
+        """
+        Creates a snapshot of this volume, with an optional name and description.
+
+        Normally snapshots will not happen if the volume is attached. To override
+        this default behavior, pass force=True.
+        """
+        name = name or ""
+        description = description or ""
+        # Note that passing in non-None values is required for the _create_body
+        # method to distinguish between this and the request to create and instance.
+        try:
+            self._snapshot_manager.create(volume=self, name=name, description=description,
+                    force=force)
+        except exc.BadRequest as e:
+            msg = str(e)
+            if "Invalid volume: must be available" in msg:
+                # The volume for the snapshot was attached.
+                raise exc.VolumeNotAvailable("Cannot create a snapshot from an attached volume. "
+                        "Detach the volume before trying again, or pass 'force=True' to the "
+                        "create_snapshot() call.")
+            else:
+                # Some other error
+                raise
+
 
 class CloudBlockStorageClient(BaseClient):
     """
@@ -79,34 +128,55 @@ class CloudBlockStorageClient(BaseClient):
         """
         self._manager = BaseManager(self, resource_class=CloudBlockStorageVolume,
                response_key="volume", uri_base="volumes")
-        self._types_manager = BaseManager(self, resource_class=CloudBlockStorageVolumeTypes,
+        self._types_manager = BaseManager(self, resource_class=CloudBlockStorageVolumeType,
                response_key="volume_type", uri_base="types")
+        self._snaps_manager = BaseManager(self, resource_class=CloudBlockStorageSnapshot,
+               response_key="snapshot", uri_base="snapshots")
 
 
     def list_types(self):
         return self._types_manager.list()
 
 
-    def _create_body(self, name, size, volume_type=None, description=None,
-             metadata=None, snapshot_id=None, availability_zone=None):
-        """Used to create the dict required to create a new volume."""
-        if not MIN_SIZE <= size <= MAX_SIZE:
-            raise exc.InvalidSize("Volume sizes must be between %s and %s" % (MIN_SIZE, MAX_SIZE))
-        if volume_type is None:
-            volume_type = "SATA"
-        if description is None:
-            description = ""
-        if metadata is None:
-            metadata = {}
-        body = {"volume": {
-                "size": size,
-                "snapshot_id": snapshot_id,
-                "display_name": name,
-                "display_description": description,
-                "volume_type": volume_type,
-                "metadata": metadata,
-                "availability_zone": availability_zone,
-                }}
+    def list_snapshots(self):
+        return self._snaps_manager.list()
+
+
+    def _create_body(self, name, size=None, volume_type=None, description=None,
+             metadata=None, snapshot_id=None, availability_zone=None,
+             volume=None, force=False):
+        """
+        Used to create the dict required to create any of the following:
+            A new volume
+            A new snapshot
+        """
+        if size is not None:
+            # Creating a volume
+            if not MIN_SIZE <= size <= MAX_SIZE:
+                raise exc.InvalidSize("Volume sizes must be between %s and %s" % (MIN_SIZE, MAX_SIZE))
+            if volume_type is None:
+                volume_type = "SATA"
+            if description is None:
+                description = ""
+            if metadata is None:
+                metadata = {}
+            body = {"volume": {
+                    "size": size,
+                    "snapshot_id": snapshot_id,
+                    "display_name": name,
+                    "display_description": description,
+                    "volume_type": volume_type,
+                    "metadata": metadata,
+                    "availability_zone": availability_zone,
+                    }}
+        else:
+            # Creating a snapshot
+            body = {"snapshot": {
+                    "display_name": name,
+                    "display_description": description,
+                    "volume_id": volume.id,
+                    "force": str(force).lower(),
+                 }}
         print "BODY"
         print body
         print
@@ -123,3 +193,26 @@ class CloudBlockStorageClient(BaseClient):
     def detach(self, volume):
         """Detaches the volume from whatever device it is attached to."""
         return volume.detach()
+
+
+    @assure_volume
+    def delete_volume(self, volume):
+        """Deletes the volume."""
+        return volume.delete()
+
+
+    @assure_volume
+    def create_snapshot(self, volume, name=None, description=None, force=False):
+        """
+        Creates a snapshot of the volume, with an optional name and description.
+
+        Normally snapshots will not happen if the volume is attached. To override
+        this default behavior, pass force=True.
+        """
+        return volume.create_snapshot(name=name, description=description, force=force)
+
+
+    @assure_snapshot
+    def delete_snapshot(self, snapshot):
+        """Deletes the snapshot."""
+        return snapshot.delete()
