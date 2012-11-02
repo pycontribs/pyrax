@@ -1,9 +1,4 @@
 # Working with Cloud Servers
-Once you are authenticated, you can easily interact with Rackspace Cloud Servers.
-
-----
-# WARNING #
-###Please note that pyrax is still in the early stages of development, and will almost certainly be changing in ways that will break any applications you might build using it. Feel free to play with it and test things out, but do not use it for production applications.
 
 ----
 
@@ -217,7 +212,7 @@ If you have a `Server` object and want to create an image of that server, you ca
     server = cs.get(id_of_server)
     server.create_image("my_image_name")
 
-Another option is to use call `pyrax.servers.create_image()`, passing in either the name of ID of the server from which you want to create the image, along with the image name and optional metadata.
+Another option is to use call `pyrax.servers.create_image()`, passing in either the name or the ID of the server from which you want to create the image, along with the image name and optional metadata.
 
     cs = pyrax.cloudservers
     cs.servers.create_image("my_awesome_server", "my_image_name")
