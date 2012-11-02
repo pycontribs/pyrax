@@ -95,7 +95,7 @@ class CloudDatabaseInstance(BaseResource):
             character_set = "utf8"
         if collate is None:
             collate = "utf8_general_ci"
-        # Note that passing in non-None values is required for the create_body
+        # Note that passing in non-None values is required for the _create_body
         # method to distinguish between this and the request to create and instance.
         self._database_manager.create(name=name, character_set=character_set,
                 collate=collate, return_none=True)
