@@ -177,9 +177,6 @@ class CloudBlockStorageClient(BaseClient):
                     "volume_id": volume.id,
                     "force": str(force).lower(),
                  }}
-        print "BODY"
-        print body
-        print
         return body
 
 
