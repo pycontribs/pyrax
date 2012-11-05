@@ -69,6 +69,29 @@ class CloudDatabasesTest(unittest.TestCase):
         inst._user_manager.list.assert_called_once_with()
         inst._user_manager.list = sav
 
+    def test_get_database(self):
+        inst = self.instance
+        sav = inst.list_databases
+        db1 = fakes.FakeEntity()
+        db1.name = "a"
+        db2 = fakes.FakeEntity()
+        db2.name = "b"
+        inst.list_databases = Mock(return_value=[db1, db2])
+        ret = inst.get_database("a")
+        self.assertEqual(ret, db1)
+        inst.list_databases = sav
+
+    def test_get_database_bad(self):
+        inst = self.instance
+        sav = inst.list_databases
+        db1 = fakes.FakeEntity()
+        db1.name = "a"
+        db2 = fakes.FakeEntity()
+        db2.name = "b"
+        inst.list_databases = Mock(return_value=[db1, db2])
+        self.assertRaises(exc.NoSuchDatabase, inst.get_database, "z")
+        inst.list_databases = sav
+
     def test_create_database(self):
         inst = self.instance
         sav = inst._database_manager.create
