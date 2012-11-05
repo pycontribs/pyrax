@@ -5,7 +5,7 @@ See the COPYING file for license and copyright information.
 
 **pyrax** should work with most OpenStack-based cloud deployments, though it specifically targets the Rackspace public cloud. For example, the code for cloudfiles contains the ability to publish your content on Rackspace's CDN network, even though CDN support is not part of OpenStack Swift. But if you don't use any of the CDN-related code, your app will work fine on any standard Swift deployment.
 
-See the [Release Notes](RELEASENOTES.md) for what has changed in the latest release
+See the [Release Notes](https://github.com/rackspace/pyrax/tree/master/samples) for what has changed in the latest release
 
 
 ##Getting Started with OpenStack/Rackspace
@@ -38,13 +38,11 @@ If you would like to work with the current development state of pyrax, you can i
 
 	pip install git+git://github.com/rackspace/pyrax.git
 
-Note that while this code may have newer features and capabilities, it also is not as well-tested as the officially released version.
-
 If you are not using [virtualenv](http://pypi.python.org/pypi/virtualenv), you will need to run `pip install` as admin using `sudo`.
 
 You may also download and install from source. The source code for **pyrax** is available on [GitHub](https://github.com/rackspace/pyrax/).
 
-Once you have the source code, `cd` to the base directory of the source and run:
+Once you have the source code, `cd` to the base directory of the source and run (using `sudo`, if necessary):
 
 	python setup.py install
 
