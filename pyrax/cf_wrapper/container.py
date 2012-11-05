@@ -68,6 +68,14 @@ class Container(object):
         return ret
 
 
+    def get_object_names(self):
+        """
+        Returns a list of the names of all the objects in this container.
+        """
+        objs = self.get_objects()
+        return [obj.name for obj in objs]
+
+
     def store_object(self, obj_name, data, content_type=None, etag=None):
         """
         Creates a new object in this container, and populates it with
