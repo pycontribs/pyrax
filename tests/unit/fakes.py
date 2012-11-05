@@ -8,6 +8,10 @@ from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
 from pyrax.cloud_databases import CloudDatabaseClient
 from pyrax.cloud_databases import CloudDatabaseInstance
+from pyrax.cloud_blockstorage import CloudBlockStorageClient
+from pyrax.cloud_blockstorage import CloudBlockStorageVolume
+from pyrax.cloud_blockstorage import CloudBlockStorageSnapshot
+
 import pyrax.exceptions as exc
 from pyrax.rax_identity import Identity
 import pyrax.utils as utils
@@ -71,6 +75,10 @@ class FakeLoadBalancerResource(object):
 
 class FakeLoadBalancers(object):
     resource_class = FakeLoadBalancerResource
+
+
+class FakeServer(object):
+    id = utils.random_name()
 
 
 class FakeService(object):
@@ -185,6 +193,26 @@ class FakeDatabaseClient(CloudDatabaseClient):
     def __init__(self, *args, **kwargs):
         self._flavor_manager = FakeManager()
         super(FakeDatabaseClient, self).__init__("fakeuser",
+                "fakepassword", *args, **kwargs)
+
+
+class FakeBlockStorageVolume(CloudBlockStorageVolume):
+    def __init__(self, *args, **kwargs):
+        self.id = utils.random_name()
+        self.manager = FakeManager()
+        self._snapshot_manager = FakeManager()
+
+
+class FakeBlockStorageSnapshot(CloudBlockStorageSnapshot):
+    def __init__(self, *args, **kwargs):
+        self.id = utils.random_name()
+
+
+class FakeBlockStorageClient(CloudBlockStorageClient):
+    def __init__(self, *args, **kwargs):
+        self._types_manager = FakeManager()
+        self._snaps_manager = FakeManager()
+        super(FakeBlockStorageClient, self).__init__("fakeuser",
                 "fakepassword", *args, **kwargs)
 
 
