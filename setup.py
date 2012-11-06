@@ -14,9 +14,10 @@ setup(
         name = "pyrax",
         version = version,
         description = "Python language bindings for the Rackspace Cloud.",
-        author = "Ed Leafe + various module authors",
+        author = "Rackspace",
         author_email = "ed.leafe@rackspace.com",
-        url = "http://docs.rackspace.com/api/",
+        url = "https://github.com/rackspace/pyrax",
+        keywords="pyrax rackspace cloud openstack",
         classifiers = [
                 "Development Status :: 4 - Beta",
                 "License :: OSI Approved :: Apache Software License",
