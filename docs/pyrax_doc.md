@@ -69,6 +69,7 @@ You can control how pyrax operates by including the optional configuration file.
     files = True
     loadbalancers = True
     databases = False
+    blockstorage = True
 
 With the above example, pyrax will default to Rackspace authentication, provision resources in the `ORD` region, and will connect to all services except Cloud Databases after authenticating.
 

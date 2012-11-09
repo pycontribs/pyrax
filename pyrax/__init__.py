@@ -81,9 +81,9 @@ USER_AGENT = "pyrax/%s" % version.version
 services_to_start = {
         "servers": True,
         "files": True,
-        "loadbalancers": True,
+        "loadbalancers": False,
         "databases": False,
-        "blockstorage": False,
+        "blockstorage": True,
         }
 # Read in the configuration file, if any
 config_file = os.path.expanduser("~/.pyrax.cfg")
