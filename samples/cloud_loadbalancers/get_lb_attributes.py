@@ -30,7 +30,7 @@ print "Name:", lb.name
 print "ID:", lb.id
 print "Status:", lb.status
 print "Nodes:", lb.nodes
-print "Virtual IPs:", lb.virtualIps
+print "Virtual IPs:", lb.virtual_ips
 print "Algorithm:", lb.algorithm
 print "Protocol:", lb.protocol
 

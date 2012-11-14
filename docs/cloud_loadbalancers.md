@@ -47,6 +47,8 @@ Next you need to create the `Nodes` that represent these servers. `Nodes` requir
 | DISABLED | Node is not permitted to accept any new connections regardless of session persistence configuration. Existing connections are forcibly terminated. |
 | DRAINING | Node is allowed to service existing established connections and connections that are being directed to it as a result of the session persistence configuration. |
 
+While you can set an existing `Node` to any of these three conditions, you can only create new nodes in either 'ENABLED' or 'DISABLED' condition.
+
 A `Node` is logically linked to the server it represents by the IP address. Since the servers and load balancer are all being created in the same datacenter, we can use the private IP address of the server.
 
     # Get the private network IPs for the servers
@@ -54,22 +56,22 @@ A `Node` is logically linked to the server it represents by the IP address. Sinc
     server2_ip = server2.networks["private"][0]
 
     # Use the IPs to create the nodes
-    node1 = pyrax.cloud_loadbalancers.Node(address=server1_ip, port=80, condition="ENABLED")
-    node2 = pyrax.cloud_loadbalancers.Node(address=server2_ip, port=80, condition="ENABLED")
+    node1 = clb.Node(address=server1_ip, port=80, condition="ENABLED")
+    node2 = clb.Node(address=server2_ip, port=80, condition="ENABLED")
 
 
 ### Create the Virtual IP for the Load Balancer
 The `VirtualIP` class represents the interface for the `LoadBalancer`. It can be "PUBLIC" or "SERVICENET".
 
     # Create the Virtual IP
-    vip = pyrax.cloud_loadbalancers.VirtualIP(type="PUBLIC")
+    vip = clb.VirtualIP(type="PUBLIC")
 
 
 ### Create the Load Balancer
 Now that you have all the information you need, create the `LoadBalancer` as follows:
 
     lb = clb.create("example_lb", port=80, protocol="HTTP",
-            nodes=[node1, node2], virtualIps=[vip])
+            nodes=[node1, node2], virtual_ips=[vip])
 
 
 ### Re-try the Listing
@@ -93,32 +95,26 @@ Once you have a `LoadBalancer` object, you can use its attributes to get informa
     print "ID:", lb.id
     print "Status:", lb.status
     print "Nodes:", lb.nodes
-    print "Virtual IPs:", lb.virtualIps
+    print "Virtual IPs:", lb.virtual_ips
     print "Algorithm:", lb.algorithm
     print "Protocol:", lb.protocol
 
 For the `LoadBalancer` just created, the output of the above is:
 
-    Load Balancer: example_lb
-    ID: 82663
-    Status: ACTIVE
-    Nodes: [<Node: 247917:10.177.16.71:80>, <Node: 247919:10.177.12.29:80>]
-    Virtual IPs: [<VirtualIP: 50.57.203.46:PUBLIC>, <VirtualIP: 2001:4801:7901:0000:8ca7:b42c:0000:0003:PUBLIC>]
-    Algorithm: RANDOM
-    Protocol: HTTP
+    Load Balancer: example_lb    ID: 78273    Status: ACTIVE    Nodes: [<Node type=PRIMARY, condition=ENABLED, id=172949, address=10.177.1.1, port=80>, <Node type=PRIMARY, condition=DISABLED, id=173161, address=10.177.1.2, port=80>]    Virtual IPs: [<VirtualIP type=PUBLIC, id=1893, address=50.56.167.209>, <VirtualIP type=PUBLIC, id=9070313, address=2001:4800:7901:0000:8ca7:b42c:0000:0001>]    Algorithm: RANDOM    Protocol: HTTP
 
 
 ## Managing Nodes
 
 ### Adding and Removing Nodes for a Load Balancer
-`LoadBalancer` instances have a method `add_nodes()` that accepts a list of `Node` objects and adds them to the `LoadBalancer`. To remove a `Node`, though, you must get a reference to that node and then call its `delete()` method.
+`LoadBalancer` instances have a method `add_nodes()` that accepts either a single `Node` or a list of `Node` objects and adds them to the `LoadBalancer`. To remove a `Node`, though, you must get a reference to that node and then call its `delete()` method.
 
     clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     print "Current nodes:", lb.nodes
 
     new_node = clb.Node(address="10.177.1.3", port=80, condition="ENABLED")
-    lb.add_nodes([new_node])
+    lb.add_nodes(new_node)
     print "After adding node:", lb.nodes
 
     # Now remove that node. Note that you can't use the original node instance,
@@ -176,6 +172,15 @@ You can get load balancer usage data for your entire account by calling `pyrax.c
 
 This output is for a test load balancer that is not getting any traffic. If this had been for an actual load balancer in production use, the values reported would not be all zeroes.
 
+The call to `get_usage()` can return a lot of data. Many times you may only be interested in the usage data for a given time period, so the method supports two optional parameters: `start` and `end`. These can be date/time values in one of the following formats:
+
+* A Python datetime.datetime object
+* A Python datetime.date object
+* A string in the format "YYYY-MM-DD HH:MM:SS"
+* A string in the format "YYYY-MM-DD"
+
+When both starting and ending times are specified, the resulting usage data will only include records within that time period. When only the starting time is specified, all records from that point to the present are returned. When only the ending time is specified, all records from the earlist up to the ending time are returned.
+
 
 ## Load Balancer Statistics
 To get the statistics for an individual load balancer, call its `get_stats()` method. You will get back a dictionary like this:
@@ -187,6 +192,7 @@ To get the statistics for an individual load balancer, call its `get_stats()` me
      'keepAliveTimedOut': 0,
      'maxConn': 14}
 
+
 ## Health Monitors
 A health monitor is a configurable feature of each load balancer. It is used to determine whether or not a back-end node is usable for processing a request.
 
@@ -194,10 +200,9 @@ To get the current Health Monitor for a load balancer, run the following code:
 
     clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
-    hm_mgr = lb.healthmonitor()
-    hm = hm_mgr.get()
+    hm = lb.get_health_monitor()
 
-The call to `healthmonitor()` returns an instance of the `HealthMonitorManager` class, which is then used to interact with health monitors. The call to `get()` returns the health monitor for the load balancer, or None if no monitors have been added.
+The call to `get_health_monitor()` returns a dict representing the health monitor for the load balancer. If no monitors have been added, an empty dict is returned.
 
 There are 3 types of Health Monitor probes:
 
@@ -213,32 +218,44 @@ This type of monitor simply checks if the load balancer's nodes are available fo
 
     clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
-    hm_mgr = lb.healthmonitor()
-    hm = hm_mgr.resource(
-            type="CONNECT",
-            delay=10,
-            timeout=10,
+    lb.add_health_monitor(type="CONNECT", delay=10, timeout=10,
             attemptsBeforeDeactivation=3)
-    hm_mgr.add(hm)
+
+Here are the parameters for configuring a TCP Connection health monitor:
+
+Name | Description | Default | Required
+---- | ---- | ---- | ----
+attemptsBeforeDeactivation | Number of permissible monitor failures before removing a node from rotation. Must be a number between 1 and 10. | 3 | Yes
+delay | The minimum number of seconds to wait before executing the health monitor. Must be a number between 1 and 3600. | 10 | Yes
+timeout | Maximum number of seconds to wait for a connection to be established before timing out. Must be a number between 1 and 300. | 10 | Yes
+type | Type of the health monitor. Must be specified as "CONNECT" to monitor connections. | None | Yes
 
 
 ### Adding a Health Monitor for HTTP(S)
-These types of monitors check whether the load balancer's nodes can be reached via standard HTTP or HTTPS ports. They also require several more parameters to be defined for the monitor:
+These types of monitors check whether the load balancer's nodes can be reached via standard HTTP or HTTPS ports. Note that the type must match the load balancer protocol: if the load balancer is 'HTTP', you cannot create an 'HTTPS' health monitor. These types of monitors also require several more parameters to be defined for the monitor:
 
     clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
-    hm_mgr = lb.healthmonitor()
-    hm = hm_mgr.resource(
-        type="HTTP", #or HTTPS
-        delay=10,
-        timeout=10,
-        attemptsBeforeDeactivation=3,
-        path="/",
-        statusRegex="^[234][0-9][0-9]$",
-        bodyRegex="testing")
-    hm_mgr.add(hm)
+    lb.add_health_monitor(type="HTTP", delay=10, timeout=10,
+            attemptsBeforeDeactivation=3, path="/",
+            statusRegex="^[234][0-9][0-9]$",
+            bodyRegex=".* testing .*"i,
+            hostHeader="example.com")
 
-The `path` parameter indicates the HTTP path for the request; the `statusRegex` parameter is compared against the returned status code, and the `bodyRegex` parameter is compared with the body of the response. If both response patterns match, the node is considered healthy.
+The `path` parameter indicates the HTTP path for the request; the `statusRegex` parameter is compared against the returned status code, and the `bodyRegex` parameter is compared with the body of the response. If both response patterns match, the node is considered healthy. The `hostHeader` parameter is the only one that is optional. If included, the monitor will check that hostname.
+
+Here are the parameters and their description:
+
+Name | Description | Default | Required
+---- | ---- | ---- | ----
+attemptsBeforeDeactivation | Number of permissible monitor failures before removing a node from rotation. Must be a number between 1 and 10. | 3 | Yes
+bodyRegex | A regular expression that will be used to evaluate the contents of the body of the response. | None | Yes
+delay | The minimum number of seconds to wait before executing the health monitor. Must be a number betwe en 1 and 3600. | 10 | Yes
+hostHeader | The name of a host for which the health monitors will check. | None | No
+path | The HTTP path that will be used in the sample request. | "/" | Yes
+statusRegex | A regular expression that will be used to evaluate the HTTP status code returned in the res ponse. | None | Yes
+timeout | Maximum number of seconds to wait for a connection to be established before timing out. Must be a number between 1 and 300. | 10 | Yes
+type | Type of the health monitor. Must be specified as "HTTP" to monitor an HTTP response or "HTTPS" to monitor an HTTPS response. | None | Yes
 
 
 ### Deleting a Health Monitor
@@ -246,8 +263,7 @@ To remove a health monitor from a load balancer, run the following:
 
     clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
-    hm_mgr = lb.healthmonitor()
-    hm_mgr.delete()
+    lb.delete_health_monitor()
 
 
 ## Session Persistence
@@ -309,38 +325,45 @@ After running the above code, you should see output like this:
 ## Access Lists
 The access list management feature allows fine-grained network access controls to be applied to the load balancer's virtual IP address. A single IP address, multiple IP addresses, or entire network subnets can be added as a `networkItem`. Items that are configured with the `ALLOW` type will always take precedence over items with the `DENY` type. To reject traffic from all items except for those with the `ALLOW` type, add a `networkItem` with an address of "0.0.0.0/0" and a `DENY` type.
 
-As an example, the following code will configure the load balancer to only allow access from the address 10.20.30.40:
+To see the access lists for a load balancer, call the load balancer's `get_access_list()` method:
 
     clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
-    al_mgr = lb.accesslist()
+    print "Starting:", lb.get_access_list()
 
-    network_item1 = al_mgr.resource(address="10.20.30.40", type="ALLOW")
-    network_item2 = al_mgr.resource(address="0.0.0.0/0", type="DENY")
-    al_mgr.add([network_item1, network_item2])
+Assuming you have not yet set up an access list, this would return an empty list:
 
-To see the access lists for a load balancer, call the manager's `list()` method:
+    Starting: []
 
-    print al_mgr.list()
+Suppose you wanted to only allow access to this load balancer from the address 10.20.30.40: you would create an 'ALLOW' record for that address, and a 'DENY' record for all others. Each record is a dict with the keys 'address' and 'type':
 
-This returns:
+    network_item1 = dict(address="10.20.30.40", type="ALLOW")
+    network_item2 = dict(address="0.0.0.0/0", type="DENY")
 
-    [<NetworkItem: 0.0.0.0/0:DENY>, <NetworkItem: 10.20.30.40:ALLOW>]
+Now configure the load balancer by passing a list of these records to its `add_access_list()` method:
 
-These are actually `NetworkItem` objects; they have the attributes `address`, `type` and `id`. You can remove any individual `NetworkItem` from an access list by calling the `delete()` method of the access list manager and passing in the `id` of the `NetworkItem` to remove. To remove the `ALLOW` item from this load balancer, run the following:
+    lb.add_access_list([network_item1, network_item2])
 
-    allow_item = [itm for itm in al_mgr.list()
-            if itm.type == "ALLOW"][0]
-    al_mgr.delete(id=allow_item.id)
-    print al_mgr.list()
+Now confirm that the load balancer has been configured:
 
-This now returns:
+    print "After:", lb.get_access_list()
 
-    [<NetworkItem: 0.0.0.0/0:DENY>]
+This prints:
 
-To delete the entire access list, call the `delete()` method without passing in an `id`:
+    After: [{u'address': u'0.0.0.0/0', u'id': 19019, u'type': u'DENY'}, {u'address': u'10.20.30.40', u'id': 19021, u'type': u'ALLOW'}]
 
-    al_mgr.delete()
+You can remove any individual item from an access list by calling the `delete_access_list_items()` method of the load balancer and passing in the ID of the item to remove. You may pass in a single ID, or a list of several IDs. To remove the `ALLOW` item from this load balancer, run the following:
+
+    lb.delete_access_list_items(19021)
+    print "After deletion", lb.get_access_list()
+
+This should return:
+
+    After deletion: [{u'address': u'0.0.0.0/0', u'id': 19019, u'type': u'DENY'}]
+
+To delete the entire access list, call the `delete_access_list()` method:
+
+    lb.delete_access_list()
 
 
 ## Error Pages

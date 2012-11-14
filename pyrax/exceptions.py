@@ -20,6 +20,9 @@
 class PyraxException(Exception):
     pass
 
+class AccessListIDNotFound(PyraxException):
+    pass
+
 class AuthenticationFailed(PyraxException):
     pass
 
@@ -53,16 +56,40 @@ class InvalidConfigurationFile(PyraxException):
 class InvalidCredentialFile(PyraxException):
     pass
 
+class InvalidDateTimeString(PyraxException):
+    pass
+
+class InvalidNodeCondition(PyraxException):
+    pass
+
+class InvalidNodeParameters(PyraxException):
+    pass
+
+class InvalidSessionPersistenceType(PyraxException):
+    pass
+
 class InvalidSize(PyraxException):
     pass
 
 class InvalidUploadID(PyraxException):
     pass
 
+class InvalidVirtualIPType(PyraxException):
+    pass
+
+class InvalidVirtualIPVersion(PyraxException):
+    pass
+
 class InvalidVolumeResize(PyraxException):
     pass
 
+class MissingHealthMonitorSettings(PyraxException):
+    pass
+
 class MissingName(PyraxException):
+    pass
+
+class NoSSLTerminationConfiguration(PyraxException):
     pass
 
 class NoSuchContainer(PyraxException):
@@ -84,6 +111,15 @@ class NotCDNEnabled(PyraxException):
     pass
 
 class NoTokenLookupException(PyraxException):
+    pass
+
+class ProtocolMismatch(PyraxException):
+    pass
+
+class UnattachedNode(PyraxException):
+    pass
+
+class UnattachedVirtualIP(PyraxException):
     pass
 
 class Unauthorized(PyraxException):
@@ -209,8 +245,12 @@ def from_response(response, body):
         details = "n/a"
         if hasattr(body, "keys"):
             error = body[body.keys()[0]]
-            message = error.get("message", None)
-            details = error.get("details", None)
+            if isinstance(error, dict):
+                message = error.get("message", None)
+                details = error.get("details", None)
+            else:
+                message = error
+                details = None
         return cls(code=response.status, message=message, details=details,
                    request_id=request_id)
     else:

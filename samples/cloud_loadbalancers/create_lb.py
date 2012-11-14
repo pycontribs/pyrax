@@ -26,9 +26,9 @@ lb_name = pyrax.utils.random_name(length=8)
 
 node = clb.Node(address="10.177.1.1", port=80, condition="ENABLED")
 vip = clb.VirtualIP(type="PUBLIC")
-lb = clb.create(lb_name, port=80, protocol="HTTP", nodes=[node], virtualIps=[vip])
+lb = clb.create(lb_name, port=80, protocol="HTTP", nodes=[node], virtual_ips=[vip])
 
-print "Node:", node.toDict()
-print "Virtual IP:", vip.toDict()
+print "Node:", node.to_dict()
+print "Virtual IP:", vip.to_dict()
 print
 print "Load Balancer:", lb

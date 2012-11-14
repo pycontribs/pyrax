@@ -93,7 +93,6 @@ class PyraxInitTest(unittest.TestCase):
         # actually resets them to None.
         pyrax.cloudservers = object()
         pyrax.cloudfiles = object()
-        pyrax.cloud_lb = object()
         pyrax.cloud_loadbalancers = object()
         pyrax.cloud_databases = object()
         default_region = object()
@@ -157,7 +156,7 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.cloudfiles = pyrax.connect_to_cloudfiles()
         self.assertIsNotNone(pyrax.cloudfiles)
 
-    @patch('pyrax._cloudlb.CloudLoadBalancer', new=FakeService)
+    @patch('pyrax.CloudLoadBalancerClient', new=FakeService)
     def test_connect_to_cloud_loadbalancers(self):
         pyrax.cloud_loadbalancers = None
         pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
