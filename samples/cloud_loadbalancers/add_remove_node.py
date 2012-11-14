@@ -17,7 +17,10 @@
 #    under the License.
 
 import os
+import time
+
 import pyrax
+
 
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
@@ -33,6 +36,13 @@ new_node = clb.Node(address="10.177.1.2", port=80, condition="ENABLED")
 lb.add_nodes([new_node])
 
 print "After adding node:", lb.nodes
+
+# The Load Balancer will be in a "PENDING_UPDATE" status for a short while, and
+# cannot accept modifications until the update completes.
+lb.reload()
+while lb.status == "PENDING_UPDATE":
+    time.sleep(1)
+    lb.reload()
 
 # Now remove that node. Note that we can't use the original node instance,
 # as it was created independently, and doesn't have the link to its load
