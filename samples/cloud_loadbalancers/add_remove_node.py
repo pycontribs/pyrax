@@ -22,32 +22,44 @@ import time
 import pyrax
 
 
+def wait_for_changes(lb):
+    """
+    When changes are made to the load balancer, no actions can be
+    made until those changes complete.
+    """
+    lb.reload()
+    while lb.status == "PENDING_UPDATE":
+        time.sleep(1)
+        lb.reload()
+
+
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 clb = pyrax.cloud_loadbalancers
 
 lb = clb.list()[0]
+print
 print "Load Balancer:", lb
+print
 print "Current nodes:", lb.nodes
 
 # You may have to adjust the address of the node to something on
 # the same internal network as your load balancer.
 new_node = clb.Node(address="10.177.1.2", port=80, condition="ENABLED")
 lb.add_nodes([new_node])
+wait_for_changes(lb)
 
+print
 print "After adding node:", lb.nodes
-
-# The Load Balancer will be in a "PENDING_UPDATE" status for a short while, and
-# cannot accept modifications until the update completes.
-lb.reload()
-while lb.status == "PENDING_UPDATE":
-    time.sleep(1)
-    lb.reload()
 
 # Now remove that node. Note that we can't use the original node instance,
 # as it was created independently, and doesn't have the link to its load
 # balancer. Instead, we'll get the last node from the load balancer.
-added_node = lb.nodes[-1]
+added_node = [node for node in lb.nodes
+        if node.address == new_node.address][0]
+print
 print "Added Node:", added_node
 added_node.delete()
+wait_for_changes(lb)
+print
 print "After removing node:", lb.nodes

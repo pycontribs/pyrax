@@ -16,33 +16,20 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import datetime
 import os
-
 import pyrax
 
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 clb = pyrax.cloud_loadbalancers
 
-# Get load balancer usage
-usage = clb.get_usage()
-print "Usage for Account:", usage["accountId"]
-print
-print "Account Usage Records"
-print "-" * 30
-au_recs = usage["accountUsage"]
-for rec_key in au_recs.keys()[:5]:
-    recs = au_recs[rec_key]
-    if len(recs) > 5:
-        print "(only the first 5 records...)"
-    print recs[:5]
-    print
-print "Load Balancer Usage Records"
-print "-" * 30
-lb_recs = usage["loadBalancerUsages"]
-if len(lb_recs) > 5:
-    print "(only the first 5 records...)"
-for rec in lb_recs[:5]:
-    print rec
-    print
+lb = clb.list()[0]
+print "Initial metadata:", lb.get_metadata()
+lb.set_metadata({"a": "one", "b": "two", "c": "three"})
+print "New metadata:", lb.get_metadata()
+lb.update_metadata({"d": "four"})
+print "Updated metadata:", lb.get_metadata()
+lb.set_metadata({"e": "five"})
+print "After set_metadata:", lb.get_metadata()
+lb.delete_metadata()
+print "After delete_metadata:", lb.get_metadata()

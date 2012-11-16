@@ -24,6 +24,9 @@ pyrax.set_credential_file(creds_file)
 clb = pyrax.cloud_loadbalancers
 
 # You need to specify an address, port and condition
-node = clb.Node(address="10.1.1.1", port=80, condition="ENABLED")
+node = clb.Node(address="10.1.1.1", port=80, condition="DISABLED")
 print "Node:", node
-print "to_dict:", node.to_dict()
+
+# Actually, 'condition' is optional; it will default to 'ENABLED'.
+node_default = clb.Node(address="10.1.1.2", port=80)
+print "Node(using default condition):", node_default

@@ -11,6 +11,11 @@ from pyrax.cloud_databases import CloudDatabaseInstance
 from pyrax.cloud_blockstorage import CloudBlockStorageClient
 from pyrax.cloud_blockstorage import CloudBlockStorageVolume
 from pyrax.cloud_blockstorage import CloudBlockStorageSnapshot
+from pyrax.cloud_loadbalancers import CloudLoadBalancer
+from pyrax.cloud_loadbalancers import CloudLoadBalancerManager
+from pyrax.cloud_loadbalancers import CloudLoadBalancerClient
+from pyrax.cloud_loadbalancers import Node
+from pyrax.cloud_loadbalancers import VirtualIP
 
 import pyrax.exceptions as exc
 from pyrax.rax_identity import Identity
@@ -65,22 +70,6 @@ class FakeStorageObject(StorageObject):
             self._read_attdict(attdict)
 
 
-class FakeNode(object):
-    pass
-
-
-class FakeVirtualIP(object):
-    pass
-
-
-class FakeLoadBalancerResource(object):
-    pass
-
-
-class FakeLoadBalancers(object):
-    resource_class = FakeLoadBalancerResource
-
-
 class FakeServer(object):
     id = utils.random_name()
 
@@ -93,7 +82,7 @@ class FakeService(object):
         self.client = FakeClient()
         self.Node = FakeNode
         self.VirtualIP = FakeVirtualIP
-        self.loadbalancers = FakeLoadBalancers()
+        self.loadbalancers = FakeLoadBalancer()
 
     def authenticate(self):
         pass
@@ -218,6 +207,45 @@ class FakeBlockStorageClient(CloudBlockStorageClient):
         self._snaps_manager = FakeManager()
         super(FakeBlockStorageClient, self).__init__("fakeuser",
                 "fakepassword", *args, **kwargs)
+
+
+class FakeLoadBalancerClient(CloudLoadBalancerClient):
+    def __init__(self, *args, **kwargs):
+        super(FakeLoadBalancerClient, self).__init__("fakeuser",
+                "fakepassword", *args, **kwargs)
+
+
+class FakeLoadBalancerManager(CloudLoadBalancerManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeBlockStorageClient()
+        super(FakeLoadBalancerManager, self).__init__(api, *args, **kwargs)
+
+
+class FakeLoadBalancer(CloudLoadBalancer):
+    def __init__(self, name=None, info=None, *args, **kwargs):
+        name = name or utils.random_name()
+        info = info or {"fake": "fake"}
+        super(FakeLoadBalancer, self).__init__(name, info, *args, **kwargs)
+        self.id = utils.random_name()
+        self.manager = FakeLoadBalancerManager()
+
+
+class FakeNode(Node):
+    def __init__(self, address=None, port=None, condition=None, weight=None, status=None,
+            parent=None, type=None, id=None):
+        if address is None:
+            address = "0.0.0.0"
+        if port is None:
+            port = 80
+        if id is None:
+            id = utils.random_name()
+        super(FakeNode, self).__init__(address=address, port=port, condition=condition, weight=weight, status=status,
+            parent=parent, type=type, id=id)
+
+
+class FakeVirtualIP(VirtualIP):
+    pass
 
 
 class FakeIdentity(Identity):
