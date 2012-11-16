@@ -26,7 +26,6 @@ setup(
         install_requires=[
                 "rackspace-novaclient",
                 "python-swiftclient",
-                "python-cloudlb",
                 ],
         packages = [
                 "pyrax",
