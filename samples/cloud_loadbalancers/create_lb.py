@@ -24,6 +24,8 @@ pyrax.set_credential_file(creds_file)
 clb = pyrax.cloud_loadbalancers
 lb_name = pyrax.utils.random_name(length=8)
 
+# You may have to adjust the address of the node to something on
+# the same internal network as your load balancer.
 node = clb.Node(address="10.177.1.1", port=80, condition="ENABLED")
 vip = clb.VirtualIP(type="PUBLIC")
 lb = clb.create(lb_name, port=80, protocol="HTTP", nodes=[node], virtual_ips=[vip])

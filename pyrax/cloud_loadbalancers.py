@@ -38,6 +38,16 @@ def assure_parent(fnc):
     return wrapped
 
 
+def assure_loadbalancer(fnc):
+    @wraps(fnc)
+    def _wrapped(self, loadbalancer, *args, **kwargs):
+        if not isinstance(loadbalancer, CloudLoadBalancer):
+            # Must be the ID
+            loadbalancer = self._manager.get(loadbalancer)
+        return fnc(self, loadbalancer, *args, **kwargs)
+    return _wrapped
+
+
 def _get_id(id_or_obj):
     try:
         return id_or_obj.id
@@ -55,7 +65,7 @@ def _time_string(val):
         return ""
     if isinstance(val, basestring):
         dt = None
-        for fmt in ("%Y-%m-%d %h:%M:%S", "%Y-%m-%d"):
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
             try:
                 dt = datetime.datetime.strptime(val, fmt)
                 break
@@ -78,10 +88,12 @@ class CloudLoadBalancer(BaseResource):
 
 
     def add_nodes(self, nodes):
+        """Adds the nodes to this load balancer."""
         return self.manager.add_nodes(self, nodes)
 
 
     def add_virtualip(self, vip):
+        """Adds the virtual IP to this load balancer."""
         return self.manager.add_virtualip(self, vip)
 
 
@@ -101,14 +113,17 @@ class CloudLoadBalancer(BaseResource):
 
 
     def delete_node(self, node):
+        """Removes the node from the load balancer."""
         return self.manager.delete_node(self, node)
 
 
-    def update_node(self, node, diff):
-        return self.manager.update_node(node, diff)
+    def update_node(self, node, diff=None):
+        """Updates the node's attributes."""
+        return self.manager.update_node(node, diff=diff)
 
 
     def delete_virtualip(self, vip):
+        """Deletes the VirtualIP from its load balancer."""
         return self.manager.delete_virtualip(self, vip)
 
 
@@ -221,7 +236,7 @@ class CloudLoadBalancer(BaseResource):
         return self.manager.get_ssl_termination(self)
 
 
-    def add_ssl_termination(self, securePort, privatekey, certificate, intermediateCertificate,
+    def add_ssl_termination(self, securePort, privatekey, certificate, intermediateCertificate=None,
             enabled=True, secureTrafficOnly=False):
         """
         Adds SSL termination information to the load balancer. If SSL termination has
@@ -376,9 +391,13 @@ class CloudLoadBalancer(BaseResource):
             self._session_persistence = ""
 
 
-    connection_logging = property(_get_connection_logging, _set_connection_logging)
-    content_caching = property(_get_content_caching, _set_content_caching)
-    session_persistence = property(_get_session_persistence, _set_session_persistence)
+    connection_logging = property(_get_connection_logging, _set_connection_logging, None,
+            "The current state of connection logging. Possible values are True or False.")
+    content_caching = property(_get_content_caching, _set_content_caching, None,
+            "The current state of content caching. Possible values are True or False.")
+    session_persistence = property(_get_session_persistence, _set_session_persistence, None,
+            "The current state of session persistence. Possible values are either 'HTTP_COOKIE' or "
+            "'SOURCE_IP, depending on the type of load balancing.")
     ## END - property definitions ##
 
 
@@ -389,35 +408,37 @@ class CloudLoadBalancerManager(BaseManager):
         if not isinstance(nodes, (list, tuple)):
             nodes = [nodes]
         node_dicts = [nd.to_dict() for nd in nodes]
-        resp, body = self.api.method_post("/loadbalancers/%d/nodes" % lb.id,
+        resp, body = self.api.method_post("/loadbalancers/%s/nodes" % lb.id,
                 body={"nodes": node_dicts})
         return resp, body
 
 
     def delete_node(self, loadbalancer, node):
-        """Deletes the node from its load balancer."""
+        """Removes the node from its load balancer."""
         lb = node.parent
         if not lb:
             raise exc.UnattachedNode("No parent Load Balancer for this node could be determined.")
-        resp, body = self.api.method_delete("/loadbalancers/%d/nodes/%s" % (lb.id, node.id))
+        resp, body = self.api.method_delete("/loadbalancers/%s/nodes/%s" % (lb.id, node.id))
         return resp, body
 
 
-    def update_node(self, node, diff):
-        """Deletes the node from its load balancer."""
+    def update_node(self, node, diff=None):
+        """Updates the node's attributes."""
         lb = node.parent
         if not lb:
             raise exc.UnattachedNode("No parent Load Balancer for this node could be determined.")
 
+        if diff is None:
+            diff = node._diff()
         req_body = {"node": diff}
-        resp, body = self.api.method_put("/loadbalancers/%d/nodes/%s" % (lb.id, node.id),
+        resp, body = self.api.method_put("/loadbalancers/%s/nodes/%s" % (lb.id, node.id),
                 body=req_body)
         return resp, body
 
 
     def add_virtualip(self, lb, vip):
         """Adds the VirtualIP to the specified load balancer."""
-        resp, body = self.api.method_post("/loadbalancers/%d/virtualips" % lb.id,
+        resp, body = self.api.method_post("/loadbalancers/%s/virtualips" % lb.id,
                 body=vip.to_dict())
         return resp, body
 
@@ -427,7 +448,7 @@ class CloudLoadBalancerManager(BaseManager):
         lb = vip.parent
         if not lb:
             raise exc.UnattachedVirtualIP("No parent Load Balancer for this VirtualIP could be determined.")
-        resp, body = self.api.method_delete("/loadbalancers/%d/virtualips/%s" % (lb.id, vip.id))
+        resp, body = self.api.method_delete("/loadbalancers/%s/virtualips/%s" % (lb.id, vip.id))
         return resp, body
 
 
@@ -809,7 +830,7 @@ class CloudLoadBalancerManager(BaseManager):
         if period:
             uri = "%s?%s" % (uri, period)
         resp, body = self.api.method_get(uri)
-        return resp, body
+        return body
 
 
     def get_stats(self, loadbalancer):
@@ -824,7 +845,8 @@ class CloudLoadBalancerManager(BaseManager):
     def get_session_persistence(self, loadbalancer):
         uri = "/loadbalancers/%s/sessionpersistence" % _get_id(loadbalancer)
         resp, body = self.api.method_get(uri)
-        return body
+        ret = body["sessionPersistence"].get("persistenceType", "")
+        return ret
 
 
     def set_session_persistence(self, loadbalancer, val):
@@ -904,6 +926,8 @@ class Node(object):
         self.address = address
         self.port = port
         self.condition = condition
+        if weight is None:
+            weight = 1
         self.weight = weight
         self.status = status
         self.parent = parent
@@ -913,8 +937,8 @@ class Node(object):
 
 
     def __repr__(self):
-        return "<Node type=%s, condition=%s, id=%s, address=%s, port=%s>" % (self.type, self.condition,
-            self.id, self.address, self.port)
+        return "<Node type=%s, condition=%s, id=%s, address=%s, port=%s weight=%s>" % (self.type, self.condition,
+            self.id, self.address, self.port, self.weight)
 
 
     def to_dict(self):
@@ -923,6 +947,38 @@ class Node(object):
                 "port": self.port,
                 "condition": self.condition,
                 }
+
+
+    def get_metadata(self):
+        """
+        Returns the current metadata for the node.
+        """
+        return self.manager.get_metadata(self, node=self)
+
+
+    def set_metadata(self, metadata):
+        """
+        Sets the metadata for the node to the supplied dictionary
+        of values. Any existing metadata is cleared.
+        """
+        return self.manager.set_metadata(self, metadata, node=self)
+
+
+    def update_metadata(self, metadata):
+        """
+        Updates the existing metadata for the node with
+        the supplied dictionary.
+        """
+        return self.manager.update_metadata(self, metadata, node=self)
+
+
+    def delete_metadata(self, keys=None):
+        """
+        Deletes metadata items specified by the 'keys' parameter for
+        this node. If no value for 'keys' is provided, all
+        metadata is deleted.
+        """
+        return self.manager.delete_metadata(self, keys=keys, node=self)
 
 
     @assure_parent
@@ -973,7 +1029,7 @@ class VirtualIP(object):
 
 
     def __repr__(self):
-        return "<VirtualIP type=%s, id=%s, address=%s>" % (self.type, self.id, self.address)
+        return "<VirtualIP type=%s, id=%s, address=%s version=%s>" % (self.type, self.id, self.address, self.ip_version)
 
 
     def to_dict(self):
@@ -1042,13 +1098,6 @@ class CloudLoadBalancerClient(BaseClient):
         return self._manager.get_usage(loadbalancer=loadbalancer, start=start, end=end)
 
 
-    def get_stats(self, loadbalancer):
-        """
-        Returns statistics for the given load balancer.
-        """
-        return self._manager.get_stats(loadbalancer)
-
-
     @property
     def allowed_domains(self):
         """
@@ -1087,5 +1136,337 @@ class CloudLoadBalancerClient(BaseClient):
         if self._protocols is None:
             uri = "/loadbalancers/protocols"
             resp, body = self.method_get(uri)
-            self._protocols = [alg["name"] for alg in body["protocols"]]
+            self._protocols = [proto["name"] for proto in body["protocols"]]
         return self._protocols
+
+
+    ## The following methods are conveniences that serve as
+    ## pass-through to the loadbalancer.
+    @assure_loadbalancer
+    def add_nodes(self, loadbalancer, nodes):
+        """Adds the nodes to this load balancer."""
+        return loadbalancer.add_nodes(nodes)
+
+
+    @assure_loadbalancer
+    def add_virtualip(self, loadbalancer, vip):
+        """Adds the virtual IP to this load balancer."""
+        return loadbalancer.add_virtualip(vip)
+
+
+    def delete_node(self, node):
+        """Removes the node from its load balancer."""
+        return node.delete()
+
+
+    def update_node(self, node):
+        """Updates the node's attributes."""
+        return node.update()
+
+
+    def delete_virtualip(self, vip):
+        """Deletes the VirtualIP from its load balancer."""
+        return vip.delete()
+
+
+    @assure_loadbalancer
+    def get_access_list(self, loadbalancer):
+        """
+        Returns the current access list for the load balancer.
+        """
+        return loadbalancer.get_access_list()
+
+
+    @assure_loadbalancer
+    def add_access_list(self, loadbalancer, access_list):
+        """
+        Adds the access list provided to the load balancer.
+
+        The 'access_list' should be a dict in the following format:
+
+            {"accessList": [
+                {"address": "192.0.43.10", "type": "DENY"},
+                {"address": "192.0.43.11", "type": "ALLOW"},
+                ...
+                {"address": "192.0.43.99", "type": "DENY"},
+                ]
+            }
+
+        If no access list exists, it is created. If an access list
+        already exists, it is updated with the provided list.
+        """
+        return loadbalancer.add_access_list(access_list)
+
+
+    @assure_loadbalancer
+    def delete_access_list(self, loadbalancer):
+        """
+        Removes the access list from this load balancer.
+        """
+        return loadbalancer.delete_access_list()
+
+
+    @assure_loadbalancer
+    def delete_access_list_items(self, loadbalancer, item_ids):
+        """
+        Removes the item(s) from the load balancer's access list
+        that match the provided IDs. 'item_ids' should be one or
+        more access list item IDs.
+        """
+        return loadbalancer.delete_access_list_items(item_ids)
+
+
+    @assure_loadbalancer
+    def get_health_monitor(self, loadbalancer):
+        """
+        Returns a dict representing the health monitor for the load
+        balancer. If no monitor has been configured, returns an
+        empty dict.
+        """
+        return loadbalancer.get_health_monitor()
+
+
+    @assure_loadbalancer
+    def add_health_monitor(self, loadbalancer, type, delay=10, timeout=10,
+            attemptsBeforeDeactivation=3, path="/", statusRegex=None,
+            bodyRegex=None, hostHeader=None):
+        """
+        Adds a health monitor to the load balancer. If a monitor already
+        exists, it is updated with the supplied settings.
+        """
+        return loadbalancer.add_health_monitor(type=type, delay=delay, timeout=timeout,
+                attemptsBeforeDeactivation=attemptsBeforeDeactivation, path=path,
+                statusRegex=statusRegex, bodyRegex=bodyRegex, hostHeader=hostHeader)
+
+
+    @assure_loadbalancer
+    def delete_health_monitor(self, loadbalancer):
+        """
+        Deletes the health monitor for the load balancer.
+        """
+        return loadbalancer.delete_health_monitor()
+
+
+    @assure_loadbalancer
+    def get_connection_throttle(self, loadbalancer):
+        """
+        Returns a dict representing the connection throttling information
+        for the load balancer. If no connection throttle has been configured,
+        returns an empty dict.
+        """
+        return loadbalancer.get_connection_throttle()
+
+
+    @assure_loadbalancer
+    def add_connection_throttle(self, loadbalancer, maxConnectionRate=None, maxConnections=None,
+            minConnections=None, rateInterval=None):
+        """
+        Updates the connection throttling information for the load balancer with
+        the supplied values. At least one of the parameters must be supplied.
+        """
+        return loadbalancer.add_connection_throttle(maxConnectionRate=maxConnectionRate,
+                maxConnections=maxConnections, minConnections=minConnections, rateInterval=rateInterval)
+
+
+    @assure_loadbalancer
+    def delete_connection_throttle(self, loadbalancer):
+        """
+        Deletes all connection throttling settings for the load balancer.
+        """
+        return loadbalancer.delete_connection_throttle()
+
+
+    @assure_loadbalancer
+    def get_ssl_termination(self, loadbalancer):
+        """
+        Returns a dict representing the SSL termination configuration
+        for the load balancer. If SSL termination has not been configured,
+        returns an empty dict.
+        """
+        return loadbalancer.get_ssl_termination()
+
+
+    @assure_loadbalancer
+    def add_ssl_termination(self, loadbalancer, securePort, privatekey, certificate, intermediateCertificate,
+            enabled=True, secureTrafficOnly=False):
+        """
+        Adds SSL termination information to the load balancer. If SSL termination has
+        already been configured, it is updated with the supplied settings.
+        """
+        return loadbalancer.add_ssl_termination(securePort=securePort, privatekey=privatekey,
+                certificate=certificate, intermediateCertificate=intermediateCertificate,
+                enabled=enabled, secureTrafficOnly=secureTrafficOnly)
+
+
+    @assure_loadbalancer
+    def update_ssl_termination(self, loadbalancer, securePort=None, enabled=None, secureTrafficOnly=None):
+        """
+        Updates existing SSL termination information for the load balancer without affecting the
+        existing certificates/keys.
+        """
+        return loadbalancer.update_ssl_termination(securePort=securePort,
+                enabled=enabled, secureTrafficOnly=secureTrafficOnly)
+
+
+    @assure_loadbalancer
+    def delete_ssl_termination(self, loadbalancer):
+        """
+        Removes SSL termination for the load balancer.
+        """
+        return loadbalancer.delete_ssl_termination()
+
+
+    @assure_loadbalancer
+    def get_metadata(self, loadbalancer):
+        """
+        Returns the current metadata for the load balancer.
+        """
+        return loadbalancer.get_metadata()
+
+
+    @assure_loadbalancer
+    def set_metadata(self, loadbalancer, metadata):
+        """
+        Sets the metadata for the load balancer to the supplied dictionary
+        of values. Any existing metadata is cleared.
+        """
+        return loadbalancer.set_metadata(metadata)
+
+
+    @assure_loadbalancer
+    def update_metadata(self, loadbalancer, metadata):
+        """
+        Updates the existing metadata for the load balancer with
+        the supplied dictionary.
+        """
+        return loadbalancer.update_metadata(metadata)
+
+
+    @assure_loadbalancer
+    def delete_metadata(self, loadbalancer, keys=None):
+        """
+        Deletes metadata items specified by the 'keys' parameter for
+        this load balancer. If no value for 'keys' is provided, all
+        metadata is deleted.
+        """
+        return loadbalancer.delete_metadata(keys=keys)
+
+
+    @assure_loadbalancer
+    def get_metadata_for_node(self, loadbalancer, node):
+        """
+        Returns the current metadata for the specified node.
+        """
+        return loadbalancer.get_metadata_for_node(node)
+
+
+    @assure_loadbalancer
+    def set_metadata_for_node(self, loadbalancer, node, metadata):
+        """
+        Sets the metadata for the specified node to the supplied dictionary
+        of values. Any existing metadata is cleared.
+        """
+        return loadbalancer.set_metadata_for_node(node, metadata)
+
+
+    @assure_loadbalancer
+    def update_metadata_for_node(self, loadbalancer, node, metadata):
+        """
+        Updates the existing metadata for the specified node with
+        the supplied dictionary.
+        """
+        return loadbalancer.update_metadata_for_node(node, metadata)
+
+
+    @assure_loadbalancer
+    def delete_metadata_for_node(self, loadbalancer, node, keys=None):
+        """
+        Deletes metadata items specified by the 'keys' parameter for
+        the specified node. If no value for 'keys' is provided, all
+        metadata is deleted.
+        """
+        return loadbalancer.delete_metadata_for_node(node, keys=keys)
+
+
+    @assure_loadbalancer
+    def get_error_page(self, loadbalancer):
+        """
+        Load Balancers all have a default error page that is shown to
+        an end user who is attempting to access a load balancer node
+        that is offline/unavailable.
+        """
+        return loadbalancer.get_error_page()
+
+
+    @assure_loadbalancer
+    def set_error_page(self, loadbalancer, html):
+        """
+        A single custom error page may be added per account load balancer
+        with an HTTP protocol. Page updates will override existing content.
+        If a custom error page is deleted, or the load balancer is changed
+        to a non-HTTP protocol, the default error page will be restored.
+        """
+        return loadbalancer.set_error_page(html)
+
+
+    @assure_loadbalancer
+    def clear_error_page(self, loadbalancer):
+        """
+        Resets the error page to the default.
+        """
+        return loadbalancer.clear_error_page()
+
+
+    @assure_loadbalancer
+    def get_connection_logging(self, loadbalancer):
+        """
+        Returns the current setting for connection logging for the load balancer.
+        """
+        return loadbalancer.connection_logging
+
+
+    @assure_loadbalancer
+    def set_connection_logging(self, loadbalancer, val):
+        """
+        Sets connection logging for the load balancer to either True
+        or False.
+        """
+        loadbalancer.connection_logging = val
+
+
+    @assure_loadbalancer
+    def get_content_caching(self, loadbalancer):
+        """
+        Returns the current setting for content caching for the load balancer.
+        """
+        return loadbalancer.content_caching
+
+
+    @assure_loadbalancer
+    def set_content_caching(self, loadbalancer, val):
+        """
+        Sets content caching for the load balancer to either True
+        or False.
+        """
+        loadbalancer.content_caching = val
+
+
+    @assure_loadbalancer
+    def get_session_persistence(self, loadbalancer):
+        """
+        Returns the current setting for session persistence for
+        the load balancer.
+        """
+        return loadbalancer.session_persistence
+
+
+    @assure_loadbalancer
+    def set_session_persistence(self, loadbalancer, val):
+        """
+        Sets the type of session persistence for the load balancer. This
+        must be one of either "HTTP_COOKIE" or "SOURCE_IP", depending
+        on the type of load balancing.
+        """
+        loadbalancer.session_persistence = val
+
+    ## END pass-through methods ##

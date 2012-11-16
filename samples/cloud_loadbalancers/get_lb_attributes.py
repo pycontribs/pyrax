@@ -17,13 +17,19 @@
 #    under the License.
 
 import os
+import sys
+
 import pyrax
 
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 clb = pyrax.cloud_loadbalancers
 
-lb = clb.list()[0]
+try:
+    lb = clb.list()[0]
+except IndexError:
+    "You do not have any load balancers yet. Please create one and then re-run this script."
+    sys.exit()
 
 print "Load Balancer:", lb
 print "Name:", lb.name

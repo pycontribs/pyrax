@@ -16,8 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import datetime
 import os
+import sys
 
 import pyrax
 
@@ -25,24 +25,25 @@ creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 clb = pyrax.cloud_loadbalancers
 
-# Get load balancer usage
-usage = clb.get_usage()
-print "Usage for Account:", usage["accountId"]
+try:
+    lb = clb.list()[0]
+except IndexError:
+    "You do not have any load balancers yet. Please create one and then re-run this script."
+    sys.exit()
+
+orig = lb.get_ssl_termination()
+print "Current setting of SSL Termination:", orig
 print
-print "Account Usage Records"
-print "-" * 30
-au_recs = usage["accountUsage"]
-for rec_key in au_recs.keys()[:5]:
-    recs = au_recs[rec_key]
-    if len(recs) > 5:
-        print "(only the first 5 records...)"
-    print recs[:5]
-    print
-print "Load Balancer Usage Records"
-print "-" * 30
-lb_recs = usage["loadBalancerUsages"]
-if len(lb_recs) > 5:
-    print "(only the first 5 records...)"
-for rec in lb_recs[:5]:
-    print rec
-    print
+[u'securePort', u'secureTrafficOnly', u'certificate', u'enabled', u'privatekey', u'intermediateCertificate']
+
+if orig:
+    print "Updating SSL Termination info..."
+    curr_enabled = orig["enabled"]
+    new_enabled = not curr_enabled
+    lb.update_ssl_termination(enabled=new_enabled)
+else:
+    print "Adding SSL Termination info..."
+    lb.add_ssl_termination(securePort=443, secureTrafficOnly=False, certificate="dummy_certificate",
+            privatekey="dummy_private_key")
+print
+print "New setting of SSL Termination:", lb.get_ssl_termination()
