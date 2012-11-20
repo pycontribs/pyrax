@@ -10,6 +10,7 @@ import shutil
 import string
 import sys
 import tempfile
+import time
 import types
 import uuid
 
@@ -163,6 +164,35 @@ def add_method(obj, func, name=None):
         name = func.func_name
     method = types.MethodType(func, obj, obj.__class__)
     setattr(obj, name, method)
+
+
+def wait_until(obj, att, desired, interval=5, attempts=10, verbose=False):
+    """
+    When changing the state of an object, it will commonly be in a
+    transitional state until the change is complete. This will reload
+    the object ever `interval` seconds, and check its `att`
+    attribute. If it is equal to `desired`, this will return a value
+    of True. If not, it will re-try a maximum of `attempts` times; if
+    the attribute has not reached the desired value by then, this will
+    return False. If `verbose` is True, each attempt will print out the
+    current value of the watched attribute.
+
+    Note that `desired` can be a list of values; if the attribute becomes
+    equal to any of those values, this will return True.
+    """
+    if not isinstance(desired, (list, tuple)):
+        desired = [desired]
+    attempt = 0
+    while attempt < attempts:
+        obj.reload()
+        attval = getattr(obj, att)
+        if verbose:
+            print "Current value of %s: %s" % (att, attval)
+        if attval in desired:
+            return True
+        time.sleep(interval)
+        attempt += 1
+    return False
 
 
 def env(*args, **kwargs):
