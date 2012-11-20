@@ -56,7 +56,23 @@ def assure_snapshot(fnc):
 
 
 class CloudBlockStorageSnapshot(BaseResource):
-    pass
+    def _get_name(self):
+        return self.display_name
+
+    def _set_name(self, val):
+        self.display_name = val
+
+    name = property(_get_name, _set_name, None,
+            "Convenience for referencing the display_name.")
+
+    def _get_description(self):
+        return self.display_description
+
+    def _set_description(self, val):
+        self.display_description = val
+
+    description = property(_get_description, _set_description, None,
+            "Convenience for referencing the display_description.")
 
 
 class CloudBlockStorageVolumeType(BaseResource):
@@ -81,14 +97,20 @@ class CloudBlockStorageVolume(BaseResource):
         """
         instance_id = _resolve_id(instance)
         body = {"instance_uuid": instance_id, "mountpoint": mountpoint}
-        return self.manager.action(self, "os-attach", body=body)
+        result = self.manager.action(self, "os-attach", body=body)
+        status = result[0]["status"]
+        # If successful, the status should be a string beginning with '2'.
+        return status.startswith("2")
 
 
     def detach(self):
         """
         Detaches this volume from any device it may be attached to.
         """
-        return self.manager.action(self, "os-detach")
+        result = self.manager.action(self, "os-detach")
+        status = result[0]["status"]
+        # If successful, the status should be a string beginning with '2'.
+        return status.startswith("2")
 
 
     def create_snapshot(self, name=None, description=None, force=False):
@@ -103,7 +125,7 @@ class CloudBlockStorageVolume(BaseResource):
         # Note that passing in non-None values is required for the _create_body
         # method to distinguish between this and the request to create and instance.
         try:
-            self._snapshot_manager.create(volume=self, name=name, description=description,
+            snap = self._snapshot_manager.create(volume=self, name=name, description=description,
                     force=force)
         except exc.BadRequest as e:
             msg = str(e)
@@ -115,6 +137,26 @@ class CloudBlockStorageVolume(BaseResource):
             else:
                 # Some other error
                 raise
+        return snap
+
+
+    def _get_name(self):
+        return self.display_name
+
+    def _set_name(self, val):
+        self.display_name = val
+
+    name = property(_get_name, _set_name, None,
+            "Convenience for referencing the display_name.")
+
+    def _get_description(self):
+        return self.display_description
+
+    def _set_description(self, val):
+        self.display_description = val
+
+    description = property(_get_description, _set_description, None,
+            "Convenience for referencing the display_description.")
 
 
 class CloudBlockStorageClient(BaseClient):

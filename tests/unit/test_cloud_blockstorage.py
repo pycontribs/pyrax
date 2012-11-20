@@ -250,6 +250,42 @@ class CloudBlockStorageTest(unittest.TestCase):
         clt.delete_snapshot(snap)
         snap.delete.assert_called_once_with()
 
+    def test_volume_name_property(self):
+        vol = self.volume
+        nm = utils.random_name()
+        vol.display_name = nm
+        self.assertEqual(vol.name, vol.display_name)
+        nm = utils.random_name()
+        vol.name = nm
+        self.assertEqual(vol.name, vol.display_name)
+
+    def test_volume_description_property(self):
+        vol = self.volume
+        nm = utils.random_name()
+        vol.display_description = nm
+        self.assertEqual(vol.description, vol.display_description)
+        nm = utils.random_name()
+        vol.description = nm
+        self.assertEqual(vol.description, vol.display_description)
+
+    def test_snapshot_name_property(self):
+        snap = self.snapshot
+        nm = utils.random_name()
+        snap.display_name = nm
+        self.assertEqual(snap.name, snap.display_name)
+        nm = utils.random_name()
+        snap.name = nm
+        self.assertEqual(snap.name, snap.display_name)
+
+    def test_snapshot_description_property(self):
+        snap = self.snapshot
+        nm = utils.random_name()
+        snap.display_description = nm
+        self.assertEqual(snap.description, snap.display_description)
+        nm = utils.random_name()
+        snap.description = nm
+        self.assertEqual(snap.description, snap.display_description)
+
 
 if __name__ == "__main__":
     unittest.main()

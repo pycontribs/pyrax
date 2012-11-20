@@ -83,6 +83,8 @@ To delete a volume you no longer need, call:
     # or
     cbs.delete_volume(vol)
 
+A volume that is attached to an instance cannot be deleted. It must be detached first, and have a status of 'available' or 'error' in order to be deleted. You also cannot delete a volume from which a snapshot has been created, as the snapshot is linked to that volume. All snapshots of a volume must be deleted before the volume can be deleted.
+
 
 ## Working with Snapshots
 A `Snapshot` captures the contents of a volume at a point in time. It can be used, for example, as a backup point; and you can later create a volume from the snapshot.
@@ -122,3 +124,5 @@ There are two ways to delete a snapshot you no longer need. For the example belo
     snap.delete()
     # or
     cbs.delete_snapshot(snap)
+
+The snapshot must have a status of 'available' or 'error' in order to be deleted.

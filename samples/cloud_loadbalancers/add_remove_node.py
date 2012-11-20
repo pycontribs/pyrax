@@ -22,17 +22,6 @@ import time
 import pyrax
 
 
-def wait_for_changes(lb):
-    """
-    When changes are made to the load balancer, no actions can be
-    made until those changes complete.
-    """
-    lb.reload()
-    while lb.status == "PENDING_UPDATE":
-        time.sleep(1)
-        lb.reload()
-
-
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 clb = pyrax.cloud_loadbalancers
@@ -47,7 +36,7 @@ print "Current nodes:", lb.nodes
 # the same internal network as your load balancer.
 new_node = clb.Node(address="10.177.1.2", port=80, condition="ENABLED")
 lb.add_nodes([new_node])
-wait_for_changes(lb)
+pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30, verbose=True)
 
 print
 print "After adding node:", lb.nodes
@@ -60,6 +49,6 @@ added_node = [node for node in lb.nodes
 print
 print "Added Node:", added_node
 added_node.delete()
-wait_for_changes(lb)
+pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30, verbose=True)
 print
 print "After removing node:", lb.nodes
