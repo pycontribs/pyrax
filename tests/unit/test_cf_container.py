@@ -72,6 +72,33 @@ class CF_ContainerTest(unittest.TestCase):
         cont = Container(self.client, "realcontainer")
         self.assertEqual(cont.cdn_uri, test_uri)
 
+    def test_fetch_cdn_not_found(self):
+        self.client.connection.cdn_request = Mock()
+        resp = FakeResponse()
+        resp.status = 404
+        resp.getheaders = Mock()
+        test_uri = "http://example.com"
+        test_ttl = "6666"
+        test_ssl_uri = "http://ssl.example.com"
+        test_streaming_uri = "http://streaming.example.com"
+        test_log_retention = True
+        resp.getheaders.return_value = []
+        self.client.connection.cdn_request.return_value = resp
+        # We need an actual container
+        cont = Container(self.client, "realcontainer")
+        self.assertIsNone(cont.cdn_uri)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_get_object_names(self):
+        cont = self.container
+        cont.client.connection.get_container = Mock()
+        cont.client.connection.get_container.return_value = ({}, [{"name": "o1"}, {"name": "o2"}])
+        nms = cont.get_object_names()
+        self.assertEqual(len(nms), 2)
+        self.assert_("o1" in nms)
+        self.assert_("o2" in nms)
+        self.assert_("o3" not in nms)
+
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_objects(self):
         cont = self.container
@@ -129,6 +156,16 @@ class CF_ContainerTest(unittest.TestCase):
         cont.client.connection.head_container = Mock()
         cont.client.connection.delete_object = Mock()
         cont.delete_object(self.obj_name)
+        cont.client.connection.delete_object.assert_called_with(self.cont_name, self.obj_name)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_delete_all_objects(self):
+        cont = self.container
+        client = cont.client
+        cont.client.connection.head_container = Mock()
+        cont.client.connection.delete_object = Mock()
+        cont.client.get_container_object_names = Mock(return_value=[self.obj_name])
+        cont.delete_all_objects()
         cont.client.connection.delete_object.assert_called_with(self.cont_name, self.obj_name)
 
     def test_delete(self):
@@ -197,6 +234,16 @@ class CF_ContainerTest(unittest.TestCase):
         self.assertFalse(cont.cdn_enabled)
         cont.cdn_uri = "http://example.com"
         self.assert_(cont.cdn_enabled)
+
+    def test_cdn_ttl(self):
+        cont = self.container
+        ret = cont.cdn_ttl
+        self.assertEqual(ret, self.client.default_cdn_ttl)
+
+    def test_cdn_ssl_uri(self):
+        cont = self.container
+        ret = cont.cdn_ssl_uri
+        self.assertIsNone(ret)
 
 
 if __name__ == "__main__":

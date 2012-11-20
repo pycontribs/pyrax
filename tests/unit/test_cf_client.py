@@ -355,6 +355,13 @@ class CF_ClientTest(unittest.TestCase):
         client._update_progress = upprog
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_valid_upload_key(self):
+        clt = self.client
+        clt.folder_upload_status = {"good": {"uploaded": 0}}
+        self.assertIsNone(clt._update_progress("good", 1))
+        self.assertRaises(exc.InvalidUploadID, clt._update_progress, "bad", 1)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_copy_object(self):
         client = self.client
         client.connection.head_container = Mock()
