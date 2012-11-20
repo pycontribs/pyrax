@@ -122,7 +122,7 @@ class BaseClient(httplib2.Http):
         raise NotImplementedError
 
 
-    # The next 4 methods are simple pass-through to the manager.
+    # The next 6 methods are simple pass-through to the manager.
     def list(self):
         """Returns a list of all resources."""
         return self._manager.list()
@@ -138,6 +138,24 @@ class BaseClient(httplib2.Http):
     def delete(self, item):
         """Deletes a specific resource."""
         return self._manager.delete(item)
+
+    def find(self, **kwargs):
+        """
+        Finds a single item with attributes matching ``**kwargs``.
+
+        This isn't very efficient: it loads the entire list then filters on
+        the Python side.
+        """
+        return self._manager.find(**kwargs)
+
+    def findall(self, **kwargs):
+        """
+        Finds all items with attributes matching ``**kwargs``.
+
+        This isn't very efficient: it loads the entire list then filters on
+        the Python side.
+        """
+        return self._manager.findall(**kwargs)
 
 
     def unauthenticate(self):
