@@ -167,7 +167,7 @@ class FakeKeyring(object):
 
 class FakeEntity(object):
     def __init__(self, *args, **kwargs):
-        pass
+        self.id = utils.random_name()
     def get(self, *args, **kwargs):
         pass
 

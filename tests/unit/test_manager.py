@@ -172,6 +172,14 @@ class ManagerTest(unittest.TestCase):
         self.assertEqual(ret, body)
         mgr.run_hooks = sav_rh
 
+    def test_action(self):
+        mgr = self.manager
+        mgr.uri_base = "testing"
+        mgr.api.method_post = Mock()
+        item = fakes.FakeEntity()
+        mgr.action(item, "fake")
+        mgr.api.method_post.assert_called_once_with("/testing/%s/action" % item.id, body={"fake": {}}) 
+
     def test_find_no_match(self):
         mgr = self.manager
         sav_fa = mgr.findall

@@ -107,6 +107,14 @@ class UtilsTest(unittest.TestCase):
             fsize = utils.folder_size(tmpdir, ignore=ignore)
         self.assertEqual(fsize, 500)
 
+    def test_add_method(self):
+        def fake_method(self):
+            pass
+        obj = fakes.FakeEntity()
+        utils.add_method(obj, fake_method, "fake_name")
+        self.assertTrue(hasattr(obj, "fake_name"))
+        self.assertTrue(callable(obj.fake_name))
+
     def test_env(self):
         args = ("foo", "bar")
         ret = utils.env(*args)

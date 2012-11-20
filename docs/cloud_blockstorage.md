@@ -91,7 +91,7 @@ The main use for snapshots is to create new volumes. That is done as noted above
 
 
 ### Creating a Snapshot
-You create snapshots by calling the `create_snaphot()` method of a volume object. You have the option of specify a display name and/or description. Normally the volume must not be attached to a server when the snapshot is created, as that may result in the contents being modified while the snapshot is being generated. You can override that by including `force=True`, which will let you create a snapshot of an attached volume. Always be sure to test any such forced snapshots to ensure that their contents are what you would expect, and that they were not corrupted during the forced snapshot process.
+You create snapshots by calling the `create_snaphot()` method of a volume object. You have the option of specifying a display name and/or description. Normally the volume should not be attached to a server when the snapshot is created, as that may result in the contents being modified while the snapshot is being generated. You can override that by including `force=True`, which will let you create a snapshot of an attached volume. Always be sure to test any such forced snapshots to ensure that their contents are what you would expect, and that they were not corrupted during the forced snapshot process.
 
 In this example `vol` is a `CloudBlockStorageVolume` object from which the snapshot will be created:
 
@@ -99,7 +99,7 @@ In this example `vol` is a `CloudBlockStorageVolume` object from which the snaps
     # or
     snap = cbs.create_snapshot(vol, name="My Snapshot")
 
-If you only have the ID of the volume from which you want to create the snapshot, you can call the service's `create_snapshot()` method instead, passing in that ID:
+If you have only the ID of the volume from which you want to create the snapshot, you can call the service's `create_snapshot()` method instead, passing in that ID:
 
     snap = cbs.create_snapshot("c1b05ede-54bf-46e0-9bd3-bf1946c5b485", name="My Snapshot")
 
