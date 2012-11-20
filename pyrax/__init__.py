@@ -49,6 +49,7 @@ try:
     import version
 
     import cf_wrapper.client as _cf
+    from novaclient import exceptions as _cs_exceptions
     from novaclient.v1_1 import client as _cs_client
 
     from cloud_databases import CloudDatabaseClient
@@ -251,6 +252,7 @@ def connect_to_services():
     if services_to_start["blockstorage"]:
         cloud_blockstorage = connect_to_cloud_blockstorage()
 
+
 def _get_service_endpoint(svc, region=None):
     """Parses the services dict to get the proper endpoint for the given service."""
     if region is None:
@@ -261,6 +263,9 @@ def _get_service_endpoint(svc, region=None):
         # Try the "ALL" region, and substitute the actual region
         ep = identity.services.get(svc, {}).get("endpoints", {}).get("ALL", {}).get("public_url")
         ep = ep.replace("//", "//%s." % region.lower())
+        # Change the version string for compute
+        if svc == "compute":
+            ep = ep.replace("v1.0", "v2")
     return ep
 
 
@@ -275,6 +280,7 @@ def connect_to_cloudservers(region=None):
 #            http_log_debug=True,
             region_name=region, service_type="compute")
     cloudservers.client.USER_AGENT = _make_agent_name(cloudservers.client.USER_AGENT)
+    cloudservers.exceptions = _cs_exceptions
     return cloudservers
 
 
@@ -327,7 +333,7 @@ def connect_to_cloud_blockstorage(region=None):
     ep = _get_service_endpoint("volume", region)
     cloud_blockstorage = CloudBlockStorageClient(identity.username, identity.api_key,
             region_name=region, management_url=ep, auth_token=identity.token,
-            http_log_debug=True,
+#            http_log_debug=True,
             tenant_id=identity.tenant_id, service_type="volume")
     cloud_blockstorage.user_agent = _make_agent_name(cloud_blockstorage.user_agent)
     return cloud_blockstorage
