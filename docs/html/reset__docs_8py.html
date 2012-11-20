@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>pyrax: pyrax/cf_wrapper/container.py File Reference</title>
+<title>pyrax: reset_docs.py File Reference</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -76,25 +76,29 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Packages</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
-<div class="title">pyrax/cf_wrapper/container.py File Reference</div>  </div>
+<div class="title">reset_docs.py File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
-<tr><td colspan="2"><h2><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Fault.html">Fault</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html">Container</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a CloudFiles container.  <a href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#details">More...</a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="namespaces"></a>
 Packages</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1container.html">pyrax::cf_wrapper::container</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereset__docs.html">reset_docs</a></td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereset__docs.html#a42ff55854937aed217ed7eb3e76387d6">runproc</a></td></tr>
 <tr><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1container.html#a892f51831156b6ea326c363e4b10631a">FAULT</a> = Fault()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereset__docs.html#a1aa933afd04a33680106ccb3320e48dd">docdir</a> = &quot;docs/html&quot;</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereset__docs.html#abe3f7ff489539ab4eabef8e70419f647">htmlpat</a> = &quot;%s/*.html&quot;</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereset__docs.html#a8a478db217c69df9e9151f5578c8d803">genpat</a> = re.compile(r&quot;^[+-]Generated on .+ for pyrax by &quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereset__docs.html#afaa7db951e945183730f55b7eb6fb797">docs</a> = glob.glob(htmlpat)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereset__docs.html#a604e13d21a2ac29d8a5e2be0a22c660e">changed</a> = False</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereset__docs.html#a90e155eddac72ef87020b85a704d97be">cmd</a> = &quot;git diff %s&quot;</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacereset__docs.html#a8f279c25df319b3b1fd99ba63c5795a6">out</a> = runproc(cmd)</td></tr>
 </table>
 </div><!-- contents -->
 <!-- window showing the filter options -->

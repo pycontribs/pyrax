@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-version = "1.0.2b"
+version = "1.0.3b"

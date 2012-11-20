@@ -119,7 +119,8 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#aed48921b20ac7d5d1bf17dae8e2f971d">handle_swiftclient_exception</a></td></tr>
 <tr><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a32d68802775b5e101a259fb6f3edf5d7">CONNECTION_TIMEOUT</a> = 5</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a32d68802775b5e101a259fb6f3edf5d7">CONNECTION_TIMEOUT</a> = 20</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a19074fb0e7d33e5cb6f2fc49877e64c1">CONNECTION_RETRIES</a> = 5</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#ab3150aa95b9e341f9b4c3f11214a9097">no_such_container_pattern</a> = re.compile(r&quot;Container GET|HEAD failed: .+/(.+) 404&quot;)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a2902c02c2870c84af5ee318ad3bd548f">etag_failed_pattern</a> = re.compile(r&quot;Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity&quot;)</td></tr>
 </table>
@@ -142,12 +143,25 @@ Variables</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Variable Documentation</h2>
+<a class="anchor" id="a19074fb0e7d33e5cb6f2fc49877e64c1"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CONNECTION_RETRIES" ref="a19074fb0e7d33e5cb6f2fc49877e64c1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a19074fb0e7d33e5cb6f2fc49877e64c1">CONNECTION_RETRIES</a> = 5</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a32d68802775b5e101a259fb6f3edf5d7"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CONNECTION_TIMEOUT" ref="a32d68802775b5e101a259fb6f3edf5d7" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int <a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a32d68802775b5e101a259fb6f3edf5d7">CONNECTION_TIMEOUT</a> = 5</td>
+          <td class="memname">int <a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a32d68802775b5e101a259fb6f3edf5d7">CONNECTION_TIMEOUT</a> = 20</td>
         </tr>
       </table>
 </div>
@@ -199,7 +213,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 5 2012 21:20:47 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Nov 20 2012 15:03:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
