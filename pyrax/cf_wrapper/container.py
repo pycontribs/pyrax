@@ -3,6 +3,13 @@
 
 from pyrax import exceptions as exc
 
+# Used to indicate values that are lazy-loaded
+class Fault(object):
+    def __nonzero__(self):
+        return False
+
+FAULT = Fault()
+
 
 class Container(object):
     """Represents a CloudFiles container."""
@@ -11,30 +18,47 @@ class Container(object):
         self.name = name
         self.object_count = object_count
         self.total_bytes = total_bytes
-        self.cdn_uri = None
-        self.cdn_ttl = client.default_cdn_ttl
-        self.cdn_ssl_uri = None
-        self.cdn_streaming_uri = None
-        self._cdn_log_retention = False
-        self._fetch_cdn_data()
+        self._cdn_uri = FAULT
+        self._cdn_ttl = FAULT
+        self._cdn_ssl_uri = FAULT
+        self._cdn_streaming_uri = FAULT
+        self._cdn_log_retention = FAULT
         self._object_cache = {}
+
+
+    def _set_cdn_defaults(self):
+        """Sets all the CDN-related attributes to default values."""
+        self._cdn_uri = None
+        self._cdn_ttl = self.client.default_cdn_ttl
+        self._cdn_ssl_uri = None
+        self._cdn_streaming_uri = None
+        self._cdn_log_retention = False
 
 
     def _fetch_cdn_data(self):
         """Fetches the object's CDN data from the CDN service"""
         response = self.client.connection.cdn_request("HEAD", [self.name])
         if 200 <= response.status < 300:
+            # Set defaults in case not all headers are present.
+            self._set_cdn_defaults()
             for hdr in response.getheaders():
-                if hdr[0].lower() == "x-cdn-uri":
-                    self.cdn_uri = hdr[1]
-                if hdr[0].lower() == "x-ttl":
-                    self.cdn_ttl = int(hdr[1])
-                if hdr[0].lower() == "x-cdn-ssl-uri":
-                    self.cdn_ssl_uri = hdr[1]
-                if hdr[0].lower() == "x-cdn-streaming-uri":
-                    self.cdn_streaming_uri = hdr[1]
-                if hdr[0].lower() == "x-log-retention":
+                low_hdr = hdr[0].lower()
+                if low_hdr == "x-cdn-uri":
+                    self._cdn_uri = hdr[1]
+                elif low_hdr == "x-ttl":
+                    self._cdn_ttl = int(hdr[1])
+                elif low_hdr == "x-cdn-ssl-uri":
+                    self._cdn_ssl_uri = hdr[1]
+                elif low_hdr == "x-cdn-streaming-uri":
+                    self._cdn_streaming_uri = hdr[1]
+                elif low_hdr == "x-log-retention":
                     self._cdn_log_retention = (hdr[1] == "True")
+        elif response.status == 404:
+            # Not CDN enabled; set the defaults.
+            self._set_cdn_defaults()
+        # We need to read the response in order to clear it for
+        # the next call
+        response.read()
 
 
     def get_objects(self, marker=None, limit=None, prefix=None, delimiter=None,
@@ -191,20 +215,64 @@ class Container(object):
         return self.client.make_container_private(self)
 
 
+    def __repr__(self):
+        return "<Container '%s'>" % self.name
+
+
+    ## BEGIN - CDN property definitions ##
     @property
     def cdn_enabled(self):
         return bool(self.cdn_uri)
 
-
     def _get_cdn_log_retention(self):
+        if self._cdn_log_retention is FAULT:
+            self._fetch_cdn_data()
         return self._cdn_log_retention
 
-    def _set_cdn_log_retention(self, enabled):
-        self.client._set_cdn_log_retention(self, enabled)
-        self._cdn_log_retention = enabled
+    def _set_cdn_log_retention(self, val):
+        self.client._set_cdn_log_retention(self, val)
+        self._cdn_log_retention = val
+
+
+    def _get_cdn_uri(self):
+        if self._cdn_uri is FAULT:
+            self._fetch_cdn_data()
+        return self._cdn_uri
+
+    def _set_cdn_uri(self, val):
+        self._cdn_uri = val
+
+
+    def _get_cdn_ttl(self):
+        if self._cdn_ttl is FAULT:
+            self._fetch_cdn_data()
+        return self._cdn_ttl
+
+    def _set_cdn_ttl(self, val):
+        self._cdn_ttl = val
+
+
+    def _get_cdn_ssl_uri(self):
+        if self._cdn_ssl_uri is FAULT:
+            self._fetch_cdn_data()
+        return self._cdn_ssl_uri
+
+    def _set_cdn_ssl_uri(self, val):
+        self._cdn_ssl_uri = val
+
+
+    def _get_cdn_streaming_uri(self):
+        if self._cdn_streaming_uri is FAULT:
+            self._fetch_cdn_data()
+        return self._cdn_streaming_uri
+
+    def _set_cdn_streaming_uri(self, val):
+        self._cdn_streaming_uri = val
+
 
     cdn_log_retention = property(_get_cdn_log_retention, _set_cdn_log_retention)
-
-
-    def __repr__(self):
-        return "<Container '%s'>" % self.name
+    cdn_uri = property(_get_cdn_uri, _set_cdn_uri)
+    cdn_ttl = property(_get_cdn_ttl, _set_cdn_ttl)
+    cdn_ssl_uri = property(_get_cdn_ssl_uri, _set_cdn_ssl_uri)
+    cdn_streaming_uri = property(_get_cdn_streaming_uri, _set_cdn_streaming_uri)
+    ## END - CDN property definitions ##

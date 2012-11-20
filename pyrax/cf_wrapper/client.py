@@ -3,7 +3,11 @@
 
 import fnmatch
 from functools import wraps
-import httplib
+# Use eventlet if available
+try:
+    import eventlet.green.httplib as httplib
+except ImportError:
+    import httplib
 import math
 import os
 import re
@@ -14,13 +18,15 @@ import urlparse
 import uuid
 
 from swiftclient import client as _swift_client
+import pyrax
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
 import pyrax.utils as utils
 import pyrax.exceptions as exc
 
 
-CONNECTION_TIMEOUT = 5
+CONNECTION_TIMEOUT = 20
+CONNECTION_RETRIES = 5
 
 no_such_container_pattern = re.compile(r"Container GET|HEAD failed: .+/(.+) 404")
 etag_failed_pattern = re.compile(r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity")
@@ -170,6 +176,8 @@ class CFClient(object):
         cname = self._resolve_name(container)
         response = self.connection.cdn_request("HEAD", [cname])
         headers = response.getheaders()
+        # Read the response to force it to close for the next request.
+        response.read()
         # headers is a list of 2-tuples instead of a dict.
         return dict(headers)
 
@@ -195,7 +203,8 @@ class CFClient(object):
         if bad:
             raise exc.InvalidCDNMetadata("The only CDN metadata you can update are: X-Log-Retention, X-CDN-enabled, and X-TTL. "
                     "Received the following illegal item(s): %s" % ", ".join(bad))
-        self.connection.cdn_request("POST", [ct.name], hdrs=hdrs)
+        response = self.connection.cdn_request("POST", [ct.name], hdrs=hdrs)
+        response.close()
 
 
     @handle_swiftclient_exception
@@ -657,6 +666,8 @@ class CFClient(object):
                 ct.cdn_uri = hdr[1]
                 break
         self._remove_container_from_cache(container)
+        # Read the response to force it to close for the next request.
+        response.read()
 
 
     def set_cdn_log_retention(self, container, enabled):
@@ -676,6 +687,8 @@ class CFClient(object):
         status = response.status
         if not 200 <= status < 300:
             raise exc.CDNFailed("Bad response: (%s) %s" % (status, response.reason))
+        # Read the response to force it to close for the next request.
+        response.read()
 
 
     def get_container_streaming_uri(self, container):
@@ -720,7 +733,9 @@ class CFClient(object):
                 email_addresses = [email_addresses]
             emls = ", ".join(email_addresses)
             hdrs = {"X-Purge-Email": emls}
-        self.connection.cdn_request("DELETE", ct.name, oname, hdrs=hdrs)
+        response = self.connection.cdn_request("DELETE", ct.name, oname, hdrs=hdrs)
+        # Read the response to force it to close for the next request.
+        response.read()
         return True
 
 
@@ -787,21 +802,24 @@ class Connection(_swift_client.Connection):
         if isinstance(hdrs, dict):
             headers.update(hdrs)
 
-        def retry_request():
-            """Re-connect and re-try a failed request once."""
-            self._make_cdn_connection()
-            self.cdn_connection.request(method, path, data, headers)
-            return self.cdn_connection.getresponse()
-
-        try:
-            self.cdn_connection.request(method, path, data, headers)
-            response = self.cdn_connection.getresponse()
-        except (socket.error, IOError, httplib.HTTPException) as e:
-            response = retry_request()
-        if response.status == 401:
-            self._authenticate()
-            headers["X-Auth-Token"] = self.token
-            response = retry_request()
+        attempt = 0
+        response = None
+        while attempt < CONNECTION_RETRIES:
+            if attempt:
+                # Last try failed; re-create the connection
+                self._make_cdn_connection()
+            try:
+                self.cdn_connection.request(method, path, data, headers)
+                response = self.cdn_connection.getresponse()
+            except (socket.error, IOError, httplib.HTTPException) as e:
+                response = None
+            if response:
+                if response.status == 401:
+                    pyrax.identity.authenticate()
+                    headers["X-Auth-Token"] = pyrax.identity.token
+                else:
+                    break
+            attempt += 1
         return response
 
 

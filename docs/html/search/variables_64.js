@@ -5,5 +5,7 @@ var searchData=
   ['default_5fidentity_5ftype',['default_identity_type',['../namespacepyrax.html#a86b78ee7e1789ae041b34dd7d0ac42e1',1,'pyrax']]],
   ['default_5fregion',['default_region',['../namespacepyrax.html#a4401f2fce3423e1f2a03097695dd927f',1,'pyrax']]],
   ['description',['description',['../namespacesetup.html#a23af17c78302b71c14ef38ea40b8d1d7',1,'setup']]],
-  ['details',['details',['../classpyrax_1_1exceptions_1_1ClientException.html#ace24e4da2dacc04a319964f1507ddb87',1,'pyrax::exceptions::ClientException']]]
+  ['details',['details',['../classpyrax_1_1exceptions_1_1ClientException.html#ace24e4da2dacc04a319964f1507ddb87',1,'pyrax::exceptions::ClientException']]],
+  ['docdir',['docdir',['../namespacereset__docs.html#a1aa933afd04a33680106ccb3320e48dd',1,'reset_docs']]],
+  ['docs',['docs',['../namespacereset__docs.html#afaa7db951e945183730f55b7eb6fb797',1,'reset_docs']]]
 ];

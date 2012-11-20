@@ -45,7 +45,11 @@ class FakeClient(object):
 
 class FakeContainer(Container):
     def _fetch_cdn_data(self):
-        pass
+        self._cdn_uri = None
+        self._cdn_ttl = self.client.default_cdn_ttl
+        self._cdn_ssl_uri = None
+        self._cdn_streaming_uri = None
+        self._cdn_log_retention = False
 
 
 class FakeStorageObject(StorageObject):
