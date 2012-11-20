@@ -110,6 +110,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <!-- doxytag: class="pyrax::manager::BaseManager" -->
 <p>Managers interact with a particular type of API (servers, databases, dns, etc.) and provide CRUD operations for them.  
  <a href="classpyrax_1_1manager_1_1BaseManager.html#details">More...</a></p>
+<div class="dynheader">
+Inheritance diagram for BaseManager:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classpyrax_1_1manager_1_1BaseManager.png" usemap="#BaseManager_map" alt=""/>
+  <map id="BaseManager_map" name="BaseManager_map">
+<area href="classpyrax_1_1cloud__loadbalancers_1_1CloudLoadBalancerManager.html" alt="CloudLoadBalancerManager" shape="rect" coords="0,56,175,80"/>
+</map>
+ </div></div>
 
 <p><a href="classpyrax_1_1manager_1_1BaseManager-members.html">List of all members.</a></p>
 <table class="memberdecls">
@@ -124,6 +133,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Subclasses need to implement the _create_body() method to return a dict that will be used for the API request body.  <a href="#a5b7ef0221e471e99fa7f0a87a28ba1ea"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#ab48bde70a0927a83d62464cb0627c34b">delete</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the specified item.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a2f9294757736802ae365f423f1e20b88">action</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Several API calls are lumped under the 'action' API.  <a href="#a2f9294757736802ae365f423f1e20b88"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a01f90f57b7acd55e177611f5d0f7df23">find</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds a single item with attributes matching ``**kwargs``.  <a href="#a01f90f57b7acd55e177611f5d0f7df23"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a1bae9ed7d134ea1c1e9a39726adea1e1">findall</a></td></tr>
@@ -195,6 +206,48 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a2f9294757736802ae365f423f1e20b88"></a><!-- doxytag: member="pyrax::manager::BaseManager::action" ref="a2f9294757736802ae365f423f1e20b88" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a2f9294757736802ae365f423f1e20b88">action</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>item</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>action_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>body</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Several API calls are lumped under the 'action' API. </p>
+<p>This is the generic handler for such calls. </p>
+
+</div>
+</div>
 <a class="anchor" id="a59de7bcf6dec48b06d00ff9b771ef6b7"></a><!-- doxytag: member="pyrax::manager::BaseManager::add_hook" ref="a59de7bcf6dec48b06d00ff9b771ef6b7" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -544,7 +597,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 5 2012 21:20:48 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Nov 20 2012 16:43:12 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
