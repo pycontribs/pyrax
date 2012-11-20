@@ -4,7 +4,9 @@ var searchData=
   ['cdn_5fenabled',['cdn_enabled',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a2335e6e10f37188b2c023f9c5575c299',1,'pyrax::cf_wrapper::container::Container']]],
   ['cdn_5frequest',['cdn_request',['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html#ad1c79a1e8a4bbf3b8286ca87c62e6da5',1,'pyrax::cf_wrapper::client::Connection']]],
   ['clear_5fcredentials',['clear_credentials',['../namespacepyrax.html#ac84933adaea04f7479d32c6a5cf6e028',1,'pyrax']]],
+  ['clear_5ferror_5fpage',['clear_error_page',['../classpyrax_1_1cloud__loadbalancers_1_1CloudLoadBalancer.html#aff0ccd9424518b3db68c4fbc3c99a710',1,'pyrax::cloud_loadbalancers::CloudLoadBalancer.clear_error_page()'],['../classpyrax_1_1cloud__loadbalancers_1_1CloudLoadBalancerManager.html#aff0ccd9424518b3db68c4fbc3c99a710',1,'pyrax::cloud_loadbalancers::CloudLoadBalancerManager.clear_error_page()'],['../classpyrax_1_1cloud__loadbalancers_1_1CloudLoadBalancerClient.html#aff0ccd9424518b3db68c4fbc3c99a710',1,'pyrax::cloud_loadbalancers::CloudLoadBalancerClient.clear_error_page()']]],
   ['coerce_5fstring_5fto_5flist',['coerce_string_to_list',['../namespacepyrax_1_1utils.html#a399c6b9652f5150282c3edb32d4d05f3',1,'pyrax::utils']]],
+  ['connect_5fto_5fcloud_5fblockstorage',['connect_to_cloud_blockstorage',['../namespacepyrax.html#a6028129593635bcde83ac8783a35f55e',1,'pyrax']]],
   ['connect_5fto_5fcloud_5fdatabases',['connect_to_cloud_databases',['../namespacepyrax.html#a2a85cb9869f6584edb2d652a82678225',1,'pyrax']]],
   ['connect_5fto_5fcloud_5floadbalancers',['connect_to_cloud_loadbalancers',['../namespacepyrax.html#a5858f51939fe223ec24c9befc4fa1a2a',1,'pyrax']]],
   ['connect_5fto_5fcloudfiles',['connect_to_cloudfiles',['../namespacepyrax.html#a34593b67ad113f95973c1c7a6546fa68',1,'pyrax']]],
@@ -16,5 +18,6 @@ var searchData=
   ['create_5fcontainer',['create_container',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a31b9196903b253dd2cd99dc4d7a0774e',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['create_5fdatabase',['create_database',['../classpyrax_1_1cloud__databases_1_1CloudDatabaseInstance.html#a287e0595d14610db48012f18e10d60d5',1,'pyrax::cloud_databases::CloudDatabaseInstance.create_database()'],['../classpyrax_1_1cloud__databases_1_1CloudDatabaseClient.html#a287e0595d14610db48012f18e10d60d5',1,'pyrax::cloud_databases::CloudDatabaseClient.create_database()']]],
   ['create_5fidentity',['create_identity',['../namespacepyrax.html#ac7d67a51d9f2900fe1a0103800d20907',1,'pyrax']]],
+  ['create_5fsnapshot',['create_snapshot',['../classpyrax_1_1cloud__blockstorage_1_1CloudBlockStorageVolume.html#a75cc4154491155dec3c34ea545de7d36',1,'pyrax::cloud_blockstorage::CloudBlockStorageVolume.create_snapshot()'],['../classpyrax_1_1cloud__blockstorage_1_1CloudBlockStorageClient.html#a75cc4154491155dec3c34ea545de7d36',1,'pyrax::cloud_blockstorage::CloudBlockStorageClient.create_snapshot()']]],
   ['create_5fuser',['create_user',['../classpyrax_1_1cloud__databases_1_1CloudDatabaseInstance.html#af18e8e2e2ba1d65bb30314133332044d',1,'pyrax::cloud_databases::CloudDatabaseInstance.create_user()'],['../classpyrax_1_1cloud__databases_1_1CloudDatabaseClient.html#af18e8e2e2ba1d65bb30314133332044d',1,'pyrax::cloud_databases::CloudDatabaseClient.create_user()']]]
 ];
