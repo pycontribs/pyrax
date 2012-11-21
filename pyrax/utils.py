@@ -174,17 +174,29 @@ def wait_until(obj, att, desired, interval=5, attempts=10, verbose=False):
     attribute. If it is equal to `desired`, this will return a value
     of True. If not, it will re-try a maximum of `attempts` times; if
     the attribute has not reached the desired value by then, this will
-    return False. If `verbose` is True, each attempt will print out the
-    current value of the watched attribute.
+    return False. If `attempts` is 0, this will loop infinitely until
+    the attribute matches. If `verbose` is True, each attempt will print
+    out the current value of the watched attribute.
 
     Note that `desired` can be a list of values; if the attribute becomes
     equal to any of those values, this will return True.
     """
     if not isinstance(desired, (list, tuple)):
         desired = [desired]
+    infinite = (attempts == 0)
     attempt = 0
-    while attempt < attempts:
-        obj.reload()
+    while infinite or (attempt < attempts):
+        try:
+            obj.reload()
+        except AttributeError:
+            # This will happen with cloudservers and cloudfiles, which
+            # use different client/resource classes.
+            try:
+                # For servers:
+                obj = obj.manager.get(obj.id)
+            except AttributeError:
+                # punt
+                raise exc.NoReloadError("The 'wait_until' method is not supported for '%s' objects." % obj.__class__)
         attval = getattr(obj, att)
         if verbose:
             print "Current value of %s: %s" % (att, attval)
