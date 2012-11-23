@@ -6,16 +6,17 @@ import json
 from pyrax.cf_wrapper.client import FolderUploader
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
+from pyrax.client import BaseClient
 from pyrax.cloud_databases import CloudDatabaseClient
 from pyrax.cloud_databases import CloudDatabaseInstance
-from pyrax.cloud_blockstorage import CloudBlockStorageClient
-from pyrax.cloud_blockstorage import CloudBlockStorageVolume
-from pyrax.cloud_blockstorage import CloudBlockStorageSnapshot
-from pyrax.cloud_loadbalancers import CloudLoadBalancer
-from pyrax.cloud_loadbalancers import CloudLoadBalancerManager
-from pyrax.cloud_loadbalancers import CloudLoadBalancerClient
-from pyrax.cloud_loadbalancers import Node
-from pyrax.cloud_loadbalancers import VirtualIP
+from pyrax.cloudblockstorage import CloudBlockStorageClient
+from pyrax.cloudblockstorage import CloudBlockStorageVolume
+from pyrax.cloudblockstorage import CloudBlockStorageSnapshot
+from pyrax.cloudloadbalancers import CloudLoadBalancer
+from pyrax.cloudloadbalancers import CloudLoadBalancerManager
+from pyrax.cloudloadbalancers import CloudLoadBalancerClient
+from pyrax.cloudloadbalancers import Node
+from pyrax.cloudloadbalancers import VirtualIP
 
 import pyrax.exceptions as exc
 from pyrax.rax_identity import Identity
@@ -83,6 +84,7 @@ class FakeService(object):
         self.Node = FakeNode
         self.VirtualIP = FakeVirtualIP
         self.loadbalancers = FakeLoadBalancer()
+        self.id = utils.random_name()
 
     def authenticate(self):
         pass
@@ -189,16 +191,25 @@ class FakeDatabaseClient(CloudDatabaseClient):
                 "fakepassword", *args, **kwargs)
 
 
+class FakeNovaVolumeClient(BaseClient):
+    def __init__(self, *args, **kwargs):
+        pass
+
+
 class FakeBlockStorageVolume(CloudBlockStorageVolume):
     def __init__(self, *args, **kwargs):
+        volname = utils.random_name(8)
         self.id = utils.random_name()
         self.manager = FakeManager()
         self._snapshot_manager = FakeManager()
+        self._nova_volumes = FakeNovaVolumeClient()
 
 
 class FakeBlockStorageSnapshot(CloudBlockStorageSnapshot):
     def __init__(self, *args, **kwargs):
         self.id = utils.random_name()
+        self.manager = FakeManager()
+        self.status = "available"
 
 
 class FakeBlockStorageClient(CloudBlockStorageClient):

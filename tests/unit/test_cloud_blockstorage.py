@@ -7,16 +7,17 @@ import unittest
 from mock import patch
 from mock import MagicMock as Mock
 
-from pyrax.cloud_blockstorage import CloudBlockStorageClient
-from pyrax.cloud_blockstorage import CloudBlockStorageVolume
-from pyrax.cloud_blockstorage import CloudBlockStorageVolumeType
-from pyrax.cloud_blockstorage import CloudBlockStorageSnapshot
-from pyrax.cloud_blockstorage import _resolve_id
-from pyrax.cloud_blockstorage import _resolve_name
-from pyrax.cloud_blockstorage import assure_volume
-from pyrax.cloud_blockstorage import assure_snapshot
-from pyrax.cloud_blockstorage import MIN_SIZE
-from pyrax.cloud_blockstorage import MAX_SIZE
+import pyrax.cloudblockstorage
+from pyrax.cloudblockstorage import CloudBlockStorageClient
+from pyrax.cloudblockstorage import CloudBlockStorageVolume
+from pyrax.cloudblockstorage import CloudBlockStorageVolumeType
+from pyrax.cloudblockstorage import CloudBlockStorageSnapshot
+from pyrax.cloudblockstorage import _resolve_id
+from pyrax.cloudblockstorage import _resolve_name
+from pyrax.cloudblockstorage import assure_volume
+from pyrax.cloudblockstorage import assure_snapshot
+from pyrax.cloudblockstorage import MIN_SIZE
+from pyrax.cloudblockstorage import MAX_SIZE
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
@@ -96,18 +97,19 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_attach_to_instance(self):
         vol = self.volume
         inst = fakes.FakeServer()
-        vol.manager.action = Mock()
         mp = utils.random_name()
+        vol._nova_volumes.create_server_volume = Mock(return_value=vol)
         vol.attach_to_instance(inst, mp)
-        fake_body = {"instance_uuid": inst.id, "mountpoint": mp}
-        vol.manager.action.assert_called_once_with(vol, "os-attach", body=fake_body)
+        vol._nova_volumes.create_server_volume.assert_called_once_with(inst.id, vol.id, mp)
 
     def test_detach_from_instance(self):
         vol = self.volume
-        inst = fakes.FakeServer()
-        vol.manager.action = Mock()
+        srv_id = utils.random_name()
+        att_id = utils.random_name()
+        vol.attachments = [{"server_id": srv_id, "id": att_id}]
+        vol._nova_volumes.delete_server_volume = Mock()
         vol.detach()
-        vol.manager.action.assert_called_once_with(vol, "os-detach")
+        vol._nova_volumes.delete_server_volume.assert_called_once_with(srv_id, att_id)
 
     def test_create_snapshot(self):
         vol = self.volume
@@ -148,6 +150,11 @@ class CloudBlockStorageTest(unittest.TestCase):
         clt = self.client
         self.assertRaises(exc.InvalidSize, clt._create_body, "name", size=MIN_SIZE - 1)
         self.assertRaises(exc.InvalidSize, clt._create_body, "name", size=MAX_SIZE + 1)
+
+    def test_create_volume_bad_size(self):
+        clt = self.client
+        self.assertRaises(exc.InvalidSize, clt.create, "name", size=MIN_SIZE - 1)
+        self.assertRaises(exc.InvalidSize, clt.create, "name", size=MAX_SIZE + 1)
 
     def test_create_body_volume(self):
         clt = self.client
@@ -232,7 +239,24 @@ class CloudBlockStorageTest(unittest.TestCase):
         vol = self.volume
         vol.delete = Mock()
         clt.delete_volume(vol)
-        vol.delete.assert_called_once_with()
+        vol.delete.assert_called_once_with(force=False)
+
+    def test_client_delete_volume_not_available(self):
+        clt = self.client
+        vol = self.volume
+        vol.manager.delete = Mock(side_effect=exc.VolumeNotAvailable(""))
+        self.assertRaises(exc.VolumeNotAvailable, clt.delete_volume, vol)
+
+    def test_client_delete_volume_force(self):
+        clt = self.client
+        vol = self.volume
+        vol.manager.delete = Mock()
+        vol.detach = Mock()
+        vol.delete_all_snapshots = Mock()
+        clt.delete_volume(vol, force=True)
+        vol.manager.delete.assert_called_once_with(vol)
+        vol.detach.assert_called_once_with()
+        vol.delete_all_snapshots.assert_called_once_with()
 
     def test_client_create_snapshot(self):
         clt = self.client
@@ -243,12 +267,39 @@ class CloudBlockStorageTest(unittest.TestCase):
         clt.create_snapshot(vol, name=name, description=description, force=True)
         vol.create_snapshot.assert_called_once_with(name=name, description=description, force=True)
 
+    def test_client_create_snapshot_not_available(self):
+        clt = self.client
+        vol = self.volume
+        name = utils.random_name()
+        description = utils.random_name()
+        cli_exc = exc.ClientException(409, "Request conflicts with in-progress")
+        vol._snapshot_manager.create = Mock(side_effect=cli_exc)
+        self.assertRaises(exc.VolumeNotAvailable, clt.create_snapshot, vol,
+                name=name, description=description)
+
     def test_client_delete_snapshot(self):
         clt = self.client
         snap = fakes.FakeBlockStorageSnapshot()
         snap.delete = Mock()
         clt.delete_snapshot(snap)
         snap.delete.assert_called_once_with()
+
+    def test_snapshot_delete(self):
+        snap = self.snapshot
+        snap.manager.delete = Mock()
+        snap.delete()
+        snap.manager.delete.assert_called_once_with(snap)
+
+    def test_snapshot_delete_unavailable(self):
+        snap = self.snapshot
+        snap.status = "busy"
+        self.assertRaises(exc.SnapshotNotAvailable, snap.delete)
+
+    def test_snapshot_delete_retry(self):
+        snap = self.snapshot
+        snap.manager.delete = Mock(side_effect=exc.ClientException("Request conflicts with in-progress 'DELETE"))
+        pyrax.cloudblockstorage.RETRY_INTERVAL = 0.1
+        self.assertRaises(exc.ClientException, snap.delete)
 
     def test_volume_name_property(self):
         vol = self.volume

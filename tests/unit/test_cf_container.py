@@ -217,7 +217,7 @@ class CF_ContainerTest(unittest.TestCase):
         resp.headers = [("x-cdn-uri", example), ("c", "d")]
         cont.client.connection.cdn_request.return_value = resp
         cont.make_public(ttl)
-        cont.client.connection.cdn_request.assert_called_with("POST", [cont.name],
+        cont.client.connection.cdn_request.assert_called_with("PUT", [cont.name],
                 hdrs={"X-TTL": str(ttl), "X-CDN-Enabled": "True"})
 
     def test_make_private(self):

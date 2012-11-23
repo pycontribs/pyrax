@@ -264,6 +264,18 @@ def _fix_uri(ep, region, svc):
     return ep
 
 
+def _fix_uri(ep, region, svc):
+    """
+    URIs returned by the "ALL" region need to be manipulated
+    in order to provide the correct endpoints.
+    """
+    ep = ep.replace("//", "//%s." % region.lower())
+    # Change the version string for compute
+    if svc == "compute":
+        ep = ep.replace("v1.0", "v2")
+    return ep
+
+
 def _get_service_endpoint(svc, region=None):
     """Parses the services dict to get the proper endpoint for the given service."""
     if region is None:

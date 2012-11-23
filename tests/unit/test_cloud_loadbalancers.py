@@ -8,14 +8,14 @@ import unittest
 from mock import patch
 from mock import MagicMock as Mock
 
-from pyrax.cloud_loadbalancers import CloudLoadBalancerClient
-from pyrax.cloud_loadbalancers import CloudLoadBalancer
-from pyrax.cloud_loadbalancers import Node
-from pyrax.cloud_loadbalancers import VirtualIP
-from pyrax.cloud_loadbalancers import _get_id
-from pyrax.cloud_loadbalancers import _time_string
-from pyrax.cloud_loadbalancers import assure_parent
-from pyrax.cloud_loadbalancers import assure_loadbalancer
+from pyrax.cloudloadbalancers import CloudLoadBalancerClient
+from pyrax.cloudloadbalancers import CloudLoadBalancer
+from pyrax.cloudloadbalancers import Node
+from pyrax.cloudloadbalancers import VirtualIP
+from pyrax.cloudloadbalancers import _get_id
+from pyrax.cloudloadbalancers import _time_string
+from pyrax.cloudloadbalancers import assure_parent
+from pyrax.cloudloadbalancers import assure_loadbalancer
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
