@@ -57,8 +57,8 @@ try:
     from cloud_databases import CloudDatabaseFlavor
     from cloud_databases import CloudDatabaseInstance
     from cloud_databases import CloudDatabaseUser
-    from cloud_loadbalancers import CloudLoadBalancerClient
-    from cloud_blockstorage import CloudBlockStorageClient
+    from cloudloadbalancers import CloudLoadBalancerClient
+    from cloudblockstorage import CloudBlockStorageClient
 except ImportError:
     # See if this is the result of the importing of version.py in setup.py
     callstack = inspect.stack()
@@ -253,6 +253,18 @@ def connect_to_services():
         cloud_blockstorage = connect_to_cloud_blockstorage()
 
 
+def _fix_uri(ep, region, svc):
+    """
+    URIs returned by the "ALL" region need to be manipulated
+    in order to provide the correct endpoints.
+    """
+    ep = ep.replace("//", "//%s." % region.lower())
+    # Change the version string for compute
+    if svc == "compute":
+        ep = ep.replace("v1.0", "v2")
+    return ep
+
+
 def _get_service_endpoint(svc, region=None):
     """Parses the services dict to get the proper endpoint for the given service."""
     if region is None:
@@ -261,11 +273,8 @@ def _get_service_endpoint(svc, region=None):
     ep = identity.services.get(svc, {}).get("endpoints", {}).get(region, {}).get("public_url")
     if not ep:
         # Try the "ALL" region, and substitute the actual region
-        ep = identity.services.get(svc, {}).get("endpoints", {}).get("ALL", {}).get("public_url")
-        ep = ep.replace("//", "//%s." % region.lower())
-        # Change the version string for compute
-        if svc == "compute":
-            ep = ep.replace("v1.0", "v2")
+        ep = identity.services.get(svc, {}).get("endpoints", {}).get("ALL", {}).get("public_url", "")
+        ep = _fix_uri(ep, region, svc)
     return ep
 
 

@@ -30,6 +30,7 @@ import pyrax.utils as utils
 
 MIN_SIZE = 100
 MAX_SIZE = 1024
+RETRY_INTERVAL = 5
 
 
 def _resolve_id(val):
@@ -77,12 +78,12 @@ class CloudBlockStorageSnapshot(BaseResource):
                     "before deleting. Current status: %s" % self.status)
         # When there are more thann one snapshot for a given volume, attempting to
         # delete them all will throw a 409 exception. This will help by retrying
-        # such an error once after a 5 second delay.
+        # such an error once after a RETRY_INTERVAL second delay.
         try:
             super(CloudBlockStorageSnapshot, self).delete()
         except exc.ClientException as e:
             if "Request conflicts with in-progress 'DELETE" in str(e):
-                time.sleep(5)
+                time.sleep(RETRY_INTERVAL)
                 # Try again; if it fails, oh, well...
                 super(CloudBlockStorageSnapshot, self).delete()
 
@@ -119,7 +120,13 @@ class CloudBlockStorageVolume(BaseResource):
     """
     def __init__(self, *args, **kwargs):
         super(CloudBlockStorageVolume, self).__init__(*args, **kwargs)
-        self._nova_volumes = pyrax.cloudservers.volumes
+        try:
+            self._nova_volumes = pyrax.cloudservers.volumes
+        except AttributeError:
+            # This will happen in unit testing, where the full pyrax
+            # namespace is not exposed. In that situation, there is
+            # no need for the reference anyway
+            pass
         self._snapshot_manager = BaseManager(self.manager.api,
                 resource_class=CloudBlockStorageSnapshot,
                 response_key="snapshot", uri_base="snapshots")
@@ -205,6 +212,10 @@ class CloudBlockStorageVolume(BaseResource):
                     raise exc.VolumeNotAvailable("The volume is current creating a snapshot. You "
                             "must wait until that completes before attempting to create an "
                             "additional snapshot.")
+                else:
+                    raise
+            else:
+                raise
         return snap
 
 
@@ -333,9 +344,9 @@ class CloudBlockStorageClient(BaseClient):
 
 
     @assure_volume
-    def delete_volume(self, volume):
+    def delete_volume(self, volume, force=False):
         """Deletes the volume."""
-        return volume.delete()
+        return volume.delete(force=force)
 
 
     @assure_volume
