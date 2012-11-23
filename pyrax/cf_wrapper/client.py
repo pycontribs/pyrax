@@ -76,19 +76,24 @@ class CFClient(object):
 
     def __init__(self, auth_endpoint, username, api_key, tenant_name,
             preauthurl=None, preauthtoken=None, auth_version="2",
-            os_options=None):
-         self.connection = None
-         self._make_connections(auth_endpoint,
-                username, api_key, tenant_name, preauthurl=preauthurl, preauthtoken=preauthtoken,
-                auth_version=auth_version, os_options=os_options)
+            os_options=None, http_log_debug=False):
+        self.connection = None
+        self.http_log_debug = http_log_debug
+        self._http_log = _swift_client.http_log
+        os.environ["SWIFTCLIENT_DEBUG"] = "True" if http_log_debug else ""
+        self._make_connections(auth_endpoint, username, api_key, tenant_name,
+            preauthurl=preauthurl, preauthtoken=preauthtoken,
+            auth_version=auth_version, os_options=os_options,
+            http_log_debug=http_log_debug)
 
 
     def _make_connections(self, auth_endpoint, username, api_key, tenant_name,
-            preauthurl=None, preauthtoken=None, auth_version="2", os_options=None):
+            preauthurl=None, preauthtoken=None, auth_version="2", os_options=None,
+            http_log_debug=None):
         cdn_url = os_options.pop("object_cdn_url", None)
         self.connection = Connection(auth_endpoint, username, api_key, tenant_name,
                 preauthurl=preauthurl, preauthtoken=preauthtoken, auth_version=auth_version,
-                os_options=os_options)
+                os_options=os_options, http_log_debug=http_log_debug)
         self.connection._make_cdn_connection(cdn_url)
 
 
@@ -652,7 +657,7 @@ class CFClient(object):
         if ttl is None:
             ttl = self.default_cdn_ttl
         ct = self.get_container(container)
-        mthd = "POST" if ct.cdn_uri else "PUT"
+        mthd = "PUT"
         hdrs = {"X-CDN-Enabled": "%s" % enabled}
         if enabled:
             hdrs["X-TTL"] = str(ttl)
@@ -752,6 +757,8 @@ class CFClient(object):
 class Connection(_swift_client.Connection):
     """This class wraps the swiftclient connection, adding support for CDN"""
     def __init__(self, *args, **kwargs):
+        self.http_log_debug = kwargs.pop("http_log_debug", False)
+        self._http_log = _swift_client.http_log
         super(Connection, self).__init__(*args, **kwargs)
         # Add the user_agent, if not defined
         try:
@@ -820,6 +827,9 @@ class Connection(_swift_client.Connection):
                 else:
                     break
             attempt += 1
+        if self.http_log_debug:
+            self._http_log((path, method), {"headers": headers, "data": data},
+                    response, "")
         return response
 
 

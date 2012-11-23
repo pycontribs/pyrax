@@ -116,6 +116,9 @@ class NoTokenLookupException(PyraxException):
 class ProtocolMismatch(PyraxException):
     pass
 
+class SnapshotNotAvailable(PyraxException):
+    pass
+
 class UnattachedNode(PyraxException):
     pass
 
