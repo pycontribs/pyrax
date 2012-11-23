@@ -295,7 +295,9 @@ def connect_to_cloudfiles(region=None):
             "region_name": region}
     cloudfiles = _cf.CFClient(identity.auth_endpoint, identity.username, identity.api_key,
             tenant_name=identity.tenant_name, preauthurl=cf_url, preauthtoken=identity.token,
-            auth_version="2", os_options=opts)
+            auth_version="2", os_options=opts,
+#            http_log_debug=True,
+            )
     cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)
     return cloudfiles
 

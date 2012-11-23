@@ -12,6 +12,8 @@ All of the code samples in this document assume that you have already imported p
 
     import pyrax
     pyrax.set_credential_file("my_cred_file")
+    # or
+    # pyrax.set_credentials("my_username", "my_api_key")
     cbs = pyrax.cloud_blockstorage
 
 
@@ -41,10 +43,16 @@ This will return a list of `CloudBlockStorageVolume` objects. You can then inter
 ## Creating a Block Storage Volume
 To create a block storage volume, you call the `create()` method, passing in the parameters to match what you need.
 
-Parameter | Description | Required---- | ---- | ----**name** | The name to be displayed in volume listings. | No**size** | The size (in GB) of the volume. The size must be a positive integer between 100 and 1024. | Yes**volume_type** | The type of volume to create, either SATA or SSD. If not defined, then the default (SATA) is used. | No
-**description** | A description of the volume. | No
-**metadata** | A dictionary of key/value metadata to be associated with this volume. | No**snapshot_id** | The ID of the snapshot from which to create a volume. | No
-When you create a volume from a snapshot, the new volume will be a copy of the volume from which the snapshot was created. The new volume must be the same size as the original volume used to create the snapshot. If you create a new volume from scratch, it will be the equivalent of an unformatted disk drive.
+Parameter | Description | Required
+---- | ---- | ----
+**name** | The name to be displayed in volume listings. Default = `""` | No
+**size** | The size (in GB) of the volume. The size must be a positive integer between 100 and 1024. | Yes
+**volume_type** | The type of volume to create, either SATA or SSD. Default = `SATA` | No
+**description** | A description of the volume. Used only for display purposes. Default = `""` | No
+**metadata** | A dictionary of key/value metadata to be associated with this volume. Default = `{}` | No
+**snapshot_id** | The ID of the snapshot from which to create a volume. Default = `None`| No
+
+When you create a volume from a snapshot, the new volume will be a copy of the volume from which the snapshot was created. The new volume must be the same size as the original volume used to create the snapshot. If you create a new volume from scratch, it will be the equivalent of an unformatted disk drive.
 
 Here is an example of the call to create a new 500 GB volume that uses SSD for high performance:
 
@@ -60,7 +68,7 @@ This will output:
 To mount your Cloud Block Storage to one of your Cloud Servers, you call the volume's `attach_to_instance()` method, passing in a server reference (either a `CloudServer` instance, or the ID of that server), along with the mount point for the volume on that server. Here is an example:
 
     server = pyrax.cloudservers.servers.get("MyServerID")
-    mountpoint = "/dev/xvhdd"
+    mountpoint = "/dev/xvdb"
     vol.attach_to_instance(server, mountpoint=mountpoint)
     # or
     cbs.attach_to_instance(vol, server, mountpoint=mountpoint)
@@ -117,6 +125,13 @@ This will return a list of `CloudBlockStorageSnapshot` objects:
 
     [<CloudBlockStorageSnapshot created_at=2012-11-09T17:17:19.000000, display_description=, display_name=Daily Snapshot, id=32af1cce-6b03-4a28-b09d-905844edeecf, size=111, status=creating, volume_id=c1b05ede-54bf-46e0-9bd3-bf1946c5b485>]
 
+To get a listing of all snapshots for a specific volume `vol`, run:
+
+    print vol.list_snapshots()
+
+This will also return a list of `CloudBlockStorageSnapshot` objects.
+
+
 
 ## Deleting Snapshots
 There are two ways to delete a snapshot you no longer need. For the example below, assume that `snap` is an instance of `CloudBlockStorageSnapshot`:
@@ -125,4 +140,9 @@ There are two ways to delete a snapshot you no longer need. For the example belo
     # or
     cbs.delete_snapshot(snap)
 
-The snapshot must have a status of 'available' or 'error' in order to be deleted.
+The snapshot must have a status of 'available' or 'error' in order to be deleted. Also, if there are many snapshots of the same volume, only one of them at a time can be deleted.
+
+If you need to delete all the snapshots for a given volume `vol`, such as before deleting a volume you no longer need, there is a convenience method for that:
+
+    vol.delete_all_snapshots()
+
