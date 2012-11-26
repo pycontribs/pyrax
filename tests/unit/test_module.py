@@ -11,9 +11,7 @@ from mock import MagicMock as Mock
 import pyrax
 import pyrax.exceptions as exc
 import pyrax.utils as utils
-from tests.unit.fakes import FakeIdentity
-from tests.unit.fakes import FakeResponse
-from tests.unit.fakes import FakeService
+from tests.unit import fakes
 
 
 
@@ -33,7 +31,7 @@ class PyraxInitTest(unittest.TestCase):
         self.api_key = "fakeapikey"
 
     def setUp(self):
-        pyrax.set_identity_class(FakeIdentity)
+        pyrax.set_identity_class(fakes.FakeIdentity)
         pyrax.identity = pyrax.identity_class()
         pyrax.identity.authenticated = True
         pyrax.connect_to_cloudservers = Mock()
@@ -142,33 +140,48 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.connect_to_cloud_loadbalancers.assert_called_once_with()
         pyrax.connect_to_cloud_databases.assert_called_once_with()
 
-    @patch('pyrax._cs_client.Client', new=FakeService)
+    @patch('pyrax._cs_client.Client', new=fakes.FakeService)
     def test_connect_to_cloudservers(self):
         pyrax.cloudservers = None
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
         pyrax.cloudservers = pyrax.connect_to_cloudservers()
         self.assertIsNotNone(pyrax.cloudservers)
 
-    @patch('pyrax._cf.CFClient', new=FakeService)
+    @patch('pyrax._cf.CFClient', new=fakes.FakeService)
     def test_connect_to_cloudfiles(self):
         pyrax.cloudfiles = None
         pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
         pyrax.cloudfiles = pyrax.connect_to_cloudfiles()
         self.assertIsNotNone(pyrax.cloudfiles)
 
-    @patch('pyrax.CloudLoadBalancerClient', new=FakeService)
+    @patch('pyrax.CloudLoadBalancerClient', new=fakes.FakeService)
     def test_connect_to_cloud_loadbalancers(self):
         pyrax.cloud_loadbalancers = None
         pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
         pyrax.cloud_loadbalancers = pyrax.connect_to_cloud_loadbalancers()
         self.assertIsNotNone(pyrax.cloud_loadbalancers)
 
-    @patch('pyrax.CloudDatabaseClient', new=FakeService)
+    @patch('pyrax.CloudDatabaseClient', new=fakes.FakeService)
     def test_connect_to_cloud_databases(self):
         pyrax.cloud_databases = None
         pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
         pyrax.cloud_databases = pyrax.connect_to_cloud_databases()
         self.assertIsNotNone(pyrax.cloud_databases)
+
+    def test_import_fail(self):
+        import __builtin__
+        sav_import = __builtin__.__import__
+        def fake_import(nm, *args):
+            if nm == "rax_identity":
+                raise ImportError
+            else:
+                return sav_import(nm, *args)
+
+        __builtin__.__import__ = fake_import
+        self.assertRaises(ImportError, reload, pyrax)
+        __builtin__.__import__ = sav_import
+        reload(pyrax)
+
 
 
 if __name__ == "__main__":
