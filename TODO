@@ -1,7 +1,3 @@
-* Complete work on Cloud Block Storage
-    * Add unit tests
-    * Add docs
-* Re-write CLB to use the pyrax client and remove dependency on python-cloudlb
 * Cloud DNS
 * Cloud Networking
 * Cloud Monitoring
