@@ -176,7 +176,8 @@ def wait_until(obj, att, desired, interval=5, attempts=10, verbose=False):
     the attribute has not reached the desired value by then, this will
     return False. If `attempts` is 0, this will loop infinitely until
     the attribute matches. If `verbose` is True, each attempt will print
-    out the current value of the watched attribute.
+    out the current value of the watched attribute and the time that has
+    elapsed since the original request.
 
     Note that `desired` can be a list of values; if the attribute becomes
     equal to any of those values, this will return True.
@@ -185,6 +186,7 @@ def wait_until(obj, att, desired, interval=5, attempts=10, verbose=False):
         desired = [desired]
     infinite = (attempts == 0)
     attempt = 0
+    start = time.time()
     while infinite or (attempt < attempts):
         try:
             obj.reload()
@@ -199,7 +201,8 @@ def wait_until(obj, att, desired, interval=5, attempts=10, verbose=False):
                 raise exc.NoReloadError("The 'wait_until' method is not supported for '%s' objects." % obj.__class__)
         attval = getattr(obj, att)
         if verbose:
-            print "Current value of %s: %s" % (att, attval)
+            elapsed = time.time() - start
+            print "Current value of %s: %s (elapsed: %4.1f seconds)" % (att, attval, elapsed)
         if attval in desired:
             return True
         time.sleep(interval)
