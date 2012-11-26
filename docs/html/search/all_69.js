@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['id',['id',['../classpyrax_1_1cloud__loadbalancers_1_1Node.html#acf2488b95c97e0378c9bf49de3b50f28',1,'pyrax::cloud_loadbalancers::Node.id()'],['../classpyrax_1_1cloud__loadbalancers_1_1VirtualIP.html#acf2488b95c97e0378c9bf49de3b50f28',1,'pyrax::cloud_loadbalancers::VirtualIP.id()'],['../classpyrax_1_1resource_1_1BaseResource.html#acf2488b95c97e0378c9bf49de3b50f28',1,'pyrax::resource::BaseResource::id()']]],
+  ['id',['id',['../classpyrax_1_1cloudloadbalancers_1_1Node.html#acf2488b95c97e0378c9bf49de3b50f28',1,'pyrax::cloudloadbalancers::Node.id()'],['../classpyrax_1_1cloudloadbalancers_1_1VirtualIP.html#acf2488b95c97e0378c9bf49de3b50f28',1,'pyrax::cloudloadbalancers::VirtualIP.id()'],['../classpyrax_1_1resource_1_1BaseResource.html#acf2488b95c97e0378c9bf49de3b50f28',1,'pyrax::resource::BaseResource::id()']]],
   ['identity',['identity',['../namespacepyrax.html#ab7fc5a23efc53b58e213cd4cdf931c9f',1,'pyrax']]],
   ['identity',['Identity',['../classpyrax_1_1rax__identity_1_1Identity.html',1,'pyrax::rax_identity']]],
   ['identity_5fclass',['identity_class',['../namespacepyrax.html#aca80ca2a7aef1dee590ef38b26ac5e9b',1,'pyrax']]],
@@ -20,6 +20,6 @@ var searchData=
   ['invalidvirtualiptype',['InvalidVirtualIPType',['../classpyrax_1_1exceptions_1_1InvalidVirtualIPType.html',1,'pyrax::exceptions']]],
   ['invalidvirtualipversion',['InvalidVirtualIPVersion',['../classpyrax_1_1exceptions_1_1InvalidVirtualIPVersion.html',1,'pyrax::exceptions']]],
   ['invalidvolumeresize',['InvalidVolumeResize',['../classpyrax_1_1exceptions_1_1InvalidVolumeResize.html',1,'pyrax::exceptions']]],
-  ['ip_5fversion',['ip_version',['../classpyrax_1_1cloud__loadbalancers_1_1VirtualIP.html#a34b83b8852b7ca0e7e93cbf0034ed69d',1,'pyrax::cloud_loadbalancers::VirtualIP']]],
+  ['ip_5fversion',['ip_version',['../classpyrax_1_1cloudloadbalancers_1_1VirtualIP.html#a34b83b8852b7ca0e7e93cbf0034ed69d',1,'pyrax::cloudloadbalancers::VirtualIP']]],
   ['isunauthenticated',['isunauthenticated',['../namespacepyrax_1_1utils.html#a14862219df8c591076486e8f4506baf0',1,'pyrax::utils']]]
 ];

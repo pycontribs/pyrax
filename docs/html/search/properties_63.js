@@ -5,6 +5,6 @@ var searchData=
   ['cdn_5fstreaming_5furi',['cdn_streaming_uri',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a000f4ad534d85c42b466056d02636ca9',1,'pyrax::cf_wrapper::container::Container']]],
   ['cdn_5fttl',['cdn_ttl',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a2e0f897ad6464bc7dafd9935fa502754',1,'pyrax::cf_wrapper::container::Container']]],
   ['cdn_5furi',['cdn_uri',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a2fed2fa3680b223c766240fab5f90bcd',1,'pyrax::cf_wrapper::container::Container']]],
-  ['connection_5flogging',['connection_logging',['../classpyrax_1_1cloud__loadbalancers_1_1CloudLoadBalancer.html#a863329ee2898f7d6212281bab325e419',1,'pyrax::cloud_loadbalancers::CloudLoadBalancer']]],
-  ['content_5fcaching',['content_caching',['../classpyrax_1_1cloud__loadbalancers_1_1CloudLoadBalancer.html#a1cd94acd6d68908839cb20d0ad216ba5',1,'pyrax::cloud_loadbalancers::CloudLoadBalancer']]]
+  ['connection_5flogging',['connection_logging',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a863329ee2898f7d6212281bab325e419',1,'pyrax::cloudloadbalancers::CloudLoadBalancer']]],
+  ['content_5fcaching',['content_caching',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a1cd94acd6d68908839cb20d0ad216ba5',1,'pyrax::cloudloadbalancers::CloudLoadBalancer']]]
 ];

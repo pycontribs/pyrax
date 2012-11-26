@@ -116,9 +116,9 @@ Inheritance diagram for BaseClient:</div>
  <div class="center">
   <img src="classpyrax_1_1client_1_1BaseClient.png" usemap="#BaseClient_map" alt=""/>
   <map id="BaseClient_map" name="BaseClient_map">
-<area href="classpyrax_1_1cloud__blockstorage_1_1CloudBlockStorageClient.html" title="This is the primary class for interacting with Cloud Block Storage." alt="CloudBlockStorageClient" shape="rect" coords="0,56,156,80"/>
-<area href="classpyrax_1_1cloud__databases_1_1CloudDatabaseClient.html" title="This is the primary class for interacting with Cloud Databases." alt="CloudDatabaseClient" shape="rect" coords="166,56,322,80"/>
-<area href="classpyrax_1_1cloud__loadbalancers_1_1CloudLoadBalancerClient.html" title="This is the primary class for interacting with Cloud Load Balancers." alt="CloudLoadBalancerClient" shape="rect" coords="332,56,488,80"/>
+<area href="classpyrax_1_1cloud__databases_1_1CloudDatabaseClient.html" title="This is the primary class for interacting with Cloud Databases." alt="CloudDatabaseClient" shape="rect" coords="0,56,156,80"/>
+<area href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html" title="This is the primary class for interacting with Cloud Block Storage." alt="CloudBlockStorageClient" shape="rect" coords="166,56,322,80"/>
+<area href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html" title="This is the primary class for interacting with Cloud Load Balancers." alt="CloudLoadBalancerClient" shape="rect" coords="332,56,488,80"/>
 </map>
  </div></div>
 
@@ -135,6 +135,10 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new resource.  <a href="#a5b7ef0221e471e99fa7f0a87a28ba1ea"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#ab48bde70a0927a83d62464cb0627c34b">delete</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a specific resource.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#a01f90f57b7acd55e177611f5d0f7df23">find</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds a single item with attributes matching ``**kwargs``.  <a href="#a01f90f57b7acd55e177611f5d0f7df23"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#a1bae9ed7d134ea1c1e9a39726adea1e1">findall</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds all items with attributes matching ``**kwargs``.  <a href="#a1bae9ed7d134ea1c1e9a39726adea1e1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#a143a677947f3597dc3cc3055a0eae66e">unauthenticate</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all of our authentication information.  <a href="#a143a677947f3597dc3cc3055a0eae66e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#ac6afa2de729057e4864e897292b3f9cb">get_timings</a></td></tr>
@@ -383,6 +387,66 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Deletes a specific resource. </p>
+
+</div>
+</div>
+<a class="anchor" id="a01f90f57b7acd55e177611f5d0f7df23"></a><!-- doxytag: member="pyrax::client::BaseClient::find" ref="a01f90f57b7acd55e177611f5d0f7df23" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1client_1_1BaseClient.html#a01f90f57b7acd55e177611f5d0f7df23">find</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>kwargs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Finds a single item with attributes matching ``**kwargs``. </p>
+<p>This isn't very efficient: it loads the entire list then filters on the Python side. </p>
+
+</div>
+</div>
+<a class="anchor" id="a1bae9ed7d134ea1c1e9a39726adea1e1"></a><!-- doxytag: member="pyrax::client::BaseClient::findall" ref="a1bae9ed7d134ea1c1e9a39726adea1e1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1client_1_1BaseClient.html#a1bae9ed7d134ea1c1e9a39726adea1e1">findall</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>kwargs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Finds all items with attributes matching ``**kwargs``. </p>
+<p>This isn't very efficient: it loads the entire list then filters on the Python side. </p>
 
 </div>
 </div>
@@ -1076,7 +1140,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Nov 20 2012 16:43:11 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Nov 26 2012 19:52:08 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
