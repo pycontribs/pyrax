@@ -34,7 +34,6 @@ except IndexError:
 orig = lb.get_ssl_termination()
 print "Current setting of SSL Termination:", orig
 print
-[u'securePort', u'secureTrafficOnly', u'certificate', u'enabled', u'privatekey', u'intermediateCertificate']
 
 if orig:
     print "Updating SSL Termination info..."

@@ -23,6 +23,17 @@ creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cbs = pyrax.cloud_blockstorage
 
-# This assumes that you have a volume named 'my_fast_volume' that you want to delete
-vol = cbs.find(name="my_fast_volume")
-vol.delete()
+# This assumes that you have are deleting the volumes named 'my_fast_volume'
+# and 'my_standard_volume' that were created in create_volume.py.
+for nm in ("my_fast_volume", "my_standard_volume"):
+    try:
+        vol = cbs.findall(name=nm)[0]
+    except IndexError:
+        print "There is no volume named '%s'. Skipping..." % nm
+        vol = None
+    if vol:
+        print "Deleting", vol
+        vol.delete()
+print
+print "Done."
+print

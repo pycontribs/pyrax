@@ -1,9 +1,10 @@
-# Cloud Block Storage
+****# Cloud Block Storage
 
 ## Basic Concepts
-Rackspace Cloud Block Storage (CBS) is a block level storage solution that allows customers to mount drives or volumes to their Rackspace Next Generation Cloud Servers™. The two primary use cases are (1) to allow customers to scale their storage independently from their compute resources, and (2) to allow customers to utilize high performance storage to serve database or I/O-intensive applications.
+Rackspace Cloud Block Storage (**CBS**) is a block level storage solution that allows customers to mount drives or volumes to their Rackspace Next Generation Cloud Servers™. The two primary use cases are (1) to allow customers to scale their storage independently from their compute resources, and (2) to allow customers to utilize high performance storage to serve database or I/O-intensive applications.
 
-CBS is built upon the OpenStack Cinder project. See http://cinder.openstack.org for complete details about the available features and functionality.
+CBS is built upon the **OpenStack Cinder** project. See [http://cinder.openstack.org](http://cinder.openstack.org) for complete details about the available features and functionality.
+
 
 ## CBS in pyrax
 Once you have authenticated and connected to the block storage service, you can reference the block storage module via `pyrax.cloud_blockstorage`. This provides general information about the volumes for the account as well as the ability to define new block storage volumes. You can also attach and detach volumes from your cloud servers.
@@ -18,7 +19,7 @@ All of the code samples in this document assume that you have already imported p
 
 
 ## Block Storage Types
-There are two types of block storage: SATA and SSD. SATA volumes offer lower cost and standard performance, while SSD offers high performance for databases and other I/O-intensive applications, at a higher cost.
+There are two types of block storage: **SATA** and **SSD**. SATA volumes offer lower cost and standard performance, while SSD offers high performance for databases and other I/O-intensive applications, at a higher cost.
 
 To get a list of the available types, run:
 
@@ -73,6 +74,8 @@ To mount your Cloud Block Storage to one of your Cloud Servers, you call the vol
     # or
     cbs.attach_to_instance(vol, server, mountpoint=mountpoint)
 
+Once the call to attach has been made successfully, the process of attaching begins. It may take several minutes until the volume has been attached and is available to the server. If this is a new volume, you will have to SSH into the server and format it as you would any new disk. Once the volume is formatted, it can be mounted and used by the server.
+
 
 ## Detaching a Volume from a Server
 The call to detach the volume is even simpler:
@@ -92,6 +95,12 @@ To delete a volume you no longer need, call:
     cbs.delete_volume(vol)
 
 A volume that is attached to an instance cannot be deleted. It must be detached first, and have a status of 'available' or 'error' in order to be deleted. You also cannot delete a volume from which a snapshot has been created, as the snapshot is linked to that volume. All snapshots of a volume must be deleted before the volume can be deleted.
+
+If you are *absolutely certain* that you no longer want to keep a volume, you can use the optional `force` parameter to `delete()`. If you call:
+
+    vol.delete(force=True)
+
+the volume will be detached from its server (if it is attached), and all snapshots of that volume will be deleted. The volume will then be deleted, too. 
 
 
 ## Working with Snapshots
@@ -129,7 +138,7 @@ To get a listing of all snapshots for a specific volume `vol`, run:
 
     print vol.list_snapshots()
 
-This will also return a list of `CloudBlockStorageSnapshot` objects.
+This will also return a list of `CloudBlockStorageSnapshot` objects, but only those for that volume.
 
 
 
@@ -145,4 +154,3 @@ The snapshot must have a status of 'available' or 'error' in order to be deleted
 If you need to delete all the snapshots for a given volume `vol`, such as before deleting a volume you no longer need, there is a convenience method for that:
 
     vol.delete_all_snapshots()
-

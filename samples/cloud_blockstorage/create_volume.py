@@ -28,4 +28,8 @@ sata_vol = cbs.create(name="my_standard_volume", size=500, volume_type="SATA")
 ssd_vol = cbs.create(name="my_fast_volume", size=500, volume_type="SSD")
 
 print "SATA:", sata_vol
+print
 print "SSD:", ssd_vol
+print
+print "To delete these volumes, run 'delete_volume.py'"
+print

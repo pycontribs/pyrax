@@ -17,7 +17,10 @@
 #    under the License.
 
 import os
+import sys
+
 import pyrax
+import pyrax.exceptions as exc
 
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
@@ -30,5 +33,22 @@ snap = vol.create_snapshot("sample_snap")
 print "Volume:", vol
 print "Snapshot:", snap
 print
-print "You will have to wait until the snapshot finishes being created before"
-print "you will be able to delete it."
+print "You have to wait until the snapshot finishes being created before"
+print "it can be deleted. Press Ctrl-C to interrupt."
+try:
+    pyrax.utils.wait_until(snap, "status", "available", attempts=0, verbose=True)
+except KeyboardInterrupt:
+    print
+    print "Process interrupted."
+    print "Be sure to manually delete this snapshot when it completes."
+    sys.exit(0)
+print
+print "Deleting snapshot..."
+snap.delete()
+try:
+    vol.delete()
+except exc.VolumeNotAvailable:
+    print "Could not delete volume; snapshot deletion has not completed yet."
+    print "Please be sure to delete the volume manually."
+    print
+print "Done."

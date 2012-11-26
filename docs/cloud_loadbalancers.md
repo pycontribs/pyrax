@@ -18,7 +18,7 @@ This will return a list of `LoadBalancer` objects. You can then interact with th
 
 
 ### Create the Servers
-[Working with Cloud Servers](cloud_servers.md) explains how to get the image and flavor IDs necessary to create a server, but for the sake of brevity the code below uses the IDs previously obtained. Note: these ID values are not constants, so make sure you get the actual IDs for when your system is running.
+[Working with Cloud Servers](cloud_servers.md) explains how to get the image and flavor IDs necessary to create a server, but for the sake of brevity the code below uses the IDs previously obtained. *Note*: these ID values are not constants, so make sure you get the actual IDs for when your system is running.
 
     cs = pyrax.cloudservers
     clb = pyrax.cloud_loadbalancers
@@ -49,7 +49,7 @@ Next you need to create the `Nodes` that represent these servers. `Nodes` requir
 
 While you can set an existing `Node` to any of these three conditions, you can only create new nodes in either 'ENABLED' or 'DISABLED' condition.
 
-A `Node` is logically linked to the server it represents by the IP address. Since the servers and load balancer are all being created in the same datacenter, we can use the private IP address of the server.
+A `Node` is logically linked to the server it represents by the IP address. Since the servers and load balancer are all being created in the same datacenter, you can use the private IP address of the server.
 
     # Get the private network IPs for the servers
     server1_ip = server1.networks["private"][0]
@@ -160,7 +160,7 @@ There are two methods for creating metadata for a load balancer: `set_metadata()
     # the same internal network as your load balancer.
     new_node = clb.Node(address="10.177.1.2", port=80, condition="ENABLED")
     lb.add_nodes([new_node])
-    wait_for_changes(lb)
+    pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30, verbose=True)
     
     print
     print "After adding node:", lb.nodes
@@ -173,11 +173,10 @@ There are two methods for creating metadata for a load balancer: `set_metadata()
     print
     print "Added Node:", added_node
     added_node.delete()
-    wait_for_changes(lb)
-    print
+    pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30, verbose=True)    print
     print "After removing node:", lb.nodes
 
-Note the `wait_for_changes()` method. After modifying a load balancer, its status will be set to `PENDING_UPDATE`. While it is in that status, no further changes can be made. Once the changes have completed, the status will be set back to `ACTIVE`. All that `wait_for_changes()` does is loop until the load balancer is ready.
+Note the `wait_until()` method. After modifying a load balancer, its status will be set to `PENDING_UPDATE`. While it is in that status, no further changes can be made. Once the changes have completed, the status will be set back to `ACTIVE`. All that `wait_until()` does is loop until the load balancer is ready. It is a convenient routine for processes that require intermediate steps that must complete before the next step is taken.
 
 Running the above code results in:
 
@@ -237,7 +236,7 @@ You can get load balancer usage data for your entire account by calling `pyrax.c
 
 This output is for a test load balancer that is not getting any traffic. If this had been for an actual load balancer in production use, the values reported would not be all zeroes.
 
-The call to `get_usage()` can return a lot of data. Many times you may only be interested in the usage data for a given time period, so the method supports two optional parameters: `start` and `end`. These can be date/time values in one of the following formats:
+The call to `get_usage()` can return a *lot* of data. Many times you may only be interested in the usage data for a given time period, so the method supports two optional parameters: `start` and `end`. These can be date/time values in one of the following formats:
 
 * A Python datetime.datetime object
 * A Python datetime.date object
@@ -309,8 +308,8 @@ These types of monitors check whether the load balancer's nodes can be reached v
 
 The `path` parameter indicates the HTTP path for the request; the `statusRegex` parameter is compared against the returned status code, and the `bodyRegex` parameter is compared with the body of the response. If both response patterns match, the node is considered healthy. The `hostHeader` parameter is the only one that is optional. If included, the monitor will check that hostname.
 
-Here are the parameters and their description:
 
+####Health Monitor parameters
 Name | Description | Default | Required
 ---- | ---- | ---- | ----
 attemptsBeforeDeactivation | Number of permissible monitor failures before removing a node from rotation. Must be a number between 1 and 10. | 3 | Yes
@@ -362,6 +361,7 @@ Similarly, to remove session persistence from your load balancer, you would run:
     lb = clb.list()[0]
     sp_mgr = lb.session_persistence()
     sp_mgr.delete()
+
 
 ## Connection Logging
 The connection logging feature allows logs to be delivered to a Cloud Files account every hour. For HTTP-based protocol traffic, these are Apache-style access logs. For all other traffic, this is connection and transfer logging.
@@ -456,7 +456,7 @@ To remove the custom error page and return to the default, run:
 ## Content Caching
 When content caching is enabled, recently-accessed files are stored on the load balancer for easy retrieval by web clients. Content caching improves the performance of high traffic web sites by temporarily storing data that was recently accessed. While it's cached, requests for that data will be served by the load balancer, which in turn reduces load off the back end nodes. The result is improved response times for those requests and less load on the web server.
 
-This is a simple on/off setting on the load balancer object. Assuming that you have a reference to the load balancer in `lb`:
+This is a simple on/off setting on the load balancer object. Assuming that you have a reference `lb` to the load balancer:
 
     # Turn on caching
     lb.content_caching = True
