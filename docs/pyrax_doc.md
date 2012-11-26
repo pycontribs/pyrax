@@ -48,10 +48,11 @@ To authenticate, run the following code using one of either `set_credentials()` 
     # Using credentials file
     pyrax.set_credential_file("/path/to/credential/file")
 
-Once you have authenticated, you now have access to Cloud Servers, Cloud Files, and Cloud Load Balancers, using the following references:
+Once you have authenticated, you now have access to Cloud Servers, Cloud Files, Cloud Block Storage, and Cloud Load Balancers, using the following references:
 
     pyrax.cloudservers
     pyrax.cloudfiles
+    pyrax.cloud_blockstorage
     pyrax.cloud_loadbalancers
 
 You don't have to log into each service separately; pyrax handles that for you.
