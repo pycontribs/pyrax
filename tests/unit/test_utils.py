@@ -149,6 +149,23 @@ class UtilsTest(unittest.TestCase):
         ret = utils.slugify(test)
         self.assertEqual(ret, expected)
 
+    def test_wait_until(self):
+        status_obj = fakes.FakeStatusChanger()
+        self.assertRaises(exc.NoReloadError, utils.wait_until, status_obj, "status", "available")
+        status_obj.manager = fakes.FakeManager()
+        status_obj.manager.get = Mock(return_value=status_obj)
+
+        ret = utils.wait_until(status_obj, "status", "ready", interval=0.1)
+        self.assertTrue(ret)
+        self.assertEqual(status_obj.status, "ready")
+        ret = utils.wait_until(status_obj, "status", "fake", interval=0.1, attempts=2)
+
+    def test_import_class(self):
+        cls_string = "tests.unit.fakes.FakeManager"
+        ret = utils.import_class(cls_string)
+        self.assertTrue(ret is fakes.FakeManager)
+
+
 
 if __name__ == "__main__":
     unittest.main()

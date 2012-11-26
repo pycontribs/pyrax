@@ -259,6 +259,18 @@ class FakeVirtualIP(VirtualIP):
     pass
 
 
+class FakeStatusChanger(object):
+    check_count = 0
+    id = utils.random_name()
+
+    @property
+    def status(self):
+        if self.check_count < 3:
+            self.check_count += 1
+            return "changing"
+        return "ready"
+
+
 class FakeIdentity(Identity):
     """Class that returns canned authentication responses."""
     def __init__(self, *args, **kwargs):
