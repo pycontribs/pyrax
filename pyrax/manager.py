@@ -66,7 +66,7 @@ class BaseManager(object):
         self.api = api
         self.resource_class = resource_class
         self.response_key = response_key
-        if self.plural_response_key:
+        if plural_response_key:
             self.plural_response_key = plural_response_key
         else:
             # Default to adding 's'
@@ -191,7 +191,7 @@ class BaseManager(object):
         if not num_matches:
             msg = "No %s matching: %s." % (self.resource_class.__name__, kwargs)
             raise exc.NotFound(404, msg)
-        elif num_matches > 1:
+        if num_matches > 1:
             msg = "More than one %s matching: %s." % (self.resource_class.__name__, kwargs)
             raise exc.NoUniqueMatch(400, msg)
         else:
