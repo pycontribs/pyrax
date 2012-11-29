@@ -243,7 +243,7 @@ The call to `get_usage()` can return a *lot* of data. Many times you may only be
 * A string in the format "YYYY-MM-DD HH:MM:SS"
 * A string in the format "YYYY-MM-DD"
 
-When both starting and ending times are specified, the resulting usage data will only include records within that time period. When only the starting time is specified, all records from that point to the present are returned. When only the ending time is specified, all records from the earlist up to the ending time are returned.
+When both starting and ending times are specified, the resulting usage data will only include records within that time period. When only the starting time is specified, all records from that point to the present are returned. When only the ending time is specified, all records from the earliest up to the ending time are returned.
 
 
 ## Load Balancer Statistics
@@ -274,7 +274,7 @@ There are 3 types of Health Monitor probes:
 * HTTP
 * HTTPS
 
-Health Monitors have a `attemptsBeforeDeactivation` setting that specifies how many failures for a node will be needed before the node is removed from the load balancer's rotation.
+Health Monitors have an `attemptsBeforeDeactivation` setting that specifies how many failures for a node will be needed before the node is removed from the load balancer's rotation.
 
 
 ### Adding a TCP Connection Health Monitor
@@ -309,7 +309,7 @@ These types of monitors check whether the load balancer's nodes can be reached v
 The `path` parameter indicates the HTTP path for the request; the `statusRegex` parameter is compared against the returned status code, and the `bodyRegex` parameter is compared with the body of the response. If both response patterns match, the node is considered healthy. The `hostHeader` parameter is the only one that is optional. If included, the monitor will check that hostname.
 
 
-####Health Monitor parameters
+####Health Monitor Parameters
 Name | Description | Default | Required
 ---- | ---- | ---- | ----
 attemptsBeforeDeactivation | Number of permissible monitor failures before removing a node from rotation. Must be a number between 1 and 10. | 3 | Yes

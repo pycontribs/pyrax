@@ -24,15 +24,13 @@ If you are working with an OpenStack deployment, you can find more information a
 	* username
 	* API key
 * Python 2.7
-	* Not yet tested yet with other Python versions. Please post feedback about what works or does not work with other versions.
+	* pyrax is not yet tested yet with other Python versions. Please post feedback about what works or does not work with other versions. See the **Support and Feedback** section below for where to post.
 
 
 ## Installation
 The best way to install **pyrax** is by using [pip](http://www.pip-installer.org/en/latest/) to get the latest official release:
 
 	pip install pyrax
-
-> Note: during the beta period, the above will not work. Use the github install below
 
 If you would like to work with the current development state of pyrax, you can install directly from trunk on GitHub:
 
@@ -58,4 +56,4 @@ If you installed **pyrax** using pip, it is simple to get the latest updates fro
 ## Support and Feedback
 Your feedback is appreciated! If you have specific issues with the **pyrax** SDK, developers should file an [issue via Github](https://github.com/rackspace/pyrax/issues).
 
-For general feedback and support requests, send an email to: <sdk-support@rackspace.com>
+For general feedback and support requests, send an email to: <sdk-support@rackspace.com>.

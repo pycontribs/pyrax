@@ -179,9 +179,9 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a38317481667772b2f3483f5360bbb08f">delete_metadata_for_node</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes metadata items specified by the 'keys' parameter for the specified node.  <a href="#a38317481667772b2f3483f5360bbb08f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a6504e1c0199cc9b8f58a3bf38eaf4f62">get_error_page</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Load Balancers all have a default error page that is shown to an end user who is attempting to access a load balancer node that is offline/unavailable.  <a href="#a6504e1c0199cc9b8f58a3bf38eaf4f62"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current error page for the load balancer.  <a href="#a6504e1c0199cc9b8f58a3bf38eaf4f62"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a9e8cf14c622fff01da294f2c2352fd92">set_error_page</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">A single custom error page may be added per account load balancer with an HTTP protocol.  <a href="#a9e8cf14c622fff01da294f2c2352fd92"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a custom error page for the load balancer.  <a href="#a9e8cf14c622fff01da294f2c2352fd92"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#aff0ccd9424518b3db68c4fbc3c99a710">clear_error_page</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the error page to the default.  <a href="#aff0ccd9424518b3db68c4fbc3c99a710"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="properties"></a>
@@ -800,7 +800,8 @@ Properties</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Load Balancers all have a default error page that is shown to an end user who is attempting to access a load balancer node that is offline/unavailable. </p>
+<p>Returns the current error page for the load balancer. </p>
+<p>Load balancers all have a default error page that is shown to an end user who is attempting to access a load balancer node that is offline/unavailable. </p>
 
 </div>
 </div>
@@ -917,8 +918,8 @@ Properties</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>A single custom error page may be added per account load balancer with an HTTP protocol. </p>
-<p>Page updates will override existing content. If a custom error page is deleted, or the load balancer is changed to a non-HTTP protocol, the default error page will be restored. </p>
+<p>Sets a custom error page for the load balancer. </p>
+<p>A single custom error page may be added per account load balancer with an HTTP protocol. Page updates will override existing content. If a custom error page is deleted, or the load balancer is changed to a non-HTTP protocol, the default error page will be restored. </p>
 
 </div>
 </div>
@@ -1196,7 +1197,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Nov 27 2012 22:06:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Nov 29 2012 19:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

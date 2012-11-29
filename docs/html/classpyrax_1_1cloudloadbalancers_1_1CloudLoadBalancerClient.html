@@ -127,13 +127,13 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a7a26606bf20204d1650ddad60fb25a3b">get_usage</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the load balancer usage records for this account.  <a href="#a7a26606bf20204d1650ddad60fb25a3b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a0a5c9a644fa7ae4b7a662ab33f00ed9c">allowed_domains</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The allowed domains are restrictions set for the allowed domain names used for adding load balancer nodes.  <a href="#a0a5c9a644fa7ae4b7a662ab33f00ed9c"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This property lists the allowed domains for a load balancer.  <a href="#a0a5c9a644fa7ae4b7a662ab33f00ed9c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#aed666a925114f957f496874543d3f2a7">algorithms</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of available load balancing algorithms.  <a href="#aed666a925114f957f496874543d3f2a7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a7ffc66e16cbb4a549e7874dce9d61e6e">protocols</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of available load balancing protocols.  <a href="#a7ffc66e16cbb4a549e7874dce9d61e6e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#aaaa90c99f97822834b7407096d0b1dce">add_nodes</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The following methods are conveniences that serve as pass-through to the loadbalancer.  <a href="#aaaa90c99f97822834b7407096d0b1dce"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the nodes to this load balancer.  <a href="#aaaa90c99f97822834b7407096d0b1dce"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#ab264d37d545101c96e50d1e2924724cc">add_virtualip</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the virtual IP to this load balancer.  <a href="#ab264d37d545101c96e50d1e2924724cc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a616947868beb4492f797b21aeb320d90">delete_node</a></td></tr>
@@ -447,7 +447,6 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>The following methods are conveniences that serve as pass-through to the loadbalancer. </p>
 <p>Adds the nodes to this load balancer. </p>
 
 </div>
@@ -587,8 +586,8 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>The allowed domains are restrictions set for the allowed domain names used for adding load balancer nodes. </p>
-<p>In order to submit a domain name as an address for the load balancer node to add, the user must verify that the domain is valid by using the List Allowed Domains call. Once verified, simply supply the domain name in place of the node's address in the <a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#aaaa90c99f97822834b7407096d0b1dce" title="The following methods are conveniences that serve as pass-through to the loadbalancer.">add_nodes()</a> call. </p>
+<p>This property lists the allowed domains for a load balancer. </p>
+<p>The allowed domains are restrictions set for the allowed domain names used for adding load balancer nodes. In order to submit a domain name as an address for the load balancer node to add, the user must verify that the domain is valid by using the List Allowed Domains call. Once verified, simply supply the domain name in place of the node's address in the <a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#aaaa90c99f97822834b7407096d0b1dce" title="Adds the nodes to this load balancer.">add_nodes()</a> call. </p>
 
 </div>
 </div>
@@ -1689,7 +1688,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Nov 27 2012 22:06:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Nov 29 2012 19:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

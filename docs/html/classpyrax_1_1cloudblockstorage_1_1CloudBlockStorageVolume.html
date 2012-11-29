@@ -130,7 +130,7 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#acaedb9678123c696fc17b7d4d46e1a10">detach</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Detaches this volume from any device it may be attached to.  <a href="#acaedb9678123c696fc17b7d4d46e1a10"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#ab48bde70a0927a83d62464cb0627c34b">delete</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Volumes cannot be deleted if: a) they are attached to a device b) they have any snapshots This method overrides the base <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#ab48bde70a0927a83d62464cb0627c34b" title="Volumes cannot be deleted if: a) they are attached to a device b) they have any snapshots This method...">delete()</a> method to both better handle these failures, and also to offer a 'force' option.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Volumes cannot be deleted if either a) they are attached to a device, or b) they have any snapshots.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#a75cc4154491155dec3c34ea545de7d36">create_snapshot</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a snapshot of this volume, with an optional name and description.  <a href="#a75cc4154491155dec3c34ea545de7d36"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#a00cc0e02f5f5345225175cad0120c697">list_snapshots</a></td></tr>
@@ -286,8 +286,8 @@ Properties</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Volumes cannot be deleted if: a) they are attached to a device b) they have any snapshots This method overrides the base <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#ab48bde70a0927a83d62464cb0627c34b" title="Volumes cannot be deleted if: a) they are attached to a device b) they have any snapshots This method...">delete()</a> method to both better handle these failures, and also to offer a 'force' option. </p>
-<p>When 'force' is True, the volume is detached, and any dependent snapshots are deleted before calling the volume's delete. </p>
+<p>Volumes cannot be deleted if either a) they are attached to a device, or b) they have any snapshots. </p>
+<p>This method overrides the base <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#ab48bde70a0927a83d62464cb0627c34b" title="Volumes cannot be deleted if either a) they are attached to a device, or b) they have any snapshots...">delete()</a> method to both better handle these failures, and also to offer a 'force' option. When 'force' is True, the volume is detached, and any dependent snapshots are deleted before calling the volume's delete. </p>
 
 </div>
 </div>
@@ -428,7 +428,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Nov 27 2012 22:06:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Nov 29 2012 19:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

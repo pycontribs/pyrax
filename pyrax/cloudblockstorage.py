@@ -163,13 +163,11 @@ class CloudBlockStorageVolume(BaseResource):
 
 
     def delete(self, force=False):
-        """Volumes cannot be deleted if:
-             a) they are attached to a device
-             b) they have any snapshots
-           This method overrides the base delete() method to both better handle
-           these failures, and also to offer a 'force' option. When 'force'
-           is True, the volume is detached, and any dependent snapshots are
-           deleted before calling the volume's delete.
+        """Volumes cannot be deleted if either a) they are attached to a device,
+        or b) they have any snapshots. This method overrides the base delete()
+        method to both better handle these failures, and also to offer a 'force'
+        option. When 'force' is True, the volume is detached, and any dependent
+        snapshots are deleted before calling the volume's delete.
         """
         if force:
             self.detach()
@@ -274,7 +272,7 @@ class CloudBlockStorageClient(BaseClient):
     def create(self, name="", size=None, volume_type=None, description=None,
              metadata=None, snapshot_id=None, availability_zone=None):
         """
-        Makes sure that the size is passed and is within allowe values.
+        Makes sure that the size is passed and is within allowed values.
         """
         if not isinstance(size, (int, long)) or not MIN_SIZE <= size <= MAX_SIZE:
             raise exc.InvalidSize("Volume sizes must be integers between %s and %s." %
@@ -285,10 +283,12 @@ class CloudBlockStorageClient(BaseClient):
 
 
     def list_types(self):
+        """Returns a list of all available volume types."""
         return self._types_manager.list()
 
 
     def list_snapshots(self):
+        """Returns a list of all snapshots."""
         return self._snaps_manager.list()
 
 
