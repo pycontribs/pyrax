@@ -94,7 +94,7 @@ def safe_region(region=None):
 
 
 # Value to plug into the user-agent headers
-USER_AGENT = "pyrax/%s" % version.version
+USER_AGENT = "pyrax %s" % version.version
 services_to_start = {
         "servers": True,
         "files": True,
@@ -121,6 +121,10 @@ if os.path.exists(config_file):
     default_region = safe_get("settings", "region") or default_region
     default_identity_type = safe_get("settings", "identity_type") or (
             default_identity_type or "rackspace")
+    app_agent = safe_get("settings", "custom_user_agent")
+    if app_agent:
+        # Customize the user-agent string with the app name.
+        USER_AGENT = "%s/%s" % (app_agent, USER_AGENT)
     svc_dict = dict(cfg.items("services"))
     for svc, status in svc_dict.items():
         services_to_start[svc] = (status == "True")
@@ -233,9 +237,13 @@ def set_default_region(region):
 
 def _make_agent_name(base):
     """Appends pyrax information to the underlying library's user agent."""
-    if "pyrax" in base:
-        return base
-    return "%s:%s" % (base, USER_AGENT)
+    if base:
+        if "pyrax" in base:
+            return base
+        else:
+            return "%s/%s" % (USER_AGENT, base)
+    else:
+        return USER_AGENT
 
 
 def connect_to_services():
@@ -252,27 +260,15 @@ def connect_to_services():
     if services_to_start["blockstorage"]:
         cloud_blockstorage = connect_to_cloud_blockstorage()
 
-def _fix_uri(ep, region, svc):
+
+def _fix_uri(ep, region):
     """
-    URIs returned by the "ALL" region need to be manipulated
+    Compute URIs returned by the "ALL" region need to be manipulated
     in order to provide the correct endpoints.
     """
     ep = ep.replace("//", "//%s." % region.lower())
-    # Change the version string for compute
-    if svc == "compute":
-        ep = ep.replace("v1.0", "v2")
-    return ep
-
-
-def _fix_uri(ep, region, svc):
-    """
-    URIs returned by the "ALL" region need to be manipulated
-    in order to provide the correct endpoints.
-    """
-    ep = ep.replace("//", "//%s." % region.lower())
-    # Change the version string for compute
-    if svc == "compute":
-        ep = ep.replace("v1.0", "v2")
+    # Change the version string
+    ep = ep.replace("v1.0", "v2")
     return ep
 
 
@@ -285,7 +281,8 @@ def _get_service_endpoint(svc, region=None):
     if not ep:
         # Try the "ALL" region, and substitute the actual region
         ep = identity.services.get(svc, {}).get("endpoints", {}).get("ALL", {}).get("public_url", "")
-        ep = _fix_uri(ep, region, svc)
+        if svc == "compute":
+            ep = _fix_uri(ep, region)
     return ep
 
 

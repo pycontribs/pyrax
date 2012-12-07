@@ -65,7 +65,8 @@ class BaseClient(httplib2.Http):
     """
     The base class for all pyrax clients.
     """
-    user_agent = "pyrax"
+    # This will get set by pyrax when the service is started.
+    user_agent = None
 
     def __init__(self, user, password, tenant_id=None, auth_url=None,
             region_name=None, endpoint_type="publicURL", management_url=None,
@@ -220,7 +221,6 @@ class BaseClient(httplib2.Http):
         if "body" in kwargs:
             kwargs["headers"]["Content-Type"] = "application/json"
             kwargs["body"] = json.dumps(kwargs["body"])
-
         self.http_log_req(args, kwargs)
         resp, body = super(BaseClient, self).request(*args, **kwargs)
         self.http_log_resp(resp, body)

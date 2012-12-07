@@ -64,6 +64,7 @@ You can control how pyrax operates by including the optional configuration file.
     [settings]
     identity_type = rackspace
     region = ORD
+    custom_user_agent = AwesomeApp 1.2
 
     [services]
     servers = True
@@ -72,7 +73,8 @@ You can control how pyrax operates by including the optional configuration file.
     databases = False
     blockstorage = True
 
-With the above example, pyrax will default to Rackspace authentication, provision resources in the `ORD` region, and will connect to all services except Cloud Databases after authenticating.
+With the above example, pyrax will default to Rackspace authentication, provision resources in the `ORD` region, and will connect to all services except Cloud Databases after authenticating. It will also customize the **User-agent** string sent to the API servers on each request by prepending the string "AwesomeApp 1.2" to the standard pyrax User-agent setting, allowing requests from your application to be distinguished from other pyrax applications.
+
 
 ## Working with Multiple Regions
 Rackspace divides its cloud infrastructure into "regions", and some interactions are only possible if the entities share a region. For example, if you wish to access a Cloud Database from a Cloud Server, that is only possible if the two are in the same region. Furthermore, if you connect to a region and call `pyrax.cloudservers.servers.list()`, you will only get a list of servers in that region. To get a list of all your servers, you will have to query each region separately. This is simple to do in pyrax.
