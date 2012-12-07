@@ -39,6 +39,7 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.connect_to_cloud_loadbalancers = Mock()
         pyrax.connect_to_cloud_databases = Mock()
         pyrax._get_service_endpoint = Mock(return_value="http://example.com/")
+        pyrax.USER_AGENT = "DUMMY"
 
     def tearDown(self):
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
@@ -111,27 +112,18 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.set_default_region(new_region)
         self.assertEqual(pyrax.default_region, new_region)
 
-    def test_fix_uri_other(self):
+    def test_fix_uri(self):
         region = "abc"
-        svc = "other"
-        orig = "http://example.com/v1.0/fake"
-        expected = "http://abc.example.com/v1.0/fake"
-        fixed = pyrax._fix_uri(orig, region, svc)
-        self.assertEqual(fixed, expected)
-
-    def test_fix_uri_compute(self):
-        region = "abc"
-        svc = "compute"
         orig = "http://example.com/v1.0/fake"
         expected = "http://abc.example.com/v2/fake"
-        fixed = pyrax._fix_uri(orig, region, svc)
+        fixed = pyrax._fix_uri(orig, region)
         self.assertEqual(fixed, expected)
 
     def test_make_agent_name(self):
         test_agent = "TEST"
         ret = pyrax._make_agent_name(test_agent)
-        self.assert_(ret.startswith(test_agent))
-        self.assert_(ret.endswith(pyrax.USER_AGENT))
+        self.assert_(ret.endswith(test_agent))
+        self.assert_(ret.startswith(pyrax.USER_AGENT))
 
     def test_connect_to_services(self):
         pyrax.connect_to_services()
