@@ -49,6 +49,8 @@ try:
     import version
 
     import cf_wrapper.client as _cf
+    from cf_wrapper.storage_object import StorageObject
+    from cf_wrapper.container import Container
     from novaclient import exceptions as _cs_exceptions
     from novaclient.v1_1 import client as _cs_client
 
