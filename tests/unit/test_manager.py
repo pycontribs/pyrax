@@ -220,7 +220,7 @@ class ManagerTest(unittest.TestCase):
         ret = mgr.findall(some_att="ok")
         self.assertTrue(o1 in ret)
         self.assertFalse(o2 in ret)
-        self.assertTrue(o1 in ret)
+        self.assertTrue(o3 in ret)
         mgr.list = sav
 
     def test_findall_bad_att(self):

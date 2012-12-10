@@ -124,9 +124,9 @@ class BaseClient(httplib2.Http):
 
 
     # The next 6 methods are simple pass-through to the manager.
-    def list(self):
+    def list(self, limit=None, marker=None):
         """Returns a list of all resources."""
-        return self._manager.list()
+        return self._manager.list(limit=limit, marker=marker)
 
     def get(self, item):
         """Gets a specific resource."""

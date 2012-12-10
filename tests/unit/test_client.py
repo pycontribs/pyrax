@@ -94,7 +94,15 @@ class ClientTest(unittest.TestCase):
         sav = mgr.list
         mgr.list = Mock()
         self.client.list()
-        mgr.list.assert_called_once_with()
+        mgr.list.assert_called_once_with(limit=None, marker=None)
+        mgr.list = sav
+
+    def test_list_limit(self):
+        mgr = self.client._manager
+        sav = mgr.list
+        mgr.list = Mock()
+        self.client.list(limit=10, marker="abc")
+        mgr.list.assert_called_once_with(limit=10, marker="abc")
         mgr.list = sav
 
     def test_get(self):

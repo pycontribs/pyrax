@@ -74,9 +74,18 @@ class BaseManager(object):
         self.uri_base = uri_base
 
 
-    def list(self):
+    def list(self, limit=None, marker=None):
         """Gets a list of all items."""
-        return self._list("/%s" % self.uri_base)
+        uri = "/%s" % self.uri_base
+        pagination_items = []
+        if limit is not None:
+            pagination_items.append("limit=%s" % limit)
+        if marker is not None:
+            pagination_items.append("marker=%s" % marker)
+        pagination = "&".join(pagination_items)
+        if pagination:
+            uri = "%s?%s" % (uri, pagination)
+        return self._list(uri)
 
 
     def get(self, item):
