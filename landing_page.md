@@ -37,7 +37,7 @@ Complete instructions can be found in the [Installation Guide](https://github.co
 
 [Getting Started with pyrax](https://github.com/rackspace/pyrax/blob/master/docs/pyrax_doc.md)– information and examples to get you started.
 
-[API Reference Manual](wherever you place the HTML files in docs/html) – detailed documentation for the classes and methods.
+[API Reference Manual](http://docs.rackspace.com/sdks/api/python/) – detailed documentation for the classes and methods.
 
 [pyrax Quick Reference](https://github.com/rackspace/pyrax/tree/master/docs) – there are several quick reference guides for the services available.
 
