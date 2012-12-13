@@ -274,15 +274,16 @@ def _fix_uri(ep, region):
     return ep
 
 
-def _get_service_endpoint(svc, region=None):
+def _get_service_endpoint(svc, region=None, public=True):
     """Parses the services dict to get the proper endpoint for the given service."""
     if region is None:
         region = safe_region()
     region = safe_region(region)
-    ep = identity.services.get(svc, {}).get("endpoints", {}).get(region, {}).get("public_url")
+    url_type = {True: "public_url", False: "internal_url"}[public] 
+    ep = identity.services.get(svc, {}).get("endpoints", {}).get(region, {}).get(url_type)
     if not ep:
         # Try the "ALL" region, and substitute the actual region
-        ep = identity.services.get(svc, {}).get("endpoints", {}).get("ALL", {}).get("public_url", "")
+        ep = identity.services.get(svc, {}).get("endpoints", {}).get("ALL", {}).get(url_type)
         if svc == "compute":
             ep = _fix_uri(ep, region)
     return ep
@@ -304,12 +305,17 @@ def connect_to_cloudservers(region=None):
 
 
 @_require_auth
-def connect_to_cloudfiles(region=None):
-    """Creates a client for working with cloud files."""
+def connect_to_cloudfiles(region=None, public=True):
+    """
+	Creates a client for working with cloud files. The default is to connect
+	to the public URL; if you need to work with the ServiceNet connection, pass
+	False to the 'public' parameter.
+	"""
     region = safe_region(region)
-    cf_url = _get_service_endpoint("object_store", region)
+    cf_url = _get_service_endpoint("object_store", region, public=public)
     cdn_url = _get_service_endpoint("object_cdn", region)
-    opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token, "endpoint_type": "publicURL",
+    ep_type = {True: "publicURL", False: "internalURL"}[public] 
+    opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token, "endpoint_type": ep_type,
             "tenant_name": identity.tenant_name, "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
     cloudfiles = _cf.CFClient(identity.auth_endpoint, identity.username, identity.api_key,

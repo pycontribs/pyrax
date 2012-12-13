@@ -10,5 +10,7 @@ var searchData=
   ['list_5fsnapshots',['list_snapshots',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#a00cc0e02f5f5345225175cad0120c697',1,'pyrax::cloudblockstorage::CloudBlockStorageVolume.list_snapshots()'],['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a00cc0e02f5f5345225175cad0120c697',1,'pyrax::cloudblockstorage::CloudBlockStorageClient.list_snapshots()']]],
   ['list_5ftypes',['list_types',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#abf762ec9acd2eabeb6da95fbf9b6b81c',1,'pyrax::cloudblockstorage::CloudBlockStorageClient']]],
   ['list_5fusers',['list_users',['../classpyrax_1_1cloud__databases_1_1CloudDatabaseInstance.html#a574e940a3d762174b715704b2267f38a',1,'pyrax::cloud_databases::CloudDatabaseInstance.list_users()'],['../classpyrax_1_1cloud__databases_1_1CloudDatabaseClient.html#a574e940a3d762174b715704b2267f38a',1,'pyrax::cloud_databases::CloudDatabaseClient.list_users()']]],
-  ['loaded',['loaded',['../classpyrax_1_1resource_1_1BaseResource.html#ae046be312a3b87c23b3729393f1ab194',1,'pyrax::resource::BaseResource']]]
+  ['loaded',['loaded',['../classpyrax_1_1resource_1_1BaseResource.html#ae046be312a3b87c23b3729393f1ab194',1,'pyrax::resource::BaseResource']]],
+  ['login',['login',['../namespacelogin.html',1,'']]],
+  ['login_2epy',['login.py',['../login_8py.html',1,'']]]
 ];

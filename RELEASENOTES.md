@@ -1,5 +1,7 @@
 # Release Notes for pyrax
 
+2012.12.13 - Added the ability to connect to the internal URL for Cloud Files.
+
 2012.12.10 - Added limit and marker support to the base client and manager classes.
 
 2012.12.07 - Added the ability for developers to customize the User-agent string for their applications.
