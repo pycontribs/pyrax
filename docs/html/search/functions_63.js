@@ -8,6 +8,7 @@ var searchData=
   ['coerce_5fstring_5fto_5flist',['coerce_string_to_list',['../namespacepyrax_1_1utils.html#a399c6b9652f5150282c3edb32d4d05f3',1,'pyrax::utils']]],
   ['connect_5fto_5fcloud_5fblockstorage',['connect_to_cloud_blockstorage',['../namespacepyrax.html#a6028129593635bcde83ac8783a35f55e',1,'pyrax']]],
   ['connect_5fto_5fcloud_5fdatabases',['connect_to_cloud_databases',['../namespacepyrax.html#a2a85cb9869f6584edb2d652a82678225',1,'pyrax']]],
+  ['connect_5fto_5fcloud_5fdns',['connect_to_cloud_dns',['../namespacepyrax.html#a51abe3757be9daee31826a1db8c2d332',1,'pyrax']]],
   ['connect_5fto_5fcloud_5floadbalancers',['connect_to_cloud_loadbalancers',['../namespacepyrax.html#a5858f51939fe223ec24c9befc4fa1a2a',1,'pyrax']]],
   ['connect_5fto_5fcloudfiles',['connect_to_cloudfiles',['../namespacepyrax.html#a34593b67ad113f95973c1c7a6546fa68',1,'pyrax']]],
   ['connect_5fto_5fcloudservers',['connect_to_cloudservers',['../namespacepyrax.html#a93dcb702dfed414cb32073e78fdff831',1,'pyrax']]],

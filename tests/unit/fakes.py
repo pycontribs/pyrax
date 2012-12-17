@@ -297,6 +297,16 @@ class FakeIdentityResponse(FakeResponse):
         return json.dumps(fake_identity_response)
 
 
+fake_config_file = """[settings]
+identity_type = rackspace
+region = FAKE
+custom_user_agent = FAKE
+debug =
+
+[services]
+servers = True
+"""
+
 fake_identity_response = {u'access':
         {u'serviceCatalog': [
             {u'endpoints': [{u'publicURL': u'https://ord.loadbalancers.api.rackspacecloud.com/v1.0/000000',

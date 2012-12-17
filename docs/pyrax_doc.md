@@ -65,6 +65,7 @@ You can control how pyrax operates by including the optional configuration file.
     identity_type = rackspace
     region = ORD
     custom_user_agent = AwesomeApp 1.2
+    http_debug = False
 
     [services]
     servers = True
@@ -73,7 +74,11 @@ You can control how pyrax operates by including the optional configuration file.
     databases = False
     blockstorage = True
 
-With the above example, pyrax will default to Rackspace authentication, provision resources in the `ORD` region, and will connect to all services except Cloud Databases after authenticating. It will also customize the **User-agent** string sent to the API servers on each request by prepending the string "AwesomeApp 1.2" to the standard pyrax User-agent setting, allowing requests from your application to be distinguished from other pyrax applications.
+With the above example, pyrax will default to Rackspace authentication, provision resources in the `ORD` region, will not output HTTP requests and responses to the console, and will connect to all services except Cloud Databases after authenticating. It will also customize the **User-agent** string sent to the API servers on each request by prepending the string "AwesomeApp 1.2" to the standard pyrax User-agent setting, allowing requests from your application to be distinguished from other pyrax applications.
+
+
+## Debugging HTTP requests
+Sometimes when developing an application, the results received from the server are not what were expected. In those cases, it is helpful to be able to see the requests being sent to the API server, along with the responses received from the server. For those situations, there is the pyrax `http_debug` setting. There are two ways to enable this behavior globally. First, if you want to track all HTTP activity, you can change the `http_debug` entry in the `settings` sections of the configuration file mentioned above to 'True'. This will cause all API calls and responses to be printed out to the terminal screen. Alternatively, you can call `pyrax.set_http_debug(True)` to turn on debug output, and `pyrax.set_http_debug(False)` to turn it off. This will enable you to fine-tune the logging behavior for only the portion of your application that is of concern. Finally, if you only wish to debug HTTP requests for a single service, you can set the `http_log_debug` attribute of that service to True. For example, if you wanted to only see the HTTP traffic for the block storage service, you would call `pyrax.cloud_blockstorage.http_log_debug = True`.
 
 
 ## Working with Multiple Regions

@@ -121,6 +121,10 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with cloud loadbalancers.  <a href="#a5858f51939fe223ec24c9befc4fa1a2a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a6028129593635bcde83ac8783a35f55e">connect_to_cloud_blockstorage</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with cloud blockstorage.  <a href="#a6028129593635bcde83ac8783a35f55e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a51abe3757be9daee31826a1db8c2d332">connect_to_cloud_dns</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with cloud dns.  <a href="#a51abe3757be9daee31826a1db8c2d332"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a2766ee16854adf9575c29ac661f447fd">get_http_debug</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a9d6ec1abac4bb1602676632e096ac945">set_http_debug</a></td></tr>
 <tr><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ae78f359d64f9eeed6dc0df4a1102dca8">callstack</a> = inspect.stack()</td></tr>
@@ -130,11 +134,13 @@ Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a6d6a60201d4fb3fb6208a724c2b7fb1f">cloud_loadbalancers</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#af1a86dab674b703fc06491e66aacadb6">cloud_databases</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a7f4dc3b1da79f21103723f78b910c8a5">cloud_blockstorage</a> = None</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#acb0f91693d36d52270ed91fd2e919fcc">cloud_dns</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#aca80ca2a7aef1dee590ef38b26ac5e9b">identity_class</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a86b78ee7e1789ae041b34dd7d0ac42e1">default_identity_type</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ab7fc5a23efc53b58e213cd4cdf931c9f">identity</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a4401f2fce3423e1f2a03097695dd927f">default_region</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a395a063eb4a0103b5e6924806e1a7c00">FALLBACK_REGION</a> = &quot;DFW&quot;</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a7fd852e881f412c9740f8d1ce9da61e3">_http_debug</a> = False</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#af2dfe76f6f24fbcdfd28b75ed32ada24">USER_AGENT</a> = &quot;pyrax %s&quot;</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dictionary&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a145019a0f18e5ec72e0dde262d39aefb">services_to_start</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ae6512f1802b7f1f9cc6f196a0938db60">config_file</a> = os.path.expanduser(&quot;~/.pyrax.cfg&quot;)</td></tr>
@@ -160,7 +166,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 10 2012 17:34:52 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 17 2012 18:02:49 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

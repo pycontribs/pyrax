@@ -1,5 +1,7 @@
 # Release Notes for pyrax
 
+2012.12.17 - Enhanced the ability to debug HTTP traffic. Fixed a bug in object naming when uploading an entire folder in Cloud Files.
+
 2012.12.13 - Added the ability to connect to the internal URL for Cloud Files.
 
 2012.12.10 - Added limit and marker support to the base client and manager classes.

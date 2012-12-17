@@ -753,6 +753,17 @@ class CFClient(object):
     user_agent = property(_get_user_agent, _set_user_agent)
 
 
+    def _get_http_log_debug(self):
+        return self._http_log_debug
+
+    def _set_http_log_debug(self, val):
+        self._http_log_debug = val
+        os.environ["SWIFTCLIENT_DEBUG"] = str(val)
+
+    http_log_debug = property(_get_http_log_debug, _set_http_log_debug, None,
+            """Determines if all http traffic is logged to the display for debugging.""")
+
+
 
 class Connection(_swift_client.Connection):
     """This class wraps the swiftclient connection, adding support for CDN"""
@@ -882,8 +893,5 @@ class FolderUploader(threading.Thread):
     def run(self):
         """Starts the uploading thread."""
         root_path, folder_name = os.path.split(self.root_folder)
-        if self.container is None:
-            self.base_path = os.path.join(root_path, folder_name)
-        else:
-            self.base_path = root_path
+        self.base_path = os.path.join(root_path, folder_name)
         os.path.walk(self.root_folder, self.upload_files_in_folder, None)

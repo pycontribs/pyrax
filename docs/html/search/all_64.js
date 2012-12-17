@@ -32,6 +32,7 @@ var searchData=
   ['details',['details',['../classpyrax_1_1exceptions_1_1ClientException.html#ace24e4da2dacc04a319964f1507ddb87',1,'pyrax::exceptions::ClientException']]],
   ['display_5fdescription',['display_description',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageSnapshot.html#a0659160d55e1ea0dfc7009027dfcb232',1,'pyrax::cloudblockstorage::CloudBlockStorageSnapshot::display_description()'],['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#a0659160d55e1ea0dfc7009027dfcb232',1,'pyrax::cloudblockstorage::CloudBlockStorageVolume::display_description()']]],
   ['display_5fname',['display_name',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageSnapshot.html#a21c9c48354b5113b02f4863870624c34',1,'pyrax::cloudblockstorage::CloudBlockStorageSnapshot::display_name()'],['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#a21c9c48354b5113b02f4863870624c34',1,'pyrax::cloudblockstorage::CloudBlockStorageVolume::display_name()']]],
+  ['dns',['dns',['../namespacejunk.html#a0d6ca450ca750c58cf88499ac24c6d4c',1,'junk']]],
   ['dom',['dom',['../namespacejunk.html#a56aab794bb007684d0fcf6aa0bb7de68',1,'junk']]],
   ['domid',['DOMID',['../namespacejunk.html#a2f8e881c8a53813b6729232519fe51a1',1,'junk']]]
 ];

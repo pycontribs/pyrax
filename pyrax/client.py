@@ -105,10 +105,9 @@ class BaseClient(httplib2.Http):
         self.auth_system = auth_system
 
         self._logger = logging.getLogger(__name__)
-        if self.http_log_debug:
-            ch = logging.StreamHandler()
-            self._logger.setLevel(logging.DEBUG)
-            self._logger.addHandler(ch)
+        ch = logging.StreamHandler()
+        self._logger.setLevel(logging.DEBUG)
+        self._logger.addHandler(ch)
         self._manager = None
         # Hook method for subclasses to create their manager instance
         # without having to override __init__().
@@ -238,15 +237,15 @@ class BaseClient(httplib2.Http):
 
         return resp, body
 
-    def _time_request(self, url, method, **kwargs):
+    def _time_request(self, uri, method, **kwargs):
         """Wraps the request call and records the elapsed time."""
         start_time = time.time()
-        resp, body = self.request(url, method, **kwargs)
-        self.times.append(("%s %s" % (method, url),
+        resp, body = self.request(uri, method, **kwargs)
+        self.times.append(("%s %s" % (method, uri),
                            start_time, time.time()))
         return resp, body
 
-    def _cs_request(self, url, method, **kwargs):
+    def _cs_request(self, uri, method, **kwargs):
         """
         Manages the request by adding any auth information, and retries
         the request after authenticating if the initial request returned
@@ -263,36 +262,36 @@ class BaseClient(httplib2.Http):
             if self.tenant_id:
                 kwargs["headers"]["X-Auth-Project-Id"] = self.tenant_id
 
-            resp, body = self._time_request(self.management_url + url, method,
+            resp, body = self._time_request(self.management_url + uri, method,
                                             **kwargs)
             return resp, body
         except exc.Unauthorized as ex:
             try:
                 self.authenticate()
                 kwargs["headers"]["X-Auth-Token"] = self.auth_token
-                resp, body = self._time_request(self.management_url + url,
+                resp, body = self._time_request(self.management_url + uri,
                                                 method, **kwargs)
                 return resp, body
             except exc.Unauthorized:
                 raise ex
 
-    def method_get(self, url, **kwargs):
+    def method_get(self, uri, **kwargs):
         """Method used to make GET requests."""
-        return self._cs_request(url, "GET", **kwargs)
+        return self._cs_request(uri, "GET", **kwargs)
 
-    def method_post(self, url, **kwargs):
+    def method_post(self, uri, **kwargs):
         """Method used to make POST requests."""
-        return self._cs_request(url, "POST", **kwargs)
+        return self._cs_request(uri, "POST", **kwargs)
 
-    def method_put(self, url, **kwargs):
+    def method_put(self, uri, **kwargs):
         """Method used to make PUT requests."""
-        return self._cs_request(url, "PUT", **kwargs)
+        return self._cs_request(uri, "PUT", **kwargs)
 
-    def method_delete(self, url, **kwargs):
+    def method_delete(self, uri, **kwargs):
         """Method used to make DELETE requests."""
-        return self._cs_request(url, "DELETE", **kwargs)
+        return self._cs_request(uri, "DELETE", **kwargs)
 
-    def _extract_service_catalog(self, url, resp, body, extract_token=True):
+    def _extract_service_catalog(self, uri, resp, body, extract_token=True):
         """
         See what the auth service told us and process the response.
         We may get redirected to another site, fail, or actually get
@@ -300,7 +299,7 @@ class BaseClient(httplib2.Http):
         """
         if resp.status == 200:  # content must always present
             try:
-                self.auth_url = url
+                self.auth_url = uri
                 self.service_catalog = service_catalog.ServiceCatalog(body)
                 if extract_token:
                     self.auth_token = self.service_catalog.get_token()
@@ -328,7 +327,7 @@ class BaseClient(httplib2.Http):
             raise exc.from_response(resp, body)
 
 
-    def _fetch_endpoints_from_auth(self, url):
+    def _fetch_endpoints_from_auth(self, uri):
         """
         We have a token, but don't know the final endpoint for
         the region. We have to go back to the auth service and
@@ -341,12 +340,12 @@ class BaseClient(httplib2.Http):
         This will overwrite our admin token with the user token.
         """
         # GET ...:5001/v2.0/tokens/#####/endpoints
-        url = "/".join([url, "tokens", "%s?belongsTo=%s"
+        uri = "/".join([uri, "tokens", "%s?belongsTo=%s"
                 % (self.proxy_token, self.proxy_tenant_id)])
-        self._logger.debug("Using Endpoint URL: %s" % url)
-        resp, body = self._time_request(url, "GET",
+        self._logger.debug("Using Endpoint URI: %s" % uri)
+        resp, body = self._time_request(uri, "GET",
                 headers={"X-Auth_Token": self.proxy_token})
-        return self._extract_service_catalog(url, resp, body,
+        return self._extract_service_catalog(uri, resp, body,
                 extract_token=False)
 
 
@@ -366,7 +365,7 @@ class BaseClient(httplib2.Http):
                     keys[index] = "?"
             keyring_key = "/".join(keys)
             if not self.no_cache and not self.used_keyring:
-                # Lookup the token/mgmt url from the keyring first time
+                # Lookup the token/mgmt uri from the keyring first time
                 # through.
                 # If we come through again, it's because the old token
                 # was rejected.
@@ -432,7 +431,7 @@ class BaseClient(httplib2.Http):
                     auth_url = auth_url + "/v2.0"
                 self._v2_auth(auth_url)
 
-        # Store the token/mgmt url in the keyring for later requests.
+        # Store the token/mgmt uri in the keyring for later requests.
         if has_keyring and not self.no_cache:
             try:
                 keyring_value = "%s|%s" % (self.auth_token,
@@ -443,7 +442,7 @@ class BaseClient(httplib2.Http):
                 pass
 
 
-    def _v1_auth(self, url):
+    def _v1_auth(self, uri):
         """The original auth system for OpenStack. Probably not used anymore."""
         if self.proxy_token:
             raise exc.NoTokenLookupException()
@@ -453,13 +452,13 @@ class BaseClient(httplib2.Http):
         if self.tenant_id:
             headers["X-Auth-Project-Id"] = self.tenant_id
 
-        resp, body = self._time_request(url, "GET", headers=headers)
+        resp, body = self._time_request(uri, "GET", headers=headers)
         if resp.status in (200, 204):  # in some cases we get No Content
             try:
                 mgmt_header = "x-server-management-url"
                 self.management_url = resp[mgmt_header].rstrip("/")
                 self.auth_token = resp["x-auth-token"]
-                self.auth_url = url
+                self.auth_url = uri
             except KeyError:
                 raise exc.AuthorizationFailure()
         elif resp.status == 305:
@@ -477,19 +476,19 @@ class BaseClient(httplib2.Http):
         raise exc.AuthSystemNotFound(self.auth_system)
 
 
-    def _v2_auth(self, url):
+    def _v2_auth(self, uri):
         """Authenticates against a v2.0 auth service."""
         body = {"auth": {
                 "passwordCredentials": {"username": self.user,
                                         "password": self.password}}}
         if self.tenant_id:
             body["auth"]["tenantName"] = self.tenant_id
-        self._authenticate(url, body)
+        self._authenticate(uri, body)
 
 
-    def _authenticate(self, url, body):
+    def _authenticate(self, uri, body):
         """Authenticates and extracts the service catalog."""
-        token_url = url + "/tokens"
+        token_url = uri + "/tokens"
 
         # Make sure we follow redirects when trying to reach Keystone
         tmp_follow_all_redirects = self.follow_all_redirects
@@ -499,7 +498,7 @@ class BaseClient(httplib2.Http):
             resp, body = self._time_request(token_url, "POST", body=body)
         finally:
             self.follow_all_redirects = tmp_follow_all_redirects
-        return self._extract_service_catalog(url, resp, body)
+        return self._extract_service_catalog(uri, resp, body)
 
 
     @property

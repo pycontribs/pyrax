@@ -94,8 +94,13 @@ Functions</h2></td></tr>
 Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#a9e9a6457bca801b7b28626de14c20832">creds_file</a> = os.path.expanduser(&quot;~/.rackspace_cloud_credentials&quot;)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#ac071bd38e4c31ed73ec02faa32b52e4a">cs</a> = <a class="el" href="namespacepyrax.html#a558330633ea0238aee2d4f5f5a7afa07">pyrax.cloudservers</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#ace32c53d52804f2843ccfe220db6038c">cf</a> = <a class="el" href="namespacepyrax.html#a87bf34a456a3712f3bd4a7207f1c36ca">pyrax.cloudfiles</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#a35eb98891848e8503ae8362c25cc284e">clb</a> = <a class="el" href="namespacepyrax.html#a6d6a60201d4fb3fb6208a724c2b7fb1f">pyrax.cloud_loadbalancers</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#a0d6ca450ca750c58cf88499ac24c6d4c">dns</a> = <a class="el" href="namespacepyrax.html#acb0f91693d36d52270ed91fd2e919fcc">pyrax.cloud_dns</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#a2f8e881c8a53813b6729232519fe51a1">DOMID</a> = 3539045</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#ac1bbde21b52638cb9b7d75de7b2e8ae6">cfi</a> = <a class="el" href="namespacepyrax.html#a34593b67ad113f95973c1c7a6546fa68">pyrax.connect_to_cloudfiles</a>(public=False)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#a0749ef1276ce8d23c2bab5587024bae7">f</a> = &quot;/Users/ed/Desktop/Run Like an Antelope.mp3&quot;</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#a662153d49896c6e46645d171ec8e5dba">z</a> = cf.create_container(&quot;phish&quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#a1e32cae90b3f3508cab6cf4d48e7c67d">e</a> = <a class="el" href="namespacepyrax_1_1utils.html#a9e1881e14792f2c07dd799fd7b9d53d1">pyrax.utils.get_checksum</a>(fp)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#ae0e8f306e8a6a3b88c941a574d1b16cd">dd</a> = dns.list()</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">LIST ## print "Domains:" for dom in dns.list(): print dom.name, dom.id.  <a href="#ae0e8f306e8a6a3b88c941a574d1b16cd"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">list&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacejunk.html#a8700ea9c26ad763c16fbdeeaa8328f98">subs</a> = [ { &quot;name&quot; : &quot;sub1.example.xxx&quot;, &quot;comment&quot; : &quot;1st sample subdomain&quot;, &quot;emailAddress&quot; : &quot;sample@rackspace.xxx&quot; }, { &quot;name&quot; : &quot;sub2.example.xxx&quot;, &quot;comment&quot; : &quot;2nd sample subdomain&quot;, &quot;emailAddress&quot; : &quot;sample@rackspace.xxx&quot; }, { &quot;name&quot; : &quot;north.example.xxx&quot;, &quot;emailAddress&quot; : &quot;sample@rackspace.xxx&quot; }, { &quot;name&quot; : &quot;south.example.xxx&quot;, &quot;comment&quot; : &quot;Final sample subdomain&quot;, &quot;emailAddress&quot; : &quot;sample@rackspace.xxx&quot; } ]</td></tr>
@@ -168,12 +173,25 @@ Variables</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Variable Documentation</h2>
-<a class="anchor" id="ac1bbde21b52638cb9b7d75de7b2e8ae6"></a><!-- doxytag: member="junk::cfi" ref="ac1bbde21b52638cb9b7d75de7b2e8ae6" args="" -->
+<a class="anchor" id="ace32c53d52804f2843ccfe220db6038c"></a><!-- doxytag: member="junk::cf" ref="ace32c53d52804f2843ccfe220db6038c" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">tuple <a class="el" href="namespacejunk.html#ac1bbde21b52638cb9b7d75de7b2e8ae6">cfi</a> = <a class="el" href="namespacepyrax.html#a34593b67ad113f95973c1c7a6546fa68">pyrax.connect_to_cloudfiles</a>(public=False)</td>
+          <td class="memname"><a class="el" href="namespacejunk.html#ace32c53d52804f2843ccfe220db6038c">cf</a> = <a class="el" href="namespacepyrax.html#a87bf34a456a3712f3bd4a7207f1c36ca">pyrax.cloudfiles</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a35eb98891848e8503ae8362c25cc284e"></a><!-- doxytag: member="junk::clb" ref="a35eb98891848e8503ae8362c25cc284e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacejunk.html#a35eb98891848e8503ae8362c25cc284e">clb</a> = <a class="el" href="namespacepyrax.html#a6d6a60201d4fb3fb6208a724c2b7fb1f">pyrax.cloud_loadbalancers</a></td>
         </tr>
       </table>
 </div>
@@ -223,6 +241,19 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a0d6ca450ca750c58cf88499ac24c6d4c"></a><!-- doxytag: member="junk::dns" ref="a0d6ca450ca750c58cf88499ac24c6d4c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacejunk.html#a0d6ca450ca750c58cf88499ac24c6d4c">dns</a> = <a class="el" href="namespacepyrax.html#acb0f91693d36d52270ed91fd2e919fcc">pyrax.cloud_dns</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a56aab794bb007684d0fcf6aa0bb7de68"></a><!-- doxytag: member="junk::dom" ref="a56aab794bb007684d0fcf6aa0bb7de68" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -249,12 +280,51 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a1e32cae90b3f3508cab6cf4d48e7c67d"></a><!-- doxytag: member="junk::e" ref="a1e32cae90b3f3508cab6cf4d48e7c67d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">tuple <a class="el" href="namespacejunk.html#a1e32cae90b3f3508cab6cf4d48e7c67d">e</a> = <a class="el" href="namespacepyrax_1_1utils.html#a9e1881e14792f2c07dd799fd7b9d53d1">pyrax.utils.get_checksum</a>(fp)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a0749ef1276ce8d23c2bab5587024bae7"></a><!-- doxytag: member="junk::f" ref="a0749ef1276ce8d23c2bab5587024bae7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string <a class="el" href="namespacejunk.html#a0749ef1276ce8d23c2bab5587024bae7">f</a> = &quot;/Users/ed/Desktop/Run Like an Antelope.mp3&quot;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a8700ea9c26ad763c16fbdeeaa8328f98"></a><!-- doxytag: member="junk::subs" ref="a8700ea9c26ad763c16fbdeeaa8328f98" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">list <a class="el" href="namespacejunk.html#a8700ea9c26ad763c16fbdeeaa8328f98">subs</a> = [ { &quot;name&quot; : &quot;sub1.example.xxx&quot;, &quot;comment&quot; : &quot;1st sample subdomain&quot;, &quot;emailAddress&quot; : &quot;sample@rackspace.xxx&quot; }, { &quot;name&quot; : &quot;sub2.example.xxx&quot;, &quot;comment&quot; : &quot;2nd sample subdomain&quot;, &quot;emailAddress&quot; : &quot;sample@rackspace.xxx&quot; }, { &quot;name&quot; : &quot;north.example.xxx&quot;, &quot;emailAddress&quot; : &quot;sample@rackspace.xxx&quot; }, { &quot;name&quot; : &quot;south.example.xxx&quot;, &quot;comment&quot; : &quot;Final sample subdomain&quot;, &quot;emailAddress&quot; : &quot;sample@rackspace.xxx&quot; } ]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a662153d49896c6e46645d171ec8e5dba"></a><!-- doxytag: member="junk::z" ref="a662153d49896c6e46645d171ec8e5dba" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">tuple <a class="el" href="namespacejunk.html#a662153d49896c6e46645d171ec8e5dba">z</a> = cf.create_container(&quot;phish&quot;)</td>
         </tr>
       </table>
 </div>
@@ -280,7 +350,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 13 2012 15:30:49 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 17 2012 18:02:49 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
