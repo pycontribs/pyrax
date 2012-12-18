@@ -101,19 +101,11 @@ def safe_region(region=None):
 
 
 # Value to plug into the user-agent headers
-USER_AGENT = "pyrax %s" % version.version
-services_to_start = {
-        "servers": True,
-        "files": True,
-        "loadbalancers": False,
-        "databases": False,
-        "blockstorage": True,
-        }
+USER_AGENT = "pyrax/%s" % version.version
 
 
 def _read_config_settings(config_file):
     global default_region, default_identity_type, USER_AGENT, _http_debug
-    global services_to_start 
     cfg = ConfigParser.SafeConfigParser()
     try:
         cfg.read(config_file)
@@ -134,10 +126,7 @@ def _read_config_settings(config_file):
     _http_debug = (safe_get("settings", "debug") or "False") == "True"
     if app_agent:
         # Customize the user-agent string with the app name.
-        USER_AGENT = "%s/%s" % (app_agent, USER_AGENT)
-    svc_dict = dict(cfg.items("services"))
-    for svc, status in svc_dict.items():
-        services_to_start[svc] = (status == "True")
+        USER_AGENT = "%s %s" % (app_agent, USER_AGENT)
 
 # Read in the configuration file, if any
 config_file = os.path.expanduser("~/.pyrax.cfg")
@@ -256,7 +245,7 @@ def _make_agent_name(base):
         if "pyrax" in base:
             return base
         else:
-            return "%s/%s" % (USER_AGENT, base)
+            return "%s %s" % (USER_AGENT, base)
     else:
         return USER_AGENT
 
@@ -265,16 +254,11 @@ def connect_to_services():
     """Establishes authenticated connections to the various cloud APIs."""
     global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
     global cloud_blockstorage
-    if services_to_start["servers"]:
-        cloudservers = connect_to_cloudservers()
-    if services_to_start["files"]:
-        cloudfiles = connect_to_cloudfiles()
-    if services_to_start["loadbalancers"]:
-        cloud_loadbalancers = connect_to_cloud_loadbalancers()
-    if services_to_start["databases"]:
-        cloud_databases = connect_to_cloud_databases()
-    if services_to_start["blockstorage"]:
-        cloud_blockstorage = connect_to_cloud_blockstorage()
+    cloudservers = connect_to_cloudservers()
+    cloudfiles = connect_to_cloudfiles()
+    cloud_loadbalancers = connect_to_cloud_loadbalancers()
+    cloud_databases = connect_to_cloud_databases()
+    cloud_blockstorage = connect_to_cloud_blockstorage()
 
 
 def _fix_uri(ep, region):

@@ -18,9 +18,6 @@ from tests.unit import fakes
 class PyraxInitTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         reload(pyrax)
-        # Override any config settings that turn off services.
-        for key, val in pyrax.services_to_start.items():
-            pyrax.services_to_start[key] = True
         self.orig_connect_to_cloudservers = pyrax.connect_to_cloudservers
         self.orig_connect_to_cloudfiles = pyrax.connect_to_cloudfiles
         self.orig_connect_to_cloud_loadbalancers = pyrax.connect_to_cloud_loadbalancers
@@ -64,7 +61,7 @@ class PyraxInitTest(unittest.TestCase):
             file(cfgfile, "w").write(dummy_cfg)
             pyrax._read_config_settings(cfgfile)
         self.assertEqual(pyrax.default_region, "FAKE")
-        self.assertTrue(pyrax.USER_AGENT.startswith("FAKE/"))
+        self.assertTrue(pyrax.USER_AGENT.startswith("FAKE "))
         pyrax.default_region = sav_region
         pyrax.USER_AGENT = sav_USER_AGENT
 

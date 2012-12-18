@@ -26,7 +26,7 @@ You can also install directly from GitHub (where the pyrax source code is hosted
 
     pip install git+git://github.com/rackspace/pyrax.git
 
-The difference is that using the GitHub installation method will install the current trunk version, which will have the latest changes, but will also be less stable.
+The difference is that using the GitHub installation method will install the current trunk version, which will have the latest changes, but may also be less stable.
 
 To upgrade your installation in the future, re-run the same command, but this time add the `--upgrade` option to make sure that pyrax and any dependecies are updated to the newest available version.
 
@@ -48,37 +48,31 @@ To authenticate, run the following code using one of either `set_credentials()` 
     # Using credentials file
     pyrax.set_credential_file("/path/to/credential/file")
 
-Once you have authenticated, you now have access to Cloud Servers, Cloud Files, Cloud Block Storage, and Cloud Load Balancers, using the following references:
+Once you have authenticated, you now have access to Cloud Servers, Cloud Files, Cloud Block Storage, Cloud Databases, and Cloud Load Balancers, using the following references:
 
     pyrax.cloudservers
     pyrax.cloudfiles
     pyrax.cloud_blockstorage
+    pyrax.cloud_databases
     pyrax.cloud_loadbalancers
 
-You don't have to log into each service separately; pyrax handles that for you.
+You don't have to authenticate to each service separately; pyrax handles that for you.
 
 
 ## Configuring pyrax
-You can control how pyrax operates by including the optional configuration file. The configuration file should be named `~/.pyrax.cfg`, and allows you to specify the default region, as well as control which services pyrax will connect to automatically after authenticating. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Here is a sample:
+You can control how pyrax operates by including the optional configuration file. The configuration file should be named `~/.pyrax.cfg`, and allows you to specify the default region. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Here is a sample:
 
     [settings]
     identity_type = rackspace
     region = ORD
-    custom_user_agent = AwesomeApp 1.2
+    custom_user_agent = AwesomeApp/1.2
     http_debug = False
 
-    [services]
-    servers = True
-    files = True
-    loadbalancers = True
-    databases = False
-    blockstorage = True
-
-With the above example, pyrax will default to Rackspace authentication, provision resources in the `ORD` region, will not output HTTP requests and responses to the console, and will connect to all services except Cloud Databases after authenticating. It will also customize the **User-agent** string sent to the API servers on each request by prepending the string "AwesomeApp 1.2" to the standard pyrax User-agent setting, allowing requests from your application to be distinguished from other pyrax applications.
+With the above example, pyrax will use the default Rackspace authentication, provision resources in the `ORD` region, and will not output HTTP requests and responses to the console. It will also customize the **User-agent** string sent to the API servers on each request by prepending the string "AwesomeApp/1.2" to the standard pyrax User-agent setting, allowing requests from your application to be distinguished from other pyrax applications.
 
 
 ## Debugging HTTP requests
-Sometimes when developing an application, the results received from the server are not what were expected. In those cases, it is helpful to be able to see the requests being sent to the API server, along with the responses received from the server. For those situations, there is the pyrax `http_debug` setting. There are two ways to enable this behavior globally. First, if you want to track all HTTP activity, you can change the `http_debug` entry in the `settings` sections of the configuration file mentioned above to 'True'. This will cause all API calls and responses to be printed out to the terminal screen. Alternatively, you can call `pyrax.set_http_debug(True)` to turn on debug output, and `pyrax.set_http_debug(False)` to turn it off. This will enable you to fine-tune the logging behavior for only the portion of your application that is of concern. Finally, if you only wish to debug HTTP requests for a single service, you can set the `http_log_debug` attribute of that service to True. For example, if you wanted to only see the HTTP traffic for the block storage service, you would call `pyrax.cloud_blockstorage.http_log_debug = True`.
+Sometimes when developing an application, the results received from the server are not what were expected. In those cases, it is helpful to be able to see the requests being sent to the API server, along with the responses received from the server. For those situations, there is the pyrax *`http_debug`* setting. There are two ways to enable this behavior globally. First, if you want to track all HTTP activity, you can change the `http_debug` entry in the `settings` sections of the configuration file mentioned above to 'True'. This will cause all API calls and responses to be printed out to the terminal screen. Alternatively, you can call `pyrax.set_http_debug(True)` to turn on debug output, and `pyrax.set_http_debug(False)` to turn it off. This will enable you to fine-tune the logging behavior for only the portion of your application that is of concern. Finally, if you only wish to debug HTTP requests for a single service, you can set the `http_log_debug` attribute of that service to True. For example, if you wanted to only see the HTTP traffic for the block storage service, you would call `pyrax.cloud_blockstorage.http_log_debug = True`.
 
 
 ## Working with Multiple Regions
