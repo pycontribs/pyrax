@@ -20,7 +20,5 @@ var searchData=
   ['list_5fsubdomains_5fprevious_5fpage',['list_subdomains_previous_page',['../classpyrax_1_1clouddns_1_1CloudDNSManager.html#a809ef53848e0cee67182feb9fdf64a18',1,'pyrax::clouddns::CloudDNSManager.list_subdomains_previous_page()'],['../classpyrax_1_1clouddns_1_1CloudDNSClient.html#a809ef53848e0cee67182feb9fdf64a18',1,'pyrax::clouddns::CloudDNSClient.list_subdomains_previous_page()']]],
   ['list_5ftypes',['list_types',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#abf762ec9acd2eabeb6da95fbf9b6b81c',1,'pyrax::cloudblockstorage::CloudBlockStorageClient']]],
   ['list_5fusers',['list_users',['../classpyrax_1_1cloud__databases_1_1CloudDatabaseInstance.html#a574e940a3d762174b715704b2267f38a',1,'pyrax::cloud_databases::CloudDatabaseInstance.list_users()'],['../classpyrax_1_1cloud__databases_1_1CloudDatabaseClient.html#a574e940a3d762174b715704b2267f38a',1,'pyrax::cloud_databases::CloudDatabaseClient.list_users()']]],
-  ['loaded',['loaded',['../classpyrax_1_1resource_1_1BaseResource.html#ae046be312a3b87c23b3729393f1ab194',1,'pyrax::resource::BaseResource']]],
-  ['login',['login',['../namespacelogin.html',1,'']]],
-  ['login_2epy',['login.py',['../login_8py.html',1,'']]]
+  ['loaded',['loaded',['../classpyrax_1_1resource_1_1BaseResource.html#ae046be312a3b87c23b3729393f1ab194',1,'pyrax::resource::BaseResource']]]
 ];
