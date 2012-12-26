@@ -1,5 +1,9 @@
 # Release Notes for pyrax
 
+2012.12.26 - Updated setup.py to use setuptools. Fixed a problem with circular imports of the version info. Added a requirement for python-novaclient>=2.10.0.
+
+2012.12.18 - Removed the code that controlled when pyrax connected to services. Also changed the User-agent format to match the other SDKs.
+
 2012.12.17 - Enhanced the ability to debug HTTP traffic. Fixed a bug in object naming when uploading an entire folder in Cloud Files.
 
 2012.12.13 - Added the ability to connect to the internal URL for Cloud Files.
