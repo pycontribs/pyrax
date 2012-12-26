@@ -48,7 +48,7 @@ meta = cf.get_container_metadata(cont)
 print "Updated metadata:", meta
 
 # Now remove the city key
-print 
+print
 print "Removing meta key for 'city'"
 cf.remove_container_metadata_key(cont, "city")
 

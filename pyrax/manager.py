@@ -37,17 +37,6 @@ except NameError:
         return True not in (not x for x in iterable)
 
 
-def getid(obj):
-    """
-    Abstracts the common pattern of allowing both an object or an object's ID
-    as a parameter when dealing with relationships.
-    """
-    try:
-        return obj.id
-    except AttributeError:
-        return obj
-
-
 
 class BaseManager(object):
     """
@@ -90,7 +79,7 @@ class BaseManager(object):
 
     def get(self, item):
         """Gets a specific item."""
-        uri = "/%s/%s" % (self.uri_base, getid(item))
+        uri = "/%s/%s" % (self.uri_base, utils.get_id(item))
         return self._get(uri)
 
 
@@ -107,19 +96,19 @@ class BaseManager(object):
 
     def delete(self, item):
         """Deletes the specified item."""
-        uri = "/%s/%s" % (self.uri_base, getid(item))
+        uri = "/%s/%s" % (self.uri_base, utils.get_id(item))
         return self._delete(uri)
 
 
-    def _list(self, url, obj_class=None, body=None):
+    def _list(self, uri, obj_class=None, body=None):
         """
         Handles the communication with the API when getting
         a full listing of the resources managed by this class.
         """
         if body:
-            _resp, body = self.api.method_post(url, body=body)
+            _resp, body = self.api.method_post(uri, body=body)
         else:
-            _resp, body = self.api.method_get(url)
+            _resp, body = self.api.method_get(uri)
 
         if obj_class is None:
             obj_class = self.resource_class
@@ -136,22 +125,22 @@ class BaseManager(object):
                 for res in data if res]
 
 
-    def _get(self, url):
+    def _get(self, uri):
         """
         Handles the communication with the API when getting
         a specific resource managed by this class.
         """
-        _resp, body = self.api.method_get(url)
+        _resp, body = self.api.method_get(uri)
         return self.resource_class(self, body[self.response_key], loaded=True)
 
 
-    def _create(self, url, body, return_none=False, return_raw=False, **kwargs):
+    def _create(self, uri, body, return_none=False, return_raw=False, **kwargs):
         """
         Handles the communication with the API when creating a new
         resource managed by this class.
         """
         self.run_hooks("modify_body_for_create", body, **kwargs)
-        _resp, body = self.api.method_post(url, body=body)
+        _resp, body = self.api.method_post(uri, body=body)
         if return_none:
             # No response body
             return
@@ -160,21 +149,21 @@ class BaseManager(object):
         return self.resource_class(self, body[self.response_key])
 
 
-    def _delete(self, url):
+    def _delete(self, uri):
         """
         Handles the communication with the API when deleting
         a specific resource managed by this class.
         """
-        _resp, _body = self.api.method_delete(url)
+        _resp, _body = self.api.method_delete(uri)
 
 
-    def _update(self, url, body, **kwargs):
+    def _update(self, uri, body, **kwargs):
         """
         Handles the communication with the API when updating
         a specific resource managed by this class.
         """
         self.run_hooks("modify_body_for_update", body, **kwargs)
-        _resp, body = self.api.method_put(url, body=body)
+        _resp, body = self.api.method_put(uri, body=body)
         return body
 
 
@@ -183,7 +172,7 @@ class BaseManager(object):
         Several API calls are lumped under the 'action' API. This
         is the generic handler for such calls.
         """
-        uri = "/%s/%s/action" % (self.uri_base, getid(item))
+        uri = "/%s/%s/action" % (self.uri_base, utils.get_id(item))
         action_body = {action_type: body}
         return self.api.method_post(uri, body=action_body)
 

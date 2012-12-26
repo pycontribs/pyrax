@@ -31,6 +31,10 @@ class BaseResource(object):
     """
     HUMAN_ID = False
     NAME_ATTR = "name"
+    # Some resource do not have any additional details to lazy load,
+    # so skip the unneeded API call by setting this to False.
+    get_details = True
+
 
     def __init__(self, manager, info, loaded=False):
         self._loaded = loaded
@@ -76,7 +80,7 @@ class BaseResource(object):
 
     def __repr__(self):
         reprkeys = sorted(key for key in self.__dict__.keys()
-               if (key[0] != "_") and (key != "manager"))
+               if (key[0] != "_") and (key not in ("manager", "created", "updated")))
         info = ", ".join("%s=%s" % (key, getattr(self, key)) for key in reprkeys)
         return "<%s %s>" % (self.__class__.__name__, info)
 
@@ -86,6 +90,8 @@ class BaseResource(object):
         # set 'loaded' first ... so if we have to bail, we know we tried.
         self.loaded = True
         if not hasattr(self.manager, "get"):
+            return
+        if not self.get_details:
             return
         new = self.manager.get(self)
         if new:

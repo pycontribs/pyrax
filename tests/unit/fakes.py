@@ -17,10 +17,18 @@ from pyrax.cloudloadbalancers import CloudLoadBalancerManager
 from pyrax.cloudloadbalancers import CloudLoadBalancerClient
 from pyrax.cloudloadbalancers import Node
 from pyrax.cloudloadbalancers import VirtualIP
+from pyrax.clouddns import CloudDNSClient
+from pyrax.clouddns import CloudDNSDomain
+from pyrax.clouddns import CloudDNSManager
+from pyrax.clouddns import CloudDNSRecord
+from pyrax.clouddns import CloudDNSPTRRecord
 
 import pyrax.exceptions as exc
 from pyrax.rax_identity import Identity
 import pyrax.utils as utils
+
+
+example_uri = "http://example.com"
 
 
 class FakeResponse(dict):
@@ -191,6 +199,43 @@ class FakeDatabaseClient(CloudDatabaseClient):
                 "fakepassword", *args, **kwargs)
 
 
+class FakeDNSClient(CloudDNSClient):
+    def __init__(self, *args, **kwargs):
+        super(FakeDNSClient, self).__init__("fakeuser",
+                "fakepassword", *args, **kwargs)
+
+
+class FakeDNSManager(CloudDNSManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeDNSClient()
+        super(FakeDNSManager, self).__init__(api, *args, **kwargs)
+        self.resource_class = FakeDNSDomain
+        self.response_key = "domain"
+        self.plural_response_key = "domains"
+        self.uri_base = "domains"
+
+
+class FakeDNSDomain(CloudDNSDomain):
+    def __init__(self, *args, **kwargs):
+        self.id = utils.random_name()
+        self.name = utils.random_name()
+        self.manager = FakeDNSManager()
+
+
+class FakeDNSRecord(CloudDNSRecord):
+    def __init__(self, mgr, info, *args, **kwargs):
+        super(FakeDNSRecord, self).__init__(mgr, info, *args, **kwargs)
+
+
+class FakeDNSPTRRecord(CloudDNSPTRRecord):
+    pass
+
+class FakeDNSDevice(FakeEntity):
+    def __init__(self, *args, **kwargs):
+        self.id = utils.random_name()
+
+
 class FakeNovaVolumeClient(BaseClient):
     def __init__(self, *args, **kwargs):
         pass
@@ -302,9 +347,6 @@ identity_type = rackspace
 region = FAKE
 custom_user_agent = FAKE
 debug =
-
-[services]
-servers = True
 """
 
 fake_identity_response = {u'access':

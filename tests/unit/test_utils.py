@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import datetime
 import hashlib
 import os
 import StringIO
@@ -159,6 +160,52 @@ class UtilsTest(unittest.TestCase):
         self.assertTrue(ret)
         self.assertEqual(status_obj.status, "ready")
         ret = utils.wait_until(status_obj, "status", "fake", interval=0.1, attempts=2)
+
+    def test_time_string_empty(self):
+        testval = None
+        self.assertEqual(utils.iso_time_string(testval), "")
+
+    def test_time_string_invalid(self):
+        testval = "abcde"
+        self.assertRaises(exc.InvalidDateTimeString, utils.iso_time_string, testval)
+
+    def test_time_string_date(self):
+        dt = "1999-12-31"
+        self.assertEqual(utils.iso_time_string(dt), "1999-12-31T00:00:00")
+
+    def test_time_string_date_obj(self):
+        dt = datetime.date(1999, 12, 31)
+        self.assertEqual(utils.iso_time_string(dt), "1999-12-31T00:00:00")
+
+    def test_time_string_datetime(self):
+        dt = "1999-12-31 23:59:59"
+        self.assertEqual(utils.iso_time_string(dt), "1999-12-31T23:59:59")
+
+    def test_time_string_datetime_add_tz(self):
+        dt = "1999-12-31 23:59:59"
+        self.assertEqual(utils.iso_time_string(dt, show_tzinfo=True), "1999-12-31T23:59:59+0000")
+
+    def test_time_string_datetime_show_tz(self):
+        class TZ(datetime.tzinfo):
+            def utcoffset(self, dt): return datetime.timedelta(minutes=-120)
+        dt = datetime.datetime(1999, 12, 31, 23, 59, 59, tzinfo=TZ())
+        self.assertEqual(utils.iso_time_string(dt, show_tzinfo=True), "1999-12-31T23:59:59-0200")
+
+    def test_time_string_datetime_hide_tz(self):
+        class TZ(datetime.tzinfo):
+            def utcoffset(self, dt): return datetime.timedelta(minutes=-120)
+        dt = datetime.datetime(1999, 12, 31, 23, 59, 59, tzinfo=TZ())
+        self.assertEqual(utils.iso_time_string(dt, show_tzinfo=False), "1999-12-31T23:59:59")
+
+
+    def test_get_id(self):
+        target = "test_id"
+        class Obj_with_id(object):
+            id = target
+        obj = Obj_with_id()
+        self.assertEqual(utils.get_id(obj), target)
+        self.assertEqual(utils.get_id(obj), target)
+        self.assertEqual(utils.get_id(obj.id), target)
 
     def test_import_class(self):
         cls_string = "tests.unit.fakes.FakeManager"

@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['safe_5fget',['safe_get',['../namespacepyrax.html#ad78061938ec2fdc2a7c956beda1f1099',1,'pyrax']]],
   ['safe_5fissubclass',['safe_issubclass',['../namespacepyrax_1_1utils.html#ab35ae0f6f47300275663bd32a957c5f2',1,'pyrax::utils']]],
   ['safe_5fregion',['safe_region',['../namespacepyrax.html#ab003f9b01814098d0690bb71ce9ff615',1,'pyrax']]],
+  ['search_5frecords',['search_records',['../classpyrax_1_1clouddns_1_1CloudDNSDomain.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSDomain.search_records()'],['../classpyrax_1_1clouddns_1_1CloudDNSManager.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSManager.search_records()'],['../classpyrax_1_1clouddns_1_1CloudDNSClient.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSClient.search_records()']]],
   ['set_5fcdn_5flog_5fretention',['set_cdn_log_retention',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ace22bfd2ecdbf455cdf010b53b1d3d90',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['set_5fconnection_5flogging',['set_connection_logging',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerManager.html#abac1dc72ddbe8369a8850b34e321f7db',1,'pyrax::cloudloadbalancers::CloudLoadBalancerManager.set_connection_logging()'],['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#abac1dc72ddbe8369a8850b34e321f7db',1,'pyrax::cloudloadbalancers::CloudLoadBalancerClient.set_connection_logging()']]],
   ['set_5fcontainer_5fcdn_5fmetadata',['set_container_cdn_metadata',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ab7d776a936c5feb8be88dc9d9e199337',1,'pyrax::cf_wrapper::client::CFClient']]],

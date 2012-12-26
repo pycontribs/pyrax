@@ -253,7 +253,7 @@ class ClientTest(unittest.TestCase):
         clt.request.assert_called_once_with(url, method)
         clt.request = sav
 
-    def test_cs_request_not_authed(self):
+    def test_api_request_not_authed(self):
         clt = self.client
         sav_auth = clt.authenticate
         clt.authenticate = Mock()
@@ -263,12 +263,12 @@ class ClientTest(unittest.TestCase):
         method = "PUT"
         clt.unauthenticate()
         clt.management_url = ""
-        clt._cs_request(url, method)
+        clt._api_request(url, method)
         clt.authenticate.assert_called_once_with()
         clt.request = sav_req
         clt.authenticate = sav_auth
 
-    def test_cs_request_auth_failed(self):
+    def test_api_request_auth_failed(self):
         clt = self.client
         sav_auth = clt.authenticate
         clt.authenticate = Mock()
@@ -278,45 +278,45 @@ class ClientTest(unittest.TestCase):
         method = "PUT"
         clt.request = Mock(side_effect=exc.Unauthorized(""))
         clt.management_url = clt.auth_token = clt.tenant_id = "test"
-        self.assertRaises(exc.Unauthorized, clt._cs_request, url, method)
+        self.assertRaises(exc.Unauthorized, clt._api_request, url, method)
         clt.request = sav_req
         clt.authenticate = sav_auth
 
     def test_method_get(self):
         clt = self.client
-        sav = clt._cs_request
-        clt._cs_request = Mock()
+        sav = clt._api_request
+        clt._api_request = Mock()
         url = "http://example.com"
         clt.method_get(url)
-        clt._cs_request.assert_called_once_with(url, "GET")
-        clt._cs_request = sav
+        clt._api_request.assert_called_once_with(url, "GET")
+        clt._api_request = sav
 
     def test_method_post(self):
         clt = self.client
-        sav = clt._cs_request
-        clt._cs_request = Mock()
+        sav = clt._api_request
+        clt._api_request = Mock()
         url = "http://example.com"
         clt.method_post(url)
-        clt._cs_request.assert_called_once_with(url, "POST")
-        clt._cs_request = sav
+        clt._api_request.assert_called_once_with(url, "POST")
+        clt._api_request = sav
 
     def test_method_put(self):
         clt = self.client
-        sav = clt._cs_request
-        clt._cs_request = Mock()
+        sav = clt._api_request
+        clt._api_request = Mock()
         url = "http://example.com"
         clt.method_put(url)
-        clt._cs_request.assert_called_once_with(url, "PUT")
-        clt._cs_request = sav
+        clt._api_request.assert_called_once_with(url, "PUT")
+        clt._api_request = sav
 
     def test_method_delete(self):
         clt = self.client
-        sav = clt._cs_request
-        clt._cs_request = Mock()
+        sav = clt._api_request
+        clt._api_request = Mock()
         url = "http://example.com"
         clt.method_delete(url)
-        clt._cs_request.assert_called_once_with(url, "DELETE")
-        clt._cs_request = sav
+        clt._api_request.assert_called_once_with(url, "DELETE")
+        clt._api_request = sav
 
     @patch('pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
     def test_extract_service_catalog_ok(self):

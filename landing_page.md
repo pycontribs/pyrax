@@ -3,7 +3,7 @@
 
 # Rackspace Cloud SDK for Python
 
-The Rackspace Cloud SDK for Python contains a language API, Getting Started Guide, API Reference Manual, Quick Reference, Release Notes, and sample code. 
+The Rackspace Cloud SDK for Python contains a language API, Getting Started Guide, API Reference Manual, Quick Reference, Release Notes, and sample code.
 
 ## Minimum requirements
 

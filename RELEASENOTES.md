@@ -1,6 +1,8 @@
 # Release Notes for pyrax
 
-2012.12.26 - Updated setup.py to use setuptools. Fixed a problem with circular imports of the version info. Added a requirement for python-novaclient>=2.10.0.
+2012.12.26 - Added support for Cloud DNS. Removed the 'beta' designation. Version 1.2.0.
+
+2012.12.26 - Updated setup.py to use setuptools. Fixed a problem with circular imports of the version info. Added a requirement for python-novaclient>=2.10.0. Version 1.1.7b.
 
 2012.12.18 - Removed the code that controlled when pyrax connected to services. Also changed the User-agent format to match the other SDKs.
 

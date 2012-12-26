@@ -65,7 +65,22 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.default_region = sav_region
         pyrax.USER_AGENT = sav_USER_AGENT
 
-
+    def test_read_config_bad(self):
+        sav_region = pyrax.default_region
+        dummy_cfg = fakes.fake_config_file
+        # Test invalid setting
+        dummy_cfg = dummy_cfg.replace("custom_user_agent", "fake")
+        sav_USER_AGENT = pyrax.USER_AGENT
+        with utils.SelfDeletingTempfile() as cfgfile:
+            file(cfgfile, "w").write(dummy_cfg)
+            pyrax._read_config_settings(cfgfile)
+        self.assertEqual(pyrax.USER_AGENT, sav_USER_AGENT)
+        # Test bad file
+        with utils.SelfDeletingTempfile() as cfgfile:
+            file(cfgfile, "w").write("FAKE")
+            self.assertRaises(exc.InvalidConfigurationFile, pyrax._read_config_settings, cfgfile)
+        pyrax.default_region = sav_region
+        pyrax.USER_AGENT = sav_USER_AGENT
 
     def test_set_credentials(self):
         pyrax.set_credentials(self.username, self.api_key)

@@ -67,7 +67,7 @@ with utils.SelfDeletingTempDirectory() as tmpfolder:
 
 # OK, the upload is complete. Let's verify what's in 'upfolder'.
 folder_name = os.path.basename(tmpfolder)
-print 
+print
 print "Temp folder name:", folder_name
 nms = cf.get_container_object_names(cont, prefix=folder_name)
 print "Number of files in container:", len(nms)

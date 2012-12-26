@@ -149,22 +149,22 @@ There are two methods for creating metadata for a load balancer: `set_metadata()
 `LoadBalancer` instances have a method `add_nodes()` that accepts either a single `Node` or a list of `Node` objects and adds them to the `LoadBalancer`. To remove a `Node`, though, you must get a reference to that node and then call its `delete()` method.
 
     clb = pyrax.cloud_loadbalancers
-    
+
     lb = clb.list()[0]
     print
     print "Load Balancer:", lb
     print
     print "Current nodes:", lb.nodes
-    
+
     # You may have to adjust the address of the node to something on
     # the same internal network as your load balancer.
     new_node = clb.Node(address="10.177.1.2", port=80, condition="ENABLED")
     lb.add_nodes([new_node])
     pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30, verbose=True)
-    
+
     print
     print "After adding node:", lb.nodes
-    
+
     # Now remove that node. Note that we can't use the original node instance,
     # as it was created independently, and doesn't have the link to its load
     # balancer. Instead, we'll get the last node from the load balancer.
@@ -181,13 +181,13 @@ Note the `wait_until()` method. After modifying a load balancer, its status will
 Running the above code results in:
 
     Load Balancer: <CloudLoadBalancer algorithm=RANDOM, created={u'time': u'2012-11-12T18:47:14Z'}, id=78273, name=sUwSNqKH, nodeCount=3, port=80, protocol=HTTP, status=ACTIVE, updated={u'time': u'2012-11-16T20:43:10Z'}, virtual_ips=[<VirtualIP type=PUBLIC, id=1893, address=50.56.167.209 version=IPV4>, <VirtualIP type=PUBLIC, id=9070313, address=2001:4800:7901:0000:8ca7:b42c:0000:0001 version=IPV6>]>
-    
+
     Current nodes: [<Node type=PRIMARY, condition=ENABLED, id=176621, address=10.177.1.42, port=80 weight=1>, <Node type=PRIMARY, condition=ENABLED, id=172949, address=10.177.1.1, port=80 weight=1>, <Node type=PRIMARY, condition=ENABLED, id=176435, address=10.177.1.3, port=80 weight=1>]
-    
+
     After adding node: [<Node type=PRIMARY, condition=ENABLED, id=176435, address=10.177.1.3, port=80 weight=1>, <Node type=PRIMARY, condition=ENABLED, id=176635, address=10.177.1.2, port=80 weight=1>, <Node type=PRIMARY, condition=ENABLED, id=172949, address=10.177.1.1, port=80 weight=1>, <Node type=PRIMARY, condition=ENABLED, id=176621, address=10.177.1.42, port=80 weight=1>]
-    
+
     Added Node: <Node type=PRIMARY, condition=ENABLED, id=176635, address=10.177.1.2, port=80 weight=1>
-    
+
     After removing node: [<Node type=PRIMARY, condition=ENABLED, id=172949, address=10.177.1.1, port=80 weight=1>, <Node type=PRIMARY, condition=ENABLED, id=176435, address=10.177.1.3, port=80 weight=1>, <Node type=PRIMARY, condition=ENABLED, id=176621, address=10.177.1.42, port=80 weight=1>]
 
 

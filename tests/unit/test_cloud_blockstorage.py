@@ -59,7 +59,7 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_assure_volume(self):
         class TestClient(object):
             _manager = fakes.FakeManager()
-            
+
             @assure_volume
             def test_method(self, volume):
                 return volume
@@ -76,7 +76,7 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_assure_snapshot(self):
         class TestClient(object):
             _snaps_manager = fakes.FakeManager()
-            
+
             @assure_snapshot
             def test_method(self, snapshot):
                 return snapshot

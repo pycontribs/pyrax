@@ -175,7 +175,7 @@ class CloudBlockStorageVolume(BaseResource):
         try:
             super(CloudBlockStorageVolume, self).delete()
         except exc.VolumeNotAvailable:
-            # Notify the user? Record it somewhere? 
+            # Notify the user? Record it somewhere?
             # For now, just re-raise
             raise
 

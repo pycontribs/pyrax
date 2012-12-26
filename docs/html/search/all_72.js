@@ -2,6 +2,7 @@ var searchData=
 [
   ['random_5fname',['random_name',['../namespacepyrax_1_1utils.html#a15ae8eb19e0cbaf0281e950aebca0962',1,'pyrax::utils']]],
   ['rax_5fidentity_2epy',['rax_identity.py',['../rax__identity_8py.html',1,'']]],
+  ['recordresultsiterator',['RecordResultsIterator',['../classpyrax_1_1clouddns_1_1RecordResultsIterator.html',1,'pyrax::clouddns']]],
   ['region_5fname',['region_name',['../classpyrax_1_1client_1_1BaseClient.html#a326b5b91b887c67a677e2eb509b569b6',1,'pyrax::client::BaseClient']]],
   ['reload',['reload',['../classpyrax_1_1resource_1_1BaseResource.html#aaef8955b9d3e2f5ddb4a016b60f14d7f',1,'pyrax::resource::BaseResource']]],
   ['remove_5f_5fmetadata_5fkey',['remove__metadata_key',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#ac08c0dd6f368890280daa3a6e1e98634',1,'pyrax::cf_wrapper::container::Container']]],
@@ -18,6 +19,8 @@ var searchData=
   ['resource_5fclass',['resource_class',['../classpyrax_1_1manager_1_1BaseManager.html#ad9ec49f2ad20e5d29aaaedf6da36c880',1,'pyrax::manager::BaseManager']]],
   ['response_5fkey',['response_key',['../classpyrax_1_1manager_1_1BaseManager.html#ab74e33fd52b6ead303c8ecd584121a47',1,'pyrax::manager::BaseManager']]],
   ['restart',['restart',['../classpyrax_1_1cloud__databases_1_1CloudDatabaseInstance.html#ac035369f12e9417eb1a18896a6888f05',1,'pyrax::cloud_databases::CloudDatabaseInstance.restart()'],['../classpyrax_1_1cloud__databases_1_1CloudDatabaseClient.html#ac035369f12e9417eb1a18896a6888f05',1,'pyrax::cloud_databases::CloudDatabaseClient.restart()']]],
+  ['results',['results',['../classpyrax_1_1clouddns_1_1ResultsIterator.html#a339bb5524b06e496a6aaa0a97a4a8d21',1,'pyrax::clouddns::ResultsIterator']]],
+  ['resultsiterator',['ResultsIterator',['../classpyrax_1_1clouddns_1_1ResultsIterator.html',1,'pyrax::clouddns']]],
   ['retry_5finterval',['RETRY_INTERVAL',['../namespacepyrax_1_1cloudblockstorage.html#abc175296d7313060131bf7f6c2932cf4',1,'pyrax::cloudblockstorage']]],
   ['root_5ffolder',['root_folder',['../classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html#a5f0b3f0b57ace7916c26401c56575116',1,'pyrax::cf_wrapper::client::FolderUploader']]],
   ['root_5fuser_5fstatus',['root_user_status',['../classpyrax_1_1cloud__databases_1_1CloudDatabaseInstance.html#a269cc22e852b374875720085d24b9922',1,'pyrax::cloud_databases::CloudDatabaseInstance.root_user_status()'],['../classpyrax_1_1cloud__databases_1_1CloudDatabaseClient.html#a269cc22e852b374875720085d24b9922',1,'pyrax::cloud_databases::CloudDatabaseClient.root_user_status()']]],

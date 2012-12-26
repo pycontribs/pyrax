@@ -34,7 +34,7 @@ class CloudDatabasesTest(unittest.TestCase):
     def test_assure_instance(self):
         class TestClient(object):
             _manager = fakes.FakeManager()
-            
+
             @assure_instance
             def test_method(self, instance):
                 return instance

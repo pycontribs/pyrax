@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['safe_5fget',['safe_get',['../namespacepyrax.html#ad78061938ec2fdc2a7c956beda1f1099',1,'pyrax']]],
   ['safe_5fissubclass',['safe_issubclass',['../namespacepyrax_1_1utils.html#ab35ae0f6f47300275663bd32a957c5f2',1,'pyrax::utils']]],
   ['safe_5fregion',['safe_region',['../namespacepyrax.html#ab003f9b01814098d0690bb71ce9ff615',1,'pyrax']]],
+  ['search_5frecords',['search_records',['../classpyrax_1_1clouddns_1_1CloudDNSDomain.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSDomain.search_records()'],['../classpyrax_1_1clouddns_1_1CloudDNSManager.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSManager.search_records()'],['../classpyrax_1_1clouddns_1_1CloudDNSClient.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSClient.search_records()']]],
   ['selfdeletingtempdirectory',['SelfDeletingTempDirectory',['../classpyrax_1_1utils_1_1SelfDeletingTempDirectory.html',1,'pyrax::utils']]],
   ['selfdeletingtempfile',['SelfDeletingTempfile',['../classpyrax_1_1utils_1_1SelfDeletingTempfile.html',1,'pyrax::utils']]],
   ['service_5fcatalog',['service_catalog',['../classpyrax_1_1client_1_1BaseClient.html#a83c5f5e2d286366b53226d42868654f2',1,'pyrax::client::BaseClient']]],
@@ -11,7 +11,6 @@ var searchData=
   ['service_5ftype',['service_type',['../classpyrax_1_1client_1_1BaseClient.html#a4613550f73f11538014f2c577af27bc3',1,'pyrax::client::BaseClient']]],
   ['servicecatalog',['ServiceCatalog',['../classpyrax_1_1service__catalog_1_1ServiceCatalog.html',1,'pyrax::service_catalog']]],
   ['services',['services',['../classpyrax_1_1rax__identity_1_1Identity.html#aa2fed172712c0f2a88ad9f4585672044',1,'pyrax::rax_identity::Identity.services()'],['../classpyrax_1_1rax__identity_1_1Identity.html#a0bf3c8aa9017e52dd041b7e2c3327621',1,'pyrax::rax_identity::Identity.services()']]],
-  ['services_5fto_5fstart',['services_to_start',['../namespacepyrax.html#a145019a0f18e5ec72e0dde262d39aefb',1,'pyrax']]],
   ['session_5fpersistence',['session_persistence',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a403633aa5d6c48d2ad993873bdbd4e2e',1,'pyrax::cloudloadbalancers::CloudLoadBalancer']]],
   ['set_5fcdn_5flog_5fretention',['set_cdn_log_retention',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ace22bfd2ecdbf455cdf010b53b1d3d90',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['set_5fconnection_5flogging',['set_connection_logging',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerManager.html#abac1dc72ddbe8369a8850b34e321f7db',1,'pyrax::cloudloadbalancers::CloudLoadBalancerManager.set_connection_logging()'],['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#abac1dc72ddbe8369a8850b34e321f7db',1,'pyrax::cloudloadbalancers::CloudLoadBalancerClient.set_connection_logging()']]],
@@ -43,6 +42,6 @@ var searchData=
   ['storage_5fobject_2epy',['storage_object.py',['../storage__object_8py.html',1,'']]],
   ['storageobject',['StorageObject',['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html',1,'pyrax::cf_wrapper::storage_object']]],
   ['store_5fobject',['store_object',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#af0a50c69bbe50a35557fb373cf3b4b6f',1,'pyrax::cf_wrapper::client::CFClient.store_object()'],['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#af0a50c69bbe50a35557fb373cf3b4b6f',1,'pyrax::cf_wrapper::container::Container.store_object()']]],
-  ['subs',['subs',['../namespacejunk.html#a8700ea9c26ad763c16fbdeeaa8328f98',1,'junk']]],
-  ['svc_5fdict',['svc_dict',['../namespacepyrax.html#ad4251633ab2ab538c5b2391036b9488b',1,'pyrax']]]
+  ['subdomainresultsiterator',['SubdomainResultsIterator',['../classpyrax_1_1clouddns_1_1SubdomainResultsIterator.html',1,'pyrax::clouddns']]],
+  ['subs',['subs',['../namespacejunk.html#a8700ea9c26ad763c16fbdeeaa8328f98',1,'junk']]]
 ];

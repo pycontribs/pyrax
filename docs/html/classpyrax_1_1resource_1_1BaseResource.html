@@ -124,7 +124,9 @@ Inheritance diagram for BaseResource:</div>
 <area href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageSnapshot.html" title="This class represents a Snapshot (copy) of a Block Storage Volume." alt="CloudBlockStorageSnapshot" shape="rect" coords="200,280,390,304"/>
 <area href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html" title="This class represents a Block Storage volume." alt="CloudBlockStorageVolume" shape="rect" coords="200,336,390,360"/>
 <area href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolumeType.html" title="This class represents a Block Storage Volume Type." alt="CloudBlockStorageVolumeType" shape="rect" coords="200,392,390,416"/>
-<area href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html" title="Represents a Cloud Load Balancer instance." alt="CloudLoadBalancer" shape="rect" coords="200,448,390,472"/>
+<area href="classpyrax_1_1clouddns_1_1CloudDNSDomain.html" title="This class represents a DNS domain." alt="CloudDNSDomain" shape="rect" coords="200,448,390,472"/>
+<area href="classpyrax_1_1clouddns_1_1CloudDNSRecord.html" title="This class represents a domain record." alt="CloudDNSRecord" shape="rect" coords="200,504,390,528"/>
+<area href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html" title="Represents a Cloud Load Balancer instance." alt="CloudLoadBalancer" shape="rect" coords="200,560,390,584"/>
 </map>
  </div></div>
 
@@ -154,6 +156,7 @@ Public Attributes</h2></td></tr>
 Static Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#a494d50825f5dfc848a56d8a568c16172">HUMAN_ID</a> = False</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#a74fac10a98253f8b0308159a33113ab9">NAME_ATTR</a> = &quot;name&quot;</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#ab6f7bc0828ee3d547e244dd336572d76">get_details</a> = True</td></tr>
 <tr><td colspan="2"><h2><a name="properties"></a>
 Properties</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#ae046be312a3b87c23b3729393f1ab194">loaded</a> = property(_get_loaded, _set_loaded)</td></tr>
@@ -296,7 +299,7 @@ Properties</h2></td></tr>
 
 <p>Deletes the object. </p>
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseUser.html#ab48bde70a0927a83d62464cb0627c34b">CloudDatabaseUser</a>, <a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseDatabase.html#ab48bde70a0927a83d62464cb0627c34b">CloudDatabaseDatabase</a>, and <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageSnapshot.html#ab48bde70a0927a83d62464cb0627c34b">CloudBlockStorageSnapshot</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseUser.html#ab48bde70a0927a83d62464cb0627c34b">CloudDatabaseUser</a>, <a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseDatabase.html#ab48bde70a0927a83d62464cb0627c34b">CloudDatabaseDatabase</a>, <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSRecord.html#ab48bde70a0927a83d62464cb0627c34b">CloudDNSRecord</a>, and <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageSnapshot.html#ab48bde70a0927a83d62464cb0627c34b">CloudBlockStorageSnapshot</a>.</p>
 
 </div>
 </div>
@@ -316,6 +319,8 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Gets the details for the object. </p>
+
+<p>Reimplemented in <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSRecord.html#a444a1328efb32d5d9d2dcb2efe855d3b">CloudDNSRecord</a>.</p>
 
 </div>
 </div>
@@ -359,6 +364,21 @@ Properties</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Member Data Documentation</h2>
+<a class="anchor" id="ab6f7bc0828ee3d547e244dd336572d76"></a><!-- doxytag: member="pyrax::resource::BaseResource::get_details" ref="ab6f7bc0828ee3d547e244dd336572d76" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#ab6f7bc0828ee3d547e244dd336572d76">get_details</a> = True<code> [static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseFlavor.html#ab6f7bc0828ee3d547e244dd336572d76">CloudDatabaseFlavor</a>, <a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseUser.html#ab6f7bc0828ee3d547e244dd336572d76">CloudDatabaseUser</a>, and <a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseDatabase.html#ab6f7bc0828ee3d547e244dd336572d76">CloudDatabaseDatabase</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a494d50825f5dfc848a56d8a568c16172"></a><!-- doxytag: member="pyrax::resource::BaseResource::HUMAN_ID" ref="a494d50825f5dfc848a56d8a568c16172" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -446,7 +466,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 26 2012 19:52:09 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 24 2012 17:11:40 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

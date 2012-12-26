@@ -245,7 +245,7 @@ class BaseClient(httplib2.Http):
                            start_time, time.time()))
         return resp, body
 
-    def _cs_request(self, uri, method, **kwargs):
+    def _api_request(self, uri, method, **kwargs):
         """
         Manages the request by adding any auth information, and retries
         the request after authenticating if the initial request returned
@@ -266,6 +266,8 @@ class BaseClient(httplib2.Http):
                                             **kwargs)
             return resp, body
         except exc.Unauthorized as ex:
+            print "AUTH"
+            print ex
             try:
                 self.authenticate()
                 kwargs["headers"]["X-Auth-Token"] = self.auth_token
@@ -277,19 +279,19 @@ class BaseClient(httplib2.Http):
 
     def method_get(self, uri, **kwargs):
         """Method used to make GET requests."""
-        return self._cs_request(uri, "GET", **kwargs)
+        return self._api_request(uri, "GET", **kwargs)
 
     def method_post(self, uri, **kwargs):
         """Method used to make POST requests."""
-        return self._cs_request(uri, "POST", **kwargs)
+        return self._api_request(uri, "POST", **kwargs)
 
     def method_put(self, uri, **kwargs):
         """Method used to make PUT requests."""
-        return self._cs_request(uri, "PUT", **kwargs)
+        return self._api_request(uri, "PUT", **kwargs)
 
     def method_delete(self, uri, **kwargs):
         """Method used to make DELETE requests."""
-        return self._cs_request(uri, "DELETE", **kwargs)
+        return self._api_request(uri, "DELETE", **kwargs)
 
     def _extract_service_catalog(self, uri, resp, body, extract_token=True):
         """

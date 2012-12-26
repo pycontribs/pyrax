@@ -26,18 +26,6 @@ class ManagerTest(unittest.TestCase):
         self.manager = None
         self.fake_api = None
 
-    def test_getid_ok(self):
-        # The class really doesn't matter
-        x = fakes.FakeException()
-        x.id = "TEST"
-        ret = manager.getid(x)
-        self.assertEqual(ret, x.id)
-
-    def test_getid_no_id(self):
-        x = None
-        ret = manager.getid(x)
-        self.assertEqual(ret, x)
-
     def test_list(self):
         mgr = self.manager
         sav = mgr._list
@@ -178,7 +166,7 @@ class ManagerTest(unittest.TestCase):
         mgr.api.method_post = Mock()
         item = fakes.FakeEntity()
         mgr.action(item, "fake")
-        mgr.api.method_post.assert_called_once_with("/testing/%s/action" % item.id, body={"fake": {}}) 
+        mgr.api.method_post.assert_called_once_with("/testing/%s/action" % item.id, body={"fake": {}})
 
     def test_find_no_match(self):
         mgr = self.manager

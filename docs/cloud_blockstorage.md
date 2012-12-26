@@ -100,7 +100,7 @@ If you are *absolutely certain* that you no longer want to keep a volume, you ca
 
     vol.delete(force=True)
 
-the volume will be detached from its server (if it is attached), and all snapshots of that volume will be deleted. The volume will then be deleted, too. 
+the volume will be detached from its server (if it is attached), and all snapshots of that volume will be deleted. The volume will then be deleted, too.
 
 
 ## Working with Snapshots

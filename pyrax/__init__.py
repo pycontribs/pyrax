@@ -63,6 +63,7 @@ try:
     from cloudloadbalancers import CloudLoadBalancer
     from cloudloadbalancers import CloudLoadBalancerClient
     from cloudblockstorage import CloudBlockStorageClient
+    from clouddns import CloudDNSClient
 except ImportError:
     # See if this is the result of the importing of version.py in setup.py
     callstack = inspect.stack()
@@ -80,6 +81,7 @@ cloudfiles = None
 cloud_loadbalancers = None
 cloud_databases = None
 cloud_blockstorage = None
+cloud_dns = None
 # Class used to handle auth/identity
 identity_class = None
 # Default identity type.
@@ -223,13 +225,14 @@ def authenticate():
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, cloudservers, cloudfiles, cloud_loadbalancers
-    global cloud_databases, cloud_blockstorage, default_region
+    global cloud_databases, cloud_blockstorage, cloud_dns, default_region
     identity = identity_class()
     cloudservers = None
     cloudfiles = None
     cloud_loadbalancers = None
     cloud_databases = None
     cloud_blockstorage = None
+    cloud_dns = None
     default_region = None
 
 
@@ -253,12 +256,13 @@ def _make_agent_name(base):
 def connect_to_services():
     """Establishes authenticated connections to the various cloud APIs."""
     global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
-    global cloud_blockstorage
+    global cloud_blockstorage, cloud_dns
     cloudservers = connect_to_cloudservers()
     cloudfiles = connect_to_cloudfiles()
     cloud_loadbalancers = connect_to_cloud_loadbalancers()
     cloud_databases = connect_to_cloud_databases()
     cloud_blockstorage = connect_to_cloud_blockstorage()
+    cloud_dns = connect_to_cloud_dns()
 
 
 def _fix_uri(ep, region):
@@ -277,7 +281,7 @@ def _get_service_endpoint(svc, region=None, public=True):
     if region is None:
         region = safe_region()
     region = safe_region(region)
-    url_type = {True: "public_url", False: "internal_url"}[public] 
+    url_type = {True: "public_url", False: "internal_url"}[public]
     ep = identity.services.get(svc, {}).get("endpoints", {}).get(region, {}).get(url_type)
     if not ep:
         # Try the "ALL" region, and substitute the actual region
@@ -312,7 +316,7 @@ def connect_to_cloudfiles(region=None, public=True):
     region = safe_region(region)
     cf_url = _get_service_endpoint("object_store", region, public=public)
     cdn_url = _get_service_endpoint("object_cdn", region)
-    ep_type = {True: "publicURL", False: "internalURL"}[public] 
+    ep_type = {True: "publicURL", False: "internalURL"}[public]
     opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token, "endpoint_type": ep_type,
             "tenant_name": identity.tenant_name, "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
@@ -364,13 +368,27 @@ def connect_to_cloud_blockstorage(region=None):
     return cloud_blockstorage
 
 
+@_require_auth
+def connect_to_cloud_dns(region=None):
+    """Creates a client for working with cloud dns."""
+    region = safe_region(region)
+    ep = _get_service_endpoint("dns", region)
+    cloud_dns = CloudDNSClient(identity.username, identity.api_key,
+            region_name=region, management_url=ep, auth_token=identity.token,
+            http_log_debug=_http_debug,
+            tenant_id=identity.tenant_id, service_type="rax:dns")
+    cloud_dns.user_agent = _make_agent_name(cloud_dns.user_agent)
+    return cloud_dns
+
+
 def get_http_debug():
     return _http_debug
+
 
 def set_http_debug(val):
     global _http_debug
     _http_debug = val
     # Set debug on the various services
     for svc in (cloudservers, cloudfiles, cloud_loadbalancers, cloud_blockstorage,
-            cloud_databases):
+            cloud_databases, cloud_dns):
         svc.http_log_debug = val

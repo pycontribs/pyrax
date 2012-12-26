@@ -35,6 +35,24 @@ class AuthSystemNotFound(PyraxException):
 class CDNFailed(PyraxException):
     pass
 
+class DomainCreationFailed(PyraxException):
+    pass
+
+class DomainDeletionFailed(PyraxException):
+    pass
+
+class DomainRecordAdditionFailed(PyraxException):
+    pass
+
+class DomainRecordDeletionFailed(PyraxException):
+    pass
+
+class DomainRecordUpdateFailed(PyraxException):
+    pass
+
+class DomainUpdateFailed(PyraxException):
+    pass
+
 class EndpointNotFound(PyraxException):
     pass
 
@@ -59,10 +77,16 @@ class InvalidCredentialFile(PyraxException):
 class InvalidDateTimeString(PyraxException):
     pass
 
+class InvalidDeviceType(PyraxException):
+    pass
+
 class InvalidNodeCondition(PyraxException):
     pass
 
 class InvalidNodeParameters(PyraxException):
+    pass
+
+class InvalidPTRRecord(PyraxException):
     pass
 
 class InvalidSessionPersistenceType(PyraxException):
@@ -83,10 +107,19 @@ class InvalidVirtualIPVersion(PyraxException):
 class InvalidVolumeResize(PyraxException):
     pass
 
+class MissingDNSSettings(PyraxException):
+    pass
+
 class MissingHealthMonitorSettings(PyraxException):
     pass
 
+class MissingLoadBalancerParameters(PyraxException):
+    pass
+
 class MissingName(PyraxException):
+    pass
+
+class NoMoreResults(PyraxException):
     pass
 
 class NoReloadError(PyraxException):
@@ -117,6 +150,15 @@ class NoTokenLookupException(PyraxException):
     pass
 
 class ProtocolMismatch(PyraxException):
+    pass
+
+class PTRRecordCreationFailed(PyraxException):
+    pass
+
+class PTRRecordDeletionFailed(PyraxException):
+    pass
+
+class PTRRecordUpdateFailed(PyraxException):
     pass
 
 class SnapshotNotAvailable(PyraxException):
