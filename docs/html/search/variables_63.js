@@ -6,9 +6,7 @@ var searchData=
   ['cdn_5fenabled',['cdn_enabled',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a15b27a248ed9133d6a84543a420fe2f9',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['cdn_5fmeta_5fprefix',['cdn_meta_prefix',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a2952143e08d5da585f27b1b2271c03be',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['cdn_5furl',['cdn_url',['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html#af8614020022a9bd864339bd42b8fceb4',1,'pyrax::cf_wrapper::client::Connection']]],
-  ['cf',['cf',['../namespacedel__conts.html#ace32c53d52804f2843ccfe220db6038c',1,'del_conts.cf()'],['../namespacejunk.html#ace32c53d52804f2843ccfe220db6038c',1,'junk.cf()'],['../namespacemake__1000__containers.html#ace32c53d52804f2843ccfe220db6038c',1,'make_1000_containers.cf()']]],
   ['classifiers',['classifiers',['../namespacesetup.html#a501bfc1867c9d0b5d91873982919a191',1,'setup']]],
-  ['clb',['clb',['../namespacejunk.html#a35eb98891848e8503ae8362c25cc284e',1,'junk']]],
   ['client',['client',['../classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html#ad5bc32b75da65fe60067f501a4bb6665',1,'pyrax::cf_wrapper::client::FolderUploader.client()'],['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#ad5bc32b75da65fe60067f501a4bb6665',1,'pyrax::cf_wrapper::container::Container::client()'],['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#ad5bc32b75da65fe60067f501a4bb6665',1,'pyrax::cf_wrapper::storage_object::StorageObject::client()']]],
   ['cloud_5fblockstorage',['cloud_blockstorage',['../namespacepyrax.html#a7f4dc3b1da79f21103723f78b910c8a5',1,'pyrax']]],
   ['cloud_5fdatabases',['cloud_databases',['../namespacepyrax.html#af1a86dab674b703fc06491e66aacadb6',1,'pyrax']]],
@@ -23,13 +21,7 @@ var searchData=
   ['connection',['connection',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a10275a078bd1abcbebc206cc5d19e18b',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['connection_5fretries',['CONNECTION_RETRIES',['../namespacepyrax_1_1cf__wrapper_1_1client.html#a19074fb0e7d33e5cb6f2fc49877e64c1',1,'pyrax::cf_wrapper::client']]],
   ['connection_5ftimeout',['CONNECTION_TIMEOUT',['../namespacepyrax_1_1cf__wrapper_1_1client.html#a32d68802775b5e101a259fb6f3edf5d7',1,'pyrax::cf_wrapper::client']]],
-  ['cont',['cont',['../namespacedel__conts.html#a4bb533a2bca3515c588cd67779171704',1,'del_conts.cont()'],['../namespacemake__1000__containers.html#a4bb533a2bca3515c588cd67779171704',1,'make_1000_containers.cont()']]],
-  ['cont_5fname',['cont_name',['../namespacemake__1000__containers.html#a4b3ffc140973b00cc7f2f6fbbf42a018',1,'make_1000_containers']]],
   ['container',['container',['../classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html#a030ecaa2a61b422a8ca7422403ad8c77',1,'pyrax::cf_wrapper::client::FolderUploader.container()'],['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a030ecaa2a61b422a8ca7422403ad8c77',1,'pyrax::cf_wrapper::storage_object::StorageObject.container()']]],
   ['container_5fmeta_5fprefix',['container_meta_prefix',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a9b5995b5ab3392bd65e1fcaf722b6707',1,'pyrax::cf_wrapper::client::CFClient']]],
-  ['content_5ftype',['content_type',['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a221623422ea72de630e7e446a84e9f1f',1,'pyrax::cf_wrapper::storage_object::StorageObject']]],
-  ['conts',['conts',['../namespacedel__conts.html#a7a5e6d9469bb7488b74c5c014cda41a0',1,'del_conts']]],
-  ['count',['count',['../namespacemake__1000__containers.html#ad43c3812e6d13e0518d9f8b8f463ffcf',1,'make_1000_containers']]],
-  ['creds_5ffile',['creds_file',['../namespacejunk.html#a9e9a6457bca801b7b28626de14c20832',1,'junk.creds_file()'],['../namespacelogin.html#a9e9a6457bca801b7b28626de14c20832',1,'login.creds_file()']]],
-  ['cs',['cs',['../namespacejunk.html#ac071bd38e4c31ed73ec02faa32b52e4a',1,'junk']]]
+  ['content_5ftype',['content_type',['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a221623422ea72de630e7e446a84e9f1f',1,'pyrax::cf_wrapper::storage_object::StorageObject']]]
 ];
