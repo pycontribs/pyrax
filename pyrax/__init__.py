@@ -298,10 +298,11 @@ def connect_to_cloudservers(region=None):
     mgt_url = _get_service_endpoint("compute", region)
     cloudservers = _cs_client.Client(identity.username, identity.api_key,
             project_id=identity.tenant_name, auth_url=identity.auth_endpoint,
-            bypass_url=mgt_url, auth_system="rackspace",
-            http_log_debug=_http_debug,
-            region_name=region, service_type="compute")
+            auth_system="rackspace", region_name=region, service_type="compute",
+            http_log_debug=_http_debug)
     cloudservers.client.USER_AGENT = _make_agent_name(cloudservers.client.USER_AGENT)
+    cloudservers.client.management_url = mgt_url
+    cloudservers.client.auth_token = identity.token
     cloudservers.exceptions = _cs_exceptions
     return cloudservers
 
