@@ -1,6 +1,8 @@
 # Release Notes for pyrax
 
-2012.12.27 - Removed old class docs that were no longer needed in this release.
+2013.01.03 - Fixed an issue that was causing calls to cloudservers to needlessly re-authenticate. Version 1.2.2.
+
+2012.12.27 - Removed old class docs that were no longer needed in this release. Version 1.2.1.
 
 2012.12.26 - Added support for Cloud DNS. Removed the 'beta' designation. Version 1.2.0.
 
