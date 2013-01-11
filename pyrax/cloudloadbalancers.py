@@ -1064,7 +1064,9 @@ class CloudLoadBalancerClient(BaseClient):
 
 
     def _create_body(self, name, port=None, protocol=None, nodes=None,
-            virtual_ips=None, algorithm=None):
+            virtual_ips=None, algorithm=None, halfClosed=None, accessList=None,
+            connectionLogging=None, connectionThrottle=None, healthMonitor=None,
+            metadata=None, timeout=None, sessionPersistence=None):
         """
         Used to create the dict required to create a load balancer instance.
         """
@@ -1081,6 +1083,14 @@ class CloudLoadBalancerClient(BaseClient):
                 "nodes": node_dicts,
                 "virtualIps": vip_dicts,
                 "algorithm": algorithm or "RANDOM",
+                "halfClosed": halfClosed,
+                "accessList": accessList,
+                "connectionLogging": connectionLogging,
+                "connectionThrottle": connectionThrottle,
+                "healthMonitor": healthMonitor,
+                "metadata": metadata,
+                "timeout": timeout,
+                "sessionPersistence": sessionPersistence,
                 }}
         return body
 

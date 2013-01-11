@@ -1070,6 +1070,14 @@ class CloudLoadBalancerTest(unittest.TestCase):
         fake_nodes = [nd]
         fake_virtual_ips = [vip]
         fake_algorithm = "FAKE"
+        fake_accessList = ["FAKE"]
+        fake_halfClosed = False
+        fake_connectionLogging = True
+        fake_connectionThrottle = True
+        fake_healthMonitor = object()
+        fake_metadata = {"fake": utils.random_name()}
+        fake_timeout = 42
+        fake_sessionPersistence = True
         expected = {"loadBalancer": {
                 "name": fake_name,
                 "port": fake_port,
@@ -1077,9 +1085,25 @@ class CloudLoadBalancerTest(unittest.TestCase):
                 "nodes": [nd.to_dict()],
                 "virtualIps": [vip.to_dict()],
                 "algorithm": fake_algorithm,
+                "accessList": fake_accessList,
+                "halfClosed": fake_halfClosed,
+                "connectionLogging": fake_connectionLogging,
+                "connectionThrottle": fake_connectionThrottle,
+                "healthMonitor": fake_healthMonitor,
+                "metadata": fake_metadata,
+                "timeout": fake_timeout,
+                "sessionPersistence": fake_sessionPersistence,
                 }}
         ret = clt._create_body(fake_name, port=fake_port, protocol=fake_protocol,
-                nodes=fake_nodes, virtual_ips=fake_virtual_ips, algorithm=fake_algorithm)
+                nodes=fake_nodes, virtual_ips=fake_virtual_ips, algorithm=fake_algorithm,
+                accessList=fake_accessList, connectionLogging=fake_connectionLogging,
+                halfClosed=fake_halfClosed, connectionThrottle=fake_connectionThrottle,
+                healthMonitor=fake_healthMonitor, metadata=fake_metadata, timeout=fake_timeout,
+                sessionPersistence=fake_sessionPersistence)
+        print "RET"
+        print ret
+        print "EXP"
+        print expected
         self.assertEqual(ret, expected)
 
     def test_client_get_usage(self):
