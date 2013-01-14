@@ -1,5 +1,7 @@
 # Release Notes for pyrax
 
+2013.01.10 - Added support for keychain storage of credentials for authentication. Version 1.2.4.
+
 2013.01.10 - Added the 'halfClosed' parameter to the create() method of load balancers.
 
 2012.12.27 - Removed old class docs that were no longer needed in this release.

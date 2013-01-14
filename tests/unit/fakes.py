@@ -344,6 +344,7 @@ class FakeIdentityResponse(FakeResponse):
 
 fake_config_file = """[settings]
 identity_type = rackspace
+keyring_username =
 region = FAKE
 custom_user_agent = FAKE
 debug =

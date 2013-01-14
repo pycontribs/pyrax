@@ -32,13 +32,18 @@ To upgrade your installation in the future, re-run the same command, but this ti
 
 
 ## Set up Authentication
-You will need to submit your Rackspace Cloud username and API key in order to authenticate. You can do this in one of two ways: explicitly pass them to pyrax, or create a file containing those credentials and pass that file path to pyrax. The file is a standard configuration file, with the format:
+You will need to submit your Rackspace Cloud username and API key in order to authenticate. You can do this in any one of three ways: explicitly pass them to pyrax, create a file containing those credentials and pass that file path to pyrax, or add them to your operating system's keychain. The credential file is a standard configuration file, with the format:
 
     [rackspace_cloud]
     username = myusername
     api_key = 01234567890abcdef
 
-To authenticate, run the following code using one of either `set_credentials()` or `set_credential_file()`. Which method you choose depends on your preference for passing credentials.
+To use the keyring method, you will need to add your API key to your operating system's keychain in the `pyrax` namespace. As of version 1.2.4, pyrax will install the Python module [`keyring`](http://pypi.python.org/pypi/keyring), which provides ready access to this feature. To configure your keychain credentials, run the following:
+
+    import keyring
+    keyring.set_password("pyrax", "myusername", "01234567890abcdef")
+
+To authenticate, run the following code using one of the following: `set_credentials()`, `set_credential_file()`, or `keyring_auth()`. Which method you choose depends on your preference for passing credentials.
 
     import pyrax
 
@@ -47,6 +52,11 @@ To authenticate, run the following code using one of either `set_credentials()` 
 
     # Using credentials file
     pyrax.set_credential_file("/path/to/credential/file")
+    
+    # Using keychain
+    pyrax.keyring_auth("myusername")
+    # Using keychain with username set in config file
+    pyrax.keyring_auth()
 
 Once you have authenticated, you now have access to Cloud Servers, Cloud Files, Cloud Block Storage, Cloud Databases, and Cloud Load Balancers, using the following references:
 
@@ -64,11 +74,12 @@ You can control how pyrax operates by including the optional configuration file.
 
     [settings]
     identity_type = rackspace
+    keyring_username = myusername
     region = ORD
     custom_user_agent = AwesomeApp/1.2
     http_debug = False
 
-With the above example, pyrax will use the default Rackspace authentication, provision resources in the `ORD` region, and will not output HTTP requests and responses to the console. It will also customize the **User-agent** string sent to the API servers on each request by prepending the string "AwesomeApp/1.2" to the standard pyrax User-agent setting, allowing requests from your application to be distinguished from other pyrax applications.
+With the above example, pyrax will use the default Rackspace authentication, will use "myusername" with keyring authentication, provision resources in the `ORD` region, and will not output HTTP requests and responses to the console. It will also customize the **User-agent** string sent to the API servers on each request by prepending the string "AwesomeApp/1.2" to the standard pyrax User-agent setting, allowing requests from your application to be distinguished from other pyrax applications.
 
 
 ## Debugging HTTP requests
