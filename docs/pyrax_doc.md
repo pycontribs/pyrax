@@ -38,7 +38,7 @@ You will need to submit your Rackspace Cloud username and API key in order to a
     username = myusername
     api_key = 01234567890abcdef
 
-To use the keyring method, you will need to add your API key to your operating system's keychain in the `pyrax` namespace. As of version 1.2.4, pyrax will install the Python module [`keyring`](http://pypi.python.org/pypi/keyring), which provides ready access to this feature. To configure your keychain credentials, run the following:
+To use the keychain method, you will need to add your API key to your operating system's keychain in the `pyrax` namespace. As of version 1.2.4, pyrax will install the Python module [`keyring`](http://pypi.python.org/pypi/keyring), which provides ready access to this feature. To configure your keychain credentials, run the following in Python:
 
     import keyring
     keyring.set_password("pyrax", "myusername", "01234567890abcdef")
@@ -57,6 +57,8 @@ To authenticate, run the following code using one of the following: `set_credent
     pyrax.keyring_auth("myusername")
     # Using keychain with username set in config file
     pyrax.keyring_auth()
+
+Note that the keyring_auth() command allows you to specify a particular username. This is especially useful if you need to connect to multiple cloud accounts. If you only have a single account, you can specify the username for your account in the config file (explained below), and pyrax will use that by default.
 
 Once you have authenticated, you now have access to Cloud Servers, Cloud Files, Cloud Block Storage, Cloud Databases, and Cloud Load Balancers, using the following references:
 
