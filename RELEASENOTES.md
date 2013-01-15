@@ -1,6 +1,6 @@
 # Release Notes for pyrax
 
-2013.01.10 - Added support for keychain storage of credentials for authentication. Version 1.2.4.
+2013.01.15 - Added support for keychain storage of credentials for authentication. Version 1.2.4.
 
 2013.01.10 - Added the 'halfClosed' parameter to the create() method of load balancers.
 
