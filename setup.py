@@ -34,6 +34,7 @@ setup(
         "python-novaclient>=2.10.0",
         "rackspace-novaclient",
         "python-swiftclient",
+        "keyring",
     ],
     packages=[
         "pyrax",

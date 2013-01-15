@@ -112,6 +112,25 @@ class PyraxInitTest(unittest.TestCase):
             self.assertRaises(exc.AuthenticationFailed, pyrax.set_credential_file, tmpname)
             self.assertFalse(pyrax.identity.authenticated)
 
+    def test_keyring_auth_no_module(self):
+        pyrax.keyring = None
+        self.assertRaises(exc.KeyringModuleNotInstalled, pyrax.keyring_auth)
+
+    def test_keyring_auth_no_username(self):
+        pyrax.keyring = object()
+        pyrax.keyring_username = ""
+        self.assertRaises(exc.KeyringUsernameMissing, pyrax.keyring_auth)
+
+    def test_keyring_auth(self):
+        class FakeKeyring(object):
+            pass
+        fake_keyring = FakeKeyring()
+        pyrax.keyring = fake_keyring
+        fake_keyring.get_password = Mock(return_value="fakeapikey")
+        pyrax.keyring_username = "fakeuser"
+        pyrax.keyring_auth()
+        self.assertTrue(pyrax.identity.authenticated)
+
     def test_clear_credentials(self):
         pyrax.set_credentials(self.username, self.api_key)
         # These next lines are required to test that clear_credentials
@@ -185,6 +204,11 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
         pyrax.cloud_databases = pyrax.connect_to_cloud_databases()
         self.assertIsNotNone(pyrax.cloud_databases)
+
+    def test_set_http_debug(self):
+        pyrax.cloudservers.http_log_debug = False
+        pyrax.set_http_debug(True)
+        self.assertTrue(pyrax.cloudservers.http_log_debug)
 
     def test_import_fail(self):
         import __builtin__

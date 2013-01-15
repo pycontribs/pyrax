@@ -40,6 +40,12 @@ from functools import wraps
 import inspect
 import os
 
+# keyring is an optional import
+try:
+    import keyring
+except ImportError:
+    keyring = None
+
 # The following try block is only needed when first installing pyrax,
 # since importing the version info in setup.py tries to import this
 # entire module.
@@ -92,6 +98,11 @@ identity = None
 default_region = None
 # Some services require a region. If the user doesn't specify one, use DFW.
 FALLBACK_REGION = "DFW"
+# If credentials are stored using keyring, this holds the username
+keyring_username = None
+
+# Value to plug into the user-agent headers
+USER_AGENT = "pyrax/%s" % version.version
 
 # Do we output HTTP traffic for debugging?
 _http_debug = False
@@ -102,12 +113,9 @@ def safe_region(region=None):
     return region or default_region or FALLBACK_REGION
 
 
-# Value to plug into the user-agent headers
-USER_AGENT = "pyrax/%s" % version.version
-
-
 def _read_config_settings(config_file):
-    global default_region, default_identity_type, USER_AGENT, _http_debug
+    global default_region, default_identity_type, USER_AGENT
+    global _http_debug, keyring_username
     cfg = ConfigParser.SafeConfigParser()
     try:
         cfg.read(config_file)
@@ -126,14 +134,10 @@ def _read_config_settings(config_file):
             default_identity_type or "rackspace")
     app_agent = safe_get("settings", "custom_user_agent")
     _http_debug = (safe_get("settings", "debug") or "False") == "True"
+    keyring_username = safe_get("settings", "keyring_username")
     if app_agent:
         # Customize the user-agent string with the app name.
         USER_AGENT = "%s %s" % (app_agent, USER_AGENT)
-
-# Read in the configuration file, if any
-config_file = os.path.expanduser("~/.pyrax.cfg")
-if os.path.exists(config_file):
-    _read_config_settings(config_file)
 
 
 def set_identity_class(cls):
@@ -155,15 +159,6 @@ def create_identity():
     if not identity_class:
         identity_class = _rax_identity.Identity
     identity = identity_class(region=safe_region())
-
-
-if identity_class is None:
-    if default_identity_type == "rackspace":
-        # Default to the rax_identity class.
-        identity_class = _rax_identity.Identity
-
-# Create an instance of the identity_class
-create_identity()
 
 
 def _require_auth(fnc):
@@ -207,6 +202,27 @@ def set_credential_file(cred_file, authenticate=True):
         raise
     if identity.authenticated:
         connect_to_services()
+
+
+def keyring_auth(username=None):
+    """
+    Use the password stored within the keyring to authenticate. If a username
+    is supplied, that name is used; otherwise, the keyring_username value
+    from the config file is used.
+
+    If there is no username defined, or if the keyring module is not installed,
+    the appropriate errors will be raised.
+    """
+    if not keyring:
+        # Module not installed
+        raise exc.KeyringModuleNotInstalled("The 'keyring' Python module is not installed on this system.")
+    if username is None:
+        username = keyring_username
+    if not username:
+        raise exc.KeyringUsernameMissing("No username specified for keyring authentication.")
+    password = keyring.get_password("pyrax", username)
+    if password:
+        set_credentials(username, password)
 
 
 def authenticate():
@@ -393,3 +409,17 @@ def set_http_debug(val):
     for svc in (cloudservers, cloudfiles, cloud_loadbalancers, cloud_blockstorage,
             cloud_databases, cloud_dns):
         svc.http_log_debug = val
+
+
+# Read in the configuration file, if any
+config_file = os.path.expanduser("~/.pyrax.cfg")
+if os.path.exists(config_file):
+    _read_config_settings(config_file)
+
+if identity_class is None:
+    if default_identity_type == "rackspace":
+        # Default to the rax_identity class.
+        identity_class = _rax_identity.Identity
+
+# Create an instance of the identity_class
+create_identity()

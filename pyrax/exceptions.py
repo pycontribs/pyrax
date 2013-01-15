@@ -65,6 +65,12 @@ class FileNotFound(PyraxException):
 class FolderNotFound(PyraxException):
     pass
 
+class KeyringModuleNotInstalled(PyraxException):
+    pass
+
+class KeyringUsernameMissing(PyraxException):
+    pass
+
 class InvalidCDNMetadata(PyraxException):
     pass
 
