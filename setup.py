@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from setuptools import setup
-import glob
 import re
 import sys
 if sys.version < "2.2.3":
@@ -26,7 +25,7 @@ setup(
     url="https://github.com/rackspace/pyrax",
     keywords="pyrax rackspace cloud openstack",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 2",
     ],
