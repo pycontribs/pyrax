@@ -914,9 +914,6 @@ class Node(object):
             parent=None, type=None, id=None):
         if condition is None:
             condition = "ENABLED"
-        if condition.upper() not in ("ENABLED", "DISABLED"):
-            raise exc.InvalidNodeCondition("Nodes must be created in either 'ENABLED' or 'DISABLED' "
-                    "condition; '%s' is not valid." % condition)
         if not all((address, port)):
             raise exc.InvalidNodeParameters("You must include an address and a port when creating a node.")
         self.address = address
@@ -1074,6 +1071,12 @@ class CloudLoadBalancerClient(BaseClient):
         if not all(required):
             raise exc.MissingLoadBalancerParameters("Load Balancer creation requires at least one node, one virtual IP, "
                     "a protocol, and a port.")
+        bad_conditions = [node.condition for node in nodes
+                if node.condition.upper() not in ("ENABLED", "DISABLED")]
+        if bad_conditions:
+            raise exc.InvalidNodeCondition("Nodes for new load balancer must be created in "
+                    "either 'ENABLED' or 'DISABLED' condition; received the following invalid "
+                    "conditions: %s" % ", ".join(set(bad_conditions)))
         node_dicts = [nd.to_dict() for nd in nodes]
         vip_dicts = [vip.to_dict() for vip in virtual_ips]
         body = {"loadBalancer": {
