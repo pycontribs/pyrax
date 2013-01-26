@@ -13,6 +13,7 @@ import pyrax.exceptions as exc
 
 
 API_DATE_PATTERN = re.compile(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})")
+UTC_API_DATE_PATTERN = re.compile(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z")
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
@@ -167,11 +168,18 @@ class Identity(object):
     @staticmethod
     def _parse_api_time(timestr):
         """Typical expiration times returned from the auth server are in this format:
-        2012-05-02T14:27:40.000-05:00
-
-        This method returns a proper datetime object from that.
+            2012-05-02T14:27:40.000-05:00
+        They can also be returned as a UTC value in this format:
+            2012-05-02T14:27:40.000Z
+        This method returns a proper datetime object from either of these formats.
         """
-        yr, mth, dy, hr, mn, sc, off_sign, off_hr, off_mn = API_DATE_PATTERN.match(timestr).groups()
+        try:
+            yr, mth, dy, hr, mn, sc, off_sign, off_hr, off_mn = API_DATE_PATTERN.match(timestr).groups()
+        except AttributeError:
+            # UTC dates don't show offsets.
+            yr, mth, dy, hr, mn, sc = UTC_API_DATE_PATTERN.match(timestr).groups()
+            off_sign = "+"
+            off_hr = off_mn = 0
         base_dt = datetime.datetime(int(yr), int(mth), int(dy), int(hr), int(mn), int(sc))
         delta = datetime.timedelta(hours=int(off_hr), minutes=int(off_mn))
         if off_sign == "+":

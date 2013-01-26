@@ -93,6 +93,28 @@ class IdentityTest(unittest.TestCase):
         ident.authenticate()
         urllib2.urlopen = savopen
 
+    def test_authenticate_fail_creds(self):
+        ident = self.identity_class(username="BAD", api_key="BAD")
+        savopen = urllib2.urlopen
+        class DummyResponse(object):
+            def read(self): pass
+            def readline(self): pass
+        urllib2.urlopen = Mock(side_effect=urllib2.HTTPError(fakes.example_uri,
+                401, "Bad", {}, DummyResponse()))  
+        self.assertRaises(exc.AuthenticationFailed, ident.authenticate)
+        urllib2.urlopen = savopen
+
+    def test_authenticate_fail_other(self):
+        ident = self.identity_class(username="BAD", api_key="BAD")
+        savopen = urllib2.urlopen
+        class DummyResponse(object):
+            def read(self): pass
+            def readline(self): pass
+        urllib2.urlopen = Mock(side_effect=urllib2.HTTPError(fakes.example_uri,
+                500, "Bad", {}, DummyResponse()))  
+        self.assertRaises(exc.AuthenticationFailed, ident.authenticate)
+        urllib2.urlopen = savopen
+
     def test_get_token(self):
         ident = self.identity_class(username=self.username, api_key=self.api_key)
         ident.token = "test_token"
@@ -128,9 +150,16 @@ class IdentityTest(unittest.TestCase):
         self.assertFalse(valid)
         urllib2.urlopen = savopen
 
-    def test_parse_api_time(self):
+    def test_parse_api_time_us(self):
         ident = self.identity_class()
         test_date = "2012-01-02T05:20:30.000-05:00"
+        expected = datetime.datetime(2012, 1, 2, 10, 20, 30)
+        parsed = ident._parse_api_time(test_date)
+        self.assertEqual(parsed, expected)
+
+    def test_parse_api_time_uk(self):
+        ident = self.identity_class()
+        test_date = "2012-01-02T10:20:30.000Z"
         expected = datetime.datetime(2012, 1, 2, 10, 20, 30)
         parsed = ident._parse_api_time(test_date)
         self.assertEqual(parsed, expected)
