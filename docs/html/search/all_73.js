@@ -5,6 +5,8 @@ var searchData=
   ['search_5frecords',['search_records',['../classpyrax_1_1clouddns_1_1CloudDNSDomain.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSDomain.search_records()'],['../classpyrax_1_1clouddns_1_1CloudDNSManager.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSManager.search_records()'],['../classpyrax_1_1clouddns_1_1CloudDNSClient.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSClient.search_records()']]],
   ['selfdeletingtempdirectory',['SelfDeletingTempDirectory',['../classpyrax_1_1utils_1_1SelfDeletingTempDirectory.html',1,'pyrax::utils']]],
   ['selfdeletingtempfile',['SelfDeletingTempfile',['../classpyrax_1_1utils_1_1SelfDeletingTempfile.html',1,'pyrax::utils']]],
+  ['serverclientexception',['ServerClientException',['../namespacepyrax_1_1exceptions.html#a033b7e579f64b8616b8c34e2406e24d7',1,'pyrax::exceptions']]],
+  ['servernotfound',['ServerNotFound',['../namespacepyrax_1_1exceptions.html#aa7887bc0806ad489b281e31ec228dcc3',1,'pyrax::exceptions']]],
   ['service_5fcatalog',['service_catalog',['../classpyrax_1_1client_1_1BaseClient.html#a83c5f5e2d286366b53226d42868654f2',1,'pyrax::client::BaseClient']]],
   ['service_5fcatalog_2epy',['service_catalog.py',['../service__catalog_8py.html',1,'']]],
   ['service_5fname',['service_name',['../classpyrax_1_1client_1_1BaseClient.html#ad71253c9267916c12cb3b7521e588151',1,'pyrax::client::BaseClient']]],

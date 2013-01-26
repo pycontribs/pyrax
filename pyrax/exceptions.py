@@ -17,6 +17,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+# Since we use the novaclient package, we need to expose its exception
+# classes here.
+from novaclient import exceptions as _nova_exceptions
+ServerNotFound = _nova_exceptions.NotFound
+ServerClientException = _nova_exceptions.ClientException
+
 class PyraxException(Exception):
     pass
 

@@ -758,7 +758,10 @@ class CFClient(object):
 
     def _set_http_log_debug(self, val):
         self._http_log_debug = val
-        os.environ["SWIFTCLIENT_DEBUG"] = str(val)
+        if val:
+            os.environ["SWIFTCLIENT_DEBUG"] = "True"
+        else:
+            os.environ.pop("SWIFTCLIENT_DEBUG", False)
 
     http_log_debug = property(_get_http_log_debug, _set_http_log_debug, None,
             """Determines if all http traffic is logged to the display for debugging.""")

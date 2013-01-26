@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['serverclientexception',['ServerClientException',['../namespacepyrax_1_1exceptions.html#a033b7e579f64b8616b8c34e2406e24d7',1,'pyrax::exceptions']]],
+  ['servernotfound',['ServerNotFound',['../namespacepyrax_1_1exceptions.html#aa7887bc0806ad489b281e31ec228dcc3',1,'pyrax::exceptions']]],
   ['service_5fcatalog',['service_catalog',['../classpyrax_1_1client_1_1BaseClient.html#a83c5f5e2d286366b53226d42868654f2',1,'pyrax::client::BaseClient']]],
   ['service_5fname',['service_name',['../classpyrax_1_1client_1_1BaseClient.html#ad71253c9267916c12cb3b7521e588151',1,'pyrax::client::BaseClient']]],
   ['service_5ftype',['service_type',['../classpyrax_1_1client_1_1BaseClient.html#a4613550f73f11538014f2c577af27bc3',1,'pyrax::client::BaseClient']]],
