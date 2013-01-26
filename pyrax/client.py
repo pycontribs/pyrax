@@ -344,7 +344,6 @@ class BaseClient(httplib2.Http):
         # GET ...:5001/v2.0/tokens/#####/endpoints
         uri = "/".join([uri, "tokens", "%s?belongsTo=%s"
                 % (self.proxy_token, self.proxy_tenant_id)])
-        self._logger.debug("Using Endpoint URI: %s" % uri)
         resp, body = self._time_request(uri, "GET",
                 headers={"X-Auth_Token": self.proxy_token})
         return self._extract_service_catalog(uri, resp, body,
