@@ -275,7 +275,7 @@ Variables</h2></td></tr>
 <div class="memdoc">
 
 <p>Returns the MD5 checksum in hex for the given content. </p>
-<p>If 'content' is a file-like object, the content will be obtained from its read() method. </p>
+<p>If 'content' is a file-like object, the content will be obtained from its read() method. If 'content' is a file path, that file is read and its contents used. Otherwise, 'content' is assumed to be the string whose checksum is desired. </p>
 
 </div>
 </div>
@@ -531,7 +531,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 24 2012 16:05:47 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jan 26 2013 19:14:19 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
