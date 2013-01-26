@@ -38,6 +38,7 @@ It also adds in CDN functionality that is Rackspace-specific.
 import ConfigParser
 from functools import wraps
 import inspect
+import logging
 import os
 
 # keyring is an optional import
@@ -409,6 +410,12 @@ def set_http_debug(val):
     for svc in (cloudservers, cloudfiles, cloud_loadbalancers, cloud_blockstorage,
             cloud_databases, cloud_dns):
         svc.http_log_debug = val
+    if not val:
+        # Need to manually remove the debug handler for swiftclient
+        swift_logger = _cf._swift_client.logger
+        for handler in swift_logger.handlers:
+            if isinstance(handler, logging.StreamHandler):
+                swift_logger.removeHandler(handler)
 
 
 # Read in the configuration file, if any

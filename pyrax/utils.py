@@ -92,13 +92,18 @@ def get_checksum(content):
     """
     Returns the MD5 checksum in hex for the given content. If 'content'
     is a file-like object, the content will be obtained from its read()
-    method.
+    method. If 'content' is a file path, that file is read and its
+    contents used. Otherwise, 'content' is assumed to be the string whose
+    checksum is desired.
     """
     if hasattr(content, "read"):
         pos = content.tell()
         content.seek(0)
         txt = content.read()
         content.seek(pos)
+    elif os.path.isfile(content):
+        with file(content, "rb") as ff:
+            txt = ff.read()
     else:
         txt = content
     md = hashlib.md5()

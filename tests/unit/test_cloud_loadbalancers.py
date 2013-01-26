@@ -993,9 +993,6 @@ class CloudLoadBalancerTest(unittest.TestCase):
         mgr._get_lb(lb.id)
         mgr.get.assert_called_once_with(lb.id)
 
-    def test_bad_node_condition(self):
-        self.assertRaises(exc.InvalidNodeCondition, fakes.FakeNode, condition="FAKE")
-
     def test_bad_node_parameters(self):
         # Can't use FakeNode, since it supplies all valid params.
         self.assertRaises(exc.InvalidNodeParameters, Node)
@@ -1100,11 +1097,58 @@ class CloudLoadBalancerTest(unittest.TestCase):
                 halfClosed=fake_halfClosed, connectionThrottle=fake_connectionThrottle,
                 healthMonitor=fake_healthMonitor, metadata=fake_metadata, timeout=fake_timeout,
                 sessionPersistence=fake_sessionPersistence)
-        print "RET"
-        print ret
-        print "EXP"
-        print expected
         self.assertEqual(ret, expected)
+
+    def test_bad_node_condition(self):
+        clt = self.client
+        nd = fakes.FakeNode()
+        nd.condition = "DRAINING"
+        vip = fakes.FakeVirtualIP()
+        fake_name = "FAKE"
+        fake_port = 999
+        fake_protocol = "FAKE"
+        fake_nodes = [nd]
+        fake_virtual_ips = [vip]
+        fake_algorithm = "FAKE"
+        fake_accessList = ["FAKE"]
+        fake_halfClosed = False
+        fake_connectionLogging = True
+        fake_connectionThrottle = True
+        fake_healthMonitor = object()
+        fake_metadata = {"fake": utils.random_name()}
+        fake_timeout = 42
+        fake_sessionPersistence = True
+        self.assertRaises(exc.InvalidNodeCondition, clt._create_body, fake_name, port=fake_port,
+                protocol=fake_protocol, nodes=fake_nodes, virtual_ips=fake_virtual_ips,
+                algorithm=fake_algorithm, accessList=fake_accessList, connectionLogging=fake_connectionLogging,
+                halfClosed=fake_halfClosed, connectionThrottle=fake_connectionThrottle,
+                healthMonitor=fake_healthMonitor, metadata=fake_metadata, timeout=fake_timeout,
+                sessionPersistence=fake_sessionPersistence)
+
+    def test_missing_lb_parameters(self):
+        clt = self.client
+        nd = fakes.FakeNode()
+        vip = fakes.FakeVirtualIP()
+        fake_name = "FAKE"
+        fake_port = 999
+        fake_protocol = "FAKE"
+        fake_nodes = [nd]
+        fake_virtual_ips = []
+        fake_algorithm = "FAKE"
+        fake_accessList = ["FAKE"]
+        fake_halfClosed = False
+        fake_connectionLogging = True
+        fake_connectionThrottle = True
+        fake_healthMonitor = object()
+        fake_metadata = {"fake": utils.random_name()}
+        fake_timeout = 42
+        fake_sessionPersistence = True
+        self.assertRaises(exc.MissingLoadBalancerParameters, clt._create_body, fake_name, port=fake_port,
+                protocol=fake_protocol, nodes=fake_nodes, virtual_ips=fake_virtual_ips,
+                algorithm=fake_algorithm, accessList=fake_accessList, connectionLogging=fake_connectionLogging,
+                halfClosed=fake_halfClosed, connectionThrottle=fake_connectionThrottle,
+                healthMonitor=fake_healthMonitor, metadata=fake_metadata, timeout=fake_timeout,
+                sessionPersistence=fake_sessionPersistence)
 
     def test_client_get_usage(self):
         clt = self.client
