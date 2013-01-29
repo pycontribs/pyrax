@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import datetime
 import fnmatch
 from functools import wraps
 # Use eventlet if available
@@ -489,6 +490,63 @@ class CFClient(object):
         """Runs the folder upload in the background."""
         uploader = FolderUploader(folder_path, container, ignore, upload_key, self)
         uploader.start()
+
+
+    def sync_folder_to_container(self, folder_path, container, include_hidden=False,
+            ignore_timestamps=False):
+        """
+        Compares the contents of the specified folder, and checks to make sure that the
+        corresponding object is present in the specified container. If there is no remote
+        object matching the local file, it is created. If a matching object exists, the etag
+        is examined to determine if the object in the container matches the local file; if
+        they differ, the container is updated with the local file if the local file is newer when
+        `ignore_timestamps' is False (default). If `ignore_timestamps` is True, the object is
+        overwritten with the local file contents whenever the etags differ. NOTE: the timestamp
+        of a remote object is the time it was uploaded, not the original modification time
+        of the file stored in that object.
+
+        Unless 'include_hidden' is True, files beginning with an initial period are ignored.
+        """
+        cont = self.get_container(container)
+        self._sync_folder_to_container(folder_path, cont, prefix="",
+                include_hidden=include_hidden, ignore_timestamps=ignore_timestamps)
+
+
+    def _sync_folder_to_container(self, folder_path, cont, prefix, include_hidden, ignore_timestamps):
+        """
+        This is the internal method that is called recursively to handle nested folder structures.
+        """
+        fnames = os.listdir(folder_path)
+        for fname in fnames:
+            if fname.startswith(".") and not include_hidden:
+                continue
+            pth = os.path.join(folder_path, fname)
+            if os.path.isdir(pth):
+                subprefix = fname
+                if prefix:
+                    subprefix = "%s/%s" % (prefix, subprefix)
+                self._sync_folder_to_container(pth, cont, prefix=subprefix,
+                        include_hidden=include_hidden, ignore_timestamps=ignore_timestamps)
+                continue
+            local_etag = utils.get_checksum(pth)
+            fullname = fname
+            if prefix:
+                fullname = "%s/%s" % (prefix, fname)
+            try:
+                obj = cont.get_object(fullname)
+                obj_etag = obj.etag
+            except exc.NoSuchObject:
+                obj = None
+                obj_etag = None
+            if local_etag != obj_etag:
+                if not ignore_timestamps:
+                    obj_time_str = obj.last_modified[:19] if obj else '1900-01-01T00:00:00'
+                    local_mod = datetime.datetime.utcfromtimestamp(os.stat(pth).st_mtime)
+                    local_mod_str = local_mod.isoformat()
+                    if obj_time_str >= local_mod_str:
+                        # Remote object is newer
+                        continue
+                cont.upload_file(pth, obj_name=fullname, etag=local_etag)
 
 
     def _valid_upload_key(fnc):
