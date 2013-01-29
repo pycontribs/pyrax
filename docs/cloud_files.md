@@ -213,6 +213,26 @@ Since a folder upload can take a while, the uploading happens in a background th
 Sometimes it is necessary to stop a folder upload before it has completed. To do this, call `cloudfiles.cancel_folder_upload(upload_key)`, which will cause the background thread to stop uploading.
 
 
+## Syncing a Local Folder with a Container
+Another common use case is to use Cloud Files as a backup of the important files on your local machine. `pyrax` provides the `sync_folder_to_container()` method that makes this straightforward. It takes the following parameters:
+
+Parameter | Required? | Description | Default
+---- | ---- | ---- | ---- 
+**folder_path** | yes | Full path to the folder on your local machine | n/a
+**container** | yes | Either the name of an existing container, or an actual container object | n/a
+**include_hidden** | no | When False, files in your folder that begin with a period are ignored | False
+**ignore_timestamps** | no | When False, if the local file and remote object differ, the local file is uploaded and overwrites the remote. When True, the local file's modification time is compared with the remote object's last_modified time, and the remote object is only overwritten if the local file is newer. | False
+
+As an example, assume you have a project named 'important' that you want to make sure is always backed up to Cloud Files. You could write a quick script like this, and call it from a cron job.
+
+    cf = pyrax.cloudfiles
+    local = "/home/myname/projects/important"
+    remote = cf.create_container("important_files")
+    cf.sync_folder_to_container(local, remote)
+
+This would sync all of the files in that folder, except for hidden files, such as .git subdirectories, or the .swp files that vim creates.
+
+
 ## Listing Objects in a Container
 Assuming you have a `Container` object, simply call:
 
