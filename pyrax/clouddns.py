@@ -62,7 +62,7 @@ class CloudDNSRecord(BaseResource):
         """
         Modifies this record.
         """
-        return self.manager.update_record(self.domain_id, self, self.name, data=data,
+        return self.manager.update_record(self.domain_id, self, data=data,
                 priority=priority, ttl=ttl, comment=comment)
 
 
