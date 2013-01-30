@@ -97,6 +97,16 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.post_object.assert_called_with(self.cont_name, self.obj_name,
                 {"x-object-meta-newkey": "newval", "x-object-meta-foo": "yes"})
 
+    def test_remove_container_metadata_key(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        client.connection.head_container.return_value = {"X-Container-Meta-Foo": "foo",
+                "X-Container-Meta-Bar": "bar"}
+        client.connection.post_container = Mock()
+        client.remove_container_metadata_key(self.cont_name, "Bar")
+        client.connection.post_container.assert_called_with(self.cont_name,
+                {"x-container-meta-bar": ""})
+
     def test_massage_metakeys(self):
         prefix = "ABC-"
         orig = {"ABC-yyy": "ok", "zzz": "change"}
@@ -196,7 +206,7 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.put_object = Mock()
         gobj = client.get_object
         client.get_object = Mock(return_value=self.fake_object)
-        content = "something"
+        content = u"something with ü†ƒ-8"
         etag = utils.get_checksum(content)
         obj = client.store_object(self.cont_name, self.obj_name, content,
                 content_type="test/test", etag=etag)
@@ -354,6 +364,7 @@ class CF_ClientTest(unittest.TestCase):
             uploader.actual_run()
             self.assertEqual(client.upload_file.call_count, num_files)
         client.get_object = gobj
+        client.upload_file = up
         client._should_abort_folder_upload = safu
         client._update_progress = upprog
 
@@ -363,6 +374,80 @@ class CF_ClientTest(unittest.TestCase):
         clt.folder_upload_status = {"good": {"uploaded": 0}}
         self.assertIsNone(clt._update_progress("good", 1))
         self.assertRaises(exc.InvalidUploadID, clt._update_progress, "bad", 1)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_sync_folder_to_container(self):
+        clt = self.client
+        up = clt.upload_file
+        clt.upload_file = Mock()
+        clt.connection.head_container = Mock()
+        clt.connection.put_container = Mock()
+        clt.get_container_objects = Mock(return_value=[])
+        cont_name = utils.random_name(8)
+        cont = clt.create_container(cont_name)
+        num_files = 7
+        with utils.SelfDeletingTempDirectory() as tmpdir:
+            for idx in xrange(num_files):
+                nm = "file%s" % idx
+                pth = os.path.join(tmpdir, nm)
+                file(pth, "w").write("test")
+            clt.sync_folder_to_container(tmpdir, cont)
+            self.assertEqual(clt.upload_file.call_count, num_files)
+        clt.upload_file = up
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_sync_folder_to_container_hidden(self):
+        clt = self.client
+        up = clt.upload_file
+        clt.upload_file = Mock()
+        clt.connection.head_container = Mock()
+        clt.connection.put_container = Mock()
+        clt.get_container_objects = Mock(return_value=[])
+        cont_name = utils.random_name(8)
+        cont = clt.create_container(cont_name)
+        num_vis_files = 4
+        num_hid_files = 4
+        num_all_files = num_vis_files + num_hid_files
+        with utils.SelfDeletingTempDirectory() as tmpdir:
+            for idx in xrange(num_vis_files):
+                nm = "file%s" % idx
+                pth = os.path.join(tmpdir, nm)
+                file(pth, "w").write("test")
+            for idx in xrange(num_hid_files):
+                nm = ".file%s" % idx
+                pth = os.path.join(tmpdir, nm)
+                file(pth, "w").write("test")
+            clt.sync_folder_to_container(tmpdir, cont, include_hidden=True)
+            self.assertEqual(clt.upload_file.call_count, num_all_files)
+        clt.upload_file = up
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_sync_folder_to_container_nested(self):
+        clt = self.client
+        up = clt.upload_file
+        clt.upload_file = Mock()
+        clt.connection.head_container = Mock()
+        clt.connection.put_container = Mock()
+        clt.get_container_objects = Mock(return_value=[])
+        cont_name = utils.random_name(8)
+        cont = clt.create_container(cont_name)
+        num_files = 3
+        num_nested_files = 6
+        num_all_files = num_files + num_nested_files
+        with utils.SelfDeletingTempDirectory() as tmpdir:
+            for idx in xrange(num_files):
+                nm = "file%s" % idx
+                pth = os.path.join(tmpdir, nm)
+                file(pth, "w").write("test")
+            nested_folder = os.path.join(tmpdir, "nested")
+            os.mkdir(nested_folder)
+            for idx in xrange(num_nested_files):
+                nm = "file%s" % idx
+                pth = os.path.join(nested_folder, nm)
+                file(pth, "w").write("test")
+            clt.sync_folder_to_container(tmpdir, cont)
+            self.assertEqual(clt.upload_file.call_count, num_all_files)
+        clt.upload_file = up
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_copy_object(self):

@@ -107,7 +107,10 @@ def get_checksum(content):
     else:
         txt = content
     md = hashlib.md5()
-    md.update(txt)
+    try:
+        md.update(txt)
+    except UnicodeEncodeError:
+        md.update(txt.encode("utf8"))
     return md.hexdigest()
 
 
