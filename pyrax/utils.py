@@ -88,13 +88,14 @@ class SelfDeletingTempDirectory(object):
         shutil.rmtree(self.name)
 
 
-def get_checksum(content):
+def get_checksum(content, encoding="utf8"):
     """
     Returns the MD5 checksum in hex for the given content. If 'content'
     is a file-like object, the content will be obtained from its read()
     method. If 'content' is a file path, that file is read and its
     contents used. Otherwise, 'content' is assumed to be the string whose
-    checksum is desired.
+    checksum is desired. If the content is unicode, it will be encoded
+    using the specified encoding.
     """
     if hasattr(content, "read"):
         pos = content.tell()
@@ -110,7 +111,7 @@ def get_checksum(content):
     try:
         md.update(txt)
     except UnicodeEncodeError:
-        md.update(txt.encode("utf8"))
+        md.update(txt.encode(encoding))
     return md.hexdigest()
 
 
