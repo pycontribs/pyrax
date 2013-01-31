@@ -22,6 +22,7 @@ except ImportError:
     import pdb as pudb
 trace = pudb.set_trace
 
+import pyrax
 import pyrax.exceptions as exc
 
 
@@ -115,9 +116,21 @@ def get_checksum(content, encoding="utf8"):
     return md.hexdigest()
 
 
-def random_name(length=20):
-    """Generates a random name; useful for testing."""
-    base_chars = string.ascii_letters
+def random_name(length=20, ascii_only=False):
+    """
+    Generates a random name; useful for testing.
+
+    By default it will return an encoded string containing
+    unicode values up to code point 1000. If you only
+    need or want ASCII values, pass True to the
+    ascii_only parameter.
+    """
+    if ascii_only:
+        base_chars = string.ascii_letters
+    else:
+        def get_char():
+            return unichr(random.randint(32, 1000)).encode(pyrax.encoding)
+        base_chars = "".join([get_char() for ii in xrange(length)])
     mult = (length / len(base_chars)) + 1
     chars = base_chars * mult
     return "".join(random.sample(chars, length))
