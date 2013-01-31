@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import pyrax
 from pyrax import exceptions as exc
 
 # Used to indicate values that are lazy-loaded
@@ -80,6 +81,8 @@ class Container(object):
         Return the StorageObject in this container with the
         specified name.
         """
+        if isinstance(name, str):
+            name = name.decode(pyrax.encoding)
         ret = self._object_cache.get(name)
         if not ret:
             objs = [obj for obj in self.client.get_container_objects(self.name)
@@ -92,11 +95,14 @@ class Container(object):
         return ret
 
 
-    def get_object_names(self):
+    def get_object_names(self, marker=None, limit=None, prefix=None, delimiter=None,
+            full_listing=False):
         """
-        Returns a list of the names of all the objects in this container.
+        Returns a list of the names of all the objects in this container. The same
+        pagination parameters apply as in self.get_objects().
         """
-        objs = self.get_objects()
+        objs = self.get_objects(marker=marker, limit=limit, prefix=prefix, delimiter=delimiter,
+            full_listing=full_listing)
         return [obj.name for obj in objs]
 
 
