@@ -203,6 +203,14 @@ class CloudDatabaseInstance(BaseResource):
         body = {"volume": {"size": size}}
         self.manager.action(self, "resize", body=body)
 
+    def get_disk_usage(self):
+        """Get the disk usage of this instance."""
+        if self.volume.get("used"):
+            return self.volume.get("used")
+        else:
+            uri = "/instances/%s" % self.id
+            resp, body = self.manager.api.method_get(uri)
+            return body['instance']['volume']['used']
 
     def _get_flavor(self):
         try:
