@@ -1,5 +1,16 @@
 # Release Notes for pyrax
 
+2013.02.05 - Added the `sync_folder_to_container()` method to cloudfiles to make it
+             easier to keep a copy of a local folder synced to the cloud.
+           - Removed the lazy load of volume info for cloud databases. Changed the
+             'volume' attribute to be an object to allow for dot notation access
+             to its values.
+           - Eliminated as many places as possible where use of non-ASCII characters
+             caused encoding issues. Added a configuration option to allow users to
+             specify their preferred encoding; default=utf-8.
+           - Fixed a bug in the `get_object_names()` method of the Cloud Files
+             container class.
+
 2013.01.26 - Fixed an issue preventing existing node objects being created if in
              'DRAINING' condition (GitHub #6). Modified the rax_identity to accept
              UTC dates returned from the LON datacenter (GitHub #5). Fixed an
