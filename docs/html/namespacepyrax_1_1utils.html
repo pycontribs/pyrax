@@ -267,15 +267,25 @@ Variables</h2></td></tr>
           <td class="memname">def <a class="el" href="namespacepyrax_1_1utils.html#a9e1881e14792f2c07dd799fd7b9d53d1">pyrax.utils.get_checksum</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>content</em></td><td>)</td>
+          <td class="paramname"><em>content</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>encoding</em> = <code>&quot;utf8&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>Returns the MD5 checksum in hex for the given content. </p>
-<p>If 'content' is a file-like object, the content will be obtained from its read() method. If 'content' is a file path, that file is read and its contents used. Otherwise, 'content' is assumed to be the string whose checksum is desired. </p>
+<p>If 'content' is a file-like object, the content will be obtained from its read() method. If 'content' is a file path, that file is read and its contents used. Otherwise, 'content' is assumed to be the string whose checksum is desired. If the content is unicode, it will be encoded using the specified encoding. </p>
 
 </div>
 </div>
@@ -374,14 +384,25 @@ Variables</h2></td></tr>
           <td class="memname">def <a class="el" href="namespacepyrax_1_1utils.html#a15ae8eb19e0cbaf0281e950aebca0962">pyrax.utils.random_name</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>length</em> = <code>20</code></td><td>)</td>
+          <td class="paramname"><em>length</em> = <code>20</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>ascii_only</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>Generates a random name; useful for testing. </p>
+<p>By default it will return an encoded string containing unicode values up to code point 1000. If you only need or want ASCII values, pass True to the ascii_only parameter. </p>
 
 </div>
 </div>
@@ -531,7 +552,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Jan 26 2013 19:14:19 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Feb 5 2013 13:13:14 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

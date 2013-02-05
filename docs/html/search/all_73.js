@@ -41,5 +41,6 @@ var searchData=
   ['storage_5fobject_2epy',['storage_object.py',['../storage__object_8py.html',1,'']]],
   ['storageobject',['StorageObject',['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html',1,'pyrax::cf_wrapper::storage_object']]],
   ['store_5fobject',['store_object',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#af0a50c69bbe50a35557fb373cf3b4b6f',1,'pyrax::cf_wrapper::client::CFClient.store_object()'],['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#af0a50c69bbe50a35557fb373cf3b4b6f',1,'pyrax::cf_wrapper::container::Container.store_object()']]],
-  ['subdomainresultsiterator',['SubdomainResultsIterator',['../classpyrax_1_1clouddns_1_1SubdomainResultsIterator.html',1,'pyrax::clouddns']]]
+  ['subdomainresultsiterator',['SubdomainResultsIterator',['../classpyrax_1_1clouddns_1_1SubdomainResultsIterator.html',1,'pyrax::clouddns']]],
+  ['sync_5ffolder_5fto_5fcontainer',['sync_folder_to_container',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#af2b0d6de7b4f7cb42d5ecef34b239907',1,'pyrax::cf_wrapper::client::CFClient']]]
 ];
