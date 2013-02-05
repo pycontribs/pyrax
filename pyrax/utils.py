@@ -22,6 +22,7 @@ except ImportError:
     import pdb as pudb
 trace = pudb.set_trace
 
+import pyrax
 import pyrax.exceptions as exc
 
 
@@ -88,13 +89,14 @@ class SelfDeletingTempDirectory(object):
         shutil.rmtree(self.name)
 
 
-def get_checksum(content):
+def get_checksum(content, encoding="utf8"):
     """
     Returns the MD5 checksum in hex for the given content. If 'content'
     is a file-like object, the content will be obtained from its read()
     method. If 'content' is a file path, that file is read and its
     contents used. Otherwise, 'content' is assumed to be the string whose
-    checksum is desired.
+    checksum is desired. If the content is unicode, it will be encoded
+    using the specified encoding.
     """
     if hasattr(content, "read"):
         pos = content.tell()
@@ -107,13 +109,28 @@ def get_checksum(content):
     else:
         txt = content
     md = hashlib.md5()
-    md.update(txt)
+    try:
+        md.update(txt)
+    except UnicodeEncodeError:
+        md.update(txt.encode(encoding))
     return md.hexdigest()
 
 
-def random_name(length=20):
-    """Generates a random name; useful for testing."""
-    base_chars = string.ascii_letters
+def random_name(length=20, ascii_only=False):
+    """
+    Generates a random name; useful for testing.
+
+    By default it will return an encoded string containing
+    unicode values up to code point 1000. If you only
+    need or want ASCII values, pass True to the
+    ascii_only parameter.
+    """
+    if ascii_only:
+        base_chars = string.ascii_letters
+    else:
+        def get_char():
+            return unichr(random.randint(32, 1000)).encode(pyrax.encoding)
+        base_chars = "".join([get_char() for ii in xrange(length)])
     mult = (length / len(base_chars)) + 1
     chars = base_chars * mult
     return "".join(random.sample(chars, length))

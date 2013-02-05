@@ -76,11 +76,12 @@ You can control how pyrax operates by including the optional configuration file.
 
 Setting | Affects | Default
 ---- | ---- | ----
-**identity_type** | The system used for authentication | rackspace
-**keyring_username** | User name used when fetching password from keyring | -none-
-**region** | Regional datacenter to connect to; either 'DFW', 'ORD', or 'LON' | DFW
-**custom_user_agent** | Customizes the User-agent string sent to the server | -none-
-**http_debug** | Causes all HTTP requests and responses to be output to the console | False
+**identity_type** | The system used for authentication. | rackspace
+**keyring_username** | User name used when fetching password from keyring. | -none-
+**region** | Regional datacenter to connect to; either 'DFW', 'ORD', or 'LON'. | DFW
+**encoding** | The encoding to use when working with non-ASCII values. Unless you have a specific need, the default should work fine. | utf-8
+**custom_user_agent** | Customizes the User-agent string sent to the server. | -none-
+**http_debug** | When True, causes all HTTP requests and responses to be output to the console to aid in debugging. | False
 
 Here is a sample:
 
@@ -97,6 +98,7 @@ With the above example, pyrax will:
 * use "myusername" as the username for keyring authentication
 * provision resources in the `ORD` region
 * not output HTTP requests and responses to the console
+* use UTF-8 encoding (the default) when working with non-ASCII values
 * customize the **User-agent** string sent to the API servers on each request by prepending the string "AwesomeApp/1.2" to the standard pyrax User-agent setting, allowing requests from your application to be distinguished from other  applications built with pyrax.
 
 

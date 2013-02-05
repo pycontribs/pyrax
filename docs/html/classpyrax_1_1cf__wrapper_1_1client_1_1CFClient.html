@@ -153,6 +153,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Uploads the specified file to the container.  <a href="#a3857f84faa9608b0bf0a4e84ba5b1566"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1d81cba43ddabd40e412c5d709192958">upload_folder</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience method for uploading an entire folder, including any sub-folders, to Cloud Files.  <a href="#a1d81cba43ddabd40e412c5d709192958"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#af2b0d6de7b4f7cb42d5ecef34b239907">sync_folder_to_container</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares the contents of the specified folder, and checks to make sure that the corresponding object is present in the specified container.  <a href="#af2b0d6de7b4f7cb42d5ecef34b239907"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a537487e2f2dabc8103e2006739cbeb0e">get_uploaded</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of bytes uploaded for the specified process.  <a href="#a537487e2f2dabc8103e2006739cbeb0e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a621a0e61fdb17290b5e9f5dec5eb12fc">cancel_folder_upload</a></td></tr>
@@ -1537,6 +1539,62 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="af2b0d6de7b4f7cb42d5ecef34b239907"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::sync_folder_to_container" ref="af2b0d6de7b4f7cb42d5ecef34b239907" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#af2b0d6de7b4f7cb42d5ecef34b239907">sync_folder_to_container</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>folder_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>delete</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>include_hidden</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>ignore_timestamps</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Compares the contents of the specified folder, and checks to make sure that the corresponding object is present in the specified container. </p>
+<p>If there is no remote object matching the local file, it is created. If a matching object exists, the etag is examined to determine if the object in the container matches the local file; if they differ, the container is updated with the local file if the local file is newer when `ignore_timestamps' is False (default). If `ignore_timestamps` is True, the object is overwritten with the local file contents whenever the etags differ. NOTE: the timestamp of a remote object is the time it was uploaded, not the original modification time of the file stored in that object.</p>
+<p>Unless 'include_hidden' is True, files beginning with an initial period are ignored.</p>
+<p>If the 'delete' option is True, any objects in the container that do not have corresponding files in the local folder are deleted. </p>
+
+</div>
+</div>
 <a class="anchor" id="a3857f84faa9608b0bf0a4e84ba5b1566"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::upload_file" ref="a3857f84faa9608b0bf0a4e84ba5b1566" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1805,7 +1863,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 17 2012 18:02:49 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Feb 5 2013 13:13:12 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

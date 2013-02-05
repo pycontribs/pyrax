@@ -209,7 +209,7 @@ Since each `Server` object has a `delete()` method, it is simple to delete all t
 If you have a `Server` object and want to create an image of that server, you can call its `create_image()` method, passing in the name of the image to create, along with any optional metadata for the image.
 
     cs = pyrax.cloudservers
-    server = cs.get(id_of_server)
+    server = cs.servers.get(id_of_server)
     server.create_image("my_image_name")
 
 Another option is to use call `pyrax.servers.create_image()`, passing in either the name or the ID of the server from which you want to create the image, along with the image name and optional metadata.
@@ -224,7 +224,7 @@ Resizing a server is the process of changing the amount of resources allocated t
 Resizing is a multi-step process. First, determine the desired `Flavor` to which the server is to be resized. Then call the `resize()` method on the server, passing in the ID of the desired `Flavor`. The server's status will then be set to "RESIZE".
 
     cs = pyrax.cloudservers
-    server = cs.get(id_of_server)
+    server = cs.servers.get(id_of_server)
     server.resize(new_flavor_ID)
 
 On the host, a new server instance with the new flavor size will be created based on your existing server. When it is ready, the ID, name, networking, and so forth for the current server instance will be transferred to the new instance. At that point, `get(ID)` will return the new instance, and it will have a status of "CONFIRM_RESIZE". Now you will need to determine if the resize was successful, and that the server is functioning properly. If all is well, call:

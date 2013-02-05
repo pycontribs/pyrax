@@ -101,6 +101,10 @@ default_region = None
 FALLBACK_REGION = "DFW"
 # If credentials are stored using keyring, this holds the username
 keyring_username = None
+# Encoding to use when working with non-ASCII names
+encoding = None
+# If no encoding is specified, use this by default
+DEFAULT_ENCODING = "utf-8"
 
 # Value to plug into the user-agent headers
 USER_AGENT = "pyrax/%s" % version.version
@@ -116,7 +120,7 @@ def safe_region(region=None):
 
 def _read_config_settings(config_file):
     global default_region, default_identity_type, USER_AGENT
-    global _http_debug, keyring_username
+    global _http_debug, encoding, keyring_username
     cfg = ConfigParser.SafeConfigParser()
     try:
         cfg.read(config_file)
@@ -136,6 +140,7 @@ def _read_config_settings(config_file):
     app_agent = safe_get("settings", "custom_user_agent")
     _http_debug = (safe_get("settings", "debug") or "False") == "True"
     keyring_username = safe_get("settings", "keyring_username")
+    encoding = safe_get("settings", "encoding") or DEFAULT_ENCODING
     if app_agent:
         # Customize the user-agent string with the app name.
         USER_AGENT = "%s %s" % (app_agent, USER_AGENT)
