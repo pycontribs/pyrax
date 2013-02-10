@@ -373,11 +373,12 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def upload_file(self, container, file_or_path, obj_name=None, content_type=None,
-            etag=None):
+            etag=None, return_none=False):
         """
         Uploads the specified file to the container. If no name is supplied, the
         file's name will be used. Either a file path or an open file-like object
-        may be supplied.
+        may be supplied. A StorageObject reference to the uploaded file will be
+        returned, unless 'return_none' is set to True.
         """
         cont = self.get_container(container)
 
@@ -437,7 +438,10 @@ class CFClient(object):
                 upload(ff, content_type, etag)
         else:
             upload(file_or_path, content_type, etag)
-        return self.get_object(container, obj_name)
+        if return_none:
+            return None
+        else:
+            return self.get_object(container, obj_name)
 
 
     def upload_folder(self, folder_path, container=None, ignore=None):
@@ -552,7 +556,7 @@ class CFClient(object):
                     if obj_time_str >= local_mod_str:
                         # Remote object is newer
                         continue
-                cont.upload_file(pth, obj_name=fullname, etag=local_etag)
+                cont.upload_file(pth, obj_name=fullname, etag=local_etag, return_none=True)
         if delete and not prefix:
             self._delete_objects_not_in_list(cont)
 
@@ -969,7 +973,8 @@ class FolderUploader(threading.Thread):
                 continue
             obj_name = os.path.relpath(full_path, self.base_path)
             obj_size = os.stat(full_path).st_size
-            self.client.upload_file(self.container, full_path, obj_name=obj_name)
+            self.client.upload_file(self.container, full_path, obj_name=obj_name,
+                    return_none=True)
             self.client._update_progress(self.upload_key, obj_size)
 
     def run(self):

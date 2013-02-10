@@ -115,14 +115,16 @@ class Container(object):
                 etag=etag)
 
 
-    def upload_file(self, file_or_path, obj_name=None, content_type=None, etag=None):
+    def upload_file(self, file_or_path, obj_name=None, content_type=None, etag=None,
+            return_none=False):
         """
         Uploads the specified file to this container. If no name is supplied, the
         file's name will be used. Either a file path or an open file-like object
-        may be supplied.
+        may be supplied. A StorageObject reference to the uploaded file will be
+        returned, unless 'return_none' is set to True.
         """
         return self.client.upload_file(self, file_or_path, obj_name=obj_name,
-                content_type=content_type, etag=etag)
+                content_type=content_type, etag=etag, return_none=return_none)
 
 
     def delete_object(self, obj):
