@@ -17,8 +17,8 @@ class Container(object):
     def __init__(self, client, name, object_count=None, total_bytes=None):
         self.client = client
         self.name = name
-        self.object_count = object_count
-        self.total_bytes = total_bytes
+        self.object_count = int(object_count)
+        self.total_bytes = int(total_bytes)
         self._cdn_uri = FAULT
         self._cdn_ttl = FAULT
         self._cdn_ssl_uri = FAULT
