@@ -92,19 +92,15 @@ cloud_dns = None
 # Class used to handle auth/identity
 identity_class = None
 # Default identity type.
-default_identity_type = None
+default_identity_type = "rackspace"
 # Identity object
 identity = None
 # Default region for all services. Can be individually overridden if needed
-default_region = None
-# Some services require a region. If the user doesn't specify one, use DFW.
-FALLBACK_REGION = "DFW"
+default_region = "DFW"
 # If credentials are stored using keyring, this holds the username
 keyring_username = None
 # Encoding to use when working with non-ASCII names
-encoding = None
-# If no encoding is specified, use this by default
-DEFAULT_ENCODING = "utf-8"
+encoding = "utf-8"
 
 # Value to plug into the user-agent headers
 USER_AGENT = "pyrax/%s" % version.version
@@ -115,7 +111,7 @@ _http_debug = False
 
 def safe_region(region=None):
     """Value to use when no region is specified."""
-    return region or default_region or FALLBACK_REGION
+    return region or default_region
 
 
 def _read_config_settings(config_file):
