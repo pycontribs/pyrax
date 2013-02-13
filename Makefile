@@ -10,7 +10,7 @@ test: lint test-python
 
 test-python:
 	@echo "Running Python tests"
-	nose --with-coverage -w tests
+	nosetests --with-coverage -w tests
 	@echo ""
 
 lint: lint-python
