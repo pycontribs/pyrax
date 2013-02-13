@@ -6,11 +6,8 @@ import unittest
 from mock import patch
 from mock import MagicMock as Mock
 
-from pyrax import CloudDatabaseClient
-from pyrax import CloudDatabaseDatabase
 from pyrax import CloudDatabaseFlavor
 from pyrax import CloudDatabaseInstance
-from pyrax import CloudDatabaseUser
 from pyrax.cloud_databases import assure_instance
 import pyrax.exceptions as exc
 import pyrax.utils as utils
@@ -96,18 +93,25 @@ class CloudDatabasesTest(unittest.TestCase):
         inst = self.instance
         sav = inst._database_manager.create
         inst._database_manager.create = Mock()
-        db = inst.create_database(name="test")
-        inst._database_manager.create.assert_called_once_with(name="test",
-                character_set="utf8", collate="utf8_general_ci", return_none=True)
+        inst.create_database(name="test")
+        inst._database_manager.create.assert_called_once_with(
+            name="test",
+            character_set="utf8",
+            collate="utf8_general_ci",
+            return_none=True)
         inst._database_manager.create = sav
 
     def test_create_user(self):
         inst = self.instance
         sav = inst._user_manager.create
         inst._user_manager.create = Mock()
-        inst.create_user(name="test", password="testpw", database_names="testdb")
-        inst._user_manager.create.assert_called_once_with(name="test", password="testpw",
-        database_names=["testdb"], return_none=True)
+        inst.create_user(
+            name="test", password="testpw", database_names="testdb")
+        inst._user_manager.create.assert_called_once_with(
+            name="test",
+            password="testpw",
+            database_names=["testdb"],
+            return_none=True)
         inst._user_manager.create = sav
 
     def test_delete_database(self):
@@ -148,7 +152,7 @@ class CloudDatabasesTest(unittest.TestCase):
     def test_restart(self):
         inst = self.instance
         inst.manager.action = Mock()
-        ret = inst.restart()
+        inst.restart()
         inst.manager.action.assert_called_once_with(inst, "restart")
 
     def test_resize(self):
@@ -157,9 +161,10 @@ class CloudDatabasesTest(unittest.TestCase):
         inst.manager.api._get_flavor_ref = Mock(return_value=flavor_ref)
         fake_body = {"flavorRef": flavor_ref}
         inst.manager.action = Mock()
-        ret = inst.resize(42)
-        call_uri = "/instances/%s/action" % inst.id
-        inst.manager.action.assert_called_once_with(inst, "resize", body=fake_body)
+        inst.resize(42)
+        # call_uri = "/instances/%s/action" % inst.id
+        inst.manager.action.assert_called_once_with(
+            inst, "resize", body=fake_body)
 
     def test_resize_volume_too_small(self):
         inst = self.instance
@@ -171,8 +176,9 @@ class CloudDatabasesTest(unittest.TestCase):
         inst.volume.get = Mock(return_value=1)
         fake_body = {"volume": {"size": 2}}
         inst.manager.action = Mock()
-        ret = inst.resize_volume(2)
-        inst.manager.action.assert_called_once_with(inst, "resize", body=fake_body)
+        inst.resize_volume(2)
+        inst.manager.action.assert_called_once_with(
+            inst, "resize", body=fake_body)
 
     def test_get_flavor_property(self):
         inst = self.instance
@@ -213,8 +219,8 @@ class CloudDatabasesTest(unittest.TestCase):
         nm = utils.random_name()
         ret = clt.create_database(inst, nm)
         self.assertEqual(ret, ["db"])
-        inst.create_database.assert_called_once_with(nm,
-                character_set=None, collate=None)
+        inst.create_database.assert_called_once_with(
+            nm, character_set=None, collate=None)
         inst.create_database = sav
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
@@ -246,9 +252,9 @@ class CloudDatabasesTest(unittest.TestCase):
         inst.create_user = Mock()
         nm = utils.random_name()
         pw = utils.random_name()
-        ret = clt.create_user(inst, nm, pw, ["db"])
-        inst.create_user.assert_called_once_with(name=nm, password=pw,
-                database_names=["db"])
+        clt.create_user(inst, nm, pw, ["db"])
+        inst.create_user.assert_called_once_with(
+            name=nm, password=pw, database_names=["db"])
         inst.create_user = sav
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
@@ -309,12 +315,13 @@ class CloudDatabasesTest(unittest.TestCase):
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_get_flavor_ref_for_obj(self):
         clt = self.client
-        info = {"id": 1,
-                "name": "test_flavor",
-                "ram": 42,
-                "links": [{
-                "href": example_uri,
-                "rel": "self"}]}
+        info = {
+            "id": 1,
+            "name": "test_flavor",
+            "ram": 42,
+            "links": [{
+            "href": example_uri,
+            "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
         ret = clt._get_flavor_ref(flavor_obj)
         self.assertEqual(ret, example_uri)
@@ -322,12 +329,13 @@ class CloudDatabasesTest(unittest.TestCase):
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_get_flavor_ref_for_id(self):
         clt = self.client
-        info = {"id": 1,
-                "name": "test_flavor",
-                "ram": 42,
-                "links": [{
-                "href": example_uri,
-                "rel": "self"}]}
+        info = {
+            "id": 1,
+            "name": "test_flavor",
+            "ram": 42,
+            "links": [{
+            "href": example_uri,
+            "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
         sav = clt.get_flavor
         clt.get_flavor = Mock(return_value=flavor_obj)
@@ -338,12 +346,13 @@ class CloudDatabasesTest(unittest.TestCase):
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_get_flavor_ref_for_name(self):
         clt = self.client
-        info = {"id": 1,
-                "name": "test_flavor",
-                "ram": 42,
-                "links": [{
-                "href": example_uri,
-                "rel": "self"}]}
+        info = {
+            "id": 1,
+            "name": "test_flavor",
+            "ram": 42,
+            "links": [{
+            "href": example_uri,
+            "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
         sav_get = clt.get_flavor
         sav_list = clt.list_flavors
@@ -355,14 +364,15 @@ class CloudDatabasesTest(unittest.TestCase):
         clt.list_flavors = sav_list
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
-    def test_get_flavor_ref_for_name(self):
+    def test_get_flavor_ref_for_name_again(self):
         clt = self.client
-        info = {"id": 1,
-                "name": "test_flavor",
-                "ram": 42,
-                "links": [{
-                "href": example_uri,
-                "rel": "self"}]}
+        info = {
+            "id": 1,
+            "name": "test_flavor",
+            "ram": 42,
+            "links": [{
+            "href": example_uri,
+            "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
         sav_get = clt.get_flavor
         sav_list = clt.list_flavors
@@ -376,12 +386,13 @@ class CloudDatabasesTest(unittest.TestCase):
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_get_flavor_ref_not_found(self):
         clt = self.client
-        info = {"id": 1,
-                "name": "test_flavor",
-                "ram": 42,
-                "links": [{
-                "href": example_uri,
-                "rel": "self"}]}
+        info = {
+            "id": 1,
+            "name": "test_flavor",
+            "ram": 42,
+            "links": [{
+            "href": example_uri,
+            "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
         sav_get = clt.get_flavor
         sav_list = clt.list_flavors
@@ -396,8 +407,9 @@ class CloudDatabasesTest(unittest.TestCase):
         clt = self.client
         nm = utils.random_name()
         ret = clt._create_body(nm, character_set="CS", collate="CO")
-        expected = {"databases": [
-                {"name": nm,
+        expected = {
+            "databases": [{
+                "name": nm,
                 "character_set": "CS",
                 "collate": "CO"}]}
         self.assertEqual(ret, expected)
@@ -408,8 +420,9 @@ class CloudDatabasesTest(unittest.TestCase):
         nm = utils.random_name()
         pw = utils.random_name()
         ret = clt._create_body(nm, password=pw, database_names=[])
-        expected = {"users": [
-                {"name": nm,
+        expected = {
+            "users": [{
+                "name": nm,
                 "password": pw,
                 "databases": []}]}
         self.assertEqual(ret, expected)
@@ -421,7 +434,8 @@ class CloudDatabasesTest(unittest.TestCase):
         sav = clt._get_flavor_ref
         clt._get_flavor_ref = Mock(return_value=example_uri)
         ret = clt._create_body(nm)
-        expected = {"instance": {
+        expected = {
+            "instance": {
                 "name": nm,
                 "flavorRef": example_uri,
                 "volume": {"size": 1},

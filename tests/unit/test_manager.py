@@ -55,8 +55,8 @@ class ManagerTest(unittest.TestCase):
         mgr.api._create_body = Mock(return_value="body")
         nm = utils.random_name()
         mgr.create(nm)
-        mgr._create.assert_called_once_with("/test", "body", return_none=False,
-                return_raw=False)
+        mgr._create.assert_called_once_with(
+            "/test", "body", return_none=False, return_raw=False)
         mgr._create = sav
 
     def test_delete(self):
@@ -166,7 +166,8 @@ class ManagerTest(unittest.TestCase):
         mgr.api.method_post = Mock()
         item = fakes.FakeEntity()
         mgr.action(item, "fake")
-        mgr.api.method_post.assert_called_once_with("/testing/%s/action" % item.id, body={"fake": {}})
+        mgr.api.method_post.assert_called_once_with(
+            "/testing/%s/action" % item.id, body={"fake": {}})
 
     def test_find_no_match(self):
         mgr = self.manager
@@ -242,7 +243,6 @@ class ManagerTest(unittest.TestCase):
         mgr.add_hook("test", tfunc)
         mgr.run_hooks("test", "dummy_arg")
         tfunc.assert_called_once_with("dummy_arg")
-
 
 
 if __name__ == "__main__":

@@ -3,9 +3,6 @@
 
 import unittest
 
-from mock import MagicMock as Mock
-
-import pyrax.utils as utils
 import pyrax.exceptions as exc
 
 from tests.unit import fakes
@@ -33,7 +30,8 @@ class ExceptionsTest(unittest.TestCase):
     def test_from_response_with_body(self):
         fake_resp = fakes.FakeResponse()
         fake_resp.status = 666
-        fake_body = {"error": {
+        fake_body = {
+            "error": {
                 "message": "fake_message",
                 "details": "fake_details"}}
         ret = exc.from_response(fake_resp, fake_body)
@@ -42,7 +40,6 @@ class ExceptionsTest(unittest.TestCase):
         self.assertEqual(ret.message, "fake_message")
         self.assertEqual(ret.details, "fake_details")
         self.assertTrue("HTTP 666" in str(ret))
-
 
 
 if __name__ == "__main__":

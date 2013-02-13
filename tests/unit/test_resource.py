@@ -6,7 +6,6 @@ import unittest
 from mock import MagicMock as Mock
 
 import pyrax.utils as utils
-import pyrax.exceptions as exc
 from pyrax import resource
 
 from tests.unit import fakes
@@ -36,7 +35,10 @@ class ResourceTest(unittest.TestCase):
         sav_hu = rsc.HUMAN_ID
         rsc.HUMAN_ID = True
         sav_slug = utils.slugify
-        def echo(val): return val
+
+        def echo(val):
+            return val
+
         utils.slugify = Mock(side_effect=echo)
         self.assertEqual(rsc.name, rsc.human_id)
         rsc.HUMAN_ID = sav_hu
@@ -47,7 +49,10 @@ class ResourceTest(unittest.TestCase):
         sav_hu = rsc.HUMAN_ID
         rsc.HUMAN_ID = False
         sav_slug = utils.slugify
-        def echo(val): return val
+
+        def echo(val):
+            return val
+
         utils.slugify = Mock(side_effect=echo)
         self.assertIsNone(rsc.human_id)
         rsc.HUMAN_ID = sav_hu
