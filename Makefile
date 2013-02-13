@@ -17,5 +17,5 @@ lint: lint-python
 
 lint-python:
 	@echo "Linting Python files"
-	flake8 --ignore=E121,W404 . || exit 1
+	flake8 --ignore=E121,W404 --exclude=./samples/* . || exit 1
 	@echo ""

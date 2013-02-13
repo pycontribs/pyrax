@@ -5,17 +5,17 @@
 
 # All Rights Reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
-#    not use this file except in compliance with the License. You may obtain
-#    a copy of the License at
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
 #
 #         http://www.apache.org/licenses/LICENSE-2.0
 #
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-#    License for the specific language governing permissions and limitations
-#    under the License.
+#    Unless required by applicable law or agreed to in writing,
+#    software distributed under the License is distributed on an "AS
+#    IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+#    express or implied. See the License for the specific language
+#    governing permissions and limitations under the License.
 
 # Since we use the novaclient package, we need to expose its exception
 # classes here.
@@ -23,170 +23,226 @@ from novaclient import exceptions as _nova_exceptions
 ServerNotFound = _nova_exceptions.NotFound
 ServerClientException = _nova_exceptions.ClientException
 
+
 class PyraxException(Exception):
     pass
+
 
 class AccessListIDNotFound(PyraxException):
     pass
 
+
 class AuthenticationFailed(PyraxException):
     pass
+
 
 class AuthorizationFailure(PyraxException):
     pass
 
+
 class AuthSystemNotFound(PyraxException):
     pass
+
 
 class CDNFailed(PyraxException):
     pass
 
+
 class DomainCreationFailed(PyraxException):
     pass
+
 
 class DomainDeletionFailed(PyraxException):
     pass
 
+
 class DomainRecordAdditionFailed(PyraxException):
     pass
+
 
 class DomainRecordDeletionFailed(PyraxException):
     pass
 
+
 class DomainRecordUpdateFailed(PyraxException):
     pass
+
 
 class DomainUpdateFailed(PyraxException):
     pass
 
+
 class EndpointNotFound(PyraxException):
     pass
+
 
 class FlavorNotFound(PyraxException):
     pass
 
+
 class FileNotFound(PyraxException):
     pass
+
 
 class FolderNotFound(PyraxException):
     pass
 
+
 class KeyringModuleNotInstalled(PyraxException):
     pass
+
 
 class KeyringUsernameMissing(PyraxException):
     pass
 
+
 class InvalidCDNMetadata(PyraxException):
     pass
+
 
 class InvalidConfigurationFile(PyraxException):
     pass
 
+
 class InvalidCredentialFile(PyraxException):
     pass
+
 
 class InvalidDateTimeString(PyraxException):
     pass
 
+
 class InvalidDeviceType(PyraxException):
     pass
+
 
 class InvalidNodeCondition(PyraxException):
     pass
 
+
 class InvalidNodeParameters(PyraxException):
     pass
+
 
 class InvalidPTRRecord(PyraxException):
     pass
 
+
 class InvalidSessionPersistenceType(PyraxException):
     pass
+
 
 class InvalidSize(PyraxException):
     pass
 
+
 class InvalidUploadID(PyraxException):
     pass
+
 
 class InvalidVirtualIPType(PyraxException):
     pass
 
+
 class InvalidVirtualIPVersion(PyraxException):
     pass
+
 
 class InvalidVolumeResize(PyraxException):
     pass
 
+
 class MissingDNSSettings(PyraxException):
     pass
+
 
 class MissingHealthMonitorSettings(PyraxException):
     pass
 
+
 class MissingLoadBalancerParameters(PyraxException):
     pass
+
 
 class MissingName(PyraxException):
     pass
 
+
 class NoMoreResults(PyraxException):
     pass
+
 
 class NoReloadError(PyraxException):
     pass
 
+
 class NoSSLTerminationConfiguration(PyraxException):
     pass
+
 
 class NoSuchContainer(PyraxException):
     pass
 
+
 class NoSuchDatabase(PyraxException):
     pass
+
 
 class NoSuchDatabaseUser(PyraxException):
     pass
 
+
 class NoSuchObject(PyraxException):
     pass
+
 
 class NotAuthenticated(PyraxException):
     pass
 
+
 class NotCDNEnabled(PyraxException):
     pass
+
 
 class NoTokenLookupException(PyraxException):
     pass
 
+
 class ProtocolMismatch(PyraxException):
     pass
+
 
 class PTRRecordCreationFailed(PyraxException):
     pass
 
+
 class PTRRecordDeletionFailed(PyraxException):
     pass
+
 
 class PTRRecordUpdateFailed(PyraxException):
     pass
 
+
 class SnapshotNotAvailable(PyraxException):
     pass
+
 
 class UnattachedNode(PyraxException):
     pass
 
+
 class UnattachedVirtualIP(PyraxException):
     pass
+
 
 class Unauthorized(PyraxException):
     pass
 
+
 class UploadFailed(PyraxException):
     pass
+
 
 class VolumeNotAvailable(PyraxException):
     pass
@@ -204,6 +260,7 @@ class AmbiguousEndpoints(PyraxException):
 class ClientException(PyraxException):
     """
     The base exception class for all exceptions this library raises.
+
     """
     def __init__(self, code, message=None, details=None, request_id=None):
         self.code = code
@@ -218,50 +275,45 @@ class ClientException(PyraxException):
 
         return formatted_string
 
+
 class BadRequest(ClientException):
-    """
-    HTTP 400 - Bad request: you sent some malformed data.
-    """
+    """HTTP 400 - Bad request: you sent some malformed data."""
     http_status = 400
     message = "Bad request"
 
 
 class Unauthorized(ClientException):
-    """
-    HTTP 401 - Unauthorized: bad credentials.
-    """
+    """HTTP 401 - Unauthorized: bad credentials."""
     http_status = 401
     message = "Unauthorized"
 
 
 class Forbidden(ClientException):
     """
-    HTTP 403 - Forbidden: your credentials don't give you access to this
-    resource.
+    HTTP 403 - Forbidden: your credentials don't give you access to
+    this resource.
+
     """
     http_status = 403
     message = "Forbidden"
 
 
 class NotFound(ClientException):
-    """
-    HTTP 404 - Not found
-    """
+    """HTTP 404 - Not found"""
     http_status = 404
     message = "Not found"
 
 
 class NoUniqueMatch(ClientException):
-    """
-    HTTP 400 - Bad Request
-    """
+    """HTTP 400 - Bad Request"""
     http_status = 400
     message = "Not Unique"
 
 
 class OverLimit(ClientException):
     """
-    HTTP 413 - Over limit: you're over the API limits for this time period.
+    HTTP 413 - Over limit: you're over the API limits for this period.
+
     """
     http_status = 413
     message = "Over limit"
@@ -270,11 +322,12 @@ class OverLimit(ClientException):
 # NotImplemented is a python keyword.
 class HTTPNotImplemented(ClientException):
     """
-    HTTP 501 - Not Implemented: the server does not support this operation.
+    HTTP 501 - Not Implemented: the server does not support
+    this operation.
+
     """
     http_status = 501
     message = "Not Implemented"
-
 
 
 # In Python 2.4 Exception is old-style and thus doesn't have a __subclasses__()
@@ -283,8 +336,10 @@ class HTTPNotImplemented(ClientException):
 #                      for c in ClientException.__subclasses__())
 #
 # Instead, we have to hardcode it:
-_code_map = dict((c.http_status, c) for c in [BadRequest, Unauthorized,
-        Forbidden, NotFound, OverLimit, HTTPNotImplemented])
+_code_map = dict(
+    (c.http_status, c) for c in [
+        BadRequest, Unauthorized, Forbidden, NotFound, OverLimit,
+        HTTPNotImplemented])
 
 
 def from_response(response, body):

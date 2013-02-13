@@ -5,17 +5,17 @@
 
 # All Rights Reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
-#    not use this file except in compliance with the License. You may obtain
-#    a copy of the License at
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
 #
 #         http://www.apache.org/licenses/LICENSE-2.0
 #
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-#    License for the specific language governing permissions and limitations
-#    under the License.
+#    Unless required by applicable law or agreed to in writing,
+#    software distributed under the License is distributed on an "AS
+#    IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+#    express or implied. See the License for the specific language
+#    governing permissions and limitations under the License.
 """
 OpenStack Client interface. Handles the REST calls and responses.
 """
@@ -31,13 +31,13 @@ import pkg_resources
 try:
     import json
 except ImportError:
-    import simplejson as json
+    import simplejson as json  # NOQA
 
 try:
     import keyring
     has_keyring = True
 except ImportError:
-    keyring = None
+    keyring = None  # NOQA
     has_keyring = False
 
 # Python 2.5 compat fix
@@ -45,11 +45,8 @@ if not hasattr(urlparse, "parse_qsl"):
     import cgi
     urlparse.parse_qsl = cgi.parse_qsl
 
-from manager import BaseManager
-from resource import BaseResource
 import pyrax.exceptions as exc
 import pyrax.service_catalog as service_catalog
-import pyrax.utils as utils
 
 
 def get_auth_system_url(auth_system):
@@ -62,17 +59,15 @@ def get_auth_system_url(auth_system):
 
 
 class BaseClient(httplib2.Http):
-    """
-    The base class for all pyrax clients.
-    """
+    """The base class for all pyrax clients."""
     # This will get set by pyrax when the service is started.
     user_agent = None
 
     def __init__(self, user, password, tenant_id=None, auth_url=None,
-            region_name=None, endpoint_type="publicURL", management_url=None,
-            auth_token=None, service_type=None, service_name=None,
-            timings=False, no_cache=False, http_log_debug=False,
-            timeout=None, auth_system="rackspace"):
+                 region_name=None, endpoint_type="publicURL",
+                 management_url=None, auth_token=None, service_type=None,
+                 service_name=None, timings=False, no_cache=False,
+                 http_log_debug=False, timeout=None, auth_system="rackspace"):
         super(BaseClient, self).__init__(timeout=timeout)
         self.user = user
         self.password = password
@@ -113,72 +108,70 @@ class BaseClient(httplib2.Http):
         # without having to override __init__().
         self._configure_manager()
 
-
     def _configure_manager(self):
         """
-        This must be overridden in base classes to create
-        the required manager class and configure it as needed.
+        This must be overridden in base classes to create the required
+        manager class and configure it as needed.
+
         """
         raise NotImplementedError
 
-
     # The next 6 methods are simple pass-through to the manager.
     def list(self, limit=None, marker=None):
-        """Returns a list of all resources."""
+        """Return a list of all resources."""
         return self._manager.list(limit=limit, marker=marker)
 
     def get(self, item):
-        """Gets a specific resource."""
+        """Get a specific resource."""
         return self._manager.get(item)
 
     def create(self, *args, **kwargs):
-        """Creates a new resource."""
+        """Create a new resource."""
         return self._manager.create(*args, **kwargs)
 
     def delete(self, item):
-        """Deletes a specific resource."""
+        """Delete a specific resource."""
         return self._manager.delete(item)
 
     def find(self, **kwargs):
         """
-        Finds a single item with attributes matching ``**kwargs``.
+        Find a single item with attributes matching ``**kwargs``.
 
-        This isn't very efficient: it loads the entire list then filters on
-        the Python side.
+        This isn't very efficient: it loads the entire list then
+        filters on the Python side.
+
         """
         return self._manager.find(**kwargs)
 
     def findall(self, **kwargs):
         """
-        Finds all items with attributes matching ``**kwargs``.
+        Find all items with attributes matching ``**kwargs``.
 
-        This isn't very efficient: it loads the entire list then filters on
-        the Python side.
+        This isn't very efficient: it loads the entire list then
+        filters on the Python side.
+
         """
         return self._manager.findall(**kwargs)
 
-
     def unauthenticate(self):
-        """Clears all of our authentication information."""
+        """Clear all of our authentication information."""
         self.management_url = None
         self.auth_token = None
         self.used_keyring = False
 
-
     def get_timings(self):
-        """Returns a list of all execution timings."""
+        """Return a list of all execution timings."""
         return self.times
 
-
     def reset_timings(self):
-        """Clears the timing history."""
+        """Clear the timing history."""
         self.times = []
-
 
     def http_log_req(self, args, kwargs):
         """
-        When self.http_log_debug is True, outputs the equivalent `curl`
+        When self.http_log_debug is True, output the equivalent `curl`
         command for the API request being made.
+
         """
         if not self.http_log_debug:
             return
@@ -198,21 +191,21 @@ class BaseClient(httplib2.Http):
         if "body" in kwargs:
             self._logger.debug("REQ BODY: %s\n" % (kwargs["body"]))
 
-
     def http_log_resp(self, resp, body):
         """
-        When self.http_log_debug is True, outputs the response received
+        When self.http_log_debug is True, output the response received
         from the API request.
+
         """
         if not self.http_log_debug:
             return
         self._logger.debug("RESP:%s %s\n", resp, body)
 
-
     def request(self, *args, **kwargs):
         """
-        Formats the request into a dict representing the headers
-        and body that will be used to make the API call.
+        Format the request into a dict representing the headers and
+        body that will be used to make the API call.
+
         """
         kwargs.setdefault("headers", kwargs.get("headers", {}))
         kwargs["headers"]["User-Agent"] = self.user_agent
@@ -238,18 +231,19 @@ class BaseClient(httplib2.Http):
         return resp, body
 
     def _time_request(self, uri, method, **kwargs):
-        """Wraps the request call and records the elapsed time."""
+        """Wrap the request call and record the elapsed time."""
         start_time = time.time()
         resp, body = self.request(uri, method, **kwargs)
-        self.times.append(("%s %s" % (method, uri),
-                           start_time, time.time()))
+        self.times.append(
+            ("%s %s" % (method, uri), start_time, time.time()))
         return resp, body
 
     def _api_request(self, uri, method, **kwargs):
         """
-        Manages the request by adding any auth information, and retries
-        the request after authenticating if the initial request returned
-        and Unauthorized exception.
+        Manage the request by adding any auth information, and retries
+        the request after authenticating if the initial request
+        returned and Unauthorized exception.
+
         """
         if not all((self.management_url, self.auth_token, self.tenant_id)):
             self.authenticate()
@@ -258,12 +252,13 @@ class BaseClient(httplib2.Http):
         # might be because the auth token expired, so try to
         # re-authenticate and try again. If it still fails, bail.
         try:
-            kwargs.setdefault("headers", {})["X-Auth-Token"] = self.auth_token
+            kwargs.setdefault(
+                "headers", {})["X-Auth-Token"] = self.auth_token
             if self.tenant_id:
                 kwargs["headers"]["X-Auth-Project-Id"] = self.tenant_id
 
-            resp, body = self._time_request(self.management_url + uri, method,
-                                            **kwargs)
+            resp, body = self._time_request(
+                self.management_url + uri, method, **kwargs)
             return resp, body
         except exc.Unauthorized as ex:
             print "AUTH"
@@ -271,8 +266,8 @@ class BaseClient(httplib2.Http):
             try:
                 self.authenticate()
                 kwargs["headers"]["X-Auth-Token"] = self.auth_token
-                resp, body = self._time_request(self.management_url + uri,
-                                                method, **kwargs)
+                resp, body = self._time_request(
+                    self.management_url + uri, method, **kwargs)
                 return resp, body
             except exc.Unauthorized:
                 raise ex
@@ -298,6 +293,7 @@ class BaseClient(httplib2.Http):
         See what the auth service told us and process the response.
         We may get redirected to another site, fail, or actually get
         back a service catalog with a token and our endpoints.
+
         """
         if resp.status == 200:  # content must always present
             try:
@@ -315,7 +311,8 @@ class BaseClient(httplib2.Http):
                 self.management_url = management_url.rstrip("/")
                 return None
             except exc.AmbiguousEndpoints:
-                print "Found more than one valid endpoint. Use a more restrictive filter"
+                print ("Found more than one valid endpoint. Use a more "
+                       "restrictive filter")
                 raise
             except KeyError:
                 raise exc.AuthorizationFailure()
@@ -328,39 +325,51 @@ class BaseClient(httplib2.Http):
         else:
             raise exc.from_response(resp, body)
 
-
     def _fetch_endpoints_from_auth(self, uri):
         """
-        We have a token, but don't know the final endpoint for
-        the region. We have to go back to the auth service and
-        ask again. This request requires an admin-level token
-        to work. The proxy token supplied could be from a low-level enduser.
+        We have a token, but don't know the final endpoint for the
+        region. We have to go back to the auth service and ask again.
+        This request requires an admin-level token to work. The proxy
+        token supplied could be from a low-level enduser.
 
-        We can't get this from the keystone service endpoint, we have to use
-        the admin endpoint.
+        We can't get this from the keystone service endpoint, we have
+        to use the admin endpoint.
 
         This will overwrite our admin token with the user token.
+
         """
         # GET ...:5001/v2.0/tokens/#####/endpoints
-        uri = "/".join([uri, "tokens", "%s?belongsTo=%s"
-                % (self.proxy_token, self.proxy_tenant_id)])
-        resp, body = self._time_request(uri, "GET",
-                headers={"X-Auth_Token": self.proxy_token})
-        return self._extract_service_catalog(uri, resp, body,
-                extract_token=False)
-
+        uri = "/".join([
+            uri,
+            "tokens",
+            "%s?belongsTo=%s" % (self.proxy_token, self.proxy_tenant_id)])
+        resp, body = self._time_request(
+            uri,
+            "GET",
+            headers={"X-Auth_Token": self.proxy_token})
+        return self._extract_service_catalog(
+            uri,
+            resp,
+            body,
+            extract_token=False)
 
     def authenticate(self):
         """
-        Handles all aspects of authentication against the cloud provider.
-        Currently this has only been tested with Rackspace auth; if you wish
-        to use this library with a different OpenStack provider, you may have
-        to modify this method. Please post your findings on GitHub so that
-        others can benefit.
+        Handle all aspects of authentication against the cloud provider.
+        Currently this has only been tested with Rackspace auth; if you
+        wish to use this library with a different OpenStack provider,
+        you may have to modify this method. Please post your findings
+        on GitHub so that others can benefit.
+
         """
         if has_keyring:
-            keys = [self.auth_url, self.user, self.region_name,
-                    self.endpoint_type, self.service_type, self.service_name]
+            keys = [
+                self.auth_url,
+                self.user,
+                self.region_name,
+                self.endpoint_type,
+                self.service_type,
+                self.service_name]
             for index, key in enumerate(keys):
                 if key is None:
                     keys[index] = "?"
@@ -371,7 +380,8 @@ class BaseClient(httplib2.Http):
                 # If we come through again, it's because the old token
                 # was rejected.
                 try:
-                    block = keyring.get_password("novaclient_auth", keyring_key)
+                    block = keyring.get_password(
+                        "novaclient_auth", keyring_key)
                     if block:
                         self.used_keyring = True
                         self.auth_token, self.management_url = block.split("|")
@@ -391,7 +401,8 @@ class BaseClient(httplib2.Http):
                 break
 
         # TODO(sandy): Assume admin endpoint is 35357 for now.
-        # Ideally this is going to have to be provided by the service catalog.
+        # Ideally this is going to have to be provided by the
+        # service catalog.
         new_netloc = netloc.replace(":%d" % port, ":%d" % (35357,))
         admin_url = urlparse.urlunsplit(
             (scheme, new_netloc, path, query, frag))
@@ -425,8 +436,8 @@ class BaseClient(httplib2.Http):
                 while auth_url:
                     auth_url = self._v1_auth(auth_url)
             # In some configurations nova makes redirection to
-            # v2.0 keystone endpoint. Also, new location does not contain
-            # real endpoint, only hostname and port.
+            # v2.0 keystone endpoint. Also, new location does not
+            # contain real endpoint, only hostname and port.
             except exc.AuthorizationFailure:
                 if auth_url.find("v2.0") < 0:
                     auth_url = auth_url + "/v2.0"
@@ -435,21 +446,25 @@ class BaseClient(httplib2.Http):
         # Store the token/mgmt uri in the keyring for later requests.
         if has_keyring and not self.no_cache:
             try:
-                keyring_value = "%s|%s" % (self.auth_token,
-                                           self.management_url)
-                keyring.set_password("novaclient_auth",
-                                     keyring_key, keyring_value)
+                keyring_value = "%s|%s" % (
+                    self.auth_token, self.management_url)
+                keyring.set_password(
+                    "novaclient_auth", keyring_key, keyring_value)
             except Exception:
                 pass
 
-
     def _v1_auth(self, uri):
-        """The original auth system for OpenStack. Probably not used anymore."""
+        """
+        The original auth system for OpenStack. Probably not
+        used anymore.
+
+        """
         if self.proxy_token:
             raise exc.NoTokenLookupException()
 
-        headers = {"X-Auth-User": self.user,
-                   "X-Auth-Key": self.password}
+        headers = {
+            "X-Auth-User": self.user,
+            "X-Auth-Key": self.password}
         if self.tenant_id:
             headers["X-Auth-Project-Id"] = self.tenant_id
 
@@ -467,28 +482,27 @@ class BaseClient(httplib2.Http):
         else:
             raise exc.from_response(resp, body)
 
-
     def _plugin_auth(self, auth_url):
-        """Loads plugin-based authentication"""
+        """Load plugin-based authentication"""
         ep_name = "openstack.client.authenticate"
         for ep in pkg_resources.iter_entry_points(ep_name):
             if ep.name == self.auth_system:
                 return ep.load()(self, auth_url)
         raise exc.AuthSystemNotFound(self.auth_system)
 
-
     def _v2_auth(self, uri):
-        """Authenticates against a v2.0 auth service."""
-        body = {"auth": {
-                "passwordCredentials": {"username": self.user,
-                                        "password": self.password}}}
+        """Authenticate against a v2.0 auth service."""
+        body = {
+            "auth": {
+                "passwordCredentials": {
+                    "username": self.user,
+                    "password": self.password}}}
         if self.tenant_id:
             body["auth"]["tenantName"] = self.tenant_id
         self._authenticate(uri, body)
 
-
     def _authenticate(self, uri, body):
-        """Authenticates and extracts the service catalog."""
+        """Authenticate and extracts the service catalog."""
         token_url = uri + "/tokens"
 
         # Make sure we follow redirects when trying to reach Keystone
@@ -501,8 +515,11 @@ class BaseClient(httplib2.Http):
             self.follow_all_redirects = tmp_follow_all_redirects
         return self._extract_service_catalog(uri, resp, body)
 
-
     @property
     def projectid(self):
-        """The older parts of this code used 'projectid'; this wraps that reference."""
+        """
+        The older parts of this code used 'projectid'; this wraps
+        that reference.
+
+        """
         return self.tenant_id

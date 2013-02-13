@@ -13,26 +13,23 @@ import sys
 import tempfile
 import time
 import types
-import uuid
 
-import prettytable
 try:
     import pudb
 except ImportError:
-    import pdb as pudb
+    import pdb as pudb  # NOQA
 trace = pudb.set_trace
 
 import pyrax
 import pyrax.exceptions as exc
 
 
-
 class SelfDeletingTempfile(object):
     """
     Convenience class for dealing with temporary files.
 
-    The temp file is created in a secure fashion, and is
-    automatically deleted when the context manager exits.
+    The temp file is created in a secure fashion, and is automatically
+    deleted when the context manager exits.
 
     Usage:
 
@@ -43,6 +40,7 @@ class SelfDeletingTempfile(object):
     # More code
     # At this point, the tempfile has been erased.
     \endcode
+
     """
     name = None
 
@@ -57,14 +55,13 @@ class SelfDeletingTempfile(object):
 
 class SelfDeletingTempDirectory(object):
     """
-    Convenience class for dealing with temporary folders and the
-    files within them.
+    Convenience class for dealing with temporary folders and the files
+    within them.
 
     The temp folder is created in a secure fashion, and is
-    automatically deleted when the context manager exits, along
-    with any files that may be contained within. When you
-    instantiate this class, you receive the full path to the
-    temporary directory.
+    automatically deleted when the context manager exits, along with
+    any files that may be contained within. When you instantiate this
+    class, you receive the full path to the temporary directory.
 
     Usage:
 
@@ -78,6 +75,7 @@ class SelfDeletingTempDirectory(object):
     # At this point, the directory 'tmpdir' has been deleted,
     # as well as the file 'f1' within it.
     \endcode
+
     """
     name = None
 
@@ -91,12 +89,13 @@ class SelfDeletingTempDirectory(object):
 
 def get_checksum(content, encoding="utf8"):
     """
-    Returns the MD5 checksum in hex for the given content. If 'content'
+    Return the MD5 checksum in hex for the given content. If 'content'
     is a file-like object, the content will be obtained from its read()
     method. If 'content' is a file path, that file is read and its
-    contents used. Otherwise, 'content' is assumed to be the string whose
-    checksum is desired. If the content is unicode, it will be encoded
-    using the specified encoding.
+    contents used. Otherwise, 'content' is assumed to be the string
+    whose checksum is desired. If the content is unicode, it will be
+    encoded using the specified encoding.
+
     """
     if hasattr(content, "read"):
         pos = content.tell()
@@ -118,12 +117,12 @@ def get_checksum(content, encoding="utf8"):
 
 def random_name(length=20, ascii_only=False):
     """
-    Generates a random name; useful for testing.
+    Generate a random name; useful for testing.
 
-    By default it will return an encoded string containing
-    unicode values up to code point 1000. If you only
-    need or want ASCII values, pass True to the
-    ascii_only parameter.
+    By default it will return an encoded string containing unicode
+    values up to code point 1000. If you only need or want ASCII
+    values, pass True to the ascii_only parameter.
+
     """
     if ascii_only:
         base_chars = string.ascii_letters
@@ -138,9 +137,10 @@ def random_name(length=20, ascii_only=False):
 
 def coerce_string_to_list(val):
     """
-    For parameters that can take either a single string or a list of strings,
-    this function will ensure that the result is a list containing the passed
-    values.
+    For parameters that can take either a single string or a list of
+    strings, this function will ensure that the result is a list
+    containing the passed values.
+
     """
     if val:
         if not isinstance(val, (list, tuple)):
@@ -152,9 +152,10 @@ def coerce_string_to_list(val):
 
 def folder_size(pth, ignore=None):
     """
-    Returns the total bytes for the specified, optionally ignoring
-    any files which match the 'ignore' parameter. 'ignore' can either be
-    a single string pattern, or a list of such patterns.
+    Return the total bytes for the specified, optionally ignoring
+    any files which match the 'ignore' parameter. 'ignore' can either
+    be a single string pattern, or a list of such patterns.
+
     """
     if not os.path.isdir(pth):
         raise exc.FolderNotFound
@@ -198,12 +199,13 @@ def wait_until(obj, att, desired, interval=5, attempts=10, verbose=False):
     of True. If not, it will re-try a maximum of `attempts` times; if
     the attribute has not reached the desired value by then, this will
     return False. If `attempts` is 0, this will loop infinitely until
-    the attribute matches. If `verbose` is True, each attempt will print
-    out the current value of the watched attribute and the time that has
-    elapsed since the original request.
+    the attribute matches. If `verbose` is True, each attempt will
+    print out the current value of the watched attribute and the time
+    that has elapsed since the original request.
 
-    Note that `desired` can be a list of values; if the attribute becomes
-    equal to any of those values, this will return True.
+    Note that `desired` can be a list of values; if the attribute
+    becomes equal to any of those values, this will return True.
+
     """
     if not isinstance(desired, (list, tuple)):
         desired = [desired]
@@ -221,11 +223,14 @@ def wait_until(obj, att, desired, interval=5, attempts=10, verbose=False):
                 obj = obj.manager.get(obj.id)
             except AttributeError:
                 # punt
-                raise exc.NoReloadError("The 'wait_until' method is not supported for '%s' objects." % obj.__class__)
+                raise exc.NoReloadError(
+                    "The 'wait_until' method is not supported for '%s' "
+                    "objects." % obj.__class__)
         attval = getattr(obj, att)
         if verbose:
             elapsed = time.time() - start
-            print "Current value of %s: %s (elapsed: %4.1f seconds)" % (att, attval, elapsed)
+            print "Current value of %s: %s (elapsed: %4.1f seconds)" % (
+                att, attval, elapsed)
         if attval in desired:
             return True
         time.sleep(interval)
@@ -235,9 +240,10 @@ def wait_until(obj, att, desired, interval=5, attempts=10, verbose=False):
 
 def iso_time_string(val, show_tzinfo=False):
     """
-    Takes either a date, datetime or a string, and returns the standard ISO
-    formatted string for that date/time, with any fractional second portion
-    removed.
+    Takes either a date, datetime or a string, and returns the standard
+    ISO formatted string for that date/time, with any fractional second
+    portion removed.
+
     """
     if not val:
         return ""
@@ -250,8 +256,9 @@ def iso_time_string(val, show_tzinfo=False):
             except ValueError:
                 continue
         if dt is None:
-            raise exc.InvalidDateTimeString("The supplied value '%s' does not match either of the formats "
-                    "'YYYY-MM-DD HH:MM:SS' or 'YYYY-MM-DD'." % val)
+            raise exc.InvalidDateTimeString(
+                "The supplied value '%s' does not match either of the formats "
+                "'YYYY-MM-DD HH:MM:SS' or 'YYYY-MM-DD'." % val)
     else:
         dt = val
     if not isinstance(dt, datetime.datetime):
@@ -285,8 +292,9 @@ def get_id(id_or_obj):
 
 def env(*args, **kwargs):
     """
-    Returns the first environment variable set
-    if none are non-empty, defaults to "" or keyword arg default
+    Return the first environment variable set if none are non-empty,
+    defaults to "" or keyword arg default.
+
     """
     for arg in args:
         value = os.environ.get(arg, None)
@@ -302,6 +310,7 @@ def unauthenticated(fnc):
         @unauthenticated
         def mymethod(fnc):
             ...
+
     """
     fnc.unauthenticated = True
     return fnc
@@ -309,9 +318,10 @@ def unauthenticated(fnc):
 
 def isunauthenticated(fnc):
     """
-    Checks to see if the function is marked as not requiring authentication
-    with the @unauthenticated decorator. Returns True if decorator is
-    set to True, False otherwise.
+    Check to see if the function is marked as not requiring
+    authentication with the @unauthenticated decorator. Return True if
+    decorator is set to True, False otherwise.
+
     """
     return getattr(fnc, "unauthenticated", False)
 
@@ -327,7 +337,7 @@ def safe_issubclass(*args):
 
 
 def import_class(import_str):
-    """Returns a class from a string including module and class."""
+    """Return a class from a string including module and class."""
     mod_str, _sep, class_str = import_str.rpartition(".")
     __import__(mod_str)
     return getattr(sys.modules[mod_str], class_str)
@@ -337,10 +347,11 @@ def import_class(import_str):
 #   577257-slugify-make-a-string-usable-in-a-url-or-filename/
 def slugify(value):
     """
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
+    Normalize string, convert to lowercase, remove non-alpha
+    characters, and convert spaces to hyphens.
 
     From Django's "django/template/defaultfilters.py".
+
     """
     import unicodedata
     _slugify_strip_re = re.compile(r"[^\w\s-]")

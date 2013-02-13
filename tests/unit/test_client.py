@@ -1,18 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import datetime
 import httplib2
 import json
-import os
 import pkg_resources
 import unittest
-import urllib2
 
 from mock import patch
 from mock import MagicMock as Mock
 
-import pyrax.utils as utils
 import pyrax.exceptions as exc
 from pyrax import client
 
@@ -39,7 +35,8 @@ class ClientTest(unittest.TestCase):
         pkg_resources.iter_entry_points.return_value = fakes.fakeEntryPoints
         ret = client.get_auth_system_url("b")
         self.assertEqual(ret, "b")
-        self.assertRaises(exc.AuthSystemNotFound, client.get_auth_system_url, "z")
+        self.assertRaises(
+            exc.AuthSystemNotFound, client.get_auth_system_url, "z")
         pkg_resources.iter_entry_points = save_priep
 
     def test_base_client(self):
@@ -61,13 +58,14 @@ class ClientTest(unittest.TestCase):
 
         save_conf = client.BaseClient._configure_manager
         client.BaseClient._configure_manager = Mock()
-        bc = client.BaseClient(user=user, password=password,
-                tenant_id=tenant_id, auth_url=auth_url,
-                region_name=region_name, endpoint_type=endpoint_type,
-                management_url=management_url, auth_token=auth_token,
-                service_type=service_type, service_name=service_name,
-                timings=timings, no_cache=no_cache, http_log_debug=http_log_debug,
-                timeout=timeout, auth_system=auth_system)
+        bc = client.BaseClient(
+            user=user, password=password,
+            tenant_id=tenant_id, auth_url=auth_url,
+            region_name=region_name, endpoint_type=endpoint_type,
+            management_url=management_url, auth_token=auth_token,
+            service_type=service_type, service_name=service_name,
+            timings=timings, no_cache=no_cache, http_log_debug=http_log_debug,
+            timeout=timeout, auth_system=auth_system)
 
         self.assertEqual(bc.user, user)
         self.assertEqual(bc.password, password)
@@ -157,7 +155,8 @@ class ClientTest(unittest.TestCase):
         sav = clt._logger.debug
         clt._logger.debug = Mock()
         clt.http_log_req(args, kwargs)
-        clt._logger.debug.assert_called_once_with("\nREQ: curl -i a b -H 'c: C'\n")
+        clt._logger.debug.assert_called_once_with(
+            "\nREQ: curl -i a b -H 'c: C'\n")
         kwargs["body"] = "text"
         clt.http_log_req(args, kwargs)
         cargs, ckw = clt._logger.debug.call_args
@@ -176,7 +175,8 @@ class ClientTest(unittest.TestCase):
         clt.http_log_debug = True
         clt.http_log_resp(resp, body)
         self.assertTrue(clt._logger.debug.called)
-        clt._logger.debug.assert_called_once_with("RESP:%s %s\n", "resp", "body")
+        clt._logger.debug.assert_called_once_with(
+            "RESP:%s %s\n", "resp", "body")
         clt._logger.debug = sav
 
     def test_request_ok(self):
@@ -258,7 +258,7 @@ class ClientTest(unittest.TestCase):
         sav_auth = clt.authenticate
         clt.authenticate = Mock()
         sav_req = clt.request
-        clt.request = Mock(return_value=(1,1))
+        clt.request = Mock(return_value=(1, 1))
         url = "http://example.com"
         method = "PUT"
         clt.unauthenticate()
@@ -273,7 +273,7 @@ class ClientTest(unittest.TestCase):
         sav_auth = clt.authenticate
         clt.authenticate = Mock()
         sav_req = clt.request
-        clt.request = Mock(return_value=(1,1))
+        clt.request = Mock(return_value=(1, 1))
         url = "http://example.com"
         method = "PUT"
         clt.request = Mock(side_effect=exc.Unauthorized(""))
@@ -318,7 +318,8 @@ class ClientTest(unittest.TestCase):
         clt._api_request.assert_called_once_with(url, "DELETE")
         clt._api_request = sav
 
-    @patch('pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
+    @patch(
+        'pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
     def test_extract_service_catalog_ok(self):
         clt = self.client
         url = "http://example.com"
@@ -327,32 +328,50 @@ class ClientTest(unittest.TestCase):
         clt._extract_service_catalog(url, resp, body)
         self.assertEqual(clt.management_url, "http://example.com")
 
-    @patch('pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
+    @patch(
+        'pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
     def test_extract_service_catalog_ambiguous_ep(self):
         clt = self.client
         url = "http://example.com"
         resp = fakes.FakeResponse()
         body = ""
         clt.region_name = "ALL"
-        self.assertRaises(exc.AmbiguousEndpoints, clt._extract_service_catalog, url, resp, body)
+        self.assertRaises(
+            exc.AmbiguousEndpoints,
+            clt._extract_service_catalog,
+            url,
+            resp,
+            body)
 
-    @patch('pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
+    @patch(
+        'pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
     def test_extract_service_catalog_key_error(self):
         clt = self.client
         url = "http://example.com"
         resp = fakes.FakeResponse()
         body = ""
         clt.region_name = "KEY"
-        self.assertRaises(exc.AuthorizationFailure, clt._extract_service_catalog, url, resp, body)
+        self.assertRaises(
+            exc.AuthorizationFailure,
+            clt._extract_service_catalog,
+            url,
+            resp,
+            body)
 
-    @patch('pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
+    @patch(
+        'pyrax.service_catalog.ServiceCatalog', new=fakes.FakeServiceCatalog)
     def test_extract_service_catalog_ep_not_found(self):
         clt = self.client
         url = "http://example.com"
         resp = fakes.FakeResponse()
         body = ""
         clt.region_name = "EP"
-        self.assertRaises(exc.EndpointNotFound, clt._extract_service_catalog, url, resp, body)
+        self.assertRaises(
+            exc.EndpointNotFound,
+            clt._extract_service_catalog,
+            url,
+            resp,
+            body)
 
     def test_extract_service_catalog_proxy_resp(self):
         clt = self.client
@@ -372,15 +391,16 @@ class ClientTest(unittest.TestCase):
         body = ""
         savexc = exc.from_response
         exc.from_response = Mock(side_effect=fakes.FakeException)
-        self.assertRaises(fakes.FakeException, clt._extract_service_catalog, url, resp, body)
+        self.assertRaises(
+            fakes.FakeException, clt._extract_service_catalog, url, resp, body)
         exc.from_response.assert_called_once_with(resp, "")
         exc.from_response = savexc
 
     def test_fetch_endpoints_from_auth(self):
         clt = self.client
-        sav_tr = clt._time_request
+        # sav_tr = clt._time_request
         clt._time_request = Mock(return_value=("resp", "body"))
-        sav_ex = clt._extract_service_catalog
+        # sav_ex = clt._extract_service_catalog
         clt._extract_service_catalog = Mock(return_value="TEST")
         url = "http://example.com"
         ret = clt._fetch_endpoints_from_auth(url)
@@ -578,7 +598,7 @@ class ClientTest(unittest.TestCase):
         save_priep = pkg_resources.iter_entry_points
         pkg_resources.iter_entry_points = Mock()
         pkg_resources.iter_entry_points.return_value = fakes.fakeEntryPoints
-        sav_au = clt.auth_system
+        # sav_au = clt.auth_system
         clt.auth_system = "b"
         ret = clt._plugin_auth("http://example.com")
         self.assertEqual(ret, "b")
@@ -589,9 +609,10 @@ class ClientTest(unittest.TestCase):
         save_priep = pkg_resources.iter_entry_points
         pkg_resources.iter_entry_points = Mock()
         pkg_resources.iter_entry_points.return_value = fakes.fakeEntryPoints
-        sav_au = clt.auth_system
+        # sav_au = clt.auth_system
         clt.auth_system = "b"
-        self.assertRaises(exc.AuthSystemNotFound, client.get_auth_system_url, "z")
+        self.assertRaises(
+            exc.AuthSystemNotFound, client.get_auth_system_url, "z")
         pkg_resources.iter_entry_points = save_priep
 
     def test_v2_auth(self):
@@ -605,9 +626,9 @@ class ClientTest(unittest.TestCase):
 
     def test_authenticate(self):
         clt = self.client
-        sav_tr = clt._time_request
+        # sav_tr = clt._time_request
         clt._time_request = Mock(return_value=("resp", "body"))
-        sav_esc = clt._extract_service_catalog
+        # sav_esc = clt._extract_service_catalog
         clt._extract_service_catalog = Mock(return_value=None)
         ret = clt._authenticate("url", "body")
         self.assertIsNone(ret)
