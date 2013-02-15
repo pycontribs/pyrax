@@ -1,5 +1,14 @@
 # Release Notes for pyrax
 
+2013.02.15 - Code formatting cleanup. No logical changes or additional
+             functionality included.
+           - Added httplib2 requirement, now that novaclient no longer installs
+             it. Taken from pull request #18 from Dustin Farris.
+           - Merge pull request #13 from adregner/container-ints: container
+             stats should be integers
+           - Modified the upload_file() process to not return an object
+             reference when not needed. GitHub issue #11.
+
 2013.02.05 - Added the `sync_folder_to_container()` method to cloudfiles to make it
              easier to keep a copy of a local folder synced to the cloud.
            - Removed the lazy load of volume info for cloud databases. Changed the
