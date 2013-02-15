@@ -44,7 +44,9 @@ def _resolve_name(val):
 
 
 def assure_volume(fnc):
-    """Converts a volumeID passed as the volume to a CloudBlockStorageVolume object."""
+    """
+    Converts a volumeID passed as the volume to a CloudBlockStorageVolume object.
+    """
     @wraps(fnc)
     def _wrapped(self, volume, *args, **kwargs):
         if not isinstance(volume, CloudBlockStorageVolume):
@@ -55,7 +57,10 @@ def assure_volume(fnc):
 
 
 def assure_snapshot(fnc):
-    """Converts a snapshot ID passed as the snapshot to a CloudBlockStorageSnapshot object."""
+    """
+    Converts a snapshot ID passed as the snapshot to a CloudBlockStorageSnapshot
+    object.
+    """
     @wraps(fnc)
     def _wrapped(self, snapshot, *args, **kwargs):
         if not isinstance(snapshot, CloudBlockStorageSnapshot):
@@ -74,8 +79,9 @@ class CloudBlockStorageSnapshot(BaseResource):
         Adds a check to make sure that the snapshot is able to be deleted.
         """
         if not self.status in ("available", "error"):
-            raise exc.SnapshotNotAvailable("Snapshot must be in 'available' or 'error' status "
-                    "before deleting. Current status: %s" % self.status)
+            raise exc.SnapshotNotAvailable("Snapshot must be in 'available' "
+                    "or 'error' status before deleting. Current status: %s" %
+                    self.status)
         # When there are more thann one snapshot for a given volume, attempting to
         # delete them all will throw a 409 exception. This will help by retrying
         # such an error once after a RETRY_INTERVAL second delay.
@@ -163,8 +169,9 @@ class CloudBlockStorageVolume(BaseResource):
 
 
     def delete(self, force=False):
-        """Volumes cannot be deleted if either a) they are attached to a device,
-        or b) they have any snapshots. This method overrides the base delete()
+        """
+        Volumes cannot be deleted if either a) they are attached to a device, or
+        b) they have any snapshots. This method overrides the base delete()
         method to both better handle these failures, and also to offer a 'force'
         option. When 'force' is True, the volume is detached, and any dependent
         snapshots are deleted before calling the volume's delete.
@@ -182,33 +189,36 @@ class CloudBlockStorageVolume(BaseResource):
 
     def create_snapshot(self, name=None, description=None, force=False):
         """
-        Creates a snapshot of this volume, with an optional name and description.
+        Creates a snapshot of this volume, with an optional name and
+        description.
 
-        Normally snapshots will not happen if the volume is attached. To override
-        this default behavior, pass force=True.
+        Normally snapshots will not happen if the volume is attached. To
+        override this default behavior, pass force=True.
         """
         name = name or ""
         description = description or ""
         # Note that passing in non-None values is required for the _create_body
-        # method to distinguish between this and the request to create and instance.
+        # method to distinguish between this and the request to create and
+        # instance.
         try:
-            snap = self._snapshot_manager.create(volume=self, name=name, description=description,
-                    force=force)
+            snap = self._snapshot_manager.create(volume=self, name=name,
+                    description=description, force=force)
         except exc.BadRequest as e:
             msg = str(e)
             if "Invalid volume: must be available" in msg:
                 # The volume for the snapshot was attached.
-                raise exc.VolumeNotAvailable("Cannot create a snapshot from an attached volume. "
-                        "Detach the volume before trying again, or pass 'force=True' to the "
-                        "create_snapshot() call.")
+                raise exc.VolumeNotAvailable("Cannot create a snapshot from an "
+                        "attached volume. Detach the volume before trying again, "
+                        "or pass 'force=True' to the create_snapshot() call.")
             else:
                 # Some other error
                 raise
         except exc.ClientException as e:
             if e.code == 409:
                 if "Request conflicts with in-progress" in str(e):
-                    raise exc.VolumeNotAvailable("The volume is current creating a snapshot. You "
-                            "must wait until that completes before attempting to create an "
+                    raise exc.VolumeNotAvailable("The volume is current "
+                            "creating a snapshot. You must wait until that "
+                            "completes before attempting to create an "
                             "additional snapshot.")
                 else:
                     raise
@@ -261,12 +271,15 @@ class CloudBlockStorageClient(BaseClient):
         Create the manager to handle the instances, and also another
         to handle flavors.
         """
-        self._manager = BaseManager(self, resource_class=CloudBlockStorageVolume,
-               response_key="volume", uri_base="volumes")
-        self._types_manager = BaseManager(self, resource_class=CloudBlockStorageVolumeType,
-               response_key="volume_type", uri_base="types")
-        self._snaps_manager = BaseManager(self, resource_class=CloudBlockStorageSnapshot,
-               response_key="snapshot", uri_base="snapshots")
+        self._manager = BaseManager(self,
+                resource_class=CloudBlockStorageVolume, response_key="volume",
+                uri_base="volumes")
+        self._types_manager = BaseManager(self,
+                resource_class=CloudBlockStorageVolumeType,
+                response_key="volume_type", uri_base="types")
+        self._snaps_manager = BaseManager(self,
+                resource_class=CloudBlockStorageSnapshot,
+                response_key="snapshot", uri_base="snapshots")
 
 
     def create(self, name="", size=None, volume_type=None, description=None,
@@ -274,12 +287,14 @@ class CloudBlockStorageClient(BaseClient):
         """
         Makes sure that the size is passed and is within allowed values.
         """
-        if not isinstance(size, (int, long)) or not MIN_SIZE <= size <= MAX_SIZE:
-            raise exc.InvalidSize("Volume sizes must be integers between %s and %s." %
-                    (MIN_SIZE, MAX_SIZE))
+        if not isinstance(size, (int, long)) or not (
+                MIN_SIZE <= size <= MAX_SIZE):
+            raise exc.InvalidSize("Volume sizes must be integers between "
+                    "%s and %s." % (MIN_SIZE, MAX_SIZE))
         return super(CloudBlockStorageClient, self).create(name, size=size,
-                volume_type=volume_type, description=description, metadata=metadata,
-                snapshot_id=snapshot_id, availability_zone=availability_zone)
+                volume_type=volume_type, description=description,
+                metadata=metadata, snapshot_id=snapshot_id,
+                availability_zone=availability_zone)
 
 
     def list_types(self):
@@ -302,9 +317,10 @@ class CloudBlockStorageClient(BaseClient):
         """
         if size is not None:
             # Creating a volume
-            if not isinstance(size, (int, long)) or not MIN_SIZE <= size <= MAX_SIZE:
-                raise exc.InvalidSize("Volume sizes must be integers between %s and %s." %
-                        (MIN_SIZE, MAX_SIZE))
+            if not isinstance(size, (int, long)) or not (
+                    MIN_SIZE <= size <= MAX_SIZE):
+                raise exc.InvalidSize("Volume sizes must be integers between "
+                        "%s and %s." % (MIN_SIZE, MAX_SIZE))
             if volume_type is None:
                 volume_type = "SATA"
             if description is None:
@@ -354,10 +370,11 @@ class CloudBlockStorageClient(BaseClient):
         """
         Creates a snapshot of the volume, with an optional name and description.
 
-        Normally snapshots will not happen if the volume is attached. To override
-        this default behavior, pass force=True.
+        Normally snapshots will not happen if the volume is attached. To
+        override this default behavior, pass force=True.
         """
-        return volume.create_snapshot(name=name, description=description, force=force)
+        return volume.create_snapshot(name=name, description=description,
+                force=force)
 
 
     @assure_snapshot

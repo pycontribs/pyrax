@@ -1,6 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Copyright 2012 Rackspace
+
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
+
 import pyrax
 from pyrax import exceptions as exc
 
@@ -65,14 +82,15 @@ class Container(object):
     def get_objects(self, marker=None, limit=None, prefix=None, delimiter=None,
             full_listing=False):
         """
-        Returns a list of StorageObjects representing the objects in the container.
-        You can use the marker and limit params to handle pagination, and the prefix
-        and delimiter params to filter the objects returned. Also, by default only
-        the first 10,000 objects are returned; if you set full_listing to True, all
-        objects in the container are returned.
+        Returns a list of StorageObjects representing the objects in the
+        container. You can use the marker and limit params to handle pagination,
+        and the prefix and delimiter params to filter the objects returned.
+        Also, by default only the first 10,000 objects are returned; if you set
+        full_listing to True, all objects in the container are returned.
         """
-        objs = self.client.get_container_objects(self.name, marker=marker, limit=limit,
-                prefix=prefix, delimiter=delimiter, full_listing=full_listing)
+        objs = self.client.get_container_objects(self.name, marker=marker,
+                limit=limit, prefix=prefix, delimiter=delimiter,
+                full_listing=full_listing)
         return objs
 
 
@@ -101,8 +119,8 @@ class Container(object):
         Returns a list of the names of all the objects in this container. The same
         pagination parameters apply as in self.get_objects().
         """
-        objs = self.get_objects(marker=marker, limit=limit, prefix=prefix, delimiter=delimiter,
-            full_listing=full_listing)
+        objs = self.get_objects(marker=marker, limit=limit, prefix=prefix,
+                delimiter=delimiter, full_listing=full_listing)
         return [obj.name for obj in objs]
 
 
@@ -111,8 +129,8 @@ class Container(object):
         Creates a new object in this container, and populates it with
         the given data.
         """
-        return self.client.store_object(self, obj_name, data, content_type=content_type,
-                etag=etag)
+        return self.client.store_object(self, obj_name, data,
+                content_type=content_type, etag=etag)
 
 
     def upload_file(self, file_or_path, obj_name=None, content_type=None, etag=None,

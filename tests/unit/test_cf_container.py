@@ -73,7 +73,7 @@ class CF_ContainerTest(unittest.TestCase):
                 ("x-log-retention", test_log_retention)]
         self.client.connection.cdn_request.return_value = resp
         # We need an actual container
-        cont = Container(self.client, "realcontainer")
+        cont = Container(self.client, "realcontainer", 0, 0)
         self.assertEqual(cont.cdn_uri, test_uri)
 
     def test_fetch_cdn_not_found(self):
@@ -89,7 +89,7 @@ class CF_ContainerTest(unittest.TestCase):
         resp.getheaders.return_value = []
         self.client.connection.cdn_request.return_value = resp
         # We need an actual container
-        cont = Container(self.client, "realcontainer")
+        cont = Container(self.client, "realcontainer", 0, 0)
         self.assertIsNone(cont.cdn_uri)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)

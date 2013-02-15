@@ -11,9 +11,10 @@ import urlparse
 
 import pyrax.exceptions as exc
 
-
-API_DATE_PATTERN = re.compile(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})")
-UTC_API_DATE_PATTERN = re.compile(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z")
+_pat = r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})"
+_utc_pat = r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z"
+API_DATE_PATTERN = re.compile(_pat)
+UTC_API_DATE_PATTERN = re.compile(_utc_pat)
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
@@ -55,8 +56,8 @@ class Identity(object):
 
     def set_credential_file(self, credential_file, authenticate=False):
         """
-        Reads in the credentials from the supplied file. It should be a standard
-        config file in the format:
+        Reads in the credentials from the supplied file. It should be
+        a standard config file in the format:
 
         [rackspace_cloud]
         username = myusername
@@ -69,8 +70,8 @@ class Identity(object):
             if not cfg.read(credential_file):
                 # If the specified file does not exist, the parser will
                 # return an empty list
-                raise exc.FileNotFound("The specified credential file '%s' does not exist"
-                        % credential_file)
+                raise exc.FileNotFound("The specified credential file '%s' "
+                        "does not exist" % credential_file)
         except ConfigParser.MissingSectionHeaderError as e:
             # The file exists, but doesn't have the correct format.
             raise exc.InvalidCredentialFile(e)
@@ -95,8 +96,9 @@ class Identity(object):
 
     def authenticate(self):
         """
-        Using the supplied credentials, connects to the specified authentication
-        endpoint and attempts to log in. If successful, records the token information.
+        Using the supplied credentials, connects to the specified
+        authentication endpoint and attempts to log in. If successful,
+        records the token information.
         """
         creds = self._get_credentials()
         url = urlparse.urljoin(self.auth_endpoint, "tokens")
@@ -109,7 +111,8 @@ class Identity(object):
             errcode = e.getcode()
             if errcode == 401:
                 # Invalid authorization
-                raise exc.AuthenticationFailed("Incorrect/unauthorized credentials received")
+                raise exc.AuthenticationFailed("Incorrect/unauthorized "
+                        "credentials received")
             else:
                 raise exc.AuthenticationFailed("Authentication Error: %s" % e)
         resp = json.loads(raw_resp.read())
@@ -167,20 +170,24 @@ class Identity(object):
 
     @staticmethod
     def _parse_api_time(timestr):
-        """Typical expiration times returned from the auth server are in this format:
+        """
+        Typical expiration times returned from the auth server are in this format:
             2012-05-02T14:27:40.000-05:00
         They can also be returned as a UTC value in this format:
             2012-05-02T14:27:40.000Z
         This method returns a proper datetime object from either of these formats.
         """
         try:
-            yr, mth, dy, hr, mn, sc, off_sign, off_hr, off_mn = API_DATE_PATTERN.match(timestr).groups()
+            reg_groups = API_DATE_PATTERN.match(timestr).groups()
+            yr, mth, dy, hr, mn, sc, off_sign, off_hr, off_mn = reg_groups
         except AttributeError:
             # UTC dates don't show offsets.
-            yr, mth, dy, hr, mn, sc = UTC_API_DATE_PATTERN.match(timestr).groups()
+            utc_groups = UTC_API_DATE_PATTERN.match(timestr).groups()
+            yr, mth, dy, hr, mn, sc = utc_groups
             off_sign = "+"
             off_hr = off_mn = 0
-        base_dt = datetime.datetime(int(yr), int(mth), int(dy), int(hr), int(mn), int(sc))
+        base_dt = datetime.datetime(int(yr), int(mth), int(dy), int(hr),
+                int(mn), int(sc))
         delta = datetime.timedelta(hours=int(off_hr), minutes=int(off_mn))
         if off_sign == "+":
             # Time is greater than UTC

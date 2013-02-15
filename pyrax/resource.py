@@ -78,13 +78,16 @@ class BaseResource(object):
         try:
             return self.__dict__[key]
         except KeyError:
-            raise AttributeError("'%s' object has no attribute '%s'." % (self.__class__, key))
+            raise AttributeError("'%s' object has no attribute "
+                    "'%s'." % (self.__class__, key))
 
 
     def __repr__(self):
         reprkeys = sorted(key for key in self.__dict__.keys()
-               if (key[0] != "_") and (key not in ("manager", "created", "updated")))
-        info = ", ".join("%s=%s" % (key, getattr(self, key)) for key in reprkeys)
+                if (key[0] != "_") and (key not in (
+                        "manager", "created", "updated")))
+        info = ", ".join("%s=%s" % (key, getattr(self, key))
+                for key in reprkeys)
         return "<%s %s>" % (self.__class__.__name__, info)
 
 

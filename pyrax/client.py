@@ -315,7 +315,8 @@ class BaseClient(httplib2.Http):
                 self.management_url = management_url.rstrip("/")
                 return None
             except exc.AmbiguousEndpoints:
-                print "Found more than one valid endpoint. Use a more restrictive filter"
+                print "Found more than one valid endpoint."
+                print "You need to use a more restrictive filter."
                 raise
             except KeyError:
                 raise exc.AuthorizationFailure()
@@ -331,10 +332,10 @@ class BaseClient(httplib2.Http):
 
     def _fetch_endpoints_from_auth(self, uri):
         """
-        We have a token, but don't know the final endpoint for
-        the region. We have to go back to the auth service and
-        ask again. This request requires an admin-level token
-        to work. The proxy token supplied could be from a low-level enduser.
+        We have a token, but don't know the final endpoint for the region. We
+        have to go back to the auth service and ask again. This request requires
+        an admin-level token to work. The proxy token supplied could be from a
+        low-level enduser.
 
         We can't get this from the keystone service endpoint, we have to use
         the admin endpoint.
@@ -444,7 +445,9 @@ class BaseClient(httplib2.Http):
 
 
     def _v1_auth(self, uri):
-        """The original auth system for OpenStack. Probably not used anymore."""
+        """
+        The original auth system for OpenStack. Probably not used anymore.
+        """
         if self.proxy_token:
             raise exc.NoTokenLookupException()
 
@@ -504,5 +507,8 @@ class BaseClient(httplib2.Http):
 
     @property
     def projectid(self):
-        """The older parts of this code used 'projectid'; this wraps that reference."""
+        """
+        The older parts of this code used 'projectid'; this wraps that
+        reference.
+        """
         return self.tenant_id

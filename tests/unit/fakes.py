@@ -218,7 +218,7 @@ class FakeDNSManager(CloudDNSManager):
 
 class FakeDNSDomain(CloudDNSDomain):
     def __init__(self, *args, **kwargs):
-        self.id = utils.random_name()
+        self.id = utils.random_name(ascii_only=True)
         self.name = utils.random_name()
         self.manager = FakeDNSManager()
 
