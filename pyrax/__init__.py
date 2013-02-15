@@ -92,19 +92,15 @@ cloud_dns = None
 # Class used to handle auth/identity
 identity_class = None
 # Default identity type.
-default_identity_type = None
+default_identity_type = "rackspace"
 # Identity object
 identity = None
 # Default region for all services. Can be individually overridden if needed
-default_region = None
-# Some services require a region. If the user doesn't specify one, use DFW.
-FALLBACK_REGION = "DFW"
+default_region = "DFW"
 # If credentials are stored using keyring, this holds the username
 keyring_username = None
 # Encoding to use when working with non-ASCII names
-encoding = None
-# If no encoding is specified, use this by default
-DEFAULT_ENCODING = "utf-8"
+encoding = "utf-8"
 
 # Value to plug into the user-agent headers
 USER_AGENT = "pyrax/%s" % version.version
@@ -115,7 +111,7 @@ _http_debug = False
 
 def safe_region(region=None):
     """Value to use when no region is specified."""
-    return region or default_region or FALLBACK_REGION
+    return region or default_region
 
 
 def _read_config_settings(config_file):
@@ -128,19 +124,19 @@ def _read_config_settings(config_file):
         # The file exists, but doesn't have the correct format.
         raise exc.InvalidConfigurationFile(e)
 
-    def safe_get(section, option):
+    def safe_get(section, option, default=None):
         try:
             return cfg.get(section, option)
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
-            return None
+            return default
 
-    default_region = safe_get("settings", "region") or default_region
-    default_identity_type = safe_get("settings", "identity_type") or (
-            default_identity_type or "rackspace")
+    default_region = safe_get("settings", "region", default_region)
+    default_identity_type = safe_get("settings", "identity_type",
+            default_identity_type)
     app_agent = safe_get("settings", "custom_user_agent")
-    _http_debug = (safe_get("settings", "debug") or "False") == "True"
+    _http_debug = safe_get("settings", "debug", "False") == "True"
     keyring_username = safe_get("settings", "keyring_username")
-    encoding = safe_get("settings", "encoding") or DEFAULT_ENCODING
+    encoding = safe_get("settings", "encoding", encoding)
     if app_agent:
         # Customize the user-agent string with the app name.
         USER_AGENT = "%s %s" % (app_agent, USER_AGENT)
@@ -250,7 +246,7 @@ def authenticate():
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, cloudservers, cloudfiles, cloud_loadbalancers
-    global cloud_databases, cloud_blockstorage, cloud_dns, default_region
+    global cloud_databases, cloud_blockstorage, cloud_dns
     identity = identity_class()
     cloudservers = None
     cloudfiles = None
@@ -258,7 +254,6 @@ def clear_credentials():
     cloud_databases = None
     cloud_blockstorage = None
     cloud_dns = None
-    default_region = None
 
 
 def set_default_region(region):
