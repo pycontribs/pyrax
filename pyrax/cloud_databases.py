@@ -69,7 +69,8 @@ class CloudDatabaseInstance(BaseResource):
             return [db for db in self.list_databases()
                     if db.name == name][0]
         except IndexError:
-            raise exc.NoSuchDatabase("No database by the name '%s' exists." % name)
+            raise exc.NoSuchDatabase("No database by the name '%s' exists." %
+                    name)
 
 
     def get_user(self, name):
@@ -82,7 +83,8 @@ class CloudDatabaseInstance(BaseResource):
             return [user for user in self.list_users()
                     if user.name == name][0]
         except IndexError:
-            raise exc.NoSuchDatabaseUser("No user by the name '%s' exists." % name)
+            raise exc.NoSuchDatabaseUser("No user by the name '%s' exists." %
+                    name)
 
 
     def create_database(self, name, character_set=None, collate=None):
@@ -96,11 +98,12 @@ class CloudDatabaseInstance(BaseResource):
         if collate is None:
             collate = "utf8_general_ci"
         # Note that passing in non-None values is required for the _create_body
-        # method to distinguish between this and the request to create and instance.
+        # method to distinguish between this and the request to create and
+        # instance.
         self._database_manager.create(name=name, character_set=character_set,
                 collate=collate, return_none=True)
-        # Since the API doesn't return the info for creating the database object, we
-        # have to do it manually.
+        # Since the API doesn't return the info for creating the database
+        # object, we have to do it manually.
         return self._database_manager.find(name=name)
 
 
@@ -119,7 +122,8 @@ class CloudDatabaseInstance(BaseResource):
         database_names = [db if isinstance(db, basestring) else db.name
                 for db in database_names]
         # Note that passing in non-None values is required for the create_body
-        # method to distinguish between this and the request to create and instance.
+        # method to distinguish between this and the request to create and
+        # instance.
         self._user_manager.create(name=name, password=password,
                 database_names=database_names, return_none=True)
         # Since the API doesn't return the info for creating the user object, we
@@ -199,7 +203,8 @@ class CloudDatabaseInstance(BaseResource):
         """Changes the size of the volume for this instance."""
         curr_size = self.volume.get("size")
         if size <= curr_size:
-            raise exc.InvalidVolumeResize("The new volume size must be larger than the current volume size of '%s'." % curr_size)
+            raise exc.InvalidVolumeResize("The new volume size must be larger "
+                    "than the current volume size of '%s'." % curr_size)
         body = {"volume": {"size": size}}
         self.manager.action(self, "resize", body=body)
 
@@ -208,12 +213,14 @@ class CloudDatabaseInstance(BaseResource):
         try:
             ret = self._flavor
         except AttributeError:
-            ret = self._flavor = CloudDatabaseFlavor(self.manager.api._flavor_manager, {})
+            ret = self._flavor = CloudDatabaseFlavor(
+                    self.manager.api._flavor_manager, {})
         return ret
 
     def _set_flavor(self, flavor):
         if isinstance(flavor, dict):
-            self._flavor = CloudDatabaseFlavor(self.manager.api._flavor_manager, flavor)
+            self._flavor = CloudDatabaseFlavor(self.manager.api._flavor_manager,
+                    flavor)
         else:
             # Must be an instance
             self._flavor = flavor
@@ -266,7 +273,7 @@ class CloudDatabaseClient(BaseClient):
         to handle flavors.
         """
         self._manager = BaseManager(self, resource_class=CloudDatabaseInstance,
-               response_key="instance", uri_base="instances")
+                response_key="instance", uri_base="instances")
         self._flavor_manager = BaseManager(self,
                 resource_class=CloudDatabaseFlavor, response_key="flavor",
                 uri_base="flavors")
@@ -373,11 +380,10 @@ class CloudDatabaseClient(BaseClient):
 
     def _get_flavor_ref(self, flavor):
         """
-        Flavors are odd in that the API expects an href link, not
-        an ID, as with nearly every other resource. This method
-        takes either a CloudDatabaseFlavor object, a flavor ID,
-        a RAM size, or a flavor name, and uses that to determine
-        the appropriate href.
+        Flavors are odd in that the API expects an href link, not an ID, as with
+        nearly every other resource. This method takes either a
+        CloudDatabaseFlavor object, a flavor ID, a RAM size, or a flavor name,
+        and uses that to determine the appropriate href.
         """
         flavor_obj = None
         if isinstance(flavor, CloudDatabaseFlavor):
@@ -402,7 +408,8 @@ class CloudDatabaseClient(BaseClient):
                     flavor_obj = [flav for flav in flavors
                             if flav.ram == flavor][0]
                 except IndexError:
-                   raise exc.FlavorNotFound("Could not determine flavor from '%s'." % flavor)
+                    raise exc.FlavorNotFound("Could not determine flavor from "
+                            "'%s'." % flavor)
         # OK, we have a Flavor object. Get the href
         href = [link["href"] for link in flavor_obj.links
                 if link["rel"] == "self"][0]

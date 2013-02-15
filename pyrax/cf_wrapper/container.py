@@ -1,6 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Copyright 2012 Rackspace
+
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
+
 import pyrax
 from pyrax import exceptions as exc
 
@@ -17,8 +34,8 @@ class Container(object):
     def __init__(self, client, name, object_count=None, total_bytes=None):
         self.client = client
         self.name = name
-        self.object_count = object_count
-        self.total_bytes = total_bytes
+        self.object_count = int(object_count)
+        self.total_bytes = int(total_bytes)
         self._cdn_uri = FAULT
         self._cdn_ttl = FAULT
         self._cdn_ssl_uri = FAULT
@@ -65,14 +82,15 @@ class Container(object):
     def get_objects(self, marker=None, limit=None, prefix=None, delimiter=None,
             full_listing=False):
         """
-        Returns a list of StorageObjects representing the objects in the container.
-        You can use the marker and limit params to handle pagination, and the prefix
-        and delimiter params to filter the objects returned. Also, by default only
-        the first 10,000 objects are returned; if you set full_listing to True, all
-        objects in the container are returned.
+        Returns a list of StorageObjects representing the objects in the
+        container. You can use the marker and limit params to handle pagination,
+        and the prefix and delimiter params to filter the objects returned.
+        Also, by default only the first 10,000 objects are returned; if you set
+        full_listing to True, all objects in the container are returned.
         """
-        objs = self.client.get_container_objects(self.name, marker=marker, limit=limit,
-                prefix=prefix, delimiter=delimiter, full_listing=full_listing)
+        objs = self.client.get_container_objects(self.name, marker=marker,
+                limit=limit, prefix=prefix, delimiter=delimiter,
+                full_listing=full_listing)
         return objs
 
 
@@ -101,8 +119,8 @@ class Container(object):
         Returns a list of the names of all the objects in this container. The same
         pagination parameters apply as in self.get_objects().
         """
-        objs = self.get_objects(marker=marker, limit=limit, prefix=prefix, delimiter=delimiter,
-            full_listing=full_listing)
+        objs = self.get_objects(marker=marker, limit=limit, prefix=prefix,
+                delimiter=delimiter, full_listing=full_listing)
         return [obj.name for obj in objs]
 
 
@@ -111,18 +129,20 @@ class Container(object):
         Creates a new object in this container, and populates it with
         the given data.
         """
-        return self.client.store_object(self, obj_name, data, content_type=content_type,
-                etag=etag)
+        return self.client.store_object(self, obj_name, data,
+                content_type=content_type, etag=etag)
 
 
-    def upload_file(self, file_or_path, obj_name=None, content_type=None, etag=None):
+    def upload_file(self, file_or_path, obj_name=None, content_type=None, etag=None,
+            return_none=False):
         """
         Uploads the specified file to this container. If no name is supplied, the
         file's name will be used. Either a file path or an open file-like object
-        may be supplied.
+        may be supplied. A StorageObject reference to the uploaded file will be
+        returned, unless 'return_none' is set to True.
         """
         return self.client.upload_file(self, file_or_path, obj_name=obj_name,
-                content_type=content_type, etag=etag)
+                content_type=content_type, etag=etag, return_none=return_none)
 
 
     def delete_object(self, obj):

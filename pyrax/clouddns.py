@@ -87,9 +87,9 @@ class CloudDNSDomain(BaseResource):
     """
     def delete(self, delete_subdomains=False):
         """
-        Deletes this domain and all of its resource records. If this domain
-        has subdomains, each subdomain will now become a root domain.
-        If you wish to also delete any subdomains, pass True to 'delete_subdomains'.
+        Deletes this domain and all of its resource records. If this domain has
+        subdomains, each subdomain will now become a root domain. If you wish to
+        also delete any subdomains, pass True to 'delete_subdomains'.
         """
         self.manager.delete(self, delete_subdomains=delete_subdomains)
 
@@ -218,7 +218,8 @@ class CloudDNSPTRRecord(object):
     This represents a Cloud DNS PTR record (reverse DNS).
     """
     def __init__(self, data=None, device=None):
-        self.type = self.id = self.data = self.name = self.ttl = self.comment = None
+        self.type = self.id = self.data = self.name = None
+        self.ttl = self.comment = None
         if data:
             for key, val in data.items():
                 setattr(self, key, val)
@@ -256,10 +257,12 @@ class CloudDNSManager(BaseManager):
         if service == "all":
             for svc in self._paging.keys():
                 svc_dct = self._paging[svc]
-                svc_dct["next_uri"] = svc_dct["prev_uri"] = svc_dct["total_entries"] = None
+                svc_dct["next_uri"] = svc_dct["prev_uri"] = None
+                svc_dct["total_entries"] = None
             return
         svc_dct = self._paging[service]
-        svc_dct["next_uri"] = svc_dct["prev_uri"] = svc_dct["total_entries"] = None
+        svc_dct["next_uri"] = svc_dct["prev_uri"] = None
+        svc_dct["total_entries"] = None
         if not body:
             return
         svc_dct["total_entries"] = body.get("totalEntries")
@@ -269,7 +272,7 @@ class CloudDNSManager(BaseManager):
             for link in links:
                 href = link["href"]
                 pos = href.index(uri_base)
-                page_uri = href[pos-1:]
+                page_uri = href[pos - 1:]
                 if link["rel"] == "next":
                     svc_dct["next_uri"] = page_uri
                 elif link["rel"] == "previous":
@@ -317,13 +320,14 @@ class CloudDNSManager(BaseManager):
 
     def list_previous_page(self):
         """
-        When paging through results, this will return the previous page, using the
-        same limit. If there are no more results, a NoMoreResults exception
+        When paging through results, this will return the previous page, using
+        the same limit. If there are no more results, a NoMoreResults exception
         will be raised.
         """
         uri = self._paging.get("domain", {}).get("prev_uri")
         if uri is None:
-            raise exc.NoMoreResults("There are no previous pages of domains to list.")
+            raise exc.NoMoreResults("There are no previous pages of domains "
+                    "to list.")
         return self._list(uri)
 
 
@@ -335,7 +339,8 @@ class CloudDNSManager(BaseManager):
         """
         uri = self._paging.get("domain", {}).get("next_uri")
         if uri is None:
-            raise exc.NoMoreResults("There are no more pages of domains to list.")
+            raise exc.NoMoreResults("There are no more pages of domains to "
+                    "list.")
         return self._list(uri)
 
 
@@ -347,8 +352,6 @@ class CloudDNSManager(BaseManager):
         Because DNS returns a different format for the body,
         the BaseManager method must be overridden here.
         """
-        # SLOW!!!!
-#        uri = "%s?showRecords=true&showSubdomains=true" % uri
         uri = "%s?showRecords=false&showSubdomains=false" % uri
         _resp, body = self.api.method_get(uri)
         body["records"] = []
@@ -381,8 +384,9 @@ class CloudDNSManager(BaseManager):
         callbackURL = ret_body["callbackUrl"].split("/status/")[-1]
         massagedURL = "/status/%s?showDetails=true" % callbackURL
         start = time.time()
-        while (ret_body["status"] == "RUNNING") and (time.time() - start < WAIT_LIMIT):
-            _resp, ret_body= self.api.method_get(massagedURL)
+        while ((ret_body["status"] == "RUNNING") and
+                (time.time() - start < WAIT_LIMIT)):
+            _resp, ret_body = self.api.method_get(massagedURL)
         if error_class and (ret_body["status"] == "ERROR"):
             #This call will handle raising the error.
             self._process_async_error(ret_body, error_class)
@@ -405,7 +409,6 @@ class CloudDNSManager(BaseManager):
         """
         def _fmt_error(err):
             # Remove the cumbersome Java-esque message
-#            details = err["details"].split(".")[-1].replace("\n", " ")
             details = err["details"].replace("\n", " ")
             if not details:
                 details = err["message"]
@@ -434,17 +437,17 @@ class CloudDNSManager(BaseManager):
         If 'records' are supplied, they should be a list of dicts. Each
         record dict should have the following format:
 
-            {"name" : "example.com",
-            "type" : "A",
-            "data" : "192.0.2.17",
-            "ttl" : 86400}
+            {"name": "example.com",
+            "type": "A",
+            "data": "192.0.2.17",
+            "ttl": 86400}
 
         If 'subdomains' are supplied, they should be a list of dicts. Each
         subdomain dict should have the following format:
 
-            {"name" : "sub1.example.com",
-             "comment" : "1st sample subdomain",
-             "emailAddress" : "sample@rackspace.com"}
+            {"name": "sub1.example.com",
+             "comment": "1st sample subdomain",
+             "emailAddress": "sample@rackspace.com"}
         """
         self.run_hooks("modify_body_for_create", body, **kwargs)
         _resp, ret_body = self._async_call(uri, body=body, method="POST",
@@ -456,8 +459,8 @@ class CloudDNSManager(BaseManager):
     def delete(self, domain, delete_subdomains=False):
         """
         Deletes the specified domain and all of its resource records. If the
-        domain has subdomains, each subdomain will now become a root domain.
-        If you wish to also delete any subdomains, pass True to 'delete_subdomains'.
+        domain has subdomains, each subdomain will now become a root domain. If
+        you wish to also delete any subdomains, pass True to 'delete_subdomains'.
         """
         uri = "/%s/%s" % (self.uri_base, utils.get_id(domain))
         if delete_subdomains:
@@ -520,8 +523,8 @@ class CloudDNSManager(BaseManager):
     def export_domain(self, domain):
         """
         Provides the BIND (Berkeley Internet Name Domain) 9 formatted contents
-        of the requested domain. This call is for a single domain only, and as such,
-        does not provide subdomain information.
+        of the requested domain. This call is for a single domain only, and as
+        such, does not provide subdomain information.
 
         Sample export:
             {u'accountId': 000000,
@@ -532,7 +535,8 @@ class CloudDNSManager(BaseManager):
              u'id': 1111111}
         """
         uri = "/domains/%s/export" % utils.get_id(domain)
-        resp, ret_body = self._async_call(uri, method="GET", error_class=exc.NotFound)
+        resp, ret_body = self._async_call(uri, method="GET",
+                error_class=exc.NotFound)
         return ret_body.get("contents", "")
 
 
@@ -542,9 +546,9 @@ class CloudDNSManager(BaseManager):
         'export_domain()' method for a description of the format.
         """
         uri = "/domains/import"
-        body = {"domains" : [{
-                "contentType" : "BIND_9",
-                "contents" : domain_data,
+        body = {"domains": [{
+                "contentType": "BIND_9",
+                "contents": domain_data,
                 }]}
         resp, ret_body = self._async_call(uri, method="POST", body=body,
                 error_class=exc.DomainCreationFailed)
@@ -560,11 +564,12 @@ class CloudDNSManager(BaseManager):
             - comment
         """
         if not any((emailAddress, ttl, comment)):
-            raise exc.MissingDNSSettings("No settings provided to update_domain().")
+            raise exc.MissingDNSSettings(
+                    "No settings provided to update_domain().")
         uri = "/domains/%s" % utils.get_id(domain)
-        body = {"comment" : comment,
-                "ttl" : ttl,
-                "emailAddress" : emailAddress,
+        body = {"comment": comment,
+                "ttl": ttl,
+                "emailAddress": emailAddress,
                 }
         none_keys = [key for key, val in body.items()
                 if val is None]
@@ -600,25 +605,27 @@ class CloudDNSManager(BaseManager):
 
     def list_subdomains_previous_page(self):
         """
-        When paging through subdomain results, this will return the previous page,
-        using the same limit. If there are no more results, a NoMoreResults exception
-        will be raised.
+        When paging through subdomain results, this will return the previous
+        page, using the same limit. If there are no more results, a
+        NoMoreResults exception will be raised.
         """
         uri = self._paging.get("subdomain", {}).get("prev_uri")
         if uri is None:
-            raise exc.NoMoreResults("There are no previous pages of subdomains to list.")
+            raise exc.NoMoreResults("There are no previous pages of subdomains "
+                    "to list.")
         return self._list_subdomains(uri)
 
 
     def list_subdomains_next_page(self):
         """
         When paging through subdomain results, this will return the next page,
-        using the same limit. If there are no more results, a NoMoreResults exception
-        will be raised.
+        using the same limit. If there are no more results, a NoMoreResults
+        exception will be raised.
         """
         uri = self._paging.get("subdomain", {}).get("next_uri")
         if uri is None:
-            raise exc.NoMoreResults("There are no more pages of subdomains to list.")
+            raise exc.NoMoreResults("There are no more pages of subdomains "
+                    "to list.")
         return self._list_subdomains(uri)
 
 
@@ -626,7 +633,8 @@ class CloudDNSManager(BaseManager):
         """
         Returns a list of all records configured for the specified domain.
         """
-        uri = "/domains/%s/records%s" % (utils.get_id(domain), self._get_pagination_qs(limit, offset))
+        uri = "/domains/%s/records%s" % (utils.get_id(domain),
+                self._get_pagination_qs(limit, offset))
         return self._list_records(uri)
 
 
@@ -647,20 +655,21 @@ class CloudDNSManager(BaseManager):
     def list_records_previous_page(self):
         """
         When paging through record results, this will return the previous page,
-        using the same limit. If there are no more results, a NoMoreResults exception
-        will be raised.
+        using the same limit. If there are no more results, a NoMoreResults
+        exception will be raised.
         """
         uri = self._paging.get("record", {}).get("prev_uri")
         if uri is None:
-            raise exc.NoMoreResults("There are no previous pages of records to list.")
+            raise exc.NoMoreResults("There are no previous pages of records "
+                    "to list.")
         return self._list_records(uri)
 
 
     def list_records_next_page(self):
         """
         When paging through record results, this will return the next page,
-        using the same limit. If there are no more results, a NoMoreResults exception
-        will be raised.
+        using the same limit. If there are no more results, a NoMoreResults
+        exception will be raised.
         """
         uri = self._paging.get("record", {}).get("next_uri")
         if uri is None:
@@ -670,8 +679,8 @@ class CloudDNSManager(BaseManager):
 
     def search_records(self, domain, record_type, name=None, data=None):
         """
-        Returns a list of all records configured for the specified domain that match
-        the supplied search criteria.
+        Returns a list of all records configured for the specified domain that
+        match the supplied search criteria.
         """
         search_params = []
         if name:
@@ -741,7 +750,8 @@ class CloudDNSManager(BaseManager):
         rec_id = utils.get_id(record)
         uri = "/domains/%s/records/%s" % (utils.get_id(domain), rec_id)
         body = {"name": record.name}
-        all_opts = (("data", data), ("priority", priority), ("ttl", ttl), ("comment", comment))
+        all_opts = (("data", data), ("priority", priority), ("ttl", ttl),
+                ("comment", comment))
         opts = [(k, v) for k, v in all_opts if v is not None]
         body.update(dict(opts))
         resp, ret_body = self._async_call(uri, method="PUT", body=body,
@@ -753,7 +763,8 @@ class CloudDNSManager(BaseManager):
         """
         Deletes an existing record for a domain.
         """
-        uri = "/domains/%s/records/%s" % (utils.get_id(domain), utils.get_id(record))
+        uri = "/domains/%s/records/%s" % (utils.get_id(domain),
+                utils.get_id(record))
         resp, ret_body = self._async_call(uri, method="DELETE",
                 error_class=exc.DomainRecordDeletionFailed, has_response=False)
         return ret_body
@@ -782,12 +793,15 @@ class CloudDNSManager(BaseManager):
         or an invalid device.
         """
         from tests.unit import fakes
-        if isinstance(device, (pyrax.CloudServer, fakes.FakeServer, fakes.FakeDNSDevice)):
+        if isinstance(device, (pyrax.CloudServer, fakes.FakeServer,
+                fakes.FakeDNSDevice)):
             device_type = "server"
-        elif isinstance(device, (pyrax.CloudLoadBalancer, fakes.FakeLoadBalancer)):
+        elif isinstance(device, (pyrax.CloudLoadBalancer,
+                fakes.FakeLoadBalancer)):
             device_type = "loadbalancer"
         else:
-            raise exc.InvalidDeviceType("The device '%s' must be a CloudServer or a CloudLoadBalancer." % device)
+            raise exc.InvalidDeviceType("The device '%s' must be a CloudServer "
+                    "or a CloudLoadBalancer." % device)
         return device_type
 
 
@@ -802,7 +816,8 @@ class CloudDNSManager(BaseManager):
             resp, ret_body = self.api.method_get(uri)
         except exc.NotFound:
             return []
-        records = [CloudDNSPTRRecord(rec, device) for rec in ret_body.get("records", [])]
+        records = [CloudDNSPTRRecord(rec, device)
+                for rec in ret_body.get("records", [])]
         return records
 
 
@@ -815,7 +830,7 @@ class CloudDNSManager(BaseManager):
         if not isinstance(records, (list, tuple)):
             records = [records]
         body = {"recordsList": {
-                   "records": records},
+                    "records": records},
                 "link": {
                     "content": "",
                     "href": href,
@@ -831,16 +846,17 @@ class CloudDNSManager(BaseManager):
         # will fail, due to the DNS API not having regional endpoints. The net
         # result is that an EndpointNotFound exception will be raised, which
         # we catch here and then raise a more meaningful exception.
-        # The Rackspace DNS team is working on changing this to return a 403 instead;
-        # when that happens this kludge can go away.
+        # The Rackspace DNS team is working on changing this to return a 403
+        # instead; when that happens this kludge can go away.
         try:
             _resp, ret_body = self._async_call(uri, body=body, method="POST",
                     error_class=exc.PTRRecordCreationFailed)
         except exc.EndpointNotFound:
-            raise exc.InvalidPTRRecord("The domain/IP address information is not valid "
-                    "for this device.")
+            raise exc.InvalidPTRRecord("The domain/IP address information is not "
+                    "valid for this device.")
         return ret_body.get("records")
-        records = [CloudDNSPTRRecord(rec, device) for rec in ret_body.get("records", [])]
+        records = [CloudDNSPTRRecord(rec, device)
+                for rec in ret_body.get("records", [])]
         return records
 
 
@@ -867,7 +883,7 @@ class CloudDNSManager(BaseManager):
             # Maximum comment length is 160 chars
             rec["comment"] = comment[:160]
         body = {"recordsList": {
-                   "records": [rec]},
+                    "records": [rec]},
                 "link": {
                     "content": "",
                     "href": href,
@@ -878,22 +894,23 @@ class CloudDNSManager(BaseManager):
             _resp, ret_body = self._async_call(uri, body=body, method="PUT",
                     has_response=False, error_class=exc.PTRRecordUpdateFailed)
         except exc.EndpointNotFound as e:
-            raise exc.InvalidPTRRecord("The record domain/IP address information is not valid "
-                    "for this device.")
+            raise exc.InvalidPTRRecord("The record domain/IP address "
+                    "information is not valid for this device.")
         return ret_body.get("status") == "COMPLETED"
 
 
     def delete_ptr_records(self, device, ip_address=None):
         """
-        Deletes the PTR records for the specified device. If 'ip_address' is supplied,
-        only the PTR records with that IP address will be deleted.
+        Deletes the PTR records for the specified device. If 'ip_address' is
+        supplied, only the PTR records with that IP address will be deleted.
         """
         device_type = self._resolve_device_type(device)
         href, svc_name = self._get_ptr_details(device, device_type)
         uri = "/rdns/%s?href=%s" % (svc_name, href)
         if ip_address:
             uri = "%s&ip=%s" % (uri, ip_address)
-        _resp, ret_body = self._async_call(uri, method="DELETE", has_response=False,
+        _resp, ret_body = self._async_call(uri, method="DELETE",
+                has_response=False,
                 error_class=exc.PTRRecordDeletionFailed)
         return ret_body.get("status") == "COMPLETED"
 
@@ -993,8 +1010,8 @@ class CloudDNSClient(BaseClient):
     def export_domain(self, domain):
         """
         Provides the BIND (Berkeley Internet Name Domain) 9 formatted contents
-        of the requested domain. This call is for a single domain only, and as such,
-        does not provide subdomain information.
+        of the requested domain. This call is for a single domain only, and as
+        such, does not provide subdomain information.
 
         Sample export:
 
@@ -1033,8 +1050,8 @@ class CloudDNSClient(BaseClient):
     def delete(self, domain, delete_subdomains=False):
         """
         Deletes the specified domain and all of its resource records. If the
-        domain has subdomains, each subdomain will now become a root domain.
-        If you wish to also delete any subdomains, pass True to 'delete_subdomains'.
+        domain has subdomains, each subdomain will now become a root domain. If
+        you wish to also delete any subdomains, pass True to 'delete_subdomains'.
         """
         domain.delete(delete_subdomains=delete_subdomains)
 
@@ -1050,9 +1067,9 @@ class CloudDNSClient(BaseClient):
     def get_subdomain_iterator(self, domain, limit=None, offset=None):
         """
         Returns an iterator that will return each available subdomain for the
-        specified domain. If there are more than the limit of 100 subdomains, the
-        iterator will continue to fetch subdomains from the API until all subdomains
-        have been returned.
+        specified domain. If there are more than the limit of 100 subdomains,
+        the iterator will continue to fetch subdomains from the API until all
+        subdomains have been returned.
         """
         return SubdomainResultsIterator(self._manager, domain=domain)
 
@@ -1098,8 +1115,8 @@ class CloudDNSClient(BaseClient):
     @assure_domain
     def search_records(self, domain, record_type, name=None, data=None):
         """
-        Returns a list of all records configured for the specified domain that match
-        the supplied search criteria.
+        Returns a list of all records configured for the specified domain
+        that match the supplied search criteria.
         """
         return domain.search_records(record_type=record_type,
                 name=name, data=data)
@@ -1166,8 +1183,8 @@ class CloudDNSClient(BaseClient):
 
     def delete_ptr_records(self, device, ip_address=None):
         """
-        Deletes the PTR records for the specified device. If 'ip_address' is supplied,
-        only the PTR records with that IP address will be deleted.
+        Deletes the PTR records for the specified device. If 'ip_address'
+        is supplied, only the PTR records with that IP address will be deleted.
         """
         return self._manager.delete_ptr_records(device, ip_address=ip_address)
 
@@ -1248,7 +1265,8 @@ class ResultsIterator(object):
                 else:
                     args = self.extra_args
                     self.results = self._list_method(self.next_uri, *args)
-                self.next_uri = self.manager._paging.get(self.paging_service, {}).get("next_uri")
+                self.next_uri = self.manager._paging.get(
+                        self.paging_service, {}).get("next_uri")
         # We should have more results.
         try:
             return self.results.pop(0)

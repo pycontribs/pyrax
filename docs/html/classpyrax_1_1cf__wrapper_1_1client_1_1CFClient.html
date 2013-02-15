@@ -207,7 +207,7 @@ Properties</h2></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Wraps the calls to swiftclient with objects representing Containers and StorageObjects. </p>
-<p>These classes allow a developer to work with regular Python objects instead of calling functions. </p>
+<p>These classes allow a developer to work with regular Python objects instead of calling functions that return primitive types. </p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ac775ee34451fdfa742b318538164070e"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::__init__" ref="ac775ee34451fdfa742b318538164070e" args="" -->
 <div class="memitem">
@@ -1589,8 +1589,7 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Compares the contents of the specified folder, and checks to make sure that the corresponding object is present in the specified container. </p>
-<p>If there is no remote object matching the local file, it is created. If a matching object exists, the etag is examined to determine if the object in the container matches the local file; if they differ, the container is updated with the local file if the local file is newer when `ignore_timestamps' is False (default). If `ignore_timestamps` is True, the object is overwritten with the local file contents whenever the etags differ. NOTE: the timestamp of a remote object is the time it was uploaded, not the original modification time of the file stored in that object.</p>
-<p>Unless 'include_hidden' is True, files beginning with an initial period are ignored.</p>
+<p>If there is no remote object matching the local file, it is created. If a matching object exists, the etag is examined to determine if the object in the container matches the local file; if they differ, the container is updated with the local file if the local file is newer when `ignore_timestamps' is False (default). If `ignore_timestamps` is True, the object is overwritten with the local file contents whenever the etags differ. NOTE: the timestamp of a remote object is the time it was uploaded, not the original modification time of the file stored in that object. Unless 'include_hidden' is True, files beginning with an initial period are ignored.</p>
 <p>If the 'delete' option is True, any objects in the container that do not have corresponding files in the local folder are deleted. </p>
 
 </div>
@@ -1633,7 +1632,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>etag</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>etag</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>return_none</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1645,7 +1650,7 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Uploads the specified file to the container. </p>
-<p>If no name is supplied, the file's name will be used. Either a file path or an open file-like object may be supplied. Returns the size of a file-like object. </p>
+<p>If no name is supplied, the file's name will be used. Either a file path or an open file-like object may be supplied. A StorageObject reference to the uploaded file will be returned, unless 'return_none' is set to True. Returns the size of a file-like object. </p>
 
 </div>
 </div>
@@ -1825,7 +1830,8 @@ Properties</h2></td></tr>
 </div>
 <div class="memdoc">
 <b>Initial value:</b><div class="fragment"><pre class="fragment">property(_get_http_log_debug, _set_http_log_debug, <span class="keywordtype">None</span>,
-            <span class="stringliteral">&quot;&quot;&quot;Determines if all http traffic is logged to the display for debugging.&quot;&quot;&quot;</span>)
+            <span class="stringliteral">&quot;Determines if all http traffic is logged to the display &quot;</span>
+            <span class="stringliteral">&quot;for debugging.&quot;</span>)
 </pre></div>
 </div>
 </div>
@@ -1863,7 +1869,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Feb 5 2013 13:13:12 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Feb 15 2013 15:48:41 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -110,17 +110,45 @@ Classes</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This class handles all of the authentication requirements for working with the Rackspace Cloud.  <a href="classpyrax_1_1rax__identity_1_1Identity.html#details">More...</a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1rax__identity.html#abc3f00c435af9a25ee98b025c8df847e">API_DATE_PATTERN</a> = re.compile(r&quot;(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})&quot;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1rax__identity.html#ae8b883633e3a4412236e6b4e798f73f6">UTC_API_DATE_PATTERN</a> = re.compile(r&quot;(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z&quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1rax__identity.html#a850dd666ec6ae04c07f742c66d17c042">_pat</a> = r&quot;(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})&quot;</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1rax__identity.html#acb654137ac94aa138ceaae7521b69540">_utc_pat</a> = r&quot;(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z&quot;</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1rax__identity.html#abc3f00c435af9a25ee98b025c8df847e">API_DATE_PATTERN</a> = re.compile(<a class="el" href="namespacepyrax_1_1rax__identity.html#a850dd666ec6ae04c07f742c66d17c042">_pat</a>)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1rax__identity.html#ae8b883633e3a4412236e6b4e798f73f6">UTC_API_DATE_PATTERN</a> = re.compile(<a class="el" href="namespacepyrax_1_1rax__identity.html#acb654137ac94aa138ceaae7521b69540">_utc_pat</a>)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1rax__identity.html#a71e8d76a94f92b1959b2ea603c78df9e">DATE_FORMAT</a> = &quot;%Y-%m-%d %H:%M:%S&quot;</td></tr>
 </table>
 <hr/><h2>Variable Documentation</h2>
+<a class="anchor" id="a850dd666ec6ae04c07f742c66d17c042"></a><!-- doxytag: member="pyrax::rax_identity::_pat" ref="a850dd666ec6ae04c07f742c66d17c042" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string <a class="el" href="namespacepyrax_1_1rax__identity.html#a850dd666ec6ae04c07f742c66d17c042">_pat</a> = r&quot;(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})&quot;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="acb654137ac94aa138ceaae7521b69540"></a><!-- doxytag: member="pyrax::rax_identity::_utc_pat" ref="acb654137ac94aa138ceaae7521b69540" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string <a class="el" href="namespacepyrax_1_1rax__identity.html#acb654137ac94aa138ceaae7521b69540">_utc_pat</a> = r&quot;(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z&quot;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="abc3f00c435af9a25ee98b025c8df847e"></a><!-- doxytag: member="pyrax::rax_identity::API_DATE_PATTERN" ref="abc3f00c435af9a25ee98b025c8df847e" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">tuple <a class="el" href="namespacepyrax_1_1rax__identity.html#abc3f00c435af9a25ee98b025c8df847e">API_DATE_PATTERN</a> = re.compile(r&quot;(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})&quot;)</td>
+          <td class="memname">tuple <a class="el" href="namespacepyrax_1_1rax__identity.html#abc3f00c435af9a25ee98b025c8df847e">API_DATE_PATTERN</a> = re.compile(<a class="el" href="namespacepyrax_1_1rax__identity.html#a850dd666ec6ae04c07f742c66d17c042">_pat</a>)</td>
         </tr>
       </table>
 </div>
@@ -146,7 +174,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">tuple <a class="el" href="namespacepyrax_1_1rax__identity.html#ae8b883633e3a4412236e6b4e798f73f6">UTC_API_DATE_PATTERN</a> = re.compile(r&quot;(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z&quot;)</td>
+          <td class="memname">tuple <a class="el" href="namespacepyrax_1_1rax__identity.html#ae8b883633e3a4412236e6b4e798f73f6">UTC_API_DATE_PATTERN</a> = re.compile(<a class="el" href="namespacepyrax_1_1rax__identity.html#acb654137ac94aa138ceaae7521b69540">_utc_pat</a>)</td>
         </tr>
       </table>
 </div>
@@ -172,7 +200,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Jan 26 2013 19:14:19 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Feb 15 2013 15:48:43 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

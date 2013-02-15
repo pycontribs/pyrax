@@ -221,11 +221,13 @@ def wait_until(obj, att, desired, interval=5, attempts=10, verbose=False):
                 obj = obj.manager.get(obj.id)
             except AttributeError:
                 # punt
-                raise exc.NoReloadError("The 'wait_until' method is not supported for '%s' objects." % obj.__class__)
+                raise exc.NoReloadError("The 'wait_until' method is not supported "
+                  "for '%s' objects." % obj.__class__)
         attval = getattr(obj, att)
         if verbose:
             elapsed = time.time() - start
-            print "Current value of %s: %s (elapsed: %4.1f seconds)" % (att, attval, elapsed)
+            print "Current value of %s: %s (elapsed: %4.1f seconds)" % (
+                    att, attval, elapsed)
         if attval in desired:
             return True
         time.sleep(interval)
@@ -250,8 +252,9 @@ def iso_time_string(val, show_tzinfo=False):
             except ValueError:
                 continue
         if dt is None:
-            raise exc.InvalidDateTimeString("The supplied value '%s' does not match either of the formats "
-                    "'YYYY-MM-DD HH:MM:SS' or 'YYYY-MM-DD'." % val)
+            raise exc.InvalidDateTimeString("The supplied value '%s' does not "
+              "match either of the formats 'YYYY-MM-DD HH:MM:SS' or "
+              "'YYYY-MM-DD'." % val)
     else:
         dt = val
     if not isinstance(dt, datetime.datetime):

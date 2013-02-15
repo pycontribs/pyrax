@@ -26,11 +26,13 @@ import pyrax.utils as utils
 import pyrax.exceptions as exc
 
 
+EARLY_DATE_STR = "1900-01-01T00:00:00"
 CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
 
 no_such_container_pattern = re.compile(r"Container GET|HEAD failed: .+/(.+) 404")
-etag_failed_pattern = re.compile(r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity")
+etag_fail_pat = r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity"
+etag_failed_pattern = re.compile(etag_fail_pat)
 
 def handle_swiftclient_exception(fnc):
     @wraps(fnc)
@@ -41,11 +43,13 @@ def handle_swiftclient_exception(fnc):
             str_error = "%s" % e
             bad_container = no_such_container_pattern.search(str_error)
             if bad_container:
-                raise exc.NoSuchContainer("Container '%s' doesn't exist" % bad_container.groups()[0])
+                raise exc.NoSuchContainer("Container '%s' doesn't exist" %
+                        bad_container.groups()[0])
             failed_upload = etag_failed_pattern.search(str_error)
             if failed_upload:
                 cont, fname = failed_upload.groups()
-                raise exc.UploadFailed("Upload of file '%(fname)s' to container '%(cont)s' failed." % locals())
+                raise exc.UploadFailed("Upload of file '%(fname)s' to container "
+                        "'%(cont)s' failed." % locals())
             # Not handled; re-raise
             raise
     return _wrapped
@@ -53,10 +57,11 @@ def handle_swiftclient_exception(fnc):
 
 class CFClient(object):
     """
-    Wraps the calls to swiftclient with objects representing Containers and StorageObjects.
+    Wraps the calls to swiftclient with objects representing Containers
+    and StorageObjects.
 
-    These classes allow a developer to work with regular Python objects instead of
-    calling functions.
+    These classes allow a developer to work with regular Python objects
+    instead of calling functions that return primitive types.
     """
     # Constants used in metadata headers
     account_meta_prefix = "X-Account-"
@@ -82,10 +87,10 @@ class CFClient(object):
         self.http_log_debug = http_log_debug
         self._http_log = _swift_client.http_log
         os.environ["SWIFTCLIENT_DEBUG"] = "True" if http_log_debug else ""
-        self._make_connections(auth_endpoint, username, api_key, tenant_name,
-            preauthurl=preauthurl, preauthtoken=preauthtoken,
-            auth_version=auth_version, os_options=os_options,
-            http_log_debug=http_log_debug)
+        self._make_connections(auth_endpoint, username, api_key,
+                tenant_name, preauthurl=preauthurl,
+                preauthtoken=preauthtoken, auth_version=auth_version,
+                os_options=os_options, http_log_debug=http_log_debug)
 
 
     def _make_connections(self, auth_endpoint, username, api_key, tenant_name,
@@ -93,8 +98,9 @@ class CFClient(object):
             http_log_debug=None):
         cdn_url = os_options.pop("object_cdn_url", None)
         self.connection = Connection(auth_endpoint, username, api_key, tenant_name,
-                preauthurl=preauthurl, preauthtoken=preauthtoken, auth_version=auth_version,
-                os_options=os_options, http_log_debug=http_log_debug)
+                preauthurl=preauthurl, preauthtoken=preauthtoken,
+                auth_version=auth_version, os_options=os_options,
+                http_log_debug=http_log_debug)
         self.connection._make_cdn_connection(cdn_url)
 
 
@@ -207,8 +213,10 @@ class CFClient(object):
                 continue
             hdrs[mkey] = str(mval)
         if bad:
-            raise exc.InvalidCDNMetadata("The only CDN metadata you can update are: X-Log-Retention, X-CDN-enabled, and X-TTL. "
-                    "Received the following illegal item(s): %s" % ", ".join(bad))
+            raise exc.InvalidCDNMetadata("The only CDN metadata you can "
+                    "update are: X-Log-Retention, X-CDN-enabled, and X-TTL. "
+                    "Received the following illegal item(s): %s" %
+                    ", ".join(bad))
         response = self.connection.cdn_request("POST", [ct.name], hdrs=hdrs)
         response.close()
 
@@ -247,8 +255,8 @@ class CFClient(object):
         # whereas for containers you need to set the values to an empty
         # string to delete them.
         if not clear:
-            new_meta = self._massage_metakeys(self.get_object_metadata(cname, oname),
-                    self.object_meta_prefix)
+            obj_meta = self.get_object_metadata(cname, oname)
+            new_meta = self._massage_metakeys(obj_meta, self.object_meta_prefix)
         new_meta.update(massaged)
         # Remove any empty values, since the object metadata API will
         # store them.
@@ -353,8 +361,8 @@ class CFClient(object):
         if new_obj_name is None:
             new_obj_name = obj.name
         hdrs = {"X-Copy-From": "/%s/%s" % (cont.name, obj.name)}
-        return self.connection.put_object(new_cont.name, new_obj_name, contents=None,
-                headers=hdrs)
+        return self.connection.put_object(new_cont.name, new_obj_name,
+                contents=None, headers=hdrs)
 
 
     @handle_swiftclient_exception
@@ -372,12 +380,13 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def upload_file(self, container, file_or_path, obj_name=None, content_type=None,
-            etag=None):
+    def upload_file(self, container, file_or_path, obj_name=None,
+            content_type=None, etag=None, return_none=False):
         """
         Uploads the specified file to the container. If no name is supplied, the
         file's name will be used. Either a file path or an open file-like object
-        may be supplied.
+        may be supplied. A StorageObject reference to the uploaded file will be
+        returned, unless 'return_none' is set to True.
         """
         cont = self.get_container(container)
 
@@ -397,13 +406,15 @@ class CFClient(object):
                 fsize = get_file_size(fileobj)
             if fsize < self.max_file_size:
                 # We can just upload it as-is.
-                return self.connection.put_object(cont.name, obj_name, contents=fileobj,
-                        content_type=content_type, etag=etag)
+                return self.connection.put_object(cont.name, obj_name,
+                        contents=fileobj, content_type=content_type,
+                        etag=etag)
             # Files larger than self.max_file_size must be segmented
             # and uploaded separately.
             num_segments = int(math.ceil(float(fsize) / self.max_file_size))
             digits = int(math.log10(num_segments)) + 1
-            # NOTE: This could be greatly improved with threading or other async design.
+            # NOTE: This could be greatly improved with threading or other
+            # async design.
             for segment in xrange(num_segments):
                 sequence = str(segment + 1).zfill(digits)
                 seg_name = "%s.%s" % (fname, sequence)
@@ -413,8 +424,9 @@ class CFClient(object):
                     with file(tmpname, "rb") as tmp:
                         # We have to calculate the etag for each segment
                         etag = utils.get_checksum(tmp)
-                        self.connection.put_object(cont.name, seg_name, contents=tmp,
-                                content_type=content_type, etag=etag)
+                        self.connection.put_object(cont.name, seg_name,
+                                contents=tmp, content_type=content_type,
+                                etag=etag)
             # Upload the manifest
             hdr = {"X-Object-Meta-Manifest": "%s." % fname}
             return self.connection.put_object(cont.name, fname,
@@ -424,7 +436,8 @@ class CFClient(object):
         if ispath:
             # Make sure it exists
             if not os.path.exists(file_or_path):
-                raise exc.FileNotFound("The file '%s' does not exist" % file_or_path)
+                raise exc.FileNotFound("The file '%s' does not exist" %
+                        file_or_path)
             fname = os.path.basename(file_or_path)
         else:
             fname = file_or_path.name
@@ -437,40 +450,46 @@ class CFClient(object):
                 upload(ff, content_type, etag)
         else:
             upload(file_or_path, content_type, etag)
-        return self.get_object(container, obj_name)
+        if return_none:
+            return None
+        else:
+            return self.get_object(container, obj_name)
 
 
     def upload_folder(self, folder_path, container=None, ignore=None):
         """
-        Convenience method for uploading an entire folder, including any sub-folders,
-        to Cloud Files.
+        Convenience method for uploading an entire folder, including any
+        sub-folders, to Cloud Files.
 
         All files will be uploaded to objects with the same name as the file. In the
         case of nested folders, files will be named with the full path relative to
-        the base folder. E.g., if the folder you specify contains a folder named 'docs',
-        and 'docs' contains a file named 'install.html', that file will be uploaded to
-        an object named 'docs/install.html'.
+        the base folder. E.g., if the folder you specify contains a folder named
+        'docs', and 'docs' contains a file named 'install.html', that file will be
+        uploaded to an object named 'docs/install.html'.
 
         If 'container' is specified, the folder's contents will be uploaded to that
         container. If it is not specified, a new container with the same name as the
         specified folder will be created, and the files uploaded to this new
         container.
 
-        You can selectively ignore files by passing either a single pattern or a list
-        of patterns; these will be applied to the individual folder and file names, and
-        any names that match any of the 'ignore' patterns will not be uploaded. The
-        patterns should be standard *nix-style shell patterns; e.g., '*pyc' will ignore
-        all files ending in 'pyc', such as 'program.pyc' and 'abcpyc'.
+        You can selectively ignore files by passing either a single pattern or a
+        list of patterns; these will be applied to the individual folder and file
+        names, and any names that match any of the 'ignore' patterns will not be
+        uploaded. The patterns should be standard *nix-style shell patterns; e.g.,
+        '*pyc' will ignore all files ending in 'pyc', such as 'program.pyc' and
+        'abcpyc'.
 
-        The upload will happen asynchronously; in other words, the call to upload_folder()
-        will generate a UUID and return a 2-tuple of (UUID, total_bytes) immediately.
-        Uploading will happen in the background; your app can call get_uploaded(uuid) to get
-        the current status of the upload. When the upload is complete, the value returned
-        by get_uploaded(uuid) will match the total_bytes for the upload.
+        The upload will happen asynchronously; in other words, the call to
+        upload_folder() will generate a UUID and return a 2-tuple of (UUID,
+        total_bytes) immediately. Uploading will happen in the background; your app
+        can call get_uploaded(uuid) to get the current status of the upload. When
+        the upload is complete, the value returned by get_uploaded(uuid) will match
+        the total_bytes for the upload.
 
-        If you start an upload and need to cancel it, call cancel_folder_upload(uuid), passing
-        the uuid returned by the initial call. It will then be up to you to either keep or delete
-        the partially-uploaded content.
+        If you start an upload and need to cancel it, call
+        cancel_folder_upload(uuid), passing the uuid returned by the initial call.
+        It will then be up to you to either keep or delete the partially-uploaded
+        content.
         """
         if not os.path.isdir(folder_path):
             raise exc.FolderNotFound("No such folder: '%s'" % folder_path)
@@ -482,33 +501,37 @@ class CFClient(object):
                 "total_bytes": total_bytes,
                 "uploaded": 0,
                 }
-        self._upload_folder_in_background(folder_path, container, ignore, upload_key)
+        self._upload_folder_in_background(folder_path, container, ignore,
+                upload_key)
         return (upload_key, total_bytes)
 
 
-    def _upload_folder_in_background(self, folder_path, container, ignore, upload_key):
+    def _upload_folder_in_background(self, folder_path, container, ignore,
+            upload_key):
         """Runs the folder upload in the background."""
-        uploader = FolderUploader(folder_path, container, ignore, upload_key, self)
+        uploader = FolderUploader(folder_path, container, ignore, upload_key,
+                self)
         uploader.start()
 
 
     def sync_folder_to_container(self, folder_path, container, delete=False,
             include_hidden=False, ignore_timestamps=False):
         """
-        Compares the contents of the specified folder, and checks to make sure that the
-        corresponding object is present in the specified container. If there is no remote
-        object matching the local file, it is created. If a matching object exists, the etag
-        is examined to determine if the object in the container matches the local file; if
-        they differ, the container is updated with the local file if the local file is newer when
-        `ignore_timestamps' is False (default). If `ignore_timestamps` is True, the object is
-        overwritten with the local file contents whenever the etags differ. NOTE: the timestamp
-        of a remote object is the time it was uploaded, not the original modification time
-        of the file stored in that object.
+        Compares the contents of the specified folder, and checks to make sure that
+        the corresponding object is present in the specified container. If there is
+        no remote object matching the local file, it is created. If a matching
+        object exists, the etag is examined to determine if the object in the
+        container matches the local file; if they differ, the container is updated
+        with the local file if the local file is newer when `ignore_timestamps' is
+        False (default). If `ignore_timestamps` is True, the object is overwritten
+        with the local file contents whenever the etags differ. NOTE: the timestamp
+        of a remote object is the time it was uploaded, not the original
+        modification time of the file stored in that object.  Unless
+        'include_hidden' is True, files beginning with an initial period are
+        ignored.
 
-        Unless 'include_hidden' is True, files beginning with an initial period are ignored.
-
-        If the 'delete' option is True, any objects in the container that do not have corresponding
-        files in the local folder are deleted.
+        If the 'delete' option is True, any objects in the container that do not
+        have corresponding files in the local folder are deleted.
         """
         cont = self.get_container(container)
         self._local_files = []
@@ -519,7 +542,8 @@ class CFClient(object):
     def _sync_folder_to_container(self, folder_path, cont, prefix, delete,
             include_hidden, ignore_timestamps):
         """
-        This is the internal method that is called recursively to handle nested folder structures.
+        This is the internal method that is called recursively to handle
+        nested folder structures.
         """
         fnames = os.listdir(folder_path)
         for fname in fnames:
@@ -530,8 +554,9 @@ class CFClient(object):
                 subprefix = fname
                 if prefix:
                     subprefix = "%s/%s" % (prefix, subprefix)
-                self._sync_folder_to_container(pth, cont, prefix=subprefix, delete=delete,
-                        include_hidden=include_hidden, ignore_timestamps=ignore_timestamps)
+                self._sync_folder_to_container(pth, cont, prefix=subprefix,
+                        delete=delete, include_hidden=include_hidden,
+                        ignore_timestamps=ignore_timestamps)
                 continue
             self._local_files.append(os.path.join(prefix, fname))
             local_etag = utils.get_checksum(pth)
@@ -546,13 +571,18 @@ class CFClient(object):
                 obj_etag = None
             if local_etag != obj_etag:
                 if not ignore_timestamps:
-                    obj_time_str = obj.last_modified[:19] if obj else '1900-01-01T00:00:00'
-                    local_mod = datetime.datetime.utcfromtimestamp(os.stat(pth).st_mtime)
+                    if obj:
+                        obj_time_str = obj.last_modified[:19]
+                    else:
+                        obj_time_str = EARLY_DATE_STR
+                    local_mod = datetime.datetime.utcfromtimestamp(
+                            os.stat(pth).st_mtime)
                     local_mod_str = local_mod.isoformat()
                     if obj_time_str >= local_mod_str:
                         # Remote object is newer
                         continue
-                cont.upload_file(pth, obj_name=fullname, etag=local_etag)
+                cont.upload_file(pth, obj_name=fullname, etag=local_etag,
+                        return_none=True)
         if delete and not prefix:
             self._delete_objects_not_in_list(cont)
 
@@ -575,7 +605,8 @@ class CFClient(object):
             try:
                 self.folder_upload_status[upload_key]
             except KeyError:
-                raise exc.InvalidUploadID("There is no folder upload with the key '%s'." % upload_key)
+                raise exc.InvalidUploadID("There is no folder upload with the "
+                        "key '%s'." % upload_key)
             return fnc(self, upload_key, *args, **kwargs)
         return wrapped
 
@@ -606,7 +637,8 @@ class CFClient(object):
         return not self.folder_upload_status[upload_key]["continue"]
 
 
-    def fetch_object(self, container, obj_name, include_meta=False, chunk_size=None):
+    def fetch_object(self, container, obj_name, include_meta=False,
+            chunk_size=None):
         """
         Fetches the object from storage.
 
@@ -622,7 +654,8 @@ class CFClient(object):
         """
         cname = self._resolve_name(container)
         oname = self._resolve_name(obj_name)
-        (meta, data) = self.connection.get_object(cname, oname, resp_chunk_size=chunk_size)
+        (meta, data) = self.connection.get_object(cname, oname,
+                resp_chunk_size=chunk_size)
         if include_meta:
             return (meta, data)
         else:
@@ -645,43 +678,49 @@ class CFClient(object):
         cont = self._container_cache.get(cname)
         if not cont:
             hdrs = self.connection.head_container(cname)
-            cont = Container(self, name=cname, object_count=hdrs.get("x-container-object-count"),
+            cont = Container(self, name=cname,
+                    object_count=hdrs.get("x-container-object-count"),
                     total_bytes=hdrs.get("x-container-bytes-used"))
             self._container_cache[cname] = cont
         return cont
 
 
     @handle_swiftclient_exception
-    def get_container_objects(self, container, marker=None, limit=None, prefix=None,
-            delimiter=None, full_listing=False):
+    def get_container_objects(self, container, marker=None, limit=None,
+            prefix=None, delimiter=None, full_listing=False):
         """
-        Return a list of StorageObjects representing the objects in the container.
-        You can use the marker and limit params to handle pagination, and the prefix
-        and delimiter params to filter the objects returned. Also, by default only
-        the first 10,000 objects are returned; if you set full_listing to True, all
-        objects in the container are returned.
+        Return a list of StorageObjects representing the objects in the
+        container. You can use the marker and limit params to handle pagination,
+        and the prefix and delimiter params to filter the objects returned.
+        Also, by default only the first 10,000 objects are returned; if you set
+        full_listing to True, all objects in the container are returned.
         """
         cname = self._resolve_name(container)
-        hdrs, objs = self.connection.get_container(cname, marker=marker, limit=limit,
-                prefix=prefix, delimiter=delimiter, full_listing=full_listing)
+        hdrs, objs = self.connection.get_container(cname, marker=marker,
+                limit=limit, prefix=prefix, delimiter=delimiter,
+                full_listing=full_listing)
         cont = self.get_container(cname)
         return [StorageObject(self, container=cont, attdict=obj) for obj in objs
                 if "name" in obj]
 
 
     @handle_swiftclient_exception
-    def get_container_object_names(self, container, marker=None, limit=None, prefix=None,
-            delimiter=None, full_listing=False):
+    def get_container_object_names(self, container, marker=None, limit=None,
+            prefix=None, delimiter=None, full_listing=False):
         cname = self._resolve_name(container)
-        hdrs, objs = self.connection.get_container(cname, marker=marker, limit=limit,
-                prefix=prefix, delimiter=delimiter, full_listing=full_listing)
+        hdrs, objs = self.connection.get_container(cname, marker=marker,
+                limit=limit, prefix=prefix, delimiter=delimiter,
+                full_listing=full_listing)
         cont = self.get_container(cname)
         return [obj["name"] for obj in objs]
 
 
     @handle_swiftclient_exception
     def get_info(self):
-        """Returns a tuple for the number of containers and total bytes in the account."""
+        """
+        Returns a tuple for the number of containers and total bytes in
+        the account.
+        """
         hdrs = self.connection.head_container("")
         return (hdrs["x-account-container-count"], hdrs["x-account-bytes-used"])
 
@@ -810,7 +849,8 @@ class CFClient(object):
         ct = self.get_container(container)
         oname = self._resolve_name(name)
         if not ct.cdn_enabled:
-            raise exc.NotCDNEnabled("The object '%s' is not in a CDN-enabled container." % oname)
+            raise exc.NotCDNEnabled("The object '%s' is not in a "
+                    "CDN-enabled container." % oname)
         hdrs = {}
         if email_addresses:
             if not isinstance(email_addresses, (list, tuple)):
@@ -843,7 +883,8 @@ class CFClient(object):
             os.environ.pop("SWIFTCLIENT_DEBUG", False)
 
     http_log_debug = property(_get_http_log_debug, _set_http_log_debug, None,
-            """Determines if all http traffic is logged to the display for debugging.""")
+            "Determines if all http traffic is logged to the display "
+            "for debugging.")
 
 
 
@@ -969,7 +1010,8 @@ class FolderUploader(threading.Thread):
                 continue
             obj_name = os.path.relpath(full_path, self.base_path)
             obj_size = os.stat(full_path).st_size
-            self.client.upload_file(self.container, full_path, obj_name=obj_name)
+            self.client.upload_file(self.container, full_path, obj_name=obj_name,
+                    return_none=True)
             self.client._update_progress(self.upload_key, obj_size)
 
     def run(self):

@@ -32,8 +32,10 @@ def assure_parent(fnc):
     def wrapped(self, *args, **kwargs):
         lb = self.parent
         if not lb:
-            exc_class = {Node: exc.UnattachedNode, VirtualIP: exc.UnattachedVirtualIP}[self.__class__]
-            raise exc_class("No parent Load Balancer for this node could be determined.")
+            exc_class = {Node: exc.UnattachedNode,
+                    VirtualIP: exc.UnattachedVirtualIP}[self.__class__]
+            raise exc_class("No parent Load Balancer for this node could "
+                    "be determined.")
         return fnc(self, *args, **kwargs)
     return wrapped
 
@@ -157,9 +159,11 @@ class CloudLoadBalancer(BaseResource):
         Adds a health monitor to the load balancer. If a monitor already
         exists, it is updated with the supplied settings.
         """
-        return self.manager.add_health_monitor(self, type=type, delay=delay, timeout=timeout,
-                attemptsBeforeDeactivation=attemptsBeforeDeactivation, path=path,
-                statusRegex=statusRegex, bodyRegex=bodyRegex, hostHeader=hostHeader)
+        abd = attemptsBeforeDeactivation
+        return self.manager.add_health_monitor(self, type=type, delay=delay,
+                timeout=timeout, attemptsBeforeDeactivation=abd,
+                path=path, statusRegex=statusRegex, bodyRegex=bodyRegex,
+                hostHeader=hostHeader)
 
 
     def delete_health_monitor(self):
@@ -178,17 +182,19 @@ class CloudLoadBalancer(BaseResource):
         return self.manager.get_connection_throttle(self)
 
 
-    def add_connection_throttle(self, maxConnectionRate=None, maxConnections=None,
-            minConnections=None, rateInterval=None):
+    def add_connection_throttle(self, maxConnectionRate=None,
+            maxConnections=None, minConnections=None, rateInterval=None):
         """
         Updates the connection throttling information for the load balancer with
         the supplied values. At least one of the parameters must be supplied.
         """
-        if not any((maxConnectionRate, maxConnections, minConnections, rateInterval)):
+        if not any((maxConnectionRate, maxConnections, minConnections,
+                rateInterval)):
             # Pointless call
             return
-        return self.manager.add_connection_throttle(self, maxConnectionRate=maxConnectionRate,
-                maxConnections=maxConnections, minConnections=minConnections, rateInterval=rateInterval)
+        return self.manager.add_connection_throttle(self,
+                maxConnectionRate=maxConnectionRate, maxConnections=maxConnections,
+                minConnections=minConnections, rateInterval=rateInterval)
 
 
     def delete_connection_throttle(self):
@@ -207,21 +213,25 @@ class CloudLoadBalancer(BaseResource):
         return self.manager.get_ssl_termination(self)
 
 
-    def add_ssl_termination(self, securePort, privatekey, certificate, intermediateCertificate=None,
-            enabled=True, secureTrafficOnly=False):
+    def add_ssl_termination(self, securePort, privatekey, certificate,
+            intermediateCertificate=None, enabled=True,
+            secureTrafficOnly=False):
         """
-        Adds SSL termination information to the load balancer. If SSL termination has
-        already been configured, it is updated with the supplied settings.
+        Adds SSL termination information to the load balancer. If SSL
+        termination has already been configured, it is updated with the
+        supplied settings.
         """
-        return self.manager.add_ssl_termination(self, securePort=securePort, privatekey=privatekey,
-                certificate=certificate, intermediateCertificate=intermediateCertificate,
+        return self.manager.add_ssl_termination(self, securePort=securePort,
+                privatekey=privatekey, certificate=certificate,
+                intermediateCertificate=intermediateCertificate,
                 enabled=enabled, secureTrafficOnly=secureTrafficOnly)
 
 
-    def update_ssl_termination(self, securePort=None, enabled=None, secureTrafficOnly=None):
+    def update_ssl_termination(self, securePort=None, enabled=None,
+            secureTrafficOnly=None):
         """
-        Updates existing SSL termination information for the load balancer without affecting the
-        existing certificates/keys.
+        Updates existing SSL termination information for the load balancer
+        without affecting the existing certificates/keys.
         """
         return self.manager.update_ssl_termination(self, securePort=securePort,
                 enabled=enabled, secureTrafficOnly=secureTrafficOnly)
@@ -356,9 +366,11 @@ class CloudLoadBalancer(BaseResource):
 
     def _set_session_persistence(self, val):
         if val:
-            if not isinstance(val, basestring) or val.upper() not in ("HTTP_COOKIE", "SOURCE_IP"):
-                raise exc.InvalidSessionPersistenceType("Session Persistence must be one of 'HTTP_COOKIE' or 'SOURCE_IP'. "
-                        "'%s' is not a valid setting." % val)
+            if not isinstance(val, basestring) or (val.upper() not in
+                    ("HTTP_COOKIE", "SOURCE_IP")):
+                raise exc.InvalidSessionPersistenceType("Session Persistence "
+                        "must be one of 'HTTP_COOKIE' or 'SOURCE_IP'. '%s' is "
+                        "not a valid setting." % val)
             self.manager.set_session_persistence(self, val)
             self._session_persistence = val.upper()
         else:
@@ -366,13 +378,16 @@ class CloudLoadBalancer(BaseResource):
             self._session_persistence = ""
 
 
-    connection_logging = property(_get_connection_logging, _set_connection_logging, None,
-            "The current state of connection logging. Possible values are True or False.")
-    content_caching = property(_get_content_caching, _set_content_caching, None,
-            "The current state of content caching. Possible values are True or False.")
-    session_persistence = property(_get_session_persistence, _set_session_persistence, None,
-            "The current state of session persistence. Possible values are either 'HTTP_COOKIE' or "
-            "'SOURCE_IP, depending on the type of load balancing.")
+    connection_logging = property(_get_connection_logging,
+            _set_connection_logging, None, "The current state of connection "
+            "logging. Possible values are True or False.")
+    content_caching = property(_get_content_caching, _set_content_caching,
+            None, "The current state of content caching. Possible values are "
+            "True or False.")
+    session_persistence = property(_get_session_persistence,
+            _set_session_persistence, None, "The current state of session "
+            "persistence. Possible values are either 'HTTP_COOKIE' or "
+            "'SOURCE_IP', depending on the type of load balancing.")
     ## END - property definitions ##
 
 
@@ -392,8 +407,10 @@ class CloudLoadBalancerManager(BaseManager):
         """Removes the node from its load balancer."""
         lb = node.parent
         if not lb:
-            raise exc.UnattachedNode("No parent Load Balancer for this node could be determined.")
-        resp, body = self.api.method_delete("/loadbalancers/%s/nodes/%s" % (lb.id, node.id))
+            raise exc.UnattachedNode("No parent Load Balancer for this node "
+                    "could be determined.")
+        resp, body = self.api.method_delete("/loadbalancers/%s/nodes/%s" %
+                (lb.id, node.id))
         return resp, body
 
 
@@ -401,13 +418,14 @@ class CloudLoadBalancerManager(BaseManager):
         """Updates the node's attributes."""
         lb = node.parent
         if not lb:
-            raise exc.UnattachedNode("No parent Load Balancer for this node could be determined.")
+            raise exc.UnattachedNode("No parent Load Balancer for this node "
+                    "could be determined.")
 
         if diff is None:
             diff = node._diff()
         req_body = {"node": diff}
-        resp, body = self.api.method_put("/loadbalancers/%s/nodes/%s" % (lb.id, node.id),
-                body=req_body)
+        resp, body = self.api.method_put("/loadbalancers/%s/nodes/%s" %
+                (lb.id, node.id), body=req_body)
         return resp, body
 
 
@@ -422,8 +440,10 @@ class CloudLoadBalancerManager(BaseManager):
         """Deletes the VirtualIP from its load balancer."""
         lb = vip.parent
         if not lb:
-            raise exc.UnattachedVirtualIP("No parent Load Balancer for this VirtualIP could be determined.")
-        resp, body = self.api.method_delete("/loadbalancers/%s/virtualips/%s" % (lb.id, vip.id))
+            raise exc.UnattachedVirtualIP("No parent Load Balancer for this "
+                    "VirtualIP could be determined.")
+        resp, body = self.api.method_delete("/loadbalancers/%s/virtualips/%s" %
+                (lb.id, vip.id))
         return resp, body
 
 
@@ -477,10 +497,11 @@ class CloudLoadBalancerManager(BaseManager):
         valid_ids = [itm["id"] for itm in self.get_access_list(loadbalancer)]
         bad_ids = [str(itm) for itm in item_ids if itm not in valid_ids]
         if bad_ids:
-            raise exc.AccessListIDNotFound("The following ID(s) are not valid Access List items: %s"
-                    % ", ".join(bad_ids))
+            raise exc.AccessListIDNotFound("The following ID(s) are not valid "
+                    "Access List items: %s" % ", ".join(bad_ids))
         items = "&".join(["id=%s" % item_id for item_id in item_ids])
-        uri = "/loadbalancers/%s/accesslist?%s" % (utils.get_id(loadbalancer), items)
+        uri = "/loadbalancers/%s/accesslist?%s" % (
+                utils.get_id(loadbalancer), items)
         # TODO: add the item ids
         resp, body = self.api.method_delete(uri)
         return body
@@ -515,17 +536,19 @@ class CloudLoadBalancerManager(BaseManager):
         if uptype.startswith("HTTP"):
             lb = self._get_lb(loadbalancer)
             if uptype != lb.protocol:
-                raise exc.ProtocolMismatch("Cannot set the Health Monitor type to '%s' when "
-                        " the Load Balancer's protocol is '%s'." % (type, lb.protocol))
+                raise exc.ProtocolMismatch("Cannot set the Health Monitor type "
+                        "to '%s' when the Load Balancer's protocol is '%s'." %
+                        (type, lb.protocol))
             if not all((path, statusRegex, bodyRegex)):
-                raise exc.MissingHealthMonitorSettings("When creating an HTTP(S) monitor, you must "
-                        "provide the 'path', 'statusRegex' and 'bodyRegex' parameters.")
+                raise exc.MissingHealthMonitorSettings("When creating an HTTP(S) "
+                        "monitor, you must provide the 'path', 'statusRegex' and "
+                        "'bodyRegex' parameters.")
             body_hm = req_body["healthMonitor"]
-            body_hm["path"] =  path
+            body_hm["path"] = path
             body_hm["statusRegex"] = statusRegex
-            body_hm["bodyRegex"] =  bodyRegex
+            body_hm["bodyRegex"] = bodyRegex
             if hostHeader:
-                body_hm["hostHeader"] =  hostHeader
+                body_hm["hostHeader"] = hostHeader
         resp, body = self.api.method_put(uri, body=req_body)
         return body
 
@@ -552,10 +575,10 @@ class CloudLoadBalancerManager(BaseManager):
     def add_connection_throttle(self, loadbalancer, maxConnectionRate=None,
             maxConnections=None, minConnections=None, rateInterval=None):
         """
-        Creates or updates the connection throttling information for the load balancer.
-        When first creating the connection throttle, all 4 parameters must be supplied.
-        When updating an existing connection throttle, at least one of the parameters
-        must be supplied.
+        Creates or updates the connection throttling information for the load
+        balancer. When first creating the connection throttle, all 4 parameters
+        must be supplied. When updating an existing connection throttle, at
+        least one of the parameters must be supplied.
         """
         settings = {}
         if maxConnectionRate:
@@ -599,8 +622,8 @@ class CloudLoadBalancerManager(BaseManager):
     def add_ssl_termination(self, loadbalancer, securePort, privatekey, certificate,
             intermediateCertificate, enabled=True, secureTrafficOnly=False):
         """
-        Adds SSL termination information to the load balancer. If SSL termination has
-        already been configured, it is updated with the supplied settings.
+        Adds SSL termination information to the load balancer. If SSL termination
+        has already been configured, it is updated with the supplied settings.
         """
         uri = "/loadbalancers/%s/ssltermination" % utils.get_id(loadbalancer)
         req_body = {"sslTermination": {
@@ -609,7 +632,7 @@ class CloudLoadBalancerManager(BaseManager):
                 "secureTrafficOnly": secureTrafficOnly,
                 "privatekey": privatekey,
                 "intermediateCertificate": intermediateCertificate,
-                "securePort": securePort
+                "securePort": securePort,
                 }}
         resp, body = self.api.method_put(uri, body=req_body)
         return body
@@ -618,13 +641,14 @@ class CloudLoadBalancerManager(BaseManager):
     def update_ssl_termination(self, loadbalancer, securePort=None, enabled=None,
             secureTrafficOnly=None):
         """
-        Updates existing SSL termination information for the load balancer without affecting the
-        existing certificates/keys.
+        Updates existing SSL termination information for the load balancer
+        without affecting the existing certificates/keys.
         """
         ssl_info = self.get_ssl_termination(loadbalancer)
         if not ssl_info:
-            raise exc.NoSSLTerminationConfiguration("You must configure SSL termination on this load balancer "
-                    "before attempting to update it.")
+            raise exc.NoSSLTerminationConfiguration("You must configure SSL "
+                    "termination on this load balancer before attempting "
+                    "to update it.")
         if securePort is None:
             securePort = ssl_info["securePort"]
         if enabled is None:
@@ -635,7 +659,7 @@ class CloudLoadBalancerManager(BaseManager):
         req_body = {"sslTermination": {
                 "enabled": enabled,
                 "secureTrafficOnly": secureTrafficOnly,
-                "securePort": securePort
+                "securePort": securePort,
                 }}
         resp, body = self.api.method_put(uri, body=req_body)
         return body
@@ -655,7 +679,8 @@ class CloudLoadBalancerManager(BaseManager):
         provided, returns the current metadata for that node.
         """
         if node:
-            uri = "/loadbalancers/%s/nodes/%s/metadata" % (utils.get_id(loadbalancer), utils.get_id(node))
+            uri = "/loadbalancers/%s/nodes/%s/metadata" % (
+                    utils.get_id(loadbalancer), utils.get_id(node))
         else:
             uri = "/loadbalancers/%s/metadata" % utils.get_id(loadbalancer)
         resp, body = self.api.method_get(uri)
@@ -678,7 +703,8 @@ class CloudLoadBalancerManager(BaseManager):
         metadata_list = [{"key": key, "value": val}
                 for key, val in metadata.items()]
         if node:
-            uri = "/loadbalancers/%s/nodes/%s/metadata" % (utils.get_id(loadbalancer), utils.get_id(node))
+            uri = "/loadbalancers/%s/nodes/%s/metadata" % (
+                    utils.get_id(loadbalancer), utils.get_id(node))
         else:
             uri = "/loadbalancers/%s/metadata" % utils.get_id(loadbalancer)
         req_body = {"metadata": metadata_list}
@@ -702,7 +728,8 @@ class CloudLoadBalancerManager(BaseManager):
                 meta_id = id_lookup[key]
                 if node:
                     uri = "/loadbalancers/%s/nodes/%s/metadata/%s" % (
-                            utils.get_id(loadbalancer), utils.get_id(node), meta_id)
+                            utils.get_id(loadbalancer), utils.get_id(node),
+                            meta_id)
                 else:
                     uri = "/loadbalancers/%s/metadata" % utils.get_id(loadbalancer)
                 req_body = {"meta": {"value": val}}
@@ -713,7 +740,8 @@ class CloudLoadBalancerManager(BaseManager):
         if metadata_list:
             # New items; POST them
             if node:
-                uri = "/loadbalancers/%s/nodes/%s/metadata" % (utils.get_id(loadbalancer), utils.get_id(node))
+                uri = "/loadbalancers/%s/nodes/%s/metadata" % (
+                        utils.get_id(loadbalancer), utils.get_id(node))
             else:
                 uri = "/loadbalancers/%s/metadata" % utils.get_id(loadbalancer)
             req_body = {"metadata": metadata_list}
@@ -736,9 +764,11 @@ class CloudLoadBalancerManager(BaseManager):
             return
         id_list = "&".join(["id=%s" % itm["id"] for itm in md])
         if node:
-            uri = "/loadbalancers/%s/nodes/%s/metadata?%s" % (utils.get_id(loadbalancer), utils.get_id(node), id_list)
+            uri = "/loadbalancers/%s/nodes/%s/metadata?%s" % (
+                    utils.get_id(loadbalancer), utils.get_id(node), id_list)
         else:
-            uri = "/loadbalancers/%s/metadata?%s" % (utils.get_id(loadbalancer), id_list)
+            uri = "/loadbalancers/%s/metadata?%s" % (
+                    utils.get_id(loadbalancer), id_list)
         resp, body = self.api.method_delete(uri)
         return body
 
@@ -762,8 +792,7 @@ class CloudLoadBalancerManager(BaseManager):
         to a non-HTTP protocol, the default error page will be restored.
         """
         uri = "/loadbalancers/%s/errorpage" % utils.get_id(loadbalancer)
-        req_body = {"errorpage": {
-                "content": html}}
+        req_body = {"errorpage": {"content": html}}
         resp, body = self.api.method_put(uri, body=req_body)
         return body
 
@@ -910,12 +939,13 @@ class CloudLoadBalancerManager(BaseManager):
 
 class Node(object):
     """Represents a Node for a Load Balancer."""
-    def __init__(self, address=None, port=None, condition=None, weight=None, status=None,
-            parent=None, type=None, id=None):
+    def __init__(self, address=None, port=None, condition=None, weight=None,
+            status=None, parent=None, type=None, id=None):
         if condition is None:
             condition = "ENABLED"
         if not all((address, port)):
-            raise exc.InvalidNodeParameters("You must include an address and a port when creating a node.")
+            raise exc.InvalidNodeParameters("You must include an address and a "
+            "port when creating a node.")
         self.address = address
         self.port = port
         self.condition = condition
@@ -930,8 +960,9 @@ class Node(object):
 
 
     def __repr__(self):
-        return "<Node type=%s, condition=%s, id=%s, address=%s, port=%s weight=%s>" % (self.type, self.condition,
-            self.id, self.address, self.port, self.weight)
+        tmp = "<Node type=%s, condition=%s, id=%s, address=%s, port=%s weight=%s>"
+        return tmp % (self.type, self.condition, self.id, self.address, self.port,
+                self.weight)
 
 
     def to_dict(self):
@@ -991,7 +1022,10 @@ class Node(object):
 
     @assure_parent
     def update(self):
-        """Pushes any local changes to the object up to the actual load balancer node."""
+        """
+        Pushes any local changes to the object up to the actual load
+        balancer node.
+        """
         diff = self._diff()
         if not diff:
             #Nothing to do!
@@ -1007,13 +1041,13 @@ class VirtualIP(object):
         if type is None:
             type = "PUBLIC"
         if type.upper() not in ("PUBLIC", "SERVICENET"):
-            raise exc.InvalidVirtualIPType("Virtual IPs must be one of 'PUBLIC' or 'SERVICENET' "
-                    "type; '%s' is not valid." % type)
+            raise exc.InvalidVirtualIPType("Virtual IPs must be one of "
+                    "'PUBLIC' or 'SERVICENET' type; '%s' is not valid." % type)
         if not ipVersion:
             ipVersion = "IPV4"
         if not ipVersion.upper() in ("IPV4", "IPV6"):
-            raise exc.InvalidVirtualIPVersion("Virtual IP versions must be one of 'IPV4' or 'IPV6'; "
-                    "'%s' is not valid." % ipVersion)
+            raise exc.InvalidVirtualIPVersion("Virtual IP versions must be one "
+                    "of 'IPV4' or 'IPV6'; '%s' is not valid." % ipVersion)
         self.type = type
         self.address = address
         self.ip_version = ipVersion
@@ -1022,11 +1056,15 @@ class VirtualIP(object):
 
 
     def __repr__(self):
-        return "<VirtualIP type=%s, id=%s, address=%s version=%s>" % (self.type, self.id, self.address, self.ip_version)
+        return "<VirtualIP type=%s, id=%s, address=%s version=%s>" % (
+                self.type, self.id, self.address, self.ip_version)
 
 
     def to_dict(self):
-        """Convert this VirtualIP to a dict representation for passing to the API."""
+        """
+        Convert this VirtualIP to a dict representation for passing
+        to the API.
+        """
         return {"type": self.type,
                 "ipVersion": self.ip_version}
 
@@ -1056,8 +1094,9 @@ class CloudLoadBalancerClient(BaseClient):
         Creates a manager to handle the instances, and another
         to handle flavors.
         """
-        self._manager = CloudLoadBalancerManager(self, resource_class=CloudLoadBalancer,
-               response_key="loadBalancer", uri_base="loadbalancers")
+        self._manager = CloudLoadBalancerManager(self,
+                resource_class=CloudLoadBalancer,
+                response_key="loadBalancer", uri_base="loadbalancers")
 
 
     def _create_body(self, name, port=None, protocol=None, nodes=None,
@@ -1069,14 +1108,16 @@ class CloudLoadBalancerClient(BaseClient):
         """
         required = (nodes, virtual_ips, port, protocol)
         if not all(required):
-            raise exc.MissingLoadBalancerParameters("Load Balancer creation requires at least one node, one virtual IP, "
+            raise exc.MissingLoadBalancerParameters("Load Balancer creation "
+                    "requires at least one node, one virtual IP, "
                     "a protocol, and a port.")
         bad_conditions = [node.condition for node in nodes
                 if node.condition.upper() not in ("ENABLED", "DISABLED")]
         if bad_conditions:
-            raise exc.InvalidNodeCondition("Nodes for new load balancer must be created in "
-                    "either 'ENABLED' or 'DISABLED' condition; received the following invalid "
-                    "conditions: %s" % ", ".join(set(bad_conditions)))
+            raise exc.InvalidNodeCondition("Nodes for new load balancer must be "
+                    "created in either 'ENABLED' or 'DISABLED' condition; "
+                    "received the following invalid conditions: %s" %
+                    ", ".join(set(bad_conditions)))
         node_dicts = [nd.to_dict() for nd in nodes]
         vip_dicts = [vip.to_dict() for vip in virtual_ips]
         body = {"loadBalancer": {
@@ -1108,7 +1149,8 @@ class CloudLoadBalancerClient(BaseClient):
         datetime.date objects, or strings in the format: "YYYY-MM-DD HH:MM:SS" or
         "YYYY-MM-DD".
         """
-        return self._manager.get_usage(loadbalancer=loadbalancer, start=start, end=end)
+        return self._manager.get_usage(loadbalancer=loadbalancer, start=start,
+                end=end)
 
 
     @property
@@ -1127,7 +1169,8 @@ class CloudLoadBalancerClient(BaseClient):
             uri = "/loadbalancers/alloweddomains"
             resp, body = self.method_get(uri)
             dom_list = body["allowedDomains"]
-            self._allowed_domains = [itm["allowedDomain"]["name"] for itm in dom_list]
+            self._allowed_domains = [itm["allowedDomain"]["name"]
+                    for itm in dom_list]
         return self._allowed_domains
 
 
@@ -1247,9 +1290,11 @@ class CloudLoadBalancerClient(BaseClient):
         Adds a health monitor to the load balancer. If a monitor already
         exists, it is updated with the supplied settings.
         """
-        return loadbalancer.add_health_monitor(type=type, delay=delay, timeout=timeout,
-                attemptsBeforeDeactivation=attemptsBeforeDeactivation, path=path,
-                statusRegex=statusRegex, bodyRegex=bodyRegex, hostHeader=hostHeader)
+        abd = attemptsBeforeDeactivation
+        return loadbalancer.add_health_monitor(type=type, delay=delay,
+                timeout=timeout, attemptsBeforeDeactivation=abd, path=path,
+                statusRegex=statusRegex, bodyRegex=bodyRegex,
+                hostHeader=hostHeader)
 
 
     @assure_loadbalancer
@@ -1271,14 +1316,15 @@ class CloudLoadBalancerClient(BaseClient):
 
 
     @assure_loadbalancer
-    def add_connection_throttle(self, loadbalancer, maxConnectionRate=None, maxConnections=None,
-            minConnections=None, rateInterval=None):
+    def add_connection_throttle(self, loadbalancer, maxConnectionRate=None,
+            maxConnections=None, minConnections=None, rateInterval=None):
         """
         Updates the connection throttling information for the load balancer with
         the supplied values. At least one of the parameters must be supplied.
         """
-        return loadbalancer.add_connection_throttle(maxConnectionRate=maxConnectionRate,
-                maxConnections=maxConnections, minConnections=minConnections, rateInterval=rateInterval)
+        return loadbalancer.add_connection_throttle(
+                maxConnectionRate=maxConnectionRate, maxConnections=maxConnections,
+                minConnections=minConnections, rateInterval=rateInterval)
 
 
     @assure_loadbalancer
@@ -1300,22 +1346,25 @@ class CloudLoadBalancerClient(BaseClient):
 
 
     @assure_loadbalancer
-    def add_ssl_termination(self, loadbalancer, securePort, privatekey, certificate, intermediateCertificate,
-            enabled=True, secureTrafficOnly=False):
+    def add_ssl_termination(self, loadbalancer, securePort, privatekey,
+            certificate, intermediateCertificate, enabled=True,
+            secureTrafficOnly=False):
         """
-        Adds SSL termination information to the load balancer. If SSL termination has
-        already been configured, it is updated with the supplied settings.
+        Adds SSL termination information to the load balancer. If SSL termination
+        has already been configured, it is updated with the supplied settings.
         """
-        return loadbalancer.add_ssl_termination(securePort=securePort, privatekey=privatekey,
-                certificate=certificate, intermediateCertificate=intermediateCertificate,
+        return loadbalancer.add_ssl_termination(securePort=securePort,
+                privatekey=privatekey, certificate=certificate,
+                intermediateCertificate=intermediateCertificate,
                 enabled=enabled, secureTrafficOnly=secureTrafficOnly)
 
 
     @assure_loadbalancer
-    def update_ssl_termination(self, loadbalancer, securePort=None, enabled=None, secureTrafficOnly=None):
+    def update_ssl_termination(self, loadbalancer, securePort=None, enabled=None,
+            secureTrafficOnly=None):
         """
-        Updates existing SSL termination information for the load balancer without affecting the
-        existing certificates/keys.
+        Updates existing SSL termination information for the load balancer
+        without affecting the existing certificates/keys.
         """
         return loadbalancer.update_ssl_termination(securePort=securePort,
                 enabled=enabled, secureTrafficOnly=secureTrafficOnly)
