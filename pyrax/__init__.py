@@ -174,20 +174,27 @@ def _require_auth(fnc):
     return _wrapped
 
 
-def set_credentials(username, api_key, authenticate=True):
-    """Set the username and api_key directly, and then try to authenticate."""
+def set_credentials(username, api_key, region=None, authenticate=True):
+    """
+    Set the username and api_key directly, and then try to authenticate.
+
+    If the region is passed, it will authenticate against the proper endpoint
+    for that region, and set the default region for connections.
+    """
     identity.authenticated = False
     try:
         identity.set_credentials(username=username, api_key=api_key,
-                authenticate=authenticate)
+                region=region, authenticate=authenticate)
     except exc.AuthenticationFailed:
         clear_credentials()
         raise
+    if region:
+        self.default_region = region
     if identity.authenticated:
-        connect_to_services()
+        connect_to_services(region=region)
 
 
-def set_credential_file(cred_file, authenticate=True):
+def set_credential_file(cred_file, region=None, authenticate=True):
     """
     Read in the credentials from the supplied file path, and then try to
     authenticate. The file should be a standard config file in the format:
@@ -196,18 +203,21 @@ def set_credential_file(cred_file, authenticate=True):
     username = myusername
     api_key = 1234567890abcdef
 
+    If the region is passed, it will authenticate against the proper endpoint
+    for that region, and set the default region for connections.
     """
     identity.authenticated = False
     try:
-        identity.set_credential_file(cred_file, authenticate=authenticate)
+        identity.set_credential_file(cred_file, region=region,
+                authenticate=authenticate)
     except exc.AuthenticationFailed:
         clear_credentials()
         raise
     if identity.authenticated:
-        connect_to_services()
+        connect_to_services(region=region)
 
 
-def keyring_auth(username=None):
+def keyring_auth(username=None, region=None):
     """
     Use the password stored within the keyring to authenticate. If a username
     is supplied, that name is used; otherwise, the keyring_username value
@@ -215,6 +225,9 @@ def keyring_auth(username=None):
 
     If there is no username defined, or if the keyring module is not installed,
     the appropriate errors will be raised.
+
+    If the region is passed, it will authenticate against the proper endpoint
+    for that region, and set the default region for connections.
     """
     if not keyring:
         # Module not installed
@@ -227,7 +240,7 @@ def keyring_auth(username=None):
                 "authentication.")
     password = keyring.get_password("pyrax", username)
     if password:
-        set_credentials(username, password)
+        set_credentials(username, password, region=region)
 
 
 def authenticate():
@@ -273,16 +286,16 @@ def _make_agent_name(base):
         return USER_AGENT
 
 
-def connect_to_services():
+def connect_to_services(region=None):
     """Establishes authenticated connections to the various cloud APIs."""
     global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
     global cloud_blockstorage, cloud_dns
-    cloudservers = connect_to_cloudservers()
-    cloudfiles = connect_to_cloudfiles()
-    cloud_loadbalancers = connect_to_cloud_loadbalancers()
-    cloud_databases = connect_to_cloud_databases()
-    cloud_blockstorage = connect_to_cloud_blockstorage()
-    cloud_dns = connect_to_cloud_dns()
+    cloudservers = connect_to_cloudservers(region=region)
+    cloudfiles = connect_to_cloudfiles(region=region)
+    cloud_loadbalancers = connect_to_cloud_loadbalancers(region=region)
+    cloud_databases = connect_to_cloud_databases(region=region)
+    cloud_blockstorage = connect_to_cloud_blockstorage(region=region)
+    cloud_dns = connect_to_cloud_dns(region=region)
 
 
 def _fix_uri(ep, region):

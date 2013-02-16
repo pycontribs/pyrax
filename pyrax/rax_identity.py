@@ -42,19 +42,29 @@ class Identity(object):
         self.api_key = api_key
         self.token = token
         self._creds_file = credential_file
-        self.auth_endpoint = (self.uk_auth_endpoint
-                if region in ("LON", "lon") else self.us_auth_endpoint)
+        self._region = region
 
 
-    def set_credentials(self, username, api_key, authenticate=False):
+    @property
+    def auth_endpoint(self):
+        if self._region and self._region.upper() in ("LON", ):
+            return self.uk_auth_endpoint
+        return self.us_auth_endpoint
+
+
+    def set_credentials(self, username, api_key, region=None,
+            authenticate=False):
         """Sets the username and api_key directly."""
         self.username = username
         self.api_key = api_key
+        if region:
+            self._region = region
         if authenticate:
             self.authenticate()
 
 
-    def set_credential_file(self, credential_file, authenticate=False):
+    def set_credential_file(self, credential_file, region=None,
+            authenticate=False):
         """
         Reads in the credentials from the supplied file. It should be
         a standard config file in the format:
@@ -80,6 +90,8 @@ class Identity(object):
             self.api_key = cfg.get("rackspace_cloud", "api_key")
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as e:
             raise exc.InvalidCredentialFile(e)
+        if region:
+            self._region = region
         if authenticate:
             self.authenticate()
 
