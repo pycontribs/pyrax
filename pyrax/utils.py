@@ -286,6 +286,22 @@ def get_id(id_or_obj):
         return id_or_obj
 
 
+def match_pattern(nm, patterns):
+    """
+    Compares `nm` with the supplied patterns, and returns True if it matches
+    at least one.
+
+    Patterns are standard file-name wildcard strings, as defined in the
+    `fnmatch` module. For example, the pattern "*.py" will match the names
+    of all Python scripts.
+    """
+    patterns = coerce_string_to_list(patterns)
+    for pat in patterns:
+        if fnmatch.fnmatch(nm, pat):
+            return True
+    return False
+
+
 def env(*args, **kwargs):
     """
     Returns the first environment variable set

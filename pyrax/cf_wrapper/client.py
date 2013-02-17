@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import fnmatch
 from functools import wraps
 # Use eventlet if available
 try:
@@ -53,6 +52,7 @@ def handle_swiftclient_exception(fnc):
             # Not handled; re-raise
             raise
     return _wrapped
+
 
 
 class CFClient(object):
@@ -515,7 +515,7 @@ class CFClient(object):
 
 
     def sync_folder_to_container(self, folder_path, container, delete=False,
-            include_hidden=False, ignore_timestamps=False):
+            include_hidden=False, ignore=None, ignore_timestamps=False):
         """
         Compares the contents of the specified folder, and checks to make sure that
         the corresponding object is present in the specified container. If there is
@@ -532,22 +532,33 @@ class CFClient(object):
 
         If the 'delete' option is True, any objects in the container that do not
         have corresponding files in the local folder are deleted.
+
+        You can selectively ignore files by passing either a single pattern or a
+        list of patterns; these will be applied to the individual folder and file
+        names, and any names that match any of the 'ignore' patterns will not be
+        uploaded. The patterns should be standard *nix-style shell patterns; e.g.,
+        '*pyc' will ignore all files ending in 'pyc', such as 'program.pyc' and
+        'abcpyc'.
         """
         cont = self.get_container(container)
         self._local_files = []
         self._sync_folder_to_container(folder_path, cont, prefix="", delete=delete,
-                include_hidden=include_hidden, ignore_timestamps=ignore_timestamps)
+                include_hidden=include_hidden, ignore=ignore,
+                ignore_timestamps=ignore_timestamps)
 
 
     def _sync_folder_to_container(self, folder_path, cont, prefix, delete,
-            include_hidden, ignore_timestamps):
+            include_hidden, ignore, ignore_timestamps):
         """
         This is the internal method that is called recursively to handle
         nested folder structures.
         """
         fnames = os.listdir(folder_path)
+        ignore = utils.coerce_string_to_list(ignore)
+        if not include_hidden:
+            ignore.append(".*")
         for fname in fnames:
-            if fname.startswith(".") and not include_hidden:
+            if utils.match_pattern(fname, ignore):
                 continue
             pth = os.path.join(folder_path, fname)
             if os.path.isdir(pth):
@@ -556,7 +567,7 @@ class CFClient(object):
                     subprefix = "%s/%s" % (prefix, subprefix)
                 self._sync_folder_to_container(pth, cont, prefix=subprefix,
                         delete=delete, include_hidden=include_hidden,
-                        ignore_timestamps=ignore_timestamps)
+                        ignore=ignore, ignore_timestamps=ignore_timestamps)
                 continue
             self._local_files.append(os.path.join(prefix, fname))
             local_etag = utils.get_checksum(pth)
@@ -990,18 +1001,12 @@ class FolderUploader(threading.Thread):
         """Convenience method that first strips trailing path separators."""
         return os.path.basename(pth.rstrip(os.sep))
 
-    def consider(self, nm):
-        """If the name matches any of the ignore patterns, returns False."""
-        for pat in self.ignore:
-            if fnmatch.fnmatch(nm, pat):
-                return False
-        return True
-
     def upload_files_in_folder(self, arg, dirname, fnames):
         """Handles the iteration across files within a folder."""
-        if not self.consider(dirname):
+        if utils.match_pattern(dirname, self.ignore):
             return False
-        for fname in (nm for nm in fnames if self.consider(nm)):
+        for fname in (nm for nm in fnames
+                if not utils.match_pattern(nm, self.ignore)):
             if self.client._should_abort_folder_upload(self.upload_key):
                 return
             full_path = os.path.join(dirname, fname)

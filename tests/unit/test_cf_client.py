@@ -87,15 +87,36 @@ class CF_ClientTest(unittest.TestCase):
         client.set_container_metadata(self.cont_name, {"newkey": "newval"})
         client.connection.post_container.assert_called_with(self.cont_name, {"x-container-meta-newkey": "newval"})
 
+    def test_set_container_metadata_clear(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        client.connection.head_container.return_value = {"X-Container-Meta-Foo": "yes",
+                "Some-Other-Key": "no"}
+        client.connection.post_container = Mock()
+        client.set_container_metadata(self.cont_name, {"newkey": "newval"}, clear=True)
+        client.connection.post_container.assert_called_with(self.cont_name,
+                {"X-Container-Meta-Foo": "", "x-container-meta-newkey": "newval"})
+
     def test_set_object_metadata(self):
         client = self.client
         client.connection.head_object = Mock()
         client.connection.head_object.return_value = {"X-Object-Meta-Foo": "yes",
                 "Some-Other-Key": "no"}
         client.connection.post_object = Mock()
-        client.set_object_metadata(self.cont_name, self.obj_name, {"newkey": "newval"})
+        client.set_object_metadata(self.cont_name, self.obj_name, {"newkey": "newval",
+                "emptykey": ""})
         client.connection.post_object.assert_called_with(self.cont_name, self.obj_name,
                 {"x-object-meta-newkey": "newval", "x-object-meta-foo": "yes"})
+
+    def test_remove_object_metadata_key(self):
+        client = self.client
+        client.connection.head_object = Mock()
+        client.connection.head_object.return_value = {"X-Object-Meta-Foo": "foo",
+                "X-Container-Meta-Bar": "bar"}
+        client.connection.post_object = Mock()
+        client.remove_object_metadata_key(self.cont_name, self.obj_name, "Bar")
+        client.connection.post_object.assert_called_with(self.cont_name, self.obj_name,
+                {"x-object-meta-foo": "foo"})
 
     def test_remove_container_metadata_key(self):
         client = self.client
@@ -320,15 +341,6 @@ class CF_ClientTest(unittest.TestCase):
         self.assertEqual(nm2, "baz")
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
-    def test_uploader_consider(self):
-        self.client.connection.put_container = Mock()
-        self.client.connection.head_container = Mock()
-        fake_upload_key = "abcd"
-        uploader = FakeFolderUploader("root", "cont", "*.bad", fake_upload_key, self.client)
-        self.assertFalse(uploader.consider("some.bad"))
-        self.assertTrue(uploader.consider("some.good"))
-
-    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_uploader_bad_dirname(self):
         self.client.connection.put_container = Mock()
         self.client.connection.head_container = Mock()
@@ -448,6 +460,21 @@ class CF_ClientTest(unittest.TestCase):
             clt.sync_folder_to_container(tmpdir, cont)
             self.assertEqual(clt.upload_file.call_count, num_all_files)
         clt.upload_file = up
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_delete_objects_not_in_list(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        cont = client.get_container(self.cont_name)
+        objs = [FakeStorageObject(client, cont, name="First"),
+                FakeStorageObject(client, cont, name="Second")]
+        cont.get_objects = Mock(return_value=objs)
+        good_names = ["First", "Third"]
+        client._local_files = good_names
+        client.delete_object = Mock()
+        client._delete_objects_not_in_list(cont)
+        client.delete_object.assert_called_with(container=cont.name, name="Second")
+
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_copy_object(self):
