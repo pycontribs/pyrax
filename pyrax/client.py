@@ -104,7 +104,7 @@ class BaseClient(httplib2.Http):
 
         self.auth_system = auth_system
 
-        self._logger = logging.getLogger(__name__)
+        self._logger = logging.getLogger(self.__class__.__name__)
         ch = logging.StreamHandler()
         self._logger.setLevel(logging.DEBUG)
         self._logger.addHandler(ch)
