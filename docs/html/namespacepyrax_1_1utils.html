@@ -120,7 +120,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a399c6b9652f5150282c3edb32d4d05f3">coerce_string_to_list</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">For parameters that can take either a single string or a list of strings, this function will ensure that the result is a list containing the passed values.  <a href="#a399c6b9652f5150282c3edb32d4d05f3"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a44e6cd242f9d12705e157706a6caddfe">folder_size</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the total bytes for the specified, optionally ignoring any files which match the 'ignore' parameter.  <a href="#a44e6cd242f9d12705e157706a6caddfe"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the total bytes for the specified path, optionally ignoring any files which match the 'ignore' parameter.  <a href="#a44e6cd242f9d12705e157706a6caddfe"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#aa8d6873854a2bde7479a7fbe44d1d60b">add_method</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an instance method to an object.  <a href="#aa8d6873854a2bde7479a7fbe44d1d60b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a4f112fac24f62fe301a4a65d389a8d0b">wait_until</a></td></tr>
@@ -129,6 +129,8 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes either a date, datetime or a string, and returns the standard ISO formatted string for that date/time, with any fractional second portion removed.  <a href="#a837450152ddaf3a18bb5dbaf98a27994"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a9cc7cce8ec3ad4b58c806254ca8ea58e">get_id</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the 'id' attribute of 'id_or_obj' if present; if not, returns 'id_or_obj'.  <a href="#a9cc7cce8ec3ad4b58c806254ca8ea58e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#ab32790e8c29f35cd0c810dd86dedba2c">match_pattern</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares `nm` with the supplied patterns, and returns True if it matches at least one.  <a href="#ab32790e8c29f35cd0c810dd86dedba2c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a9790d3a239a8e290bffbeef17c48f017">env</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the first environment variable set if none are non-empty, defaults to "" or keyword arg default.  <a href="#a9790d3a239a8e290bffbeef17c48f017"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a662924ed2118b3ba66f1d1521a7c2b40">unauthenticated</a></td></tr>
@@ -254,7 +256,7 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Returns the total bytes for the specified, optionally ignoring any files which match the 'ignore' parameter. </p>
+<p>Returns the total bytes for the specified path, optionally ignoring any files which match the 'ignore' parameter. </p>
 <p>'ignore' can either be a single string pattern, or a list of such patterns. </p>
 
 </div>
@@ -373,6 +375,36 @@ Variables</h2></td></tr>
 
 <p>Checks to see if the function is marked as not requiring authentication with the  decorator. </p>
 <p>Returns True if decorator is set to True, False otherwise. </p>
+
+</div>
+</div>
+<a class="anchor" id="ab32790e8c29f35cd0c810dd86dedba2c"></a><!-- doxytag: member="pyrax::utils::match_pattern" ref="ab32790e8c29f35cd0c810dd86dedba2c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1utils.html#ab32790e8c29f35cd0c810dd86dedba2c">pyrax.utils.match_pattern</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>nm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>patterns</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Compares `nm` with the supplied patterns, and returns True if it matches at least one. </p>
+<p>Patterns are standard file-name wildcard strings, as defined in the `fnmatch` module. For example, the pattern "*.py" will match the names of all Python scripts. </p>
 
 </div>
 </div>
@@ -552,7 +584,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Feb 5 2013 13:13:14 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Feb 18 2013 09:02:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

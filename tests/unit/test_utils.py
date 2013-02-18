@@ -215,6 +215,10 @@ class UtilsTest(unittest.TestCase):
         dt = datetime.datetime(1999, 12, 31, 23, 59, 59, tzinfo=TZ())
         self.assertEqual(utils.iso_time_string(dt, show_tzinfo=False), "1999-12-31T23:59:59")
 
+    def test_match_pattern(self):
+        ignore_pat = "*.bad"
+        self.assertTrue(utils.match_pattern("some.bad", ignore_pat))
+        self.assertFalse(utils.match_pattern("some.good", ignore_pat))
 
     def test_get_id(self):
         target = "test_id"

@@ -116,6 +116,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#a146f36df43eb5ac08c7c7b09bf50d6ed">auth_endpoint</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#a29ca4bc84123f642dc6cf191e2d61543">set_credentials</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the username and api_key directly.  <a href="#a29ca4bc84123f642dc6cf191e2d61543"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#a31357d099c87594b661d674bb12a56c0">set_credential_file</a></td></tr>
@@ -129,7 +130,6 @@ Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">username</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#a70651ad93f531b836bca3257d615c95e">api_key</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#a87da3d8264af1c9427605148f20dd9c4">token</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#aa53e1795e4652cc9decff64f3446261a">auth_endpoint</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#a49192f7cc960a0aab538e014cf449225">expires</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#a9f8b98f9d8644964bbb15a9fb217ccb7">tenant_id</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#a0eda5ccf1b845b56032e5dfb7e536642">tenant_name</a></td></tr>
@@ -203,6 +203,23 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a146f36df43eb5ac08c7c7b09bf50d6ed"></a><!-- doxytag: member="pyrax::rax_identity::Identity::auth_endpoint" ref="a146f36df43eb5ac08c7c7b09bf50d6ed" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#a146f36df43eb5ac08c7c7b09bf50d6ed">auth_endpoint</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="ac0665028c611e61881f7e9fd0e752b99"></a><!-- doxytag: member="pyrax::rax_identity::Identity::authenticate" ref="ac0665028c611e61881f7e9fd0e752b99" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -273,6 +290,12 @@ Static Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>region</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
           <td class="paramname"><em>authenticate</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
@@ -316,6 +339,12 @@ Static Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>region</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
           <td class="paramname"><em>authenticate</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
@@ -351,19 +380,6 @@ Static Public Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#ab7e8405f143a8f7c34a68418464e5d21">api_key</a></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="aa53e1795e4652cc9decff64f3446261a"></a><!-- doxytag: member="pyrax::rax_identity::Identity::auth_endpoint" ref="aa53e1795e4652cc9decff64f3446261a" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html#aa53e1795e4652cc9decff64f3446261a">auth_endpoint</a></td>
         </tr>
       </table>
 </div>
@@ -600,7 +616,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 5 2012 21:20:48 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Feb 18 2013 09:02:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

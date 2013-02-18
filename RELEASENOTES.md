@@ -1,5 +1,8 @@
 # Release Notes for pyrax
 
+2013.02.18 - Fixed a bug that created multiple debugging loggers.
+           - Refactored the utils script to use the match_pattern() method.
+
 2013.02.15 - Code formatting cleanup. No logical changes or additional
              functionality included.
            - Added httplib2 requirement, now that novaclient no longer installs

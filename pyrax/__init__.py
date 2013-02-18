@@ -92,19 +92,15 @@ cloud_dns = None
 # Class used to handle auth/identity
 identity_class = None
 # Default identity type.
-default_identity_type = None
+default_identity_type = "rackspace"
 # Identity object
 identity = None
 # Default region for all services. Can be individually overridden if needed
-default_region = None
-# Some services require a region. If the user doesn't specify one, use DFW.
-FALLBACK_REGION = "DFW"
+default_region = "DFW"
 # If credentials are stored using keyring, this holds the username
 keyring_username = None
 # Encoding to use when working with non-ASCII names
-encoding = None
-# If no encoding is specified, use this by default
-DEFAULT_ENCODING = "utf-8"
+encoding = "utf-8"
 
 # Value to plug into the user-agent headers
 USER_AGENT = "pyrax/%s" % version.version
@@ -115,7 +111,7 @@ _http_debug = False
 
 def safe_region(region=None):
     """Value to use when no region is specified."""
-    return region or default_region or FALLBACK_REGION
+    return region or default_region
 
 
 def _read_config_settings(config_file):
@@ -128,19 +124,19 @@ def _read_config_settings(config_file):
         # The file exists, but doesn't have the correct format.
         raise exc.InvalidConfigurationFile(e)
 
-    def safe_get(section, option):
+    def safe_get(section, option, default=None):
         try:
             return cfg.get(section, option)
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
-            return None
+            return default
 
-    default_region = safe_get("settings", "region") or default_region
-    default_identity_type = safe_get("settings", "identity_type") or (
-            default_identity_type or "rackspace")
+    default_region = safe_get("settings", "region", default_region)
+    default_identity_type = safe_get("settings", "identity_type",
+            default_identity_type)
     app_agent = safe_get("settings", "custom_user_agent")
-    _http_debug = (safe_get("settings", "debug") or "False") == "True"
+    _http_debug = safe_get("settings", "debug", "False") == "True"
     keyring_username = safe_get("settings", "keyring_username")
-    encoding = safe_get("settings", "encoding") or DEFAULT_ENCODING
+    encoding = safe_get("settings", "encoding", encoding)
     if app_agent:
         # Customize the user-agent string with the app name.
         USER_AGENT = "%s %s" % (app_agent, USER_AGENT)
@@ -178,20 +174,27 @@ def _require_auth(fnc):
     return _wrapped
 
 
-def set_credentials(username, api_key, authenticate=True):
-    """Set the username and api_key directly, and then try to authenticate."""
+def set_credentials(username, api_key, region=None, authenticate=True):
+    """
+    Set the username and api_key directly, and then try to authenticate.
+
+    If the region is passed, it will authenticate against the proper endpoint
+    for that region, and set the default region for connections.
+    """
     identity.authenticated = False
     try:
         identity.set_credentials(username=username, api_key=api_key,
-                authenticate=authenticate)
+                region=region, authenticate=authenticate)
     except exc.AuthenticationFailed:
         clear_credentials()
         raise
+    if region:
+        self.default_region = region
     if identity.authenticated:
-        connect_to_services()
+        connect_to_services(region=region)
 
 
-def set_credential_file(cred_file, authenticate=True):
+def set_credential_file(cred_file, region=None, authenticate=True):
     """
     Read in the credentials from the supplied file path, and then try to
     authenticate. The file should be a standard config file in the format:
@@ -200,18 +203,21 @@ def set_credential_file(cred_file, authenticate=True):
     username = myusername
     api_key = 1234567890abcdef
 
+    If the region is passed, it will authenticate against the proper endpoint
+    for that region, and set the default region for connections.
     """
     identity.authenticated = False
     try:
-        identity.set_credential_file(cred_file, authenticate=authenticate)
+        identity.set_credential_file(cred_file, region=region,
+                authenticate=authenticate)
     except exc.AuthenticationFailed:
         clear_credentials()
         raise
     if identity.authenticated:
-        connect_to_services()
+        connect_to_services(region=region)
 
 
-def keyring_auth(username=None):
+def keyring_auth(username=None, region=None):
     """
     Use the password stored within the keyring to authenticate. If a username
     is supplied, that name is used; otherwise, the keyring_username value
@@ -219,6 +225,9 @@ def keyring_auth(username=None):
 
     If there is no username defined, or if the keyring module is not installed,
     the appropriate errors will be raised.
+
+    If the region is passed, it will authenticate against the proper endpoint
+    for that region, and set the default region for connections.
     """
     if not keyring:
         # Module not installed
@@ -231,7 +240,7 @@ def keyring_auth(username=None):
                 "authentication.")
     password = keyring.get_password("pyrax", username)
     if password:
-        set_credentials(username, password)
+        set_credentials(username, password, region=region)
 
 
 def authenticate():
@@ -250,7 +259,7 @@ def authenticate():
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, cloudservers, cloudfiles, cloud_loadbalancers
-    global cloud_databases, cloud_blockstorage, cloud_dns, default_region
+    global cloud_databases, cloud_blockstorage, cloud_dns
     identity = identity_class()
     cloudservers = None
     cloudfiles = None
@@ -258,7 +267,6 @@ def clear_credentials():
     cloud_databases = None
     cloud_blockstorage = None
     cloud_dns = None
-    default_region = None
 
 
 def set_default_region(region):
@@ -278,16 +286,16 @@ def _make_agent_name(base):
         return USER_AGENT
 
 
-def connect_to_services():
+def connect_to_services(region=None):
     """Establishes authenticated connections to the various cloud APIs."""
     global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
     global cloud_blockstorage, cloud_dns
-    cloudservers = connect_to_cloudservers()
-    cloudfiles = connect_to_cloudfiles()
-    cloud_loadbalancers = connect_to_cloud_loadbalancers()
-    cloud_databases = connect_to_cloud_databases()
-    cloud_blockstorage = connect_to_cloud_blockstorage()
-    cloud_dns = connect_to_cloud_dns()
+    cloudservers = connect_to_cloudservers(region=region)
+    cloudfiles = connect_to_cloudfiles(region=region)
+    cloud_loadbalancers = connect_to_cloud_loadbalancers(region=region)
+    cloud_databases = connect_to_cloud_databases(region=region)
+    cloud_blockstorage = connect_to_cloud_blockstorage(region=region)
+    cloud_dns = connect_to_cloud_dns(region=region)
 
 
 def _fix_uri(ep, region):
