@@ -152,7 +152,7 @@ def coerce_string_to_list(val):
 
 def folder_size(pth, ignore=None):
     """
-    Returns the total bytes for the specified, optionally ignoring
+    Returns the total bytes for the specified path, optionally ignoring
     any files which match the 'ignore' parameter. 'ignore' can either be
     a single string pattern, or a list of such patterns.
     """
@@ -169,10 +169,8 @@ def folder_size(pth, ignore=None):
             if os.path.isdir(pth):
                 # Don't count folder stat sizes
                 paths.remove(pth)
-            for pattern in ignore:
-                if fnmatch.fnmatch(pth, pattern):
-                    paths.remove(pth)
-                    break
+            if match_pattern(pth, ignore):
+                paths.remove(pth)
         total[0] += sum(os.stat(pth).st_size for pth in paths)
 
     # Need a mutable to pass
