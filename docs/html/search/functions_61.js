@@ -21,5 +21,6 @@ var searchData=
   ['assure_5fsnapshot',['assure_snapshot',['../namespacepyrax_1_1cloudblockstorage.html#a8a930b1066981115404f992adb243aa2',1,'pyrax::cloudblockstorage']]],
   ['assure_5fvolume',['assure_volume',['../namespacepyrax_1_1cloudblockstorage.html#a68a6bb754146fc1cdfe07a97456d71e9',1,'pyrax::cloudblockstorage']]],
   ['attach_5fto_5finstance',['attach_to_instance',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#a7a946d1fbbaba8aa5fbad457498e2db4',1,'pyrax::cloudblockstorage::CloudBlockStorageVolume.attach_to_instance()'],['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a7a946d1fbbaba8aa5fbad457498e2db4',1,'pyrax::cloudblockstorage::CloudBlockStorageClient.attach_to_instance()']]],
+  ['auth_5fendpoint',['auth_endpoint',['../classpyrax_1_1rax__identity_1_1Identity.html#a146f36df43eb5ac08c7c7b09bf50d6ed',1,'pyrax::rax_identity::Identity']]],
   ['authenticate',['authenticate',['../classpyrax_1_1client_1_1BaseClient.html#ac0665028c611e61881f7e9fd0e752b99',1,'pyrax::client::BaseClient.authenticate()'],['../classpyrax_1_1rax__identity_1_1Identity.html#ac0665028c611e61881f7e9fd0e752b99',1,'pyrax::rax_identity::Identity.authenticate()'],['../namespacepyrax.html#a14a943d0bb5ce4bcec385d1b733c6544',1,'pyrax.authenticate()']]]
 ];

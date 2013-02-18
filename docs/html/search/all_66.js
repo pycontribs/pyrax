@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['fallback_5fregion',['FALLBACK_REGION',['../namespacepyrax.html#a395a063eb4a0103b5e6924806e1a7c00',1,'pyrax']]],
-  ['fault',['FAULT',['../namespacepyrax_1_1cf__wrapper_1_1container.html#a892f51831156b6ea326c363e4b10631a',1,'pyrax::cf_wrapper::container']]],
   ['fault',['Fault',['../classpyrax_1_1cf__wrapper_1_1container_1_1Fault.html',1,'pyrax::cf_wrapper::container']]],
+  ['fault',['FAULT',['../namespacepyrax_1_1cf__wrapper_1_1container.html#a892f51831156b6ea326c363e4b10631a',1,'pyrax::cf_wrapper::container']]],
   ['fetch_5fobject',['fetch_object',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1c274968ef395c2b88a4d67c24f30f8e',1,'pyrax::cf_wrapper::client::CFClient.fetch_object()'],['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a1c274968ef395c2b88a4d67c24f30f8e',1,'pyrax::cf_wrapper::container::Container.fetch_object()']]],
   ['filenotfound',['FileNotFound',['../classpyrax_1_1exceptions_1_1FileNotFound.html',1,'pyrax::exceptions']]],
   ['find',['find',['../classpyrax_1_1client_1_1BaseClient.html#a01f90f57b7acd55e177611f5d0f7df23',1,'pyrax::client::BaseClient.find()'],['../classpyrax_1_1manager_1_1BaseManager.html#a01f90f57b7acd55e177611f5d0f7df23',1,'pyrax::manager::BaseManager.find()']]],

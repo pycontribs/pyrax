@@ -14,7 +14,6 @@ var searchData=
   ['connect_5fto_5fcloudfiles',['connect_to_cloudfiles',['../namespacepyrax.html#a34593b67ad113f95973c1c7a6546fa68',1,'pyrax']]],
   ['connect_5fto_5fcloudservers',['connect_to_cloudservers',['../namespacepyrax.html#a93dcb702dfed414cb32073e78fdff831',1,'pyrax']]],
   ['connect_5fto_5fservices',['connect_to_services',['../namespacepyrax.html#a708483dfb93616381fb0ec9338ab5528',1,'pyrax']]],
-  ['consider',['consider',['../classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html#a8a856e60db24bc984c6f13b1b14cd8f0',1,'pyrax::cf_wrapper::client::FolderUploader']]],
   ['copy_5fobject',['copy_object',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a7d45157fae0af819d907da6b00fa2378',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['create',['create',['../classpyrax_1_1client_1_1BaseClient.html#a5b7ef0221e471e99fa7f0a87a28ba1ea',1,'pyrax::client::BaseClient.create()'],['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a5b7ef0221e471e99fa7f0a87a28ba1ea',1,'pyrax::cloudblockstorage::CloudBlockStorageClient.create()'],['../classpyrax_1_1manager_1_1BaseManager.html#a5b7ef0221e471e99fa7f0a87a28ba1ea',1,'pyrax::manager::BaseManager.create()']]],
   ['create_5fcontainer',['create_container',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a31b9196903b253dd2cd99dc4d7a0774e',1,'pyrax::cf_wrapper::client::CFClient']]],
