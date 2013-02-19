@@ -1,0 +1,18 @@
+Contributing to pyrax
+=====================
+
+Please create all pull requests against the 'working' branch. The 'master'
+branch is reserved for full releases, complete with updated docs, etc.
+
+While PEP8 is generally followed, it is not treated as Holy Gospel. Practicality
+beats purity, and coming up with come convoluted coding to avoid a line of 82
+characters is an anti-pattern.
+
+When indenting continuation lines, the standard is 2 levels (i.e., 8 spaces).
+Please do not use "visual indentation", as it is fraught with its own
+issues with consistency.
+
+All changes other than simple typos should be accompanied by unit tests. All
+changes must pass all unit tests. You can run the tests by making sure that
+the `nose` module and running:
+    nose --with-coverage -w tests/unit/
