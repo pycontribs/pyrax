@@ -189,7 +189,7 @@ def set_credentials(username, api_key, region=None, authenticate=True):
         clear_credentials()
         raise
     if region:
-        self.default_region = region
+        default_region = region
     if identity.authenticated:
         connect_to_services(region=region)
 
