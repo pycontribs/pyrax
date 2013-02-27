@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import uuid
 
 from pyrax.cf_wrapper.client import FolderUploader
 from pyrax.cf_wrapper.container import Container
@@ -22,6 +23,8 @@ from pyrax.clouddns import CloudDNSDomain
 from pyrax.clouddns import CloudDNSManager
 from pyrax.clouddns import CloudDNSRecord
 from pyrax.clouddns import CloudDNSPTRRecord
+from pyrax.cloudnetworks import CloudNetwork
+from pyrax.cloudnetworks import CloudNetworkClient
 
 import pyrax.exceptions as exc
 from pyrax.rax_identity import Identity
@@ -314,6 +317,21 @@ class FakeStatusChanger(object):
             self.check_count += 1
             return "changing"
         return "ready"
+
+
+class FakeCloudNetworkClient(CloudNetworkClient):
+    def __init__(self, *args, **kwargs):
+        super(FakeCloudNetworkClient, self).__init__("fakeuser",
+                "fakepassword", *args, **kwargs)
+
+
+class FakeCloudNetwork(CloudNetwork):
+    def __init__(self, *args, **kwargs):
+        info = kwargs.get("info", {"fake": "fake"})
+        label = kwargs.get("label", kwargs.pop("name", utils.random_name()))
+        info["label"] = label
+        super(FakeCloudNetwork, self).__init__(manager=None, info=info, *args, **kwargs)
+        self.id = uuid.uuid4()
 
 
 class FakeIdentity(Identity):

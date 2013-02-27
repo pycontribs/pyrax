@@ -129,8 +129,8 @@ def random_name(length=20, ascii_only=False):
         base_chars = string.ascii_letters
     else:
         def get_char():
-            return unichr(random.randint(32, 1000)).encode(pyrax.encoding)
-        base_chars = "".join([get_char() for ii in xrange(length)])
+            return unichr(random.randint(32, 1000))
+        base_chars = u"".join([get_char() for ii in xrange(length)])
     mult = (length / len(base_chars)) + 1
     chars = base_chars * mult
     return "".join(random.sample(chars, length))

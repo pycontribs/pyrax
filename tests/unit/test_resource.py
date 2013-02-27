@@ -86,7 +86,7 @@ class ResourceTest(unittest.TestCase):
         rsc.__getattr__ = Mock()
         sav_mgr = rsc.manager.get
         ent = fakes.FakeEntity
-        new_att = utils.random_name()
+        new_att = utils.random_name(ascii_only=True)
         ent._info = {new_att: None}
         rsc.manager.get = Mock(return_value=ent)
         rsc.get()
