@@ -198,7 +198,7 @@ class Container(object):
         return self.client.set_container_metadata(self, metadata, clear=clear)
 
 
-    def remove__metadata_key(self, key):
+    def remove_metadata_key(self, key):
         """
         Removes the specified key from the container's metadata. If the key
         does not exist in the metadata, nothing is done.
