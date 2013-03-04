@@ -127,7 +127,8 @@ class CloudBlockStorageVolume(BaseResource):
     def __init__(self, *args, **kwargs):
         super(CloudBlockStorageVolume, self).__init__(*args, **kwargs)
         try:
-            self._nova_volumes = pyrax.cloudservers.volumes
+            region = self.manager.api.region_name
+            self._nova_volumes = pyrax.connect_to_cloudservers(region).volumes
         except AttributeError:
             # This will happen in unit testing, where the full pyrax
             # namespace is not exposed. In that situation, there is
