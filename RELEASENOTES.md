@@ -1,5 +1,9 @@
 # Release Notes for pyrax
 
+2013.03.04 - Version 1.3.1
+           - The merge for 1.3.0 did not grab the newly-created files for that
+             version. They are included in this version.
+
 2013.03.04 - Version 1.3.0
            - Added support for Rackspace Cloud Networks.
            - Modified attach/detach of CBS volumes so that they both raise
