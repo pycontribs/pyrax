@@ -127,7 +127,8 @@ class CloudBlockStorageVolume(BaseResource):
     def __init__(self, *args, **kwargs):
         super(CloudBlockStorageVolume, self).__init__(*args, **kwargs)
         try:
-            self._nova_volumes = pyrax.cloudservers.volumes
+            region = self.manager.api.region_name
+            self._nova_volumes = pyrax.connect_to_cloudservers(region).volumes
         except AttributeError:
             # This will happen in unit testing, where the full pyrax
             # namespace is not exposed. In that situation, there is
@@ -145,10 +146,11 @@ class CloudBlockStorageVolume(BaseResource):
         API; it cannot be done directly.
         """
         instance_id = _resolve_id(instance)
-        resp = self._nova_volumes.create_server_volume(instance_id,
-                self.id, mountpoint)
-        # The response should be a volume reference to this volume.
-        return resp.id == self.id
+        try:
+            resp = self._nova_volumes.create_server_volume(instance_id,
+                    self.id, mountpoint)
+        except Exception as e:
+            raise exc.VolumeAttachmentFailed("%s" % e)
 
 
     def detach(self):
@@ -165,7 +167,10 @@ class CloudBlockStorageVolume(BaseResource):
         att = attachments[0]
         instance_id = att["server_id"]
         attachment_id = att["id"]
-        self._nova_volumes.delete_server_volume(instance_id, attachment_id)
+        try:
+            self._nova_volumes.delete_server_volume(instance_id, attachment_id)
+        except Exception as e:
+            raise exc.VolumeDetachmentFailed("%s" % e)
 
 
     def delete(self, force=False):

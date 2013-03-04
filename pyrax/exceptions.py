@@ -131,6 +131,24 @@ class MissingLoadBalancerParameters(PyraxException):
 class MissingName(PyraxException):
     pass
 
+class NetworkCIDRInvalid(PyraxException):
+    pass
+
+class NetworkCIDRMalformed(PyraxException):
+    pass
+
+class NetworkCountExceeded(PyraxException):
+    pass
+
+class NetworkInUse(PyraxException):
+    pass
+
+class NetworkNotFound(PyraxException):
+    pass
+
+class NetworkLabelNotUnique(PyraxException):
+    pass
+
 class NoMoreResults(PyraxException):
     pass
 
@@ -186,6 +204,12 @@ class Unauthorized(PyraxException):
     pass
 
 class UploadFailed(PyraxException):
+    pass
+
+class VolumeAttachmentFailed(PyraxException):
+    pass
+
+class VolumeDetachmentFailed(PyraxException):
     pass
 
 class VolumeNotAvailable(PyraxException):

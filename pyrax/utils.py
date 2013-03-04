@@ -11,6 +11,7 @@ import shutil
 import string
 import sys
 import tempfile
+import threading
 import time
 import types
 import uuid
@@ -129,8 +130,8 @@ def random_name(length=20, ascii_only=False):
         base_chars = string.ascii_letters
     else:
         def get_char():
-            return unichr(random.randint(32, 1000)).encode(pyrax.encoding)
-        base_chars = "".join([get_char() for ii in xrange(length)])
+            return unichr(random.randint(32, 1000))
+        base_chars = u"".join([get_char() for ii in xrange(length)])
     mult = (length / len(base_chars)) + 1
     chars = base_chars * mult
     return "".join(random.sample(chars, length))
@@ -187,21 +188,75 @@ def add_method(obj, func, name=None):
     setattr(obj, name, method)
 
 
-def wait_until(obj, att, desired, interval=5, attempts=10, verbose=False):
+class _WaitThread(threading.Thread):
     """
-    When changing the state of an object, it will commonly be in a
-    transitional state until the change is complete. This will reload
-    the object ever `interval` seconds, and check its `att`
-    attribute. If it is equal to `desired`, this will return a value
-    of True. If not, it will re-try a maximum of `attempts` times; if
-    the attribute has not reached the desired value by then, this will
-    return False. If `attempts` is 0, this will loop infinitely until
-    the attribute matches. If `verbose` is True, each attempt will print
-    out the current value of the watched attribute and the time that has
-    elapsed since the original request.
+    Threading class to wait for object status in the background. Note that
+    verbose will always be False for a background thread.
+    """
+    def __init__(self, obj, att, desired, callback, interval, attempts,
+            verbose):
+        self.obj = obj
+        self.att = att
+        self.desired = desired
+        self.callback = callback
+        self.interval = interval
+        self.attempts = attempts
+        self.verbose = verbose
+        threading.Thread.__init__(self)
 
-    Note that `desired` can be a list of values; if the attribute becomes
-    equal to any of those values, this will return True.
+    def run(self):
+        """Starts the thread."""
+        resp = _wait_until(obj=self.obj, att=self.att,
+                desired=self.desired, callback=None,
+                interval=self.interval, attempts=self.attempts,
+                verbose=False)
+        self.callback(resp)
+
+
+def wait_until(obj, att, desired, callback=None, interval=5, attempts=10,
+        verbose=False):
+    """
+    When changing the state of an object, it will commonly be in a transitional
+    state until the change is complete. This will reload the object ever
+    `interval` seconds, and check its `att` attribute. If the desired value of
+    the attribute is reached, the updated object is returned. If not, it will
+    re-try a maximum of `attempts` times; if the attribute has not reached the
+    desired value by then, this method will exit and return None. If `attempts`
+    is 0, this will loop forever until the attribute matches. If `verbose` is
+    True, each attempt will print out the current value of the watched
+    attribute and the time that has elapsed since the original request.
+
+    Note that `desired` can be a list of values; if the attribute becomes equal
+    to any of those values, this will succeed. For example, when creating a new
+    cloud server, it will initially have a status of 'BUILD', and you can't
+    work with it until its status is 'ACTIVE'. However, there might be a
+    problem with the build process, and the server will change to a status of
+    'ERROR'. So for this case you need to set the `desired` parameter to
+    `['ACTIVE', 'ERROR']`. If you simply pass 'ACTIVE' as the desired state,
+    this will loop indefinitely if a build fails, as the server will never
+    reach a status of 'ACTIVE'.
+
+    Since this process of waiting can take a potentially long time, and will
+    block your program's execution until the desired state of the object is
+    reached, you may specify a callback function. The callback can be any
+    callable that accepts a single parameter; the parameter it receives will be
+    either the updated object (success), or None (failure). If a callback is
+    specified, the program will return immediately after spawning the wait
+    process in a separate thread.
+    """
+    if callback:
+        waiter = _WaitThread(obj=obj, att=att, desired=desired, callback=callback,
+                interval=interval, attempts=attempts, verbose=verbose)
+        waiter.start()
+    else:
+        return _wait_until(obj=obj, att=att, desired=desired, callback=None,
+                interval=interval, attempts=attempts, verbose=verbose)
+
+
+def _wait_until(obj, att, desired, callback, interval, attempts, verbose):
+    """
+    Loops until either the desired value of the attribute is reached, or the
+    number of attempts is exceeded.
     """
     if not isinstance(desired, (list, tuple)):
         desired = [desired]
@@ -227,10 +282,10 @@ def wait_until(obj, att, desired, interval=5, attempts=10, verbose=False):
             print "Current value of %s: %s (elapsed: %4.1f seconds)" % (
                     att, attval, elapsed)
         if attval in desired:
-            return True
+            return obj
         time.sleep(interval)
         attempt += 1
-    return False
+    return None
 
 
 def iso_time_string(val, show_tzinfo=False):

@@ -71,6 +71,7 @@ try:
     from cloudloadbalancers import CloudLoadBalancerClient
     from cloudblockstorage import CloudBlockStorageClient
     from clouddns import CloudDNSClient
+    from cloudnetworks import CloudNetworkClient
 except ImportError:
     # See if this is the result of the importing of version.py in setup.py
     callstack = inspect.stack()
@@ -89,6 +90,7 @@ cloud_loadbalancers = None
 cloud_databases = None
 cloud_blockstorage = None
 cloud_dns = None
+cloud_networks = None
 # Class used to handle auth/identity
 identity_class = None
 # Default identity type.
@@ -189,7 +191,7 @@ def set_credentials(username, api_key, region=None, authenticate=True):
         clear_credentials()
         raise
     if region:
-        self.default_region = region
+        default_region = region
     if identity.authenticated:
         connect_to_services(region=region)
 
@@ -259,7 +261,7 @@ def authenticate():
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, cloudservers, cloudfiles, cloud_loadbalancers
-    global cloud_databases, cloud_blockstorage, cloud_dns
+    global cloud_databases, cloud_blockstorage, cloud_dns, cloud_networks
     identity = identity_class()
     cloudservers = None
     cloudfiles = None
@@ -267,6 +269,7 @@ def clear_credentials():
     cloud_databases = None
     cloud_blockstorage = None
     cloud_dns = None
+    cloud_networks = None
 
 
 def set_default_region(region):
@@ -289,13 +292,14 @@ def _make_agent_name(base):
 def connect_to_services(region=None):
     """Establishes authenticated connections to the various cloud APIs."""
     global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
-    global cloud_blockstorage, cloud_dns
+    global cloud_blockstorage, cloud_dns, cloud_networks
     cloudservers = connect_to_cloudservers(region=region)
     cloudfiles = connect_to_cloudfiles(region=region)
     cloud_loadbalancers = connect_to_cloud_loadbalancers(region=region)
     cloud_databases = connect_to_cloud_databases(region=region)
     cloud_blockstorage = connect_to_cloud_blockstorage(region=region)
     cloud_dns = connect_to_cloud_dns(region=region)
+    cloud_networks = connect_to_cloud_networks(region=region)
 
 
 def _fix_uri(ep, region):
@@ -422,6 +426,20 @@ def connect_to_cloud_dns(region=None):
     return cloud_dns
 
 
+@_require_auth
+def connect_to_cloud_networks(region=None):
+    """Creates a client for working with cloud networks."""
+    region = safe_region(region)
+    # Networks uses the same endpoint as compute
+    ep = _get_service_endpoint("compute", region)
+    cloud_networks = CloudNetworkClient(identity.username, identity.api_key,
+            region_name=region, management_url=ep, auth_token=identity.token,
+            http_log_debug=_http_debug,
+            tenant_id=identity.tenant_id, service_type="compute")
+    cloud_networks.user_agent = _make_agent_name(cloud_networks.user_agent)
+    return cloud_networks
+
+
 def get_http_debug():
     return _http_debug
 
@@ -431,8 +449,9 @@ def set_http_debug(val):
     _http_debug = val
     # Set debug on the various services
     for svc in (cloudservers, cloudfiles, cloud_loadbalancers,
-            cloud_blockstorage, cloud_databases, cloud_dns):
-        svc.http_log_debug = val
+            cloud_blockstorage, cloud_databases, cloud_dns, cloud_networks):
+        if svc is not None:
+            svc.http_log_debug = val
     if not val:
         # Need to manually remove the debug handler for swiftclient
         swift_logger = _cf._swift_client.logger
