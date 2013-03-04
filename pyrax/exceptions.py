@@ -206,6 +206,12 @@ class Unauthorized(PyraxException):
 class UploadFailed(PyraxException):
     pass
 
+class VolumeAttachmentFailed(PyraxException):
+    pass
+
+class VolumeDetachmentFailed(PyraxException):
+    pass
+
 class VolumeNotAvailable(PyraxException):
     pass
 

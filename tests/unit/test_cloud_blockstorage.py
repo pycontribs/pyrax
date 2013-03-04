@@ -102,6 +102,13 @@ class CloudBlockStorageTest(unittest.TestCase):
         vol.attach_to_instance(inst, mp)
         vol._nova_volumes.create_server_volume.assert_called_once_with(inst.id, vol.id, mp)
 
+    def test_attach_to_instance_fail(self):
+        vol = self.volume
+        inst = fakes.FakeServer()
+        mp = utils.random_name()
+        vol._nova_volumes.create_server_volume = Mock(side_effect=Exception("test"))
+        self.assertRaises(exc.VolumeAttachmentFailed, vol.attach_to_instance, inst, mp)
+
     def test_detach_from_instance(self):
         vol = self.volume
         srv_id = utils.random_name()
@@ -110,6 +117,14 @@ class CloudBlockStorageTest(unittest.TestCase):
         vol._nova_volumes.delete_server_volume = Mock()
         vol.detach()
         vol._nova_volumes.delete_server_volume.assert_called_once_with(srv_id, att_id)
+
+    def test_detach_from_instance_fail(self):
+        vol = self.volume
+        srv_id = utils.random_name()
+        att_id = utils.random_name()
+        vol.attachments = [{"server_id": srv_id, "id": att_id}]
+        vol._nova_volumes.delete_server_volume = Mock(side_effect=Exception("test"))
+        self.assertRaises(exc.VolumeDetachmentFailed, vol.detach)
 
     def test_create_snapshot(self):
         vol = self.volume
