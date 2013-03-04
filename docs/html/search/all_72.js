@@ -5,10 +5,9 @@ var searchData=
   ['recordresultsiterator',['RecordResultsIterator',['../classpyrax_1_1clouddns_1_1RecordResultsIterator.html',1,'pyrax::clouddns']]],
   ['region_5fname',['region_name',['../classpyrax_1_1client_1_1BaseClient.html#a326b5b91b887c67a677e2eb509b569b6',1,'pyrax::client::BaseClient']]],
   ['reload',['reload',['../classpyrax_1_1resource_1_1BaseResource.html#aaef8955b9d3e2f5ddb4a016b60f14d7f',1,'pyrax::resource::BaseResource']]],
-  ['remove_5f_5fmetadata_5fkey',['remove__metadata_key',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#ac08c0dd6f368890280daa3a6e1e98634',1,'pyrax::cf_wrapper::container::Container']]],
   ['remove_5fcontainer_5fmetadata_5fkey',['remove_container_metadata_key',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a91fcdf99119a696e0b626957628605bb',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['remove_5ffrom_5fcache',['remove_from_cache',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#adf3d192d83c2f53a96b0bd594c15b84d',1,'pyrax::cf_wrapper::container::Container']]],
-  ['remove_5fmetadata_5fkey',['remove_metadata_key',['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a01a67fdfd99526a56bef1e3c0a01a68d',1,'pyrax::cf_wrapper::storage_object::StorageObject']]],
+  ['remove_5fmetadata_5fkey',['remove_metadata_key',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a01a67fdfd99526a56bef1e3c0a01a68d',1,'pyrax::cf_wrapper::container::Container.remove_metadata_key()'],['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a01a67fdfd99526a56bef1e3c0a01a68d',1,'pyrax::cf_wrapper::storage_object::StorageObject.remove_metadata_key()']]],
   ['remove_5fobject_5fmetadata_5fkey',['remove_object_metadata_key',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ac3072e2b9369e7435f660ff89ae85aa5',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['request',['request',['../classpyrax_1_1client_1_1BaseClient.html#a7ea72716d3813b3d175a880ff91eca73',1,'pyrax::client::BaseClient']]],
   ['request_5fid',['request_id',['../classpyrax_1_1exceptions_1_1ClientException.html#a24b613add05b03f7af1be9c4dab66d59',1,'pyrax::exceptions::ClientException']]],
@@ -24,6 +23,6 @@ var searchData=
   ['retry_5finterval',['RETRY_INTERVAL',['../namespacepyrax_1_1cloudblockstorage.html#abc175296d7313060131bf7f6c2932cf4',1,'pyrax::cloudblockstorage']]],
   ['root_5ffolder',['root_folder',['../classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html#a5f0b3f0b57ace7916c26401c56575116',1,'pyrax::cf_wrapper::client::FolderUploader']]],
   ['root_5fuser_5fstatus',['root_user_status',['../classpyrax_1_1cloud__databases_1_1CloudDatabaseInstance.html#a269cc22e852b374875720085d24b9922',1,'pyrax::cloud_databases::CloudDatabaseInstance.root_user_status()'],['../classpyrax_1_1cloud__databases_1_1CloudDatabaseClient.html#a269cc22e852b374875720085d24b9922',1,'pyrax::cloud_databases::CloudDatabaseClient.root_user_status()']]],
-  ['run',['run',['../classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html#aedcaade7dd45761ddcc3b3cc07005314',1,'pyrax::cf_wrapper::client::FolderUploader']]],
+  ['run',['run',['../classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html#aedcaade7dd45761ddcc3b3cc07005314',1,'pyrax::cf_wrapper::client::FolderUploader.run()'],['../classpyrax_1_1utils_1_1__WaitThread.html#aedcaade7dd45761ddcc3b3cc07005314',1,'pyrax::utils::_WaitThread.run()']]],
   ['run_5fhooks',['run_hooks',['../classpyrax_1_1manager_1_1BaseManager.html#aac4d6a908dd774f73e389ad2b14b6968',1,'pyrax::manager::BaseManager']]]
 ];

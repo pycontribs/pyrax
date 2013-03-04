@@ -7,6 +7,7 @@ var searchData=
   ['cloudblockstorage',['cloudblockstorage',['../namespacepyrax_1_1cloudblockstorage.html',1,'pyrax']]],
   ['clouddns',['clouddns',['../namespacepyrax_1_1clouddns.html',1,'pyrax']]],
   ['cloudloadbalancers',['cloudloadbalancers',['../namespacepyrax_1_1cloudloadbalancers.html',1,'pyrax']]],
+  ['cloudnetworks',['cloudnetworks',['../namespacepyrax_1_1cloudnetworks.html',1,'pyrax']]],
   ['container',['container',['../namespacepyrax_1_1cf__wrapper_1_1container.html',1,'pyrax::cf_wrapper']]],
   ['exceptions',['exceptions',['../namespacepyrax_1_1exceptions.html',1,'pyrax']]],
   ['manager',['manager',['../namespacepyrax_1_1manager.html',1,'pyrax']]],
