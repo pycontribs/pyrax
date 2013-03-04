@@ -1,5 +1,16 @@
 # Release Notes for pyrax
 
+2013.03.04 - Version 1.3.0
+           - Added support for Rackspace Cloud Networks.
+           - Modified attach/detach of CBS volumes so that they both raise
+             exceptions on failure, and return None otherwise. GitHub #22
+           - Fixed bug in block storage that could connect to incorrect
+             datacenter. Github #19
+           - Added the option of running utils.wait_until() in a background thread.
+           - Added the HACKING file to help people contribute to pyrax.
+           - Merged pull request #21 from simonz05: fix name error: global
+             name `self` does not exist.
+
 2013.02.18 - Fixed a bug that created multiple debugging loggers.
            - Refactored the utils script to use the match_pattern() method.
 
