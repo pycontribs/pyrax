@@ -173,6 +173,24 @@ class CloudDNSDomain(BaseResource):
                 name=name, data=data)
 
 
+    def find_record(self, record_type, name=None, data=None):
+        """
+        Returns a single record for this domain that matches the supplied
+        search criteria.
+
+        If no record matches, a DomainRecordNotFound exception will be raised.
+        If more than one matches, a DomainRecordNotUnique exception will
+        be raised.
+        """
+        matches = self.manager.search_records(self, record_type=record_type,
+                name=name, data=data)
+        if not matches:
+            raise exc.DomainRecordNotFound
+        elif len(matches) > 1:
+            raise exc.DomainRecordNotUnique
+        return matches[0]
+
+
     def add_records(self, records):
         """
         Adds the records to this domain. Each record should be a dict with the
@@ -1119,6 +1137,20 @@ class CloudDNSClient(BaseClient):
         that match the supplied search criteria.
         """
         return domain.search_records(record_type=record_type,
+                name=name, data=data)
+
+
+    @assure_domain
+    def find_record(self, domain, record_type, name=None, data=None):
+        """
+        Returns a single record for this domain that matches the supplied
+        search criteria.
+
+        If no record matches, a DomainRecordNotFound exception will be raised.
+        If more than one matches, a DomainRecordNotUnique exception will
+        be raised.
+        """
+        return domain.find_record(record_type=record_type,
                 name=name, data=data)
 
 
