@@ -101,18 +101,71 @@ Once you have a `LoadBalancer` object, you can use its attributes to get informa
 
 For the `LoadBalancer` just created, the output of the above is:
 
-    Load Balancer: example_lb    ID: 78273    Status: ACTIVE    Nodes: [<Node type=PRIMARY, condition=ENABLED, id=172949, address=10.177.1.1, port=80>, <Node type=PRIMARY, condition=DISABLED, id=173161, address=10.177.1.2, port=80>]    Virtual IPs: [<VirtualIP type=PUBLIC, id=1893, address=50.56.167.209>, <VirtualIP type=PUBLIC, id=9070313, address=2001:4800:7901:0000:8ca7:b42c:0000:0001>]    Algorithm: RANDOM    Protocol: HTTP
-## Load Balancer AlgorithmsThe load balancer's 'algorithm' refers to the logic that determines how connections are spread across the nodes. You can get the available algorithms by running:
-    print pyrax.cloud_loadbalancers.algorithms
-This will print:
-    [u'LEAST_CONNECTIONS', u'RANDOM', u'ROUND_ROBIN', u'WEIGHTED_LEAST_CONNECTIONS', u'WEIGHTED_ROUND_ROBIN']
-This table lists the algorithms and how they work:
-Algorithm | Description---- | ----LEAST_CONNECTIONS | The node with the lowest number of connections will receive requests.RANDOM | Back-end servers are selected at random.ROUND_ROBIN | Connections are routed to each of the back-end servers in turn.WEIGHTED_LEAST_CONNECTIONS | Each request will be assigned to a node based on the number of concurrent connections to the node and its weight.WEIGHTED_ROUND_ROBIN | A round robin algorithm, but with different proportions of traffic being directed to the back-end nodes. Weights must be defined as part of the load balancer's node configuration.## Load Balancer ProtocolsAll load balancers must define the protocol of the service which is being load balanced. The protocol selection should be based on the protocol of the back-end nodes. When configuring a load balancer, the default port for the given protocol will be selected unless otherwise specified. You can get a list of the available protocols by calling:
-    print clb.protocols
-This will print out:
-    [u'DNS_TCP', u'DNS_UDP', u'FTP', u'HTTP', u'HTTPS', u'IMAPS', u'IMAPv2', u'IMAPv3', u'IMAPv4', u'LDAP', u'LDAPS', u'MYSQL', u'POP3', u'POP3S', u'SFTP', u'SMTP', u'TCP', u'TCP_CLIENT_FIRST', u'UDP', u'UDP_STREAM']
-Here is a table of available protocols and their description:Protocol | Description---- | ----DNS_TCP | This protocol works with IPv6 and allows your DNS server to receive traffic using TCP port 53.DNS_UDP | This protocol works with IPv6 and allows your DNS server to receive traffic using UDP port 53.FTP | The File Transfer Protocol defines how files are transported over the Internet. It is typically used when downloading or uploading files to or from web servers.HTTP | The Hypertext Transfer Protocol defines how communications occur on the Internet between clients and web servers. For example, if you request a web page in your browser, HTTP defines how the web server fetches the page and returns it your browser.HTTPS | The Hypertext Transfer Protocol over Secure Socket Layer (SSL) provides encrypted communication over the Internet. It securely verifies the authenticity of the web server you are communicating with. IMAPS | The Internet Message Application Protocol over Secure Socket Layer (SSL) defines how an email client, such as Microsoft Outlook, retrieves and transfers email messages with a mail server.IMAPv2 | Version 2 of IMAPS.IMAPv3 | Version 3 of IMAPS.IMAPv4 | Version 4, the current version of IMAPS.LDAP | The Lightweight Directory Access Protocol provides access to distributed directory information services over the Internet. This protocol is typically used to access a large set of hierarchical records, such as corporate email or a telephone directory.LDAPS | The Lightweight Directory Access Protocol over Secure Socket Layer (SSL).MYSQL | This protocol allows communication with MySQL, an open source database management system.POP3 | The Post Office Protocol is one of the two most common protocols for communciation between email clients and email servers. Version 3 is the current standard of POP.POP3S | Post Office Protocol over Secure Socket Layer.SFTP | The SSH File Transfer Protocol is a secure file transfer and management protocol. This protocol assumes the files are using a secure channel, such as SSH, and that the identity of the client is available to the protocol.SMTP | The Simple Mail Transfer Protocol is used by electronic mail servers to send and receive email messages. Email clients use this protocol to relay messages to another computer or web server, but use IMAP or POP to send and receive messages.TCP | The Transmission Control Protocol is a part of the Transport Layer protocol and is one of the core protocols of the Internet Protocol Suite. It provides a reliable, ordered delivery of a stream of bytes from one program on a computer to another program on another computer. Applications that require an ordered and reliable delivery of packets use this protocol.TCP_CLIE (TCP_CLIENT_FIRST) | This protocol is similiar to TCP, but is more efficient when a client is expected to write the data first.UDP | The User Datagram Protocol provides a datagram service that emphasizes speed over reliability, It works well with applications that provide security through other measures. UDP_STRE (UDP_STREAM) | This protocol is designed to stream media over networks and is built on top of UDP.
-## SSL Termination
+    Load Balancer: example_lb
+    ID: 78273
+    Status: ACTIVE
+    Nodes: [<Node type=PRIMARY, condition=ENABLED, id=172949, address=10.177.1.1, port=80>, <Node type=PRIMARY, condition=DISABLED, id=173161, address=10.177.1.2, port=80>]
+    Virtual IPs: [<VirtualIP type=PUBLIC, id=1893, address=50.56.167.209>, <VirtualIP type=PUBLIC, id=9070313, address=2001:4800:7901:0000:8ca7:b42c:0000:0001>]
+    Algorithm: RANDOM
+    Protocol: HTTP
+
+
+## Load Balancer Algorithms
+The load balancer's 'algorithm' refers to the logic that determines how connections are spread across the nodes. You can get the available algorithms by running:
+
+    print pyrax.cloud_loadbalancers.algorithms
+
+This will print:
+
+    [u'LEAST_CONNECTIONS', u'RANDOM', u'ROUND_ROBIN', u'WEIGHTED_LEAST_CONNECTIONS', u'WEIGHTED_ROUND_ROBIN']
+
+This table lists the algorithms and how they work:
+
+Algorithm | Description
+---- | ----
+LEAST_CONNECTIONS | The node with the lowest number of connections will receive requests.
+RANDOM | Back-end servers are selected at random.
+ROUND_ROBIN | Connections are routed to each of the back-end servers in turn.
+WEIGHTED_LEAST_CONNECTIONS | Each request will be assigned to a node based on the number of concurrent connections to the node and its weight.
+WEIGHTED_ROUND_ROBIN | A round robin algorithm, but with different proportions of traffic being directed to the back-end nodes. Weights must be defined as part of the load balancer's node configuration.
+
+
+## Load Balancer Protocols
+All load balancers must define the protocol of the service which is being load balanced. The protocol selection should be based on the protocol of the back-end nodes. When configuring a load balancer, the default port for the given protocol will be selected unless otherwise specified. You can get a list of the available protocols by calling:
+
+    print clb.protocols
+
+This will print out:
+
+    [u'DNS_TCP', u'DNS_UDP', u'FTP', u'HTTP', u'HTTPS', u'IMAPS', u'IMAPv2', u'IMAPv3', u'IMAPv4', u'LDAP', u'LDAPS', u'MYSQL', u'POP3', u'POP3S', u'SFTP', u'SMTP', u'TCP', u'TCP_CLIENT_FIRST', u'UDP', u'UDP_STREAM']
+
+Here is a table of available protocols and their description:
+
+Protocol | Description
+---- | ----
+DNS_TCP | This protocol works with IPv6 and allows your DNS server to receive traffic using TCP port 53.
+DNS_UDP | This protocol works with IPv6 and allows your DNS server to receive traffic using UDP port 53.
+FTP | The File Transfer Protocol defines how files are transported over the Internet. It is typically used when downloading or uploading files to or from web servers.
+HTTP | The Hypertext Transfer Protocol defines how communications occur on the Internet between clients and web servers. For example, if you request a web page in your browser, HTTP defines how the web server fetches the page and returns it your browser.
+HTTPS | The Hypertext Transfer Protocol over Secure Socket Layer (SSL) provides encrypted communication over the Internet. It securely verifies the authenticity of the web server you are communicating with. 
+IMAPS | The Internet Message Application Protocol over Secure Socket Layer (SSL) defines how an email client, such as Microsoft Outlook, retrieves and transfers email messages with a mail server.
+IMAPv2 | Version 2 of IMAPS.
+IMAPv3 | Version 3 of IMAPS.
+IMAPv4 | Version 4, the current version of IMAPS.
+LDAP | The Lightweight Directory Access Protocol provides access to distributed directory information services over the Internet. This protocol is typically used to access a large set of hierarchical records, such as corporate email or a telephone directory.
+LDAPS | The Lightweight Directory Access Protocol over Secure Socket Layer (SSL).
+MYSQL | This protocol allows communication with MySQL, an open source database management system.
+POP3 | The Post Office Protocol is one of the two most common protocols for communciation between email clients and email servers. Version 3 is the current standard of POP.
+POP3S | Post Office Protocol over Secure Socket Layer.
+SFTP | The SSH File Transfer Protocol is a secure file transfer and management protocol. This protocol assumes the files are using a secure channel, such as SSH, and that the identity of the client is available to the protocol.
+SMTP | The Simple Mail Transfer Protocol is used by electronic mail servers to send and receive email messages. Email clients use this protocol to relay messages to another computer or web server, but use IMAP or POP to send and receive messages.
+TCP | The Transmission Control Protocol is a part of the Transport Layer protocol and is one of the core protocols of the Internet Protocol Suite. It provides a reliable, ordered delivery of a stream of bytes from one program on a computer to another program on another computer. Applications that require an ordered and reliable delivery of packets use this protocol.
+TCP_CLIE (TCP_CLIENT_FIRST) | This protocol is similiar to TCP, but is more efficient when a client is expected to write the data first.
+UDP | The User Datagram Protocol provides a datagram service that emphasizes speed over reliability, It works well with applications that provide security through other measures. 
+UDP_STRE (UDP_STREAM) | This protocol is designed to stream media over networks and is built on top of UDP.
+
+
+## SSL Termination
 The SSL Termination feature allows a load balancer user to terminate SSL traffic at the load balancer layer versus at the web server layer. A user may choose to configure SSL Termination using a key and an SSL certificate or an (Intermediate) SSL certificate.
 
 When SSL Termination is configured on a load balancer, a secure shadow server is created that listens only for secure traffic on a user-specified port. This shadow server is only visible to and manageable by the system. Existing or updated attributes on a load balancer with SSL Termination will also apply to its shadow server. For example, if Connection Logging is enabled on an SSL load balancer, it will also be enabled on the shadow server and Cloud Files logs will contain log files for both.
@@ -129,20 +182,37 @@ To add SSL Termination to your load balancer (`lb`), call its `add_ssl_terminati
             secureTrafficOnly=False,
             certificate=cert,
             privatekey=pk,
-            )Once SSL Termination is configured, you can only update the `securePort`, `secureTrafficOnly`, or `enabled` settings. This is done by passing one or more of these values to `lb.update_ssl_termination()`. You may not add or update the certificates or keys. If you need to change certificates, you must first call `lb.delete_ssl_termination()`, and then add all the info back at once with `lb.add_ssl_termination()`
-## Metadata
+            )
+
+Once SSL Termination is configured, you can only update the `securePort`, `secureTrafficOnly`, or `enabled` settings. This is done by passing one or more of these values to `lb.update_ssl_termination()`. You may not add or update the certificates or keys. If you need to change certificates, you must first call `lb.delete_ssl_termination()`, and then add all the info back at once with `lb.add_ssl_termination()`
+
+
+## Metadata
 Each load balancer can have arbitrary key/value pairs associated with it. These keys and values must be valid UTF-8 characters, of 256 characters or less. To see the metadata for a load balancer, call its `get_metadata()` method. This will return a dict that contains the keys and associated values, or an empty dict if the load balancer does not have any metadata.
 
 There are two methods for creating metadata for a load balancer: `set_metadata()` and `update_metadata()`. The difference is that `update_metadata()` will only affect the keys in the update, whereas `set_metadata()` will delete any existing metadata first before setting the values passed to it. The following code illustrates the different methods for working with metadata:
 
-    print "Initial metadata:", lb.get_metadata()    lb.set_metadata({"a": "one", "b": "two", "c": "three"})    print "New metadata:", lb.get_metadata()    lb.update_metadata({"d": "four"})    print "Updated metadata:", lb.get_metadata()    lb.set_metadata({"e": "five"})    print "After set_metadata:", lb.get_metadata()
+    print "Initial metadata:", lb.get_metadata()
+    lb.set_metadata({"a": "one", "b": "two", "c": "three"})
+    print "New metadata:", lb.get_metadata()
+    lb.update_metadata({"d": "four"})
+    print "Updated metadata:", lb.get_metadata()
+    lb.set_metadata({"e": "five"})
+    print "After set_metadata:", lb.get_metadata()
     lb.delete_metadata()
-    print "After delete_metadata:", lb.get_metadata()This will result in:
-    Initial metadata: {}
+    print "After delete_metadata:", lb.get_metadata()
+
+This will result in:
+
+    Initial metadata: {}
     New metadata: {u'a': u'one', u'c': u'three', u'b': u'two'}
     Updated metadata: {u'a': u'one', u'c': u'three', u'b': u'two', u'd': u'four'}
     After set_metadata: {u'e': u'five'}
-    After delete_metadata: {}
+
+    After delete_metadata: {}
+
+
+
 ## Managing Nodes
 
 ### Adding and Removing Nodes for a Load Balancer
