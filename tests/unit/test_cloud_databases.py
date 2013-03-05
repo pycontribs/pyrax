@@ -11,7 +11,7 @@ from pyrax import CloudDatabaseDatabase
 from pyrax import CloudDatabaseFlavor
 from pyrax import CloudDatabaseInstance
 from pyrax import CloudDatabaseUser
-from pyrax.cloud_databases import assure_instance
+from pyrax.clouddatabases import assure_instance
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
@@ -50,7 +50,8 @@ class CloudDatabasesTest(unittest.TestCase):
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_instantiate_instance(self):
-        inst = CloudDatabaseInstance(fakes.FakeManager(), {"id": 42})
+        inst = CloudDatabaseInstance(fakes.FakeManager(), {"id": 42,
+                "volume": {"size": 1, "used": 0.2}})
         self.assertTrue(isinstance(inst, CloudDatabaseInstance))
 
     def test_list_databases(self):
@@ -168,11 +169,30 @@ class CloudDatabasesTest(unittest.TestCase):
 
     def test_resize_volume(self):
         inst = self.instance
-        inst.volume.get = Mock(return_value=1)
         fake_body = {"volume": {"size": 2}}
         inst.manager.action = Mock()
         ret = inst.resize_volume(2)
         inst.manager.action.assert_called_once_with(inst, "resize", body=fake_body)
+
+    def test_resize_volume_direct(self):
+        inst = self.instance
+        vol = inst.volume
+        fake_body = {"volume": {"size": 2}}
+        inst.manager.action = Mock()
+        ret = vol.resize(2)
+        inst.manager.action.assert_called_once_with(inst, "resize", body=fake_body)
+
+    def test_volume_get(self):
+        inst = self.instance
+        vol = inst.volume
+        att = vol.size
+        using_get = vol.get("size")
+        self.assertEqual(att, using_get)
+
+    def test_volume_get_fail(self):
+        inst = self.instance
+        vol = inst.volume
+        self.assertRaises(AttributeError, vol.get, "fake")
 
     def test_get_flavor_property(self):
         inst = self.instance
@@ -281,6 +301,16 @@ class CloudDatabasesTest(unittest.TestCase):
         clt.root_user_status(inst)
         inst.root_user_status.assert_called_once_with()
         inst.root_user_status = sav
+
+    def test_get_user(self):
+        inst = self.instance
+        good_name = utils.random_name()
+        bad_name = utils.random_name()
+        user = fakes.FakeDatabaseUser(manager=None, info={"name": good_name})
+        inst.list_users = Mock(return_value=[user])
+        returned = inst.get_user(good_name)
+        self.assertEqual(returned, user)
+        self.assertRaises(exc.NoSuchDatabaseUser, inst.get_user, bad_name)
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_resize_for_instance(self):
