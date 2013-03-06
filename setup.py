@@ -16,6 +16,8 @@ with file("pyrax/version.py") as vfile:
 vmatch = re.search(r'version ?= ?"(.+)"$', version_text)
 version = vmatch.groups()[0]
 
+testing_requires = ["mock"]
+
 setup(
     name="pyrax",
     version=version,
@@ -35,7 +37,7 @@ setup(
         "python-swiftclient",
         "httplib2",
         "keyring",
-    ],
+    ] + testing_requires,
     packages=[
         "pyrax",
         "pyrax/cf_wrapper",

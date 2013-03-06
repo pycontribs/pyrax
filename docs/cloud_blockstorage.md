@@ -55,6 +55,7 @@ Parameter | Description | Required
 
 When you create a volume from a snapshot, the new volume will be a copy of the volume from which the snapshot was created. The new volume must be the same size as the original volume used to create the snapshot. If you create a new volume from scratch, it will be the equivalent of an unformatted disk drive.
 
+
 Here is an example of the call to create a new 500 GB volume that uses SSD for high performance:
 
     vol = cbs.create(name="my_fast_volume", size=500, volume_type="SSD")

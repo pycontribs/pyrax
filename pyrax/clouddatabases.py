@@ -35,6 +35,27 @@ def assure_instance(fnc):
     return _wrapped
 
 
+
+class CloudDatabaseVolume(object):
+    instance = None
+    size = None
+    used = None
+
+    def __init__(self, instance, info):
+        self.instance = instance
+        for key, val in info.items():
+            setattr(self, key, val)
+
+    def resize(self, size):
+        self.instance.resize_volume(size)
+        self.size = size
+
+    def get(self, att):
+        # For backwards compatibility
+        return getattr(self, att)
+
+
+
 class CloudDatabaseInstance(BaseResource):
     """
     This class represents a MySQL instance in the cloud.
@@ -47,6 +68,11 @@ class CloudDatabaseInstance(BaseResource):
         self._user_manager = BaseManager(self.manager.api,
                 resource_class=CloudDatabaseUser, response_key="user",
                 uri_base="instances/%s/users" % self.id)
+        # Remove the lazy load
+        if not self.loaded:
+            self.get()
+            # Make the volume into an accessible object instead of a dict
+            self.volume = CloudDatabaseVolume(self, self.volume)
 
 
     def list_databases(self):
@@ -201,7 +227,7 @@ class CloudDatabaseInstance(BaseResource):
 
     def resize_volume(self, size):
         """Changes the size of the volume for this instance."""
-        curr_size = self.volume.get("size")
+        curr_size = self.volume.size
         if size <= curr_size:
             raise exc.InvalidVolumeResize("The new volume size must be larger "
                     "than the current volume size of '%s'." % curr_size)

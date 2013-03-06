@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>pyrax: CloudDatabaseUser Class Reference</title>
+<title>pyrax: CloudDatabaseVolume Class Reference</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -93,8 +93,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="nav-path" class="navpath">
     <ul>
       <li class="navelem"><a class="el" href="namespacepyrax.html">pyrax</a>      </li>
-      <li class="navelem"><a class="el" href="namespacepyrax_1_1cloud__databases.html">cloud_databases</a>      </li>
-      <li class="navelem"><a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseUser.html">CloudDatabaseUser</a>      </li>
+      <li class="navelem"><a class="el" href="namespacepyrax_1_1clouddatabases.html">clouddatabases</a>      </li>
+      <li class="navelem"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html">CloudDatabaseVolume</a>      </li>
     </ul>
   </div>
 </div>
@@ -103,75 +103,154 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a>  </div>
   <div class="headertitle">
-<div class="title">CloudDatabaseUser Class Reference</div>  </div>
+<div class="title">CloudDatabaseVolume Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<!-- doxytag: class="pyrax::cloud_databases::CloudDatabaseUser" --><!-- doxytag: inherits="pyrax::resource::BaseResource" -->
-<p>This class represents a user on a <a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseInstance.html" title="This class represents a MySQL instance in the cloud.">CloudDatabaseInstance</a>.  
- <a href="classpyrax_1_1cloud__databases_1_1CloudDatabaseUser.html#details">More...</a></p>
-<div class="dynheader">
-Inheritance diagram for CloudDatabaseUser:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="classpyrax_1_1cloud__databases_1_1CloudDatabaseUser.png" usemap="#CloudDatabaseUser_map" alt=""/>
-  <map id="CloudDatabaseUser_map" name="CloudDatabaseUser_map">
-<area href="classpyrax_1_1resource_1_1BaseResource.html" title="A resource represents a particular instance of an object (server, flavor, etc)." alt="BaseResource" shape="rect" coords="0,0,124,24"/>
-</map>
- </div></div>
-
-<p><a href="classpyrax_1_1cloud__databases_1_1CloudDatabaseUser-members.html">List of all members.</a></p>
+<!-- doxytag: class="pyrax::clouddatabases::CloudDatabaseVolume" -->
+<p><a href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseUser.html#ab48bde70a0927a83d62464cb0627c34b">delete</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This class doesn't have an 'id', so pass the name.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a8f82cbc9bffef6b720c446024ddf35f9">resize</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
 <tr><td colspan="2"><h2><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseUser.html#ab6f7bc0828ee3d547e244dd336572d76">get_details</a> = False</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a5ffaf17e178b3a6fa2012fe3050ede22">instance</a> = None</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#aa3d6656320f1a7278c0c2c7fdf07617c">size</a> = None</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#ab896e794c7918f3e8a6ca0f8339f1add">used</a> = None</td></tr>
 </table>
-<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>This class represents a user on a <a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseInstance.html" title="This class represents a MySQL instance in the cloud.">CloudDatabaseInstance</a>. </p>
-<p>It is not a true cloud entity, but a convenience object for dealing with users for instances. </p>
-</div><hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="ab48bde70a0927a83d62464cb0627c34b"></a><!-- doxytag: member="pyrax::cloud_databases::CloudDatabaseUser::delete" ref="ab48bde70a0927a83d62464cb0627c34b" args="" -->
+<hr/><h2>Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="ac775ee34451fdfa742b318538164070e"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::__init__" ref="ac775ee34451fdfa742b318538164070e" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseUser.html#ab48bde70a0927a83d62464cb0627c34b">delete</a> </td>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#ac775ee34451fdfa742b318538164070e">__init__</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>This class doesn't have an 'id', so pass the name. </p>
+</div>
+</div>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a444a1328efb32d5d9d2dcb2efe855d3b"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::get" ref="a444a1328efb32d5d9d2dcb2efe855d3b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>att</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#ab48bde70a0927a83d62464cb0627c34b">BaseResource</a>.</p>
+</div>
+</div>
+<a class="anchor" id="a8f82cbc9bffef6b720c446024ddf35f9"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::resize" ref="a8f82cbc9bffef6b720c446024ddf35f9" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a8f82cbc9bffef6b720c446024ddf35f9">resize</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
 
 </div>
 </div>
 <hr/><h2>Member Data Documentation</h2>
-<a class="anchor" id="ab6f7bc0828ee3d547e244dd336572d76"></a><!-- doxytag: member="pyrax::cloud_databases::CloudDatabaseUser::get_details" ref="ab6f7bc0828ee3d547e244dd336572d76" args="" -->
+<a class="anchor" id="a5ffaf17e178b3a6fa2012fe3050ede22"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::instance" ref="a5ffaf17e178b3a6fa2012fe3050ede22" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpyrax_1_1cloud__databases_1_1CloudDatabaseUser.html#ab6f7bc0828ee3d547e244dd336572d76">get_details</a> = False<code> [static]</code></td>
+          <td class="memname"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a5ffaf17e178b3a6fa2012fe3050ede22">instance</a> = None<code> [static]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#ab6f7bc0828ee3d547e244dd336572d76">BaseResource</a>.</p>
+</div>
+</div>
+<a class="anchor" id="aa3d6656320f1a7278c0c2c7fdf07617c"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::size" ref="aa3d6656320f1a7278c0c2c7fdf07617c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#aa3d6656320f1a7278c0c2c7fdf07617c">size</a> = None<code> [static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ab896e794c7918f3e8a6ca0f8339f1add"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::used" ref="ab896e794c7918f3e8a6ca0f8339f1add" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#ab896e794c7918f3e8a6ca0f8339f1add">used</a> = None<code> [static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>pyrax/<a class="el" href="cloud__databases_8py.html">cloud_databases.py</a></li>
+<li>pyrax/<a class="el" href="clouddatabases_8py.html">clouddatabases.py</a></li>
 </ul>
 </div><!-- contents -->
 <!-- window showing the filter options -->
@@ -191,7 +270,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 24 2012 16:05:44 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 6 2013 09:10:15 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

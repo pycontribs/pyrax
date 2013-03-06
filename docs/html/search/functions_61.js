@@ -15,7 +15,7 @@ var searchData=
   ['all',['all',['../namespacepyrax_1_1manager.html#acedac857b1708c80eefe0a6c379bedec',1,'pyrax::manager']]],
   ['allowed_5fdomains',['allowed_domains',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a0a5c9a644fa7ae4b7a662ab33f00ed9c',1,'pyrax::cloudloadbalancers::CloudLoadBalancerClient']]],
   ['assure_5fdomain',['assure_domain',['../namespacepyrax_1_1clouddns.html#ae456353f0a4abcc4b605b5eeac0656d1',1,'pyrax::clouddns']]],
-  ['assure_5finstance',['assure_instance',['../namespacepyrax_1_1cloud__databases.html#a287b76a7b332176755ae7a9a904bd053',1,'pyrax::cloud_databases']]],
+  ['assure_5finstance',['assure_instance',['../namespacepyrax_1_1clouddatabases.html#a8f8b217553a66a79f0135899e14964b4',1,'pyrax::clouddatabases']]],
   ['assure_5floadbalancer',['assure_loadbalancer',['../namespacepyrax_1_1cloudloadbalancers.html#ac1fa7d34dba3d7cf4a26fdab6afe2d22',1,'pyrax::cloudloadbalancers']]],
   ['assure_5fparent',['assure_parent',['../namespacepyrax_1_1cloudloadbalancers.html#ae8088c141e57bdabed8a13866eed8cdf',1,'pyrax::cloudloadbalancers']]],
   ['assure_5fsnapshot',['assure_snapshot',['../namespacepyrax_1_1cloudblockstorage.html#a8a930b1066981115404f992adb243aa2',1,'pyrax::cloudblockstorage']]],

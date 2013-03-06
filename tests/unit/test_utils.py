@@ -173,11 +173,27 @@ class UtilsTest(unittest.TestCase):
         self.assertRaises(exc.NoReloadError, utils.wait_until, status_obj, "status", "available")
         status_obj.manager = fakes.FakeManager()
         status_obj.manager.get = Mock(return_value=status_obj)
-
         ret = utils.wait_until(status_obj, "status", "ready", interval=0.1)
-        self.assertTrue(ret)
-        self.assertEqual(status_obj.status, "ready")
+        self.assertTrue(isinstance(ret, fakes.FakeStatusChanger))
+        self.assertEqual(ret.status, "ready")
+
+    def test_wait_until_fail(self):
+        status_obj = fakes.FakeStatusChanger()
+        self.assertRaises(exc.NoReloadError, utils.wait_until, status_obj, "status", "available")
+        status_obj.manager = fakes.FakeManager()
+        status_obj.manager.get = Mock(return_value=status_obj)
         ret = utils.wait_until(status_obj, "status", "fake", interval=0.1, attempts=2)
+        self.assertIsNone(ret)
+
+    def test_wait_until_callback(self):
+        cback = Mock()
+        status_obj = fakes.FakeStatusChanger()
+        status_obj.manager = fakes.FakeManager()
+        status_obj.manager.get = Mock(return_value=status_obj)
+        thread = utils.wait_until(obj=status_obj, att="status", desired="ready",
+                interval=0.1, callback=cback)
+        thread.join()
+        cback.assert_called_once_with(status_obj)
 
     def test_time_string_empty(self):
         testval = None

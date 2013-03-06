@@ -8,8 +8,10 @@ from pyrax.cf_wrapper.client import FolderUploader
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
 from pyrax.client import BaseClient
-from pyrax.cloud_databases import CloudDatabaseClient
-from pyrax.cloud_databases import CloudDatabaseInstance
+from pyrax.clouddatabases import CloudDatabaseClient
+from pyrax.clouddatabases import CloudDatabaseInstance
+from pyrax.clouddatabases import CloudDatabaseUser
+from pyrax.clouddatabases import CloudDatabaseVolume
 from pyrax.cloudblockstorage import CloudBlockStorageClient
 from pyrax.cloudblockstorage import CloudBlockStorageVolume
 from pyrax.cloudblockstorage import CloudBlockStorageSnapshot
@@ -185,14 +187,25 @@ class FakeEntity(object):
         pass
 
 
+class FakeDatabaseUser(CloudDatabaseUser):
+    pass
+
+
+class FakeDatabaseVolume(CloudDatabaseVolume):
+    def __init__(self, instance, *args, **kwargs):
+        self.instance = instance
+        self.size = 1
+        self.used = 0.2
+
+
 class FakeDatabaseInstance(CloudDatabaseInstance):
     def __init__(self, *args, **kwargs):
         self.id = utils.random_name()
-        self.volume = FakeEntity()
         self.manager = FakeManager()
         self.manager.api = FakeDatabaseClient()
         self._database_manager = FakeManager()
         self._user_manager = FakeManager()
+        self.volume = FakeDatabaseVolume(self)
 
 
 class FakeDatabaseClient(CloudDatabaseClient):
@@ -313,7 +326,7 @@ class FakeStatusChanger(object):
 
     @property
     def status(self):
-        if self.check_count < 3:
+        if self.check_count < 2:
             self.check_count += 1
             return "changing"
         return "ready"

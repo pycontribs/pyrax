@@ -62,11 +62,11 @@ try:
     from novaclient.v1_1 import client as _cs_client
     from novaclient.v1_1.servers import Server as CloudServer
 
-    from cloud_databases import CloudDatabaseClient
-    from cloud_databases import CloudDatabaseDatabase
-    from cloud_databases import CloudDatabaseFlavor
-    from cloud_databases import CloudDatabaseInstance
-    from cloud_databases import CloudDatabaseUser
+    from clouddatabases import CloudDatabaseClient
+    from clouddatabases import CloudDatabaseDatabase
+    from clouddatabases import CloudDatabaseFlavor
+    from clouddatabases import CloudDatabaseInstance
+    from clouddatabases import CloudDatabaseUser
     from cloudloadbalancers import CloudLoadBalancer
     from cloudloadbalancers import CloudLoadBalancerClient
     from cloudblockstorage import CloudBlockStorageClient

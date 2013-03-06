@@ -9,6 +9,7 @@ var searchData=
   ['import_5fdomain',['import_domain',['../classpyrax_1_1clouddns_1_1CloudDNSManager.html#a836e9097c126d4a1f02466e69a008071',1,'pyrax::clouddns::CloudDNSManager.import_domain()'],['../classpyrax_1_1clouddns_1_1CloudDNSClient.html#a836e9097c126d4a1f02466e69a008071',1,'pyrax::clouddns::CloudDNSClient.import_domain()']]],
   ['in_5fsetup',['in_setup',['../namespacepyrax.html#aee18dc40b08b618d107a4dc24a9e0459',1,'pyrax']]],
   ['install_5frequires',['install_requires',['../namespacesetup.html#af13461461c50ae271e468b6b20d1f831',1,'setup']]],
+  ['instance',['instance',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a5ffaf17e178b3a6fa2012fe3050ede22',1,'pyrax::clouddatabases::CloudDatabaseVolume']]],
   ['interval',['interval',['../classpyrax_1_1utils_1_1__WaitThread.html#a943af1103d1f1365d6c7f31b331119bf',1,'pyrax::utils::_WaitThread']]],
   ['invalidcdnmetadata',['InvalidCDNMetadata',['../classpyrax_1_1exceptions_1_1InvalidCDNMetadata.html',1,'pyrax::exceptions']]],
   ['invalidconfigurationfile',['InvalidConfigurationFile',['../classpyrax_1_1exceptions_1_1InvalidConfigurationFile.html',1,'pyrax::exceptions']]],

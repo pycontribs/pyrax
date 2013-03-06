@@ -71,7 +71,15 @@ There is a slight delay when the end of a page of domains is reached and the nex
 ## Adding Domains
 To create a domain, you call the `dns.create()` method, supplying some or all of the following parameters:
 
-Parameter | Description | Required?---- | ---- | ----**name** | The fully-qualified domain name (FQDN). | yes**emailAddress** | The email address of the domain administrator. | yes**ttl** | The Time To Live (in seconds) for the domain. Default=3600. Minimum=300. | no**comment** | A brief description of the domain. Maximum length=160 characters. | no**subdomains** | One or more dicts that represent subdomains of this new domain. The dicts have the same structure as the main domain, with each of these parameters being keys in the subdomain dicts. Including subdomains in the `create()` command is equivalent to creating them separately, but requires only one API call instead of many. | no**records** | You can optionally add DNS records for the domain, such as `MX`, `A`, and `CNAME` records. The records are dicts with the same structure as for the `add_records()` method, and adding them in the `create()` command is equivalent to adding them separately afterward, but requires only one API call. | no
+Parameter | Description | Required?
+---- | ---- | ----
+**name** | The fully-qualified domain name (FQDN). | yes
+**emailAddress** | The email address of the domain administrator. | yes
+**ttl** | The Time To Live (in seconds) for the domain. Default=3600. Minimum=300. | no
+**comment** | A brief description of the domain. Maximum length=160 characters. | no
+**subdomains** | One or more dicts that represent subdomains of this new domain. The dicts have the same structure as the main domain, with each of these parameters being keys in the subdomain dicts. Including subdomains in the `create()` command is equivalent to creating them separately, but requires only one API call instead of many. | no
+**records** | You can optionally add DNS records for the domain, such as `MX`, `A`, and `CNAME` records. The records are dicts with the same structure as for the `add_records()` method, and adding them in the `create()` command is equivalent to adding them separately afterward, but requires only one API call. | no
+
 
 So the simplest form of the call would be:
 
@@ -126,7 +134,9 @@ To get a listing of all the records for a given domain 'dom', call the `list_rec
 
 Each of the above calls returns the same information: a series of `CloudDNSRecord` objects:
 
-    [<CloudDNSRecord created=2012-12-10T21:25:45.000+0000, data=example.edu, domain_id=3539045, id=CNAME-11284972, name=sample001.example.edu, ttl=3600, type=CNAME, updated=2012-12-10T21:25:45.000+0000>,     <CloudDNSRecord created=2012-12-10T21:25:47.000+0000, data=example.edu, domain_id=3539045, id=CNAME-11284973, name=sample002.example.edu, ttl=3600, type=CNAME, updated=2012-12-10T21:25:47.000+0000>,     <CloudDNSRecord created=2012-12-10T21:25:49.000+0000, data=example.edu, domain_id=3539045, id=CNAME-11284974, name=sample003.example.edu, ttl=3600, type=CNAME, updated=2012-12-10T21:25:49.000+0000>]
+    [<CloudDNSRecord created=2012-12-10T21:25:45.000+0000, data=example.edu, domain_id=3539045, id=CNAME-11284972, name=sample001.example.edu, ttl=3600, type=CNAME, updated=2012-12-10T21:25:45.000+0000>,
+     <CloudDNSRecord created=2012-12-10T21:25:47.000+0000, data=example.edu, domain_id=3539045, id=CNAME-11284973, name=sample002.example.edu, ttl=3600, type=CNAME, updated=2012-12-10T21:25:47.000+0000>,
+     <CloudDNSRecord created=2012-12-10T21:25:49.000+0000, data=example.edu, domain_id=3539045, id=CNAME-11284974, name=sample003.example.edu, ttl=3600, type=CNAME, updated=2012-12-10T21:25:49.000+0000>]
 
 
 ### Paging Subdomains and Records
@@ -158,7 +168,15 @@ DNS records are associated with a particular domain, so to add records you call 
 
 The record information should be a dict whose keys are the relevant record attributes; which keys are needed depend on the record type. To create multiple records in a single call, pass in a list of these record dicts.
 
-Name | Description | Required--- | --- | ---**type** | Specifies the record type to add. | Yes**name** | Specifies the name for the domain or subdomain. Must be a valid domain name. | Yes**data** | The data field for PTR, A, and AAAA records must be a valid IPv4 or IPv6 IP address. For MX records it must be the FQDN for the mail server. | Yes**priority** | Required for MX and SRV records, but forbidden for other record types. If specified, must be an integer from 0 to 65535. | For MX and SRV records only**ttl** | If specified, must be greater than 300. Defaults to the domain TTL if available, or 3600 if no TTL is specified. | No**comment** | If included, its length must be less than or equal to 160 characters. | No
+Name | Description | Required
+--- | --- | ---
+**type** | Specifies the record type to add. | Yes
+**name** | Specifies the name for the domain or subdomain. Must be a valid domain name. | Yes
+**data** | The data field for PTR, A, and AAAA records must be a valid IPv4 or IPv6 IP address. For MX records it must be the FQDN for the mail server. | Yes
+**priority** | Required for MX and SRV records, but forbidden for other record types. If specified, must be an integer from 0 to 65535. | For MX and SRV records only
+**ttl** | If specified, must be greater than 300. Defaults to the domain TTL if available, or 3600 if no TTL is specified. | No
+**comment** | If included, its length must be less than or equal to 160 characters. | No
+
 
 Here is an example of adding an **A** and an **MX** record to a `CloudDNSDomain` object 'dom':
 
@@ -187,7 +205,9 @@ If the record addition succeeds, it returns a list of `CloudDNSRecord` objects r
 ## Adding Subdomains
 Since a subdomain is really not any different than a primary domain, the command to add  a subdomain is exactly the same:
 
-    subdom1 = dns.create(name="north.example.edu", comment="1st sample subdomain",            emailAddress="sample@rackspace.edu")
+    subdom1 = dns.create(name="north.example.edu", comment="1st sample subdomain",
+            emailAddress="sample@rackspace.edu")
+
 
 Note that there is no reference to the primary domain. Instead, the relation is simply implied via the FQDN.
 
@@ -198,17 +218,40 @@ The `create()` method allows you to specify subdomains and records to be added t
 Consider a situation where you need to create the `example.edu` domain, along with an `A` and an `MX` record, as well as four subdomains: `north.example.edu`, `west.example.edu`, `southeast.example.edu`, and `southby.southeast.example.edu`. The approach using individual requests is to call `create()` and `add_record()` for each one separately:
 
     dom = dns.create(name="example.edu", comment="Primary domain",
-            emailAddress="sample@rackspace.edu")    rec1 = dom.add_records({"type": "A", "name": "example.edu",
-            "data": "192.168.0.42", "ttl": 6000})    rec2 = dom.add_records({"type": "MX", "name": "example.edu",
+            emailAddress="sample@rackspace.edu")
+    rec1 = dom.add_records({"type": "A", "name": "example.edu",
+            "data": "192.168.0.42", "ttl": 6000})
+    rec2 = dom.add_records({"type": "MX", "name": "example.edu",
             "data": "mail.example.edu", "priority": 50, "comment":
-            "Backup mail server"})    subdom1 = dns.create(name="north.example.edu", comment="1st sample subdomain",            emailAddress="sample@rackspace.edu")    subdom2 = dns.create(name="west.example.edu", comment="2nd sample subdomain",
-            emailAddress="sample@rackspace.edu")    subdom3 = dns.create(name="southeast.example.edu",            emailAddress="sample@rackspace.edu")    subdom4 = dns.create(name="southby.southeast.example.edu",            comment="Final sample subdomain", emailAddress="sample@rackspace.edu")
+            "Backup mail server"})
+    subdom1 = dns.create(name="north.example.edu", comment="1st sample subdomain",
+            emailAddress="sample@rackspace.edu")
+    subdom2 = dns.create(name="west.example.edu", comment="2nd sample subdomain",
+            emailAddress="sample@rackspace.edu")
+    subdom3 = dns.create(name="southeast.example.edu",
+            emailAddress="sample@rackspace.edu")
+    subdom4 = dns.create(name="southby.southeast.example.edu",
+            comment="Final sample subdomain", emailAddress="sample@rackspace.edu")
+
 
 That's a total of 7 separate calls to the server. Actually, some of these calls are done asynchronously, and require several callbacks to determine if the calls succeeded, which `pyrax` handles for you, so the total number of API calls is actually much higher.
 
 By preparing the record and subdomain information ahead of time, the process can be made much more efficient, by requiring only a single `create()` call:
 
-    subs = [        {"name" : "north.example.edu",            "comment" : "1st sample subdomain",            "emailAddress" : "sample@rackspace.edu"},        {"name" : "west.example.edu",            "comment" : "2nd sample subdomain",            "emailAddress" : "sample@rackspace.edu"},        {"name" : "southeast.example.edu",            "emailAddress" : "sample@rackspace.edu"},        {"name" : "southby.southeast.example.edu",            "comment" : "Final sample subdomain",            "emailAddress" : "sample@rackspace.edu"}        ]
+    subs = [
+        {"name" : "north.example.edu",
+            "comment" : "1st sample subdomain",
+            "emailAddress" : "sample@rackspace.edu"},
+        {"name" : "west.example.edu",
+            "comment" : "2nd sample subdomain",
+            "emailAddress" : "sample@rackspace.edu"},
+        {"name" : "southeast.example.edu",
+            "emailAddress" : "sample@rackspace.edu"},
+        {"name" : "southby.southeast.example.edu",
+            "comment" : "Final sample subdomain",
+            "emailAddress" : "sample@rackspace.edu"}
+        ]
+
     recs = [{
             "type": "A",
             "name": "example.edu",
@@ -224,6 +267,7 @@ By preparing the record and subdomain information ahead of time, the process can
     dom = dns.create(name="example.edu", comment="Primary domain",
             emailAddress="sample@rackspace.edu", subdomains=subs,
             records=recs)
+
 
 This single call has the exact same result as the 7 separate calls, but is much more efficient. A recent test running this code showed 11.4 seconds for the separate calls, but only 4.6 for the combined call.
 
@@ -265,7 +309,11 @@ Similarly, you can export a domain by calling its `export()` method, or the modu
 
 Each call creates the same output:
 
-    example.edu.        3600    IN    SOA    ns.rackspace.com. sample.rackspace.edu. 1354918038 21600 3600 1814400 500    example.edu.        6000    IN    A    192.168.0.42    example.edu.        3600    IN    NS    dns1.stabletransit.com.    example.edu.        3600    IN    NS    dns2.stabletransit.com.    example.edu.        3600    IN    MX    50 mail.example.edu.
+    example.edu.        3600    IN    SOA    ns.rackspace.com. sample.rackspace.edu. 1354918038 21600 3600 1814400 500
+    example.edu.        6000    IN    A    192.168.0.42
+    example.edu.        3600    IN    NS    dns1.stabletransit.com.
+    example.edu.        3600    IN    NS    dns2.stabletransit.com.
+    example.edu.        3600    IN    MX    50 mail.example.edu.
 
 
 # Updating a DNS Record
@@ -323,13 +371,26 @@ To add PTR records for a device, you call the `dns.add_ptr_records()` method, pa
 
 The following table lists both the required and optional keys for a PTR record:
 
-Name | Description | Required---- | ---- | ----type | Specifies the record type as "PTR". | Yesname | Specifies the name for the domain or subdomain. Must be a valid domain name. | Yesdata | The data field for PTR records must be a valid IPv4 or IPv6 IP address. | Yesttl | If specified, must be greater than 300. Defaults to 3600 if no TTL is specified. | Nocomment | If included, its length must be less than or equal to 160 characters. | No
+Name | Description | Required
+---- | ---- | ----
+type | Specifies the record type as "PTR". | Yes
+name | Specifies the name for the domain or subdomain. Must be a valid domain name. | Yes
+data | The data field for PTR records must be a valid IPv4 or IPv6 IP address. | Yes
+ttl | If specified, must be greater than 300. Defaults to 3600 if no TTL is specified. | No
+comment | If included, its length must be less than or equal to 160 characters. | No
 
 
 ## Updating PTR Records
 You can modify the `TTL` or `comment` for an existing PTR record by calling the `update_ptr_record()` method of the module, and passing in a reference to the device and the domain name, along with the updated record values as keyword arguments. You must supply the `domain_name` and `ip_address` parameters, and they must match the values in the existing record. Changing the domain name or IP address is not allowed. If you need to change either of those, you must delete the records and then re-create them with the new domain name.
 
-Name | Description | Required---- | ---- | ----device | A reference to the Cloud Server or Cloud Load Balancer object that this PTR record is for. | Yesdomain_name | Specifies the name for the domain or subdomain. Must be a valid domain name. Cannot be modified. | Yesdata | The data field is required for PTR records and must be a valid IPv4 or IPv6 IP address. | Yesttl | If specified, must be greater than 300. Defaults to 3600 if no TTL is specified. | Nocomment | If included, its length must be less than or equal to 160 characters. | No
+Name | Description | Required
+---- | ---- | ----
+device | A reference to the Cloud Server or Cloud Load Balancer object that this PTR record is for. | Yes
+domain_name | Specifies the name for the domain or subdomain. Must be a valid domain name. Cannot be modified. | Yes
+data | The data field is required for PTR records and must be a valid IPv4 or IPv6 IP address. | Yes
+ttl | If specified, must be greater than 300. Defaults to 3600 if no TTL is specified. | No
+comment | If included, its length must be less than or equal to 160 characters. | No
+
 
 The following example shows how to change the TTL of a server whose domain name is "example.edu":
 

@@ -495,6 +495,69 @@ class CloudDNSTest(unittest.TestCase):
         clt.search_records(dom, typ, name=nm, data=data)
         clt.method_get.assert_called_once_with(uri)
 
+    def test_find_record(self):
+        clt = self.client
+        mgr = clt._manager
+        dom = self.domain
+        typ = "A"
+        nm = utils.random_name()
+        data = "0.0.0.0"
+        ret_body = {"records": [{
+                "accountId": "728829",
+                "created": "2012-09-21T21:32:27.000+0000",
+                "emailAddress": "me@example.com",
+                "id": "3448214",
+                "name": "example.com",
+                "updated": "2012-09-21T21:35:45.000+0000"
+                }]}
+        clt.method_get = Mock(return_value=({}, ret_body))
+        uri = "/domains/%s/records?type=%s&name=%s&data=%s" % (utils.get_id(dom),
+                typ, nm, data)
+        clt.find_record(dom, typ, name=nm, data=data)
+        clt.method_get.assert_called_once_with(uri)
+
+    def test_find_record_not_found(self):
+        clt = self.client
+        mgr = clt._manager
+        dom = self.domain
+        typ = "A"
+        nm = utils.random_name()
+        data = "0.0.0.0"
+        ret_body = {"records": []}
+        clt.method_get = Mock(return_value=({}, ret_body))
+        uri = "/domains/%s/records?type=%s&name=%s&data=%s" % (utils.get_id(dom),
+                typ, nm, data)
+        self.assertRaises(exc.DomainRecordNotFound, clt.find_record, dom, typ,
+                name=nm, data=data)
+
+    def test_find_record_not_unique(self):
+        clt = self.client
+        mgr = clt._manager
+        dom = self.domain
+        typ = "A"
+        nm = utils.random_name()
+        data = "0.0.0.0"
+        ret_body = {"records": [{
+                "accountId": "728829",
+                "created": "2012-09-21T21:32:27.000+0000",
+                "emailAddress": "me@example.com",
+                "id": "3448214",
+                "name": "example.com",
+                "updated": "2012-09-21T21:35:45.000+0000"
+                }, {
+                "accountId": "728829",
+                "created": "2012-09-21T21:32:27.000+0000",
+                "emailAddress": "me@example.com",
+                "id": "3448214",
+                "name": "example.com",
+                "updated": "2012-09-21T21:35:45.000+0000"
+                }]}
+        clt.method_get = Mock(return_value=({}, ret_body))
+        uri = "/domains/%s/records?type=%s&name=%s&data=%s" % (utils.get_id(dom),
+                typ, nm, data)
+        self.assertRaises(exc.DomainRecordNotUnique, clt.find_record, dom, typ,
+                name=nm, data=data)
+
     def test_add_records(self):
         clt = self.client
         mgr = clt._manager

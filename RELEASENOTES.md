@@ -1,5 +1,14 @@
 # Release Notes for pyrax
 
+2013.03.06 - Version 1.3.2
+           - Removed lazy loading of Database Volumes. GitHub #8.
+           - Fixed the inconsistent naming of the cloud databases module.
+           - Removed mixed line endings from the docs that my markdown
+             editor inserted.
+           - Added the find_record() method to Cloud DNS to return a single
+             domain record. GitHub #24.
+           - Added the test dependency for the 'mock' package to setup.py
+
 2013.03.04 - Version 1.3.1
            - The merge for 1.3.0 did not grab the newly-created files for that
              version. They are included in this version.
