@@ -326,7 +326,7 @@ class FakeStatusChanger(object):
 
     @property
     def status(self):
-        if self.check_count < 3:
+        if self.check_count < 2:
             self.check_count += 1
             return "changing"
         return "ready"

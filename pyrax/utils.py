@@ -248,6 +248,7 @@ def wait_until(obj, att, desired, callback=None, interval=5, attempts=10,
         waiter = _WaitThread(obj=obj, att=att, desired=desired, callback=callback,
                 interval=interval, attempts=attempts, verbose=verbose)
         waiter.start()
+        return waiter
     else:
         return _wait_until(obj=obj, att=att, desired=desired, callback=None,
                 interval=interval, attempts=attempts, verbose=verbose)
