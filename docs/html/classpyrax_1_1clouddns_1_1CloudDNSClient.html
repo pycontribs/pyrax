@@ -159,6 +159,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the next page of record results.  <a href="#a9433b9835b889f167ade546f6d545de7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#ae7afc3edf5d837708e01cfa202d748b6">search_records</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all records configured for the specified domain that match the supplied search criteria.  <a href="#ae7afc3edf5d837708e01cfa202d748b6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a20415cf3e70cdff472ca1161a6ad2e64">find_record</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a single record for this domain that matches the supplied search criteria.  <a href="#a20415cf3e70cdff472ca1161a6ad2e64"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#abf676b7d485de10f8409a7904a0a8018">add_records</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the records to this domain.  <a href="#abf676b7d485de10f8409a7904a0a8018"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a68301b71ce78f89e6a5d44f1cb9c362a">update_record</a></td></tr>
@@ -443,6 +445,54 @@ Static Public Attributes</h2></td></tr>
 <p>This call is for a single domain only, and as such, does not provide subdomain information.</p>
 <p>Sample export:</p>
 <p>{u'accountId': 000000, u'contentType': u'BIND_9', u'contents': u'example.com..rackspace.com. <a href="mailto:foo@example.com">foo@example.com</a>. 1354202974 21600 3600 1814400 500' 'example.com..stabletransit.com.' 'example.com..stabletransit.com.', u'id': 1111111} </p>
+
+</div>
+</div>
+<a class="anchor" id="a20415cf3e70cdff472ca1161a6ad2e64"></a><!-- doxytag: member="pyrax::clouddns::CloudDNSClient::find_record" ref="a20415cf3e70cdff472ca1161a6ad2e64" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a20415cf3e70cdff472ca1161a6ad2e64">find_record</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>record_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>data</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a single record for this domain that matches the supplied search criteria. </p>
+<p>If no record matches, a DomainRecordNotFound exception will be raised. If more than one matches, a DomainRecordNotUnique exception will be raised. </p>
 
 </div>
 </div>
@@ -1120,7 +1170,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 24 2012 18:48:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 6 2013 09:10:16 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
