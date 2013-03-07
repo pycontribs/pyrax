@@ -393,10 +393,10 @@ class CFClient(object):
             obj_url = '%s/%s' % (cont.cdn_uri, obj.name)
             new_ctype = mimetypes.guess_type(obj_url)[0]
         hdrs = {"X-Copy-From": "/%s/%s" % (cont.name, obj.name)}
-        new_obj_etag =  self.connection.put_object(cont.name, obj.name,
+        new_obj_etag = self.connection.put_object(cont.name, obj.name,
                             contents=None, headers=hdrs, content_type=new_ctype)
         if new_obj_etag:
-            cont.remove_frome_cache(obj.name)
+            cont.remove_from_cache(obj.name)
             if cont.cdn_enabled == True:
                 obj.purge()
                 return new_obj_etag
