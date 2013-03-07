@@ -386,7 +386,7 @@ class CFClient(object):
         feature requires the container to be CDN-enabled. If not then the 
         content-type must be supplied. If using guess with a CDN-enabled 
         container, new_ctype can be set to None.
-        Failure to update the content-type will result in a return None.
+        Failure during the put will result in a swift exception.
         """
         cont = self.get_container(container)
         obj = self.get_object(cont, obj_name)
@@ -394,16 +394,12 @@ class CFClient(object):
             obj_url = "%s/%s" % (cont.cdn_uri, obj.name)
             new_ctype = mimetypes.guess_type(obj_url)[0]
         hdrs = {"X-Copy-From": "/%s/%s" % (cont.name, obj.name)}
-        new_obj_etag = self.connection.put_object(cont.name, obj.name,
-                contents=None, headers=hdrs, content_type=new_ctype)
-        if new_obj_etag:
-            cont.remove_from_cache(obj.name)
-            if cont.cdn_enabled:
-                obj.purge()
-                return new_obj_etag
-            return new_obj_etag
-        else:
-            return None
+        self.connection.put_object(cont.name, obj.name, contents=None,
+                headers=hdrs, content_type=new_ctype)
+        cont.remove_from_cache(obj.name)
+        if cont.cdn_enabled:
+            obj.purge()
+        return obj.name, self.get_object(cont.name, obj.name).content_type
 
     @handle_swiftclient_exception
     def upload_file(self, container, file_or_path, obj_name=None,
