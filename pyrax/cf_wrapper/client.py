@@ -389,7 +389,7 @@ class CFClient(object):
         """
         cont = self.get_container(container)
         obj = self.get_object(cont, obj_name)
-        if guess == True and cont.cdn_enabled == True:
+        if guess and cont.cdn_enabled:
             obj_url = '%s/%s' % (cont.cdn_uri, obj.name)
             new_ctype = mimetypes.guess_type(obj_url)[0]
         hdrs = {"X-Copy-From": "/%s/%s" % (cont.name, obj.name)}
@@ -397,10 +397,12 @@ class CFClient(object):
                             contents=None, headers=hdrs, content_type=new_ctype)
         if new_obj_etag:
             cont.remove_from_cache(obj.name)
-            if cont.cdn_enabled == True:
+            if cont.cdn_enabled:
                 obj.purge()
                 return new_obj_etag
             return new_obj_etag
+        else:
+            return None
 
     @handle_swiftclient_exception
     def upload_file(self, container, file_or_path, obj_name=None,
