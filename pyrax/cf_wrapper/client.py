@@ -16,6 +16,7 @@ import threading
 import urllib
 import urlparse
 import uuid
+import mimetypes
 
 from swiftclient import client as _swift_client
 import pyrax
