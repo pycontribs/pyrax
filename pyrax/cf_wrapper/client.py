@@ -16,6 +16,7 @@ import threading
 import urllib
 import urlparse
 import uuid
+import mimetypes
 
 from swiftclient import client as _swift_client
 import pyrax
@@ -378,6 +379,27 @@ class CFClient(object):
             self.delete_object(container, obj_name)
         return new_obj_etag
 
+    @handle_swiftclient_exception
+    def change_object_content_type(self, container, obj_name, new_ctype, guess=False):
+        """
+        Copies object to itself, but applies a new content-type. The guess
+        feature requires the container to be CDN-enabled. If not then the 
+        content-type must be supplied. If using guess with a CDN-enabled 
+        container, new_ctype can be set to None.
+        Failure during the put will result in a swift exception.
+        """
+        cont = self.get_container(container)
+        obj = self.get_object(cont, obj_name)
+        if guess and cont.cdn_enabled:
+            obj_url = "%s/%s" % (cont.cdn_uri, obj.name)
+            new_ctype = mimetypes.guess_type(obj_url)[0]
+        hdrs = {"X-Copy-From": "/%s/%s" % (cont.name, obj.name)}
+        self.connection.put_object(cont.name, obj.name, contents=None,
+                headers=hdrs, content_type=new_ctype)
+        cont.remove_from_cache(obj.name)
+        if cont.cdn_enabled:
+            obj.purge()
+        return obj.name, self.get_object(cont.name, obj.name).content_type
 
     @handle_swiftclient_exception
     def upload_file(self, container, file_or_path, obj_name=None,
