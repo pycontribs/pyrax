@@ -35,6 +35,8 @@ class BaseResource(object):
     # Some resource do not have any additional details to lazy load,
     # so skip the unneeded API call by setting this to False.
     get_details = True
+    # Atts not to display when showing the __repr__()
+    _non_display = []
 
 
     def __init__(self, manager, info, loaded=False):
@@ -84,8 +86,9 @@ class BaseResource(object):
 
     def __repr__(self):
         reprkeys = sorted(key for key in self.__dict__.keys()
-                if (key[0] != "_") and (key not in (
-                        "manager", "created", "updated")))
+                if (key[0] != "_")
+                and (key not in ("manager", "created", "updated"))
+                and (key not in self._non_display))
         info = ", ".join("%s=%s" % (key, getattr(self, key))
                 for key in reprkeys)
         return "<%s %s>" % (self.__class__.__name__, info)
