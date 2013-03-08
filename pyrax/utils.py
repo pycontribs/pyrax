@@ -292,7 +292,7 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
             msgs = ["Current value of %s: %s (elapsed: %4.1f seconds)" % (
                     att, attval, elapsed)]
             for vatt in verbose_atts:
-                vattval = getattr(obj, vatt)
+                vattval = getattr(obj, vatt, None)
                 msgs.append("%s=%s" % (vatt, vattval))
             print " ".join(msgs)
         if attval in desired:
