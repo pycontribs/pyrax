@@ -380,7 +380,8 @@ class CFClient(object):
         return new_obj_etag
 
     @handle_swiftclient_exception
-    def change_object_content_type(self, container, obj_name, new_ctype, guess=False):
+    def change_object_content_type(self, container, obj_name, new_ctype,
+            guess=False):
         """
         Copies object to itself, but applies a new content-type. The guess
         feature requires the container to be CDN-enabled. If not then the 
@@ -391,18 +392,17 @@ class CFClient(object):
         cont = self.get_container(container)
         obj = self.get_object(cont, obj_name)
         if guess and cont.cdn_enabled:
+            #Test against the CDN url to guess the content-type.
             obj_url = "%s/%s" % (cont.cdn_uri, obj.name)
             new_ctype = mimetypes.guess_type(obj_url)[0]
         hdrs = {"X-Copy-From": "/%s/%s" % (cont.name, obj.name)}
         self.connection.put_object(cont.name, obj.name, contents=None,
                 headers=hdrs, content_type=new_ctype)
         cont.remove_from_cache(obj.name)
-        if cont.cdn_enabled:
-            obj.purge()
-        return obj.name, self.get_object(cont.name, obj.name).content_type
+        return
 
     @handle_swiftclient_exception
-    def upload_file(self, container, file_or_path, obj_name=None,
+    def upload_file(self, container, file_or_path, obj_name=None, 
             content_type=None, etag=None, return_none=False):
         """
         Uploads the specified file to the container. If no name is supplied, the
