@@ -402,7 +402,7 @@ class CFClient(object):
         return
 
     @handle_swiftclient_exception
-    def upload_file(self, container, file_or_path, obj_name=None, 
+    def upload_file(self, container, file_or_path, obj_name=None,
             content_type=None, etag=None, return_none=False):
         """
         Uploads the specified file to the container. If no name is supplied, the
