@@ -502,6 +502,19 @@ class CF_ClientTest(unittest.TestCase):
                 headers={"X-Copy-From": "/%s/o1" % self.cont_name})
         client.delete_object.assert_called_with(self.cont_name, "o1")
 
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_change_object_content_type(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        cont = client.get_container(self.cont_name)
+        client.connection.put_object = Mock(return_value="0000")
+        cont.client.connection.get_container = Mock()
+        cont.client.connection.get_container.return_value = ({}, [{"name": "o1"}, {"name": "o2"}])
+        client.change_object_content_type(self.cont_name, "o1", "something/else")
+        client.connection.put_object.assert_called_with(self.cont_name, "o1", contents=None,
+                headers={"X-Copy-From": "/%s/o1" % self.cont_name},
+                content_type="something/else")
+
     def test_fetch_object(self):
         client = self.client
         text = "file_contents"
