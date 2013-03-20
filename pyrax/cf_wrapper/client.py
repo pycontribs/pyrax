@@ -184,7 +184,7 @@ class CFClient(object):
         self.set_account_metadata(meta)
 
 
-    def get_temp_url(self, container, obj, seconds, method):
+    def get_temp_url(self, container, obj, seconds, method="GET"):
         """
         Given a storage object in a container, returns a URL that can be used
         to access that object. The URL will expire after `seconds` seconds.

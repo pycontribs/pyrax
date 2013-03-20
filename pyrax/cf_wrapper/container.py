@@ -241,6 +241,17 @@ class Container(object):
         return self.client.make_container_private(self)
 
 
+    def get_temp_url(self, obj, seconds, method="GET"):
+        """
+        Returns a URL that can be used to access the specified object in this
+        container. The URL will expire after `seconds` seconds.
+
+        The only methods supported are GET and PUT. Anything else will raise
+        an InvalidTemporaryURLMethod exception.
+        """
+        self.client.get_temp_url(self, obj, seconds=seconds, method=method)
+
+
     def __repr__(self):
         return "<Container '%s'>" % self.name
 

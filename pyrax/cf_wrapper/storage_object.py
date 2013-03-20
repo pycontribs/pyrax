@@ -111,5 +111,16 @@ class StorageObject(object):
         self.client.remove_object_metadata_key(self.container, self, key)
 
 
+    def get_temp_url(self, seconds, method="GET"):
+        """
+        Returns a URL that can be used to access this object. The URL will
+        expire after `seconds` seconds.
+
+        The only methods supported are GET and PUT. Anything else will raise
+        an InvalidTemporaryURLMethod exception.
+        """
+        self.client.get_temp_url(self.container, self, seconds=seconds, method=method)
+
+
     def __repr__(self):
         return "<Object '%s' (%s)>" % (self.name, self.content_type)

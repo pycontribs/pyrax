@@ -7,11 +7,18 @@ Rackspace Cloud Files allows you to store files in a scalable, redundant manner,
 
 In pyrax, Cloud Files is represented by `Container` and `StorageObject` classes. Once you're authenticated with pyrax, you can interact with Cloud Files via the `pyrax.cloudfiles` object. All of the example code that follows assumes that you have already imported pyrax and authenticated.
 
+All of the code samples in this document assume that you have already imported pyrax, authenticated, and created the name `cf` at the top of the script, like this:
+
+    import pyrax
+    pyrax.set_credential_file("my_cred_file")
+    # or any other auth method
+    cf = pyrax.cloudfiles
+
 
 ## General Account Information
 If you want to get an idea of the overall usage for your Cloud Files account, you can run the following:
 
-    pyrax.cloudfiles.get_account_metadata()
+    cf.get_account_metadata()
 
 This will return a dict that will look something like the following:
 
@@ -21,10 +28,21 @@ This will return a dict that will look something like the following:
      'x-account-object-count': '148'}
 
 
+## Setting Account Metadata
+Accounts can have metadata (arbitrary key pairs) associated with them; this metadata is entirely for your usage. To add metadata to your account, create a dict with the values you want to add, and run the following code:
+
+    meta = {"color": "blue", "flower": "lily"}
+    cf.set_account_metadata(meta)
+
+Note that by default this call will add all of the key pairs to your existing metadata. If you wish to overwrite any existing metadata with the new values, add the parameter `clear=True` to the call:
+
+    meta = {"color": "blue", "flower": "lily"}
+    cf.set_account_metadata(meta, clear=True)
+
+
 ## Creating a Container
 You must have a container before you can store anything on Cloud Files, so start by creating a container:
 
-    cf = pyrax.cloudfiles
     cont = cf.create_container("example")
     print "Name:", cont.name
     print "# of objects:", cont.object_count
@@ -58,7 +76,6 @@ If you want more information about these containers, you can call `list_containe
 ## Getting a Container Object
 Given the name of a container, you can get the corresponding `Container` object easily enough:
 
-    cf = pyrax.cloudfiles
     cont = cf.get_container("example")
     print "Container:", cont
 
@@ -80,7 +97,6 @@ Start with the simplest example: storing some text as an object. The example bel
 
 The example creates some simple content: a single text sentence stored in the variable name `content`. It then tells `pyrax.cloudfiles` to store that content into the container named `example`, and give that stored object the name `new_object.txt`.
 
-    cf = pyrax.cloudfiles
     content = "This is the content of the file."
     obj = cf.store_object("example", "new_object.txt", content)
     print "Stored object:", obj
@@ -91,7 +107,6 @@ One common issue when storing objects is ensuring that the object did not get ch
 
 To make this a simpler process, pyrax includes a utility method for calculating the MD5 checksum; it accepts either raw text or a file-like object. So try this again, this time sending the checksum as the `etag` parameter:
 
-    cf = pyrax.cloudfiles
     text = "This is a random collection of words."
     chksum = pyrax.utils.get_checksum(text)
     obj = cf.store_object("example", "new_object.txt",
@@ -103,7 +118,6 @@ If all went well, the two values will match. If not, an `UploadFailed` exception
 
 If you have a `Container` object, you can call `store_object()` directly on it to store an object into that container:
 
-    cf = pyrax.cloudfiles
     cont = cf.get_container("example")
     text = "This is a random collection of words."
     chksum = pyrax.utils.get_checksum(text)
@@ -113,7 +127,6 @@ If you have a `Container` object, you can call `store_object()` directly on it t
 
 Most of the time, though, you won't have raw text in your code to store; the more likely situation is that you want to store files that exist on your computer into Cloud Files. The way to do that is essentially the same, except that you call `upload_file()`, and pass the full path to the file you want to upload. Additionally, specifying the object's name is optional, since pyrax will use the name of the file as the stored object name by default. `upload_file()` accepts the same `etag` parameter that `store_object()` does, and etag verification works the same way.
 
-    cf = pyrax.cloudfiles
     pth = "/home/me/path/to/myfile.txt"
     chksum = pyrax.utils.get_checksum(pth)
     obj = cf.upload_file("example", pth, etag=chksum)
@@ -134,8 +147,6 @@ All 3 take the same optional parameters:
 * `chunk_size` – This represents the number of bytes to return from the server at a time. Note that if you specify a chunk size, instead of a stream of bytes, a generator is returned. You must iterate on the generator to retrieve the chunks of bytes. You must fully read the object's contents from the generator before making any other requests, or the results are not defined. Default = None.
 
 Here is some sample code that creates a stored object containing some unicode text, and then retrieves that from Cloud Files using the various parameters:
-
-    cf = pyrax.cloudfiles
 
     text = "This is some text containing unicode like é, ü and ˚¬∆ç"
     obj = cf.store_object("example", "new_object.txt", text)
@@ -185,7 +196,6 @@ You can also specify one or more file name patterns to ignore, and pyrax will sk
 
 Here are some examples, using the local folder **"/home/me/projects/cool_project/"**:
 
-    cf = pyrax.cloudfiles
     folder = "/home/me/projects/cool_project/"
 
     # This will create a new container named 'cool_project', and
@@ -225,7 +235,6 @@ Parameter | Required? | Description | Default
 
 As an example, assume you have a project named 'important' that you want to make sure is always backed up to Cloud Files. You could write a quick script like this, and call it from a cron job.
 
-    cf = pyrax.cloudfiles
     local = "/home/myname/projects/important"
     remote = cf.create_container("important_files")
     cf.sync_folder_to_container(local, remote)
@@ -246,7 +255,6 @@ There are also two ways to filter your results: the `prefix` and `delimiter` par
 
 To illustrate these uses, start by creating a new folder, and populating it with 10 objects. The first 5 will have names starting with "series_" followed by an integer between 0 and 4; the second 5 will simulate items in a nested folder. They will have names that are a single repeated character. The content of the objects is not important, as `get_objects()` works only on the names.
 
-    cf = pyrax.cloudfiles
     cont = cf.create_container("my_objects")
     for idx in xrange(5):
     fname = "series_%s" % idx
@@ -321,7 +329,6 @@ Note that these methods are asynchronous and return almost immediately. They do 
 
 The following example illustrates object deletion:
 
-    cf = pyrax.cloudfiles
     cname = "delete_object_test"
     fname = "soon_to_vanish.txt"
     cont = cf.create_container(cname)
@@ -360,7 +367,6 @@ Both methods take the parameters: `container, obj_name, new_container, new_obj_n
 ## Metadata for Containers and Objects
 Cloud Files allows you to set and retrieve arbitrary metadata on containers and storage objects. Metadata are simple key/value pairs, with both key and value being strings. Keys are case-insensitive, and are always returned in lowercase. The content of the metadata can be anything that is useful to you. The only requirement is that the keys begin with "X-Container-Meta-" and "X-Object-Meta-", respectively, for containers and storage objects. However, to make things easy for you, pyrax will automatically prefix your metadata headers with those strings if they aren't already present.
 
-    cf = pyrax.cloudfiles
     cname = "example"
     cont = cf.create_container(cname)
 
@@ -400,15 +406,13 @@ Cloud Files makes it easy to publish your stored objects over the high-speed Aka
 ### Publishing a Container to CDN
 To publish a container to CDN, simply make the following call:
 
-    pyrax.cloudfiles.make_container_public("example", ttl=900)
+    cf.make_container_public("example", ttl=900)
 
 This makes the 'example' container public, and sets the `TTL`, or `Time To Live`, to 15 minutes (900 seconds). This is the minimum `TTL` supported.
 
 Once a container is made public, you can access its CDN-related properties. You can see this in action by running the following code:
 
-    cf = pyrax.cloudfiles
     cont_name = pyrax.utils.random_name()
-
     cont = cf.create_container(cont_name)
     print "Before Making Public"
     print "cdn_enabled", cont.cdn_enabled
@@ -487,3 +491,38 @@ If you have a `StorageObject` instance, you can call it directly instead:
 
 You are responsible for deleting the purged object from the container separately, as these calls only affect the object on the CDN network.
 
+
+## Temporary URLs
+The Temporary URL feature (TempURL) allows you to create limited-time Internet addresses which allow you to grant limited access to your Cloud Files account. Using TempURL, you may allow others to retrieve or place objects in your Cloud Files account for as long or as short a time as you wish. Access to the TempURL is independent of whether or not your account is CDN-enabled. And even if you don't CDN-enable a directory, you can still grant temporary public access through a TempURL.
+
+This feature is useful if you want to allow a limited audience to download a file from your Cloud Files account or website. You can give out the TempURL and know that after a specified time, no one will be able to access your object through the address. Or, if you want to allow your audience to upload objects into your Cloud Files account, you can give them a TempURL. After the specified time expires, no one will be able to upload to the address.
+
+Additionally, you need not worry about time running out when someone downloads a large object. If the time expires while a file is being retrieved, the download will continue until it is finished. Only the link will expire.
+
+To create a Temporary URL, you must first set a key that only you know. This key can be any arbitrary sequence as it is for encoding your account. Once the key is set, you should not change it while you still want others to be able to access your temporary URL. If you change it, the TempURL becomes invalid (within 60 seconds, which is the cache time for a key) and others will not be allowed to access it.
+
+When setting the key, you can either provide your own value, or let `pyrax` create the key for you by not passing in a value.
+
+    cf.set_temp_url_key()
+    # - or -
+    my_key = "jnRB6#1sduo8YGUF&%7r7guf6f"
+    cf.set_temp_url_key(my_key)
+
+In either case, you can retrieve your key by calling:
+
+    key = cf.get_temp_url_key()
+
+Once your key has been set, you can generate the TempURL by passing in the name of the container, the name of the object, the number of seconds you want the URL to be valid, and the method (either 'GET' or 'PUT'; default='GET'). In this example, a TempURL is generated for GETting an object named "photo.jpg" in the "vacation" container. This URL will be good for 24 hours.
+
+    secs = 24 * 60 * 60
+    url = cf.get_temp_url("vacation", "photo.jpg", seconds=secs, method="GET")
+
+Similarly, if you have a StorageObject reference, you can call its get_temp_url() method; only the duration and method are needed. Likewise for Container objects, except that you need to pass in the object name. Here are two examples:
+
+    # Assume we have a StorageObject 'obj'
+    obj.get_temp_url(300)
+
+    # Assume we have a Container 'cont'
+    cont.get_temp_url("object_name", 300)
+
+Note that in both of these we omitted the method; this will result in the default method of "GET" being used.
