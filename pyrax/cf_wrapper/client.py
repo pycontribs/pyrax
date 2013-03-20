@@ -199,6 +199,10 @@ class CFClient(object):
             raise exc.InvalidTemporaryURLMethod("Method must be either 'GET' "
                     "or 'PUT'; received '%s'." % method)
         key = self.get_temp_url_key()
+        if not key:
+            raise exc.MissingTemporaryURLKey("You must set the key for Temporary "
+                    "URLs before you can generate them. This is done via the "
+                    "`set_temp_url_key()` method.")
         conn_url = self.connection.url
         v1pos = conn_url.index("/v1/")
         base_url = conn_url[:v1pos]

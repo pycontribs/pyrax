@@ -140,6 +140,9 @@ class MissingLoadBalancerParameters(PyraxException):
 class MissingName(PyraxException):
     pass
 
+class MissingTemporaryURLKey(PyraxException):
+    pass
+
 class NetworkCIDRInvalid(PyraxException):
     pass
 

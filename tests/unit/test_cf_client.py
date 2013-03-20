@@ -95,11 +95,11 @@ class CF_ClientTest(unittest.TestCase):
     def test_get_temp_url(self):
         client = self.client
         nm = utils.random_name(ascii_only=True)
+        cname = utils.random_name(ascii_only=True)
+        oname = utils.random_name(ascii_only=True)
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {"x-account-meta-temp-url-key": nm,
                 "some-other-key": "no"}
-        cname = utils.random_name(ascii_only=True)
-        oname = utils.random_name(ascii_only=True)
         ret = client.get_temp_url(cname, oname, seconds=120, method="GET")
         self.assert_(cname in ret)
         self.assert_(oname in ret)
@@ -109,12 +109,23 @@ class CF_ClientTest(unittest.TestCase):
     def test_get_temp_url_unicode(self):
         client = self.client
         nm = utils.random_name(ascii_only=False)
+        cname = utils.random_name(ascii_only=True)
+        oname = utils.random_name(ascii_only=True)
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {"x-account-meta-temp-url-key": nm,
                 "some-other-key": "no"}
         client.post_account = Mock()
-        self.assertRaises(exc.UnicodePathError, client.get_temp_url, self.cont_name,
-                self.obj_name, seconds=120, method="GET")
+        self.assertRaises(exc.UnicodePathError, client.get_temp_url, cname,
+                oname, seconds=120, method="GET")
+
+    def test_get_temp_url_missing_key(self):
+        client = self.client
+        cname = utils.random_name(ascii_only=True)
+        oname = utils.random_name(ascii_only=True)
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"some-other-key": "no"}
+        self.assertRaises(exc.MissingTemporaryURLKey, client.get_temp_url, cname,
+                oname, seconds=120, method="GET")
 
     def test_container_metadata(self):
         client = self.client
