@@ -14,7 +14,6 @@ import tempfile
 import threading
 import time
 import types
-import uuid
 
 import prettytable
 try:

@@ -54,11 +54,67 @@ class CF_ClientTest(unittest.TestCase):
     def test_account_metadata(self):
         client = self.client
         client.connection.head_account = Mock()
-        client.connection.head_account.return_value = {"X-Account-Foo": "yes",
+        client.connection.head_account.return_value = {"X-Account-Meta-Foo": "yes",
                 "Some-Other-Key": "no"}
         meta = client.get_account_metadata()
         self.assert_(len(meta) == 1)
-        self.assert_("X-Account-Foo" in meta)
+        self.assert_("X-Account-Meta-Foo" in meta)
+
+    def test_set_account_metadata(self):
+        client = self.client
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"x-account-meta-foo": "yes",
+                "some-other-key": "no"}
+        client.connection.post_account = Mock()
+        client.set_account_metadata({"newkey": "newval"})
+        client.connection.post_account.assert_called_with({"x-account-meta-newkey": "newval"})
+
+    def test_set_account_metadata_clear(self):
+        client = self.client
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"x-account-meta-foo": "yes",
+                "some-other-key": "no"}
+        client.connection.post_account = Mock()
+        client.set_account_metadata({"newkey": "newval"}, clear=True)
+        client.connection.post_account.assert_called_with(
+                {"x-account-meta-foo": "", "x-account-meta-newkey": "newval"})
+
+    def test_get_temp_url_key(self):
+        client = self.client
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"x-account-meta-foo": "yes",
+                "some-other-key": "no"}
+        meta = client.get_temp_url_key()
+        self.assertIsNone(meta)
+        nm = utils.random_name()
+        client.connection.head_account.return_value = {"x-account-meta-temp-url-key": nm,
+                "some-other-key": "no"}
+        meta = client.get_temp_url_key()
+        self.assertEqual(meta, nm)
+
+    def test_get_temp_url(self):
+        client = self.client
+        nm = utils.random_name(ascii_only=True)
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"x-account-meta-temp-url-key": nm,
+                "some-other-key": "no"}
+        cname = utils.random_name(ascii_only=True)
+        oname = utils.random_name(ascii_only=True)
+        ret = client.get_temp_url(cname, oname, seconds=120, method="GET")
+        self.assert_(cname in ret)
+        self.assert_(oname in ret)
+        self.assert_("?temp_url_sig=" in ret)
+        self.assert_("&temp_url_expires=" in ret)
+
+    def test_get_temp_url_unicode(self):
+        client = self.client
+        nm = utils.random_name(ascii_only=False)
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"x-account-meta-temp-url-key": nm,
+                "some-other-key": "no"}
+        client.post_account = Mock()
+        self.assertRaises(exc.UnicodePathError, client.get_temp_url, self.cont_name,
+                self.obj_name, seconds=120, method="GET")
 
     def test_container_metadata(self):
         client = self.client
