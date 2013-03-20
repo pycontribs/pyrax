@@ -249,7 +249,7 @@ class Container(object):
         The only methods supported are GET and PUT. Anything else will raise
         an InvalidTemporaryURLMethod exception.
         """
-        self.client.get_temp_url(self, obj, seconds=seconds, method=method)
+        return self.client.get_temp_url(self, obj, seconds=seconds, method=method)
 
 
     def __repr__(self):
