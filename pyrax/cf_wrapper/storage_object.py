@@ -114,8 +114,8 @@ class StorageObject(object):
     def change_content_type(self, new_ctype, guess=False):
         """
         Copies object to itself, but applies a new content-type. The guess
-        feature requires the container to be CDN-enabled. If not then the 
-        content-type must be supplied. If using guess with a CDN-enabled 
+        feature requires the container to be CDN-enabled. If not then the
+        content-type must be supplied. If using guess with a CDN-enabled
         container, new_ctype can be set to None.
         Failure during the put will result in a swift exception.
         """
@@ -131,7 +131,8 @@ class StorageObject(object):
         The only methods supported are GET and PUT. Anything else will raise
         an InvalidTemporaryURLMethod exception.
         """
-        return self.client.get_temp_url(self.container, self, seconds=seconds, method=method)
+        return self.client.get_temp_url(self.container, self, seconds=seconds,
+                method=method)
 
 
     def __repr__(self):

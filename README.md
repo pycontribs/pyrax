@@ -54,6 +54,11 @@ If you installed **pyrax** using pip, it is simple to get the latest updates fro
 	# GitHub
 	pip install --upgrade git+git://github.com/rackspace/pyrax.git
 
+
+## Contributing
+Please see the HACKING file for contribution guidelines. Make sure pull requests are on the `working` branch!
+
+
 ## Support and Feedback
 Your feedback is appreciated! If you have specific issues with the **pyrax** SDK, developers should file an [issue via Github](https://github.com/rackspace/pyrax/issues).
 

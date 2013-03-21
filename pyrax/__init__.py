@@ -349,7 +349,7 @@ def connect_to_cloudservers(region=None):
     # Add some convenience methods
     cloudservers.list_images = cloudservers.images.list
     cloudservers.list_flavors = cloudservers.flavors.list
-    cloudservers.list= cloudservers.servers.list
+    cloudservers.list = cloudservers.servers.list
 
     def list_base_images():
         """

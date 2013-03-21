@@ -1,5 +1,17 @@
 # Release Notes for pyrax
 
+###2013.03.21 - Version 1.3.3
+- Added support for creating Temporary URLs for Cloud Files.
+- Added set_account_metadata() for Cloud Files.
+- Added shortcuts to the Cloud Servers client to make it more consistent
+    with the rest of pyrax. E.g.:
+      cs.images.list() -> cs.list_images()
+- Added change_content_type() to the StorageObject class in Cloud Files.
+- Cleaned up the __repr__ for some classes.
+- Added more customization to the output for utils.wait_until()
+- Cleaned up the markdown formatting in RELEASENOTES.md.
+- Added travis-ci integration.
+
 ###2013.03.06 - Version 1.3.2
 - Removed lazy loading of Database Volumes. GitHub #8.
 - Fixed the inconsistent naming of the cloud databases module.

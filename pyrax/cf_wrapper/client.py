@@ -470,8 +470,8 @@ class CFClient(object):
             guess=False):
         """
         Copies object to itself, but applies a new content-type. The guess
-        feature requires the container to be CDN-enabled. If not then the 
-        content-type must be supplied. If using guess with a CDN-enabled 
+        feature requires the container to be CDN-enabled. If not then the
+        content-type must be supplied. If using guess with a CDN-enabled
         container, new_ctype can be set to None.
         Failure during the put will result in a swift exception.
         """
