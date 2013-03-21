@@ -14,7 +14,6 @@ import tempfile
 import threading
 import time
 import types
-import uuid
 
 import prettytable
 try:
@@ -194,7 +193,7 @@ class _WaitThread(threading.Thread):
     verbose will always be False for a background thread.
     """
     def __init__(self, obj, att, desired, callback, interval, attempts,
-            verbose):
+            verbose, verbose_atts):
         self.obj = obj
         self.att = att
         self.desired = desired
@@ -209,12 +208,12 @@ class _WaitThread(threading.Thread):
         resp = _wait_until(obj=self.obj, att=self.att,
                 desired=self.desired, callback=None,
                 interval=self.interval, attempts=self.attempts,
-                verbose=False)
+                verbose=False, verbose_atts=None)
         self.callback(resp)
 
 
 def wait_until(obj, att, desired, callback=None, interval=5, attempts=10,
-        verbose=False):
+        verbose=False, verbose_atts=None):
     """
     When changing the state of an object, it will commonly be in a transitional
     state until the change is complete. This will reload the object ever
@@ -224,7 +223,9 @@ def wait_until(obj, att, desired, callback=None, interval=5, attempts=10,
     desired value by then, this method will exit and return None. If `attempts`
     is 0, this will loop forever until the attribute matches. If `verbose` is
     True, each attempt will print out the current value of the watched
-    attribute and the time that has elapsed since the original request.
+    attribute and the time that has elapsed since the original request. Also,
+    if `verbose_atts` is specified, the values of those attributes will also
+    be output. If `verbose` is False, then `verbose_atts` has no effect.
 
     Note that `desired` can be a list of values; if the attribute becomes equal
     to any of those values, this will succeed. For example, when creating a new
@@ -246,21 +247,28 @@ def wait_until(obj, att, desired, callback=None, interval=5, attempts=10,
     """
     if callback:
         waiter = _WaitThread(obj=obj, att=att, desired=desired, callback=callback,
-                interval=interval, attempts=attempts, verbose=verbose)
+                interval=interval, attempts=attempts, verbose=verbose,
+                verbose_atts=verbose_atts)
         waiter.start()
         return waiter
     else:
         return _wait_until(obj=obj, att=att, desired=desired, callback=None,
-                interval=interval, attempts=attempts, verbose=verbose)
+                interval=interval, attempts=attempts, verbose=verbose,
+                verbose_atts=verbose_atts)
 
 
-def _wait_until(obj, att, desired, callback, interval, attempts, verbose):
+def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
+        verbose_atts):
     """
     Loops until either the desired value of the attribute is reached, or the
     number of attempts is exceeded.
     """
     if not isinstance(desired, (list, tuple)):
         desired = [desired]
+    if verbose_atts is None:
+        verbose_atts = []
+    if not isinstance(verbose_atts, (list, tuple)):
+        verbose_atts = [verbose_atts]
     infinite = (attempts == 0)
     attempt = 0
     start = time.time()
@@ -280,8 +288,12 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose):
         attval = getattr(obj, att)
         if verbose:
             elapsed = time.time() - start
-            print "Current value of %s: %s (elapsed: %4.1f seconds)" % (
-                    att, attval, elapsed)
+            msgs = ["Current value of %s: %s (elapsed: %4.1f seconds)" % (
+                    att, attval, elapsed)]
+            for vatt in verbose_atts:
+                vattval = getattr(obj, vatt, None)
+                msgs.append("%s=%s" % (vatt, vattval))
+            print " ".join(msgs)
         if attval in desired:
             return obj
         time.sleep(interval)

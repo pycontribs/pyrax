@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import random
 import unittest
 
 from mock import patch
@@ -231,6 +232,25 @@ class CF_ContainerTest(unittest.TestCase):
         cont.make_private()
         cont.client.connection.cdn_request.assert_called_with("PUT", [cont.name],
                 hdrs={"X-CDN-Enabled": "False"})
+
+    def test_change_object_content_type(self):
+        cont = self.container
+        cont.client.change_object_content_type = Mock()
+        cont.change_object_content_type("fakeobj", "foo")
+        cont.client.change_object_content_type.assert_called_once_with(cont,
+                "fakeobj", new_ctype="foo", guess=False)
+
+    def test_get_temp_url(self):
+        cont = self.container
+        nm = utils.random_name(ascii_only=True)
+        sav = cont.name
+        cont.name = utils.random_name(ascii_only=True)
+        cont.client.get_temp_url = Mock()
+        secs = random.randint(1, 1000)
+        cont.get_temp_url(nm, seconds=secs)
+        cont.client.get_temp_url.assert_called_with(cont, nm, seconds=secs,
+                method="GET")
+        cont.name = sav
 
     def test_cdn_enabled(self):
         cont = self.container

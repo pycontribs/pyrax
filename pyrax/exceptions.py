@@ -113,6 +113,9 @@ class InvalidSessionPersistenceType(PyraxException):
 class InvalidSize(PyraxException):
     pass
 
+class InvalidTemporaryURLMethod(PyraxException):
+    pass
+
 class InvalidUploadID(PyraxException):
     pass
 
@@ -135,6 +138,9 @@ class MissingLoadBalancerParameters(PyraxException):
     pass
 
 class MissingName(PyraxException):
+    pass
+
+class MissingTemporaryURLKey(PyraxException):
     pass
 
 class NetworkCIDRInvalid(PyraxException):
@@ -207,6 +213,9 @@ class UnattachedVirtualIP(PyraxException):
     pass
 
 class Unauthorized(PyraxException):
+    pass
+
+class UnicodePathError(PyraxException):
     pass
 
 class UploadFailed(PyraxException):

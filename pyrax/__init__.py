@@ -346,6 +346,29 @@ def connect_to_cloudservers(region=None):
     cloudservers.client.management_url = mgt_url
     cloudservers.client.auth_token = identity.token
     cloudservers.exceptions = _cs_exceptions
+    # Add some convenience methods
+    cloudservers.list_images = cloudservers.images.list
+    cloudservers.list_flavors = cloudservers.flavors.list
+    cloudservers.list = cloudservers.servers.list
+
+    def list_base_images():
+        """
+        Returns a list of all base images; excludes any images created
+        by this account.
+        """
+        return [image for image in cloudservers.images.list()
+                if not hasattr(image, "server")]
+
+    def list_snapshots():
+        """
+        Returns a list of all images created by this account; in other words, it
+        excludes all the base images.
+        """
+        return [image for image in cloudservers.images.list()
+                if hasattr(image, "server")]
+
+    cloudservers.list_base_images = list_base_images
+    cloudservers.list_snapshots = list_snapshots
     return cloudservers
 
 

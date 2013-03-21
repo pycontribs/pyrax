@@ -177,7 +177,7 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.connect_to_cloud_loadbalancers.assert_called_once_with(region=None)
         pyrax.connect_to_cloud_databases.assert_called_once_with(region=None)
 
-    @patch('pyrax._cs_client.Client', new=fakes.FakeService)
+    @patch('pyrax._cs_client.Client', new=fakes.FakeCSClient)
     def test_connect_to_cloudservers(self):
         pyrax.cloudservers = None
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers

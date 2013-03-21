@@ -111,5 +111,29 @@ class StorageObject(object):
         self.client.remove_object_metadata_key(self.container, self, key)
 
 
+    def change_content_type(self, new_ctype, guess=False):
+        """
+        Copies object to itself, but applies a new content-type. The guess
+        feature requires the container to be CDN-enabled. If not then the
+        content-type must be supplied. If using guess with a CDN-enabled
+        container, new_ctype can be set to None.
+        Failure during the put will result in a swift exception.
+        """
+        self.client.change_object_content_type(self.container, self,
+                new_ctype=new_ctype, guess=guess)
+
+
+    def get_temp_url(self, seconds, method="GET"):
+        """
+        Returns a URL that can be used to access this object. The URL will
+        expire after `seconds` seconds.
+
+        The only methods supported are GET and PUT. Anything else will raise
+        an InvalidTemporaryURLMethod exception.
+        """
+        return self.client.get_temp_url(self.container, self, seconds=seconds,
+                method=method)
+
+
     def __repr__(self):
         return "<Object '%s' (%s)>" % (self.name, self.content_type)

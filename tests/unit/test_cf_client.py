@@ -54,11 +54,78 @@ class CF_ClientTest(unittest.TestCase):
     def test_account_metadata(self):
         client = self.client
         client.connection.head_account = Mock()
-        client.connection.head_account.return_value = {"X-Account-Foo": "yes",
+        client.connection.head_account.return_value = {"X-Account-Meta-Foo": "yes",
                 "Some-Other-Key": "no"}
         meta = client.get_account_metadata()
         self.assert_(len(meta) == 1)
-        self.assert_("X-Account-Foo" in meta)
+        self.assert_("X-Account-Meta-Foo" in meta)
+
+    def test_set_account_metadata(self):
+        client = self.client
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"x-account-meta-foo": "yes",
+                "some-other-key": "no"}
+        client.connection.post_account = Mock()
+        client.set_account_metadata({"newkey": "newval"})
+        client.connection.post_account.assert_called_with({"x-account-meta-newkey": "newval"})
+
+    def test_set_account_metadata_clear(self):
+        client = self.client
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"x-account-meta-foo": "yes",
+                "some-other-key": "no"}
+        client.connection.post_account = Mock()
+        client.set_account_metadata({"newkey": "newval"}, clear=True)
+        client.connection.post_account.assert_called_with(
+                {"x-account-meta-foo": "", "x-account-meta-newkey": "newval"})
+
+    def test_get_temp_url_key(self):
+        client = self.client
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"x-account-meta-foo": "yes",
+                "some-other-key": "no"}
+        meta = client.get_temp_url_key()
+        self.assertIsNone(meta)
+        nm = utils.random_name()
+        client.connection.head_account.return_value = {"x-account-meta-temp-url-key": nm,
+                "some-other-key": "no"}
+        meta = client.get_temp_url_key()
+        self.assertEqual(meta, nm)
+
+    def test_get_temp_url(self):
+        client = self.client
+        nm = utils.random_name(ascii_only=True)
+        cname = utils.random_name(ascii_only=True)
+        oname = utils.random_name(ascii_only=True)
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"x-account-meta-temp-url-key": nm,
+                "some-other-key": "no"}
+        ret = client.get_temp_url(cname, oname, seconds=120, method="GET")
+        self.assert_(cname in ret)
+        self.assert_(oname in ret)
+        self.assert_("?temp_url_sig=" in ret)
+        self.assert_("&temp_url_expires=" in ret)
+
+    def test_get_temp_url_unicode(self):
+        client = self.client
+        nm = utils.random_name(ascii_only=False)
+        cname = utils.random_name(ascii_only=True)
+        oname = utils.random_name(ascii_only=True)
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"x-account-meta-temp-url-key": nm,
+                "some-other-key": "no"}
+        client.post_account = Mock()
+        self.assertRaises(exc.UnicodePathError, client.get_temp_url, cname,
+                oname, seconds=120, method="GET")
+
+    def test_get_temp_url_missing_key(self):
+        client = self.client
+        cname = utils.random_name(ascii_only=True)
+        oname = utils.random_name(ascii_only=True)
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {"some-other-key": "no"}
+        self.assertRaises(exc.MissingTemporaryURLKey, client.get_temp_url, cname,
+                oname, seconds=120, method="GET")
 
     def test_container_metadata(self):
         client = self.client
@@ -501,6 +568,19 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.put_object.assert_called_with("newcont", "o1", contents=None,
                 headers={"X-Copy-From": "/%s/o1" % self.cont_name})
         client.delete_object.assert_called_with(self.cont_name, "o1")
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_change_object_content_type(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        cont = client.get_container(self.cont_name)
+        client.connection.put_object = Mock(return_value="0000")
+        cont.client.connection.get_container = Mock()
+        cont.client.connection.get_container.return_value = ({}, [{"name": "o1"}, {"name": "o2"}])
+        client.change_object_content_type(self.cont_name, "o1", "something/else")
+        client.connection.put_object.assert_called_with(self.cont_name, "o1", contents=None,
+                headers={"X-Copy-From": "/%s/o1" % self.cont_name},
+                content_type="something/else")
 
     def test_fetch_object(self):
         client = self.client

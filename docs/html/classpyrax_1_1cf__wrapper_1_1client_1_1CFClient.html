@@ -119,6 +119,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1db54cea98fd675f9e1f88ebb4c14246">get_account_metadata</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ab38bbe7b6c0330ae9d0a768197b36a6c">set_account_metadata</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepts a dictionary of metadata key/value pairs and updates the specified account metadata with them.  <a href="#ab38bbe7b6c0330ae9d0a768197b36a6c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a80f3fd33724985de91d7930036344668">get_temp_url_key</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current TempURL key, or None if it has not been set.  <a href="#a80f3fd33724985de91d7930036344668"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a3815e3caab49229722d4761c169fc358">set_temp_url_key</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the key for the Temporary URL for the account.  <a href="#a3815e3caab49229722d4761c169fc358"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a26cd51b10d04d2f632fc6f12fa2e3b43">get_temp_url</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a storage object in a container, returns a URL that can be used to access that object.  <a href="#a26cd51b10d04d2f632fc6f12fa2e3b43"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#af3f2bf8377401391d0fed1403d7ce1e1">get_container_metadata</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a dictionary containing the metadata for the container.  <a href="#af3f2bf8377401391d0fed1403d7ce1e1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a4bb2698330c6d409640337b1a80e16bf">set_container_metadata</a></td></tr>
@@ -149,6 +157,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies the object to the new container, optionally giving it a new name.  <a href="#a7d45157fae0af819d907da6b00fa2378"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a536af175d76546af80d86eda21eaaccc">move_object</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Works just like copy_object, except that the source object is deleted after a successful copy.  <a href="#a536af175d76546af80d86eda21eaaccc"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a7e76f3530378ae1328a083c7766c2ada">change_object_content_type</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies object to itself, but applies a new content-type.  <a href="#a7e76f3530378ae1328a083c7766c2ada"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a3857f84faa9608b0bf0a4e84ba5b1566">upload_file</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Uploads the specified file to the container.  <a href="#a3857f84faa9608b0bf0a4e84ba5b1566"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1d81cba43ddabd40e412c5d709192958">upload_folder</a></td></tr>
@@ -192,7 +202,7 @@ Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a10275a078bd1abcbebc206cc5d19e18b">connection</a></td></tr>
 <tr><td colspan="2"><h2><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#afc65c059b6cbdda2bf91e6f5b6608608">account_meta_prefix</a> = &quot;X-Account-&quot;</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#afc65c059b6cbdda2bf91e6f5b6608608">account_meta_prefix</a> = &quot;X-Account-Meta-&quot;</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a9b5995b5ab3392bd65e1fcaf722b6707">container_meta_prefix</a> = &quot;X-<a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html">Container</a>-Meta-&quot;</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a5adbaa075a44196e9f26841c572f0639">object_meta_prefix</a> = &quot;X-Object-Meta-&quot;</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a2952143e08d5da585f27b1b2271c03be">cdn_meta_prefix</a> = &quot;X-Cdn-&quot;</td></tr>
@@ -312,6 +322,54 @@ Properties</h2></td></tr>
 
 <p>Cancels any folder upload happening in the background. </p>
 <p>If there is no such upload in progress, calling this method has no effect. </p>
+
+</div>
+</div>
+<a class="anchor" id="a7e76f3530378ae1328a083c7766c2ada"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::change_object_content_type" ref="a7e76f3530378ae1328a083c7766c2ada" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a7e76f3530378ae1328a083c7766c2ada">change_object_content_type</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_ctype</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>guess</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Copies object to itself, but applies a new content-type. </p>
+<p>The guess feature requires the container to be CDN-enabled. If not then the content-type must be supplied. If using guess with a CDN-enabled container, new_ctype can be set to None. Failure during the put will result in a swift exception. </p>
 
 </div>
 </div>
@@ -889,6 +947,74 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a26cd51b10d04d2f632fc6f12fa2e3b43"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::get_temp_url" ref="a26cd51b10d04d2f632fc6f12fa2e3b43" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a26cd51b10d04d2f632fc6f12fa2e3b43">get_temp_url</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>method</em> = <code>&quot;GET&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Given a storage object in a container, returns a URL that can be used to access that object. </p>
+<p>The URL will expire after `seconds` seconds.</p>
+<p>The only methods supported are GET and PUT. Anything else will raise an InvalidTemporaryURLMethod exception. </p>
+
+</div>
+</div>
+<a class="anchor" id="a80f3fd33724985de91d7930036344668"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::get_temp_url_key" ref="a80f3fd33724985de91d7930036344668" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a80f3fd33724985de91d7930036344668">get_temp_url_key</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the current TempURL key, or None if it has not been set. </p>
+
+</div>
+</div>
 <a class="anchor" id="a537487e2f2dabc8103e2006739cbeb0e"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::get_uploaded" ref="a537487e2f2dabc8103e2006739cbeb0e" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1252,6 +1378,42 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ab38bbe7b6c0330ae9d0a768197b36a6c"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::set_account_metadata" ref="ab38bbe7b6c0330ae9d0a768197b36a6c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ab38bbe7b6c0330ae9d0a768197b36a6c">set_account_metadata</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>metadata</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>clear</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Accepts a dictionary of metadata key/value pairs and updates the specified account metadata with them. </p>
+<p>If 'clear' is True, any existing metadata is deleted and only the passed metadata is retained. Otherwise, the values passed here update the account's metadata. </p>
+
+</div>
+</div>
 <a class="anchor" id="ace22bfd2ecdbf455cdf010b53b1d3d90"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::set_cdn_log_retention" ref="ace22bfd2ecdbf455cdf010b53b1d3d90" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1486,6 +1648,37 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a3815e3caab49229722d4761c169fc358"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::set_temp_url_key" ref="a3815e3caab49229722d4761c169fc358" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a3815e3caab49229722d4761c169fc358">set_temp_url_key</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>key</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Sets the key for the Temporary URL for the account. </p>
+<p>It should be a key that is secret to the owner.</p>
+<p>If no key is provided, a UUID value will be generated and used. It can later be obtained by calling <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a80f3fd33724985de91d7930036344668" title="Returns the current TempURL key, or None if it has not been set.">get_temp_url_key()</a>. </p>
+
+</div>
+</div>
 <a class="anchor" id="af0a50c69bbe50a35557fb373cf3b4b6f"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::store_object" ref="af0a50c69bbe50a35557fb373cf3b4b6f" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1713,7 +1906,7 @@ Properties</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">string <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#afc65c059b6cbdda2bf91e6f5b6608608">account_meta_prefix</a> = &quot;X-Account-&quot;<code> [static]</code></td>
+          <td class="memname">string <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#afc65c059b6cbdda2bf91e6f5b6608608">account_meta_prefix</a> = &quot;X-Account-Meta-&quot;<code> [static]</code></td>
         </tr>
       </table>
 </div>
@@ -1876,7 +2069,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 18 2013 09:02:03 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 21 2013 10:17:20 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -543,7 +543,13 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>verbose</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>verbose</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>verbose_atts</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -555,7 +561,7 @@ Variables</h2></td></tr>
 <div class="memdoc">
 
 <p>When changing the state of an object, it will commonly be in a transitional state until the change is complete. </p>
-<p>This will reload the object ever `interval` seconds, and check its `att` attribute. If the desired value of the attribute is reached, the updated object is returned. If not, it will re-try a maximum of `attempts` times; if the attribute has not reached the desired value by then, this method will exit and return None. If `attempts` is 0, this will loop forever until the attribute matches. If `verbose` is True, each attempt will print out the current value of the watched attribute and the time that has elapsed since the original request.</p>
+<p>This will reload the object ever `interval` seconds, and check its `att` attribute. If the desired value of the attribute is reached, the updated object is returned. If not, it will re-try a maximum of `attempts` times; if the attribute has not reached the desired value by then, this method will exit and return None. If `attempts` is 0, this will loop forever until the attribute matches. If `verbose` is True, each attempt will print out the current value of the watched attribute and the time that has elapsed since the original request. Also, if `verbose_atts` is specified, the values of those attributes will also be output. If `verbose` is False, then `verbose_atts` has no effect.</p>
 <p>Note that `desired` can be a list of values; if the attribute becomes equal to any of those values, this will succeed. For example, when creating a new cloud server, it will initially have a status of 'BUILD', and you can't work with it until its status is 'ACTIVE'. However, there might be a problem with the build process, and the server will change to a status of 'ERROR'. So for this case you need to set the `desired` parameter to `['ACTIVE', 'ERROR']`. If you simply pass 'ACTIVE' as the desired state, this will loop indefinitely if a build fails, as the server will never reach a status of 'ACTIVE'.</p>
 <p>Since this process of waiting can take a potentially long time, and will block your program's execution until the desired state of the object is reached, you may specify a callback function. The callback can be any callable that accepts a single parameter; the parameter it receives will be either the updated object (success), or None (failure). If a callback is specified, the program will return immediately after spawning the wait process in a separate thread. </p>
 
@@ -593,7 +599,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 4 2013 09:29:03 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 21 2013 10:17:22 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

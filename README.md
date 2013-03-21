@@ -7,6 +7,7 @@ See the COPYING file for license and copyright information.
 
 See the [Release Notes](https://github.com/rackspace/pyrax/tree/master/samples) for what has changed in the latest release
 
+[![Build Status](https://travis-ci.org/rackspace/pyrax.png?branch=travis-ci)](https://travis-ci.org/rackspace/pyrax)
 
 ##Getting Started with OpenStack/Rackspace
 To sign up for a Rackspace Cloud account, go to
@@ -52,6 +53,11 @@ If you installed **pyrax** using pip, it is simple to get the latest updates fro
 	pip install --upgrade pyrax
 	# GitHub
 	pip install --upgrade git+git://github.com/rackspace/pyrax.git
+
+
+## Contributing
+Please see the HACKING file for contribution guidelines. Make sure pull requests are on the `working` branch!
+
 
 ## Support and Feedback
 Your feedback is appreciated! If you have specific issues with the **pyrax** SDK, developers should file an [issue via Github](https://github.com/rackspace/pyrax/issues).

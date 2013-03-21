@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import random
 import unittest
 
 from mock import patch
@@ -129,9 +130,38 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj.client.connection.post_object = Mock()
         obj.client.connection.head_object = Mock(return_value={})
         obj.set_metadata({"newkey": "newval"})
-        obj.client.connection.post_object.assert_called_with(obj.container.name, obj.name,
-                {"x-object-meta-newkey": "newval"})
+        obj.client.connection.post_object.assert_called_with(obj.container.name,
+                obj.name, {"x-object-meta-newkey": "newval"})
 
+    def test_remove_metadata_key(self):
+        obj = self.storage_object
+        obj.client.connection.post_object = Mock()
+        obj.client.connection.head_object = Mock(return_value={})
+        obj.remove_metadata_key("newkey")
+        obj.client.connection.post_object.assert_called_with(obj.container.name,
+                obj.name, {})
+
+    def test_change_content_type(self):
+        obj = self.storage_object
+        obj.client.change_object_content_type = Mock()
+        obj.change_content_type("foo")
+        obj.client.change_object_content_type.assert_called_once_with(obj.container,
+                obj, new_ctype="foo", guess=False)
+
+    def test_get_temp_url(self):
+        obj = self.storage_object
+        obj.client.get_temp_url = Mock()
+        secs = random.randint(1, 1000)
+        obj.get_temp_url(seconds=secs)
+        obj.client.get_temp_url.assert_called_with(obj.container, obj,
+                seconds=secs, method="GET")
+
+    def test_repr(self):
+        obj = self.storage_object
+        rep = obj.__repr__()
+        self.assert_("<Object " in rep)
+        self.assert_(obj.name in rep)
+        self.assert_(obj.content_type in rep)
 
 if __name__ == "__main__":
     unittest.main()

@@ -112,6 +112,18 @@ class FakeService(object):
         pass
 
 
+class FakeCSClient(FakeService):
+    def __init__(self, *args, **kwargs):
+        super(FakeCSClient, self).__init__(*args, **kwargs)
+        def dummy(self): pass
+        self.servers = FakeService()
+        utils.add_method(self.servers, dummy, "list")
+        self.images = FakeService()
+        utils.add_method(self.images, dummy, "list")
+        self.flavors = FakeService()
+        utils.add_method(self.flavors, dummy, "list")
+
+
 class FakeFolderUploader(FolderUploader):
     def __init__(self, *args, **kwargs):
         super(FakeFolderUploader, self).__init__(*args, **kwargs)

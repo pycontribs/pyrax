@@ -3,6 +3,8 @@
 
 import datetime
 from functools import wraps
+import hashlib
+import hmac
 # Use eventlet if available
 try:
     import eventlet.green.httplib as httplib
@@ -13,9 +15,11 @@ import os
 import re
 import socket
 import threading
+import time
 import urllib
 import urlparse
 import uuid
+import mimetypes
 
 from swiftclient import client as _swift_client
 import pyrax
@@ -64,7 +68,7 @@ class CFClient(object):
     instead of calling functions that return primitive types.
     """
     # Constants used in metadata headers
-    account_meta_prefix = "X-Account-"
+    account_meta_prefix = "X-Account-Meta-"
     container_meta_prefix = "X-Container-Meta-"
     object_meta_prefix = "X-Object-Meta-"
     cdn_meta_prefix = "X-Cdn-"
@@ -132,6 +136,89 @@ class CFClient(object):
             if hkey.lower().startswith(prfx):
                 ret[hkey] = hval
         return ret
+
+
+    @handle_swiftclient_exception
+    def set_account_metadata(self, metadata, clear=False):
+        """
+        Accepts a dictionary of metadata key/value pairs and updates
+        the specified account metadata with them.
+
+        If 'clear' is True, any existing metadata is deleted and only
+        the passed metadata is retained. Otherwise, the values passed
+        here update the account's metadata.
+        """
+        # Add the metadata prefix, if needed.
+        massaged = self._massage_metakeys(metadata, self.account_meta_prefix)
+        new_meta = {}
+        if clear:
+            curr_meta = self.get_account_metadata()
+            for ckey in curr_meta:
+                new_meta[ckey] = ""
+        new_meta.update(massaged)
+        self.connection.post_account(new_meta)
+
+
+    @handle_swiftclient_exception
+    def get_temp_url_key(self):
+        """
+        Returns the current TempURL key, or None if it has not been set.
+        """
+        key = "%stemp-url-key" % self.account_meta_prefix.lower()
+        meta = self.get_account_metadata().get(key)
+        return meta
+
+
+    @handle_swiftclient_exception
+    def set_temp_url_key(self, key=None):
+        """
+        Sets the key for the Temporary URL for the account. It should be a key
+        that is secret to the owner.
+
+        If no key is provided, a UUID value will be generated and used. It can
+        later be obtained by calling get_temp_url_key().
+        """
+        if key is None:
+            key = uuid.uuid4().hex
+        meta = {"Temp-Url-Key": key}
+        self.set_account_metadata(meta)
+
+
+    def get_temp_url(self, container, obj, seconds, method="GET"):
+        """
+        Given a storage object in a container, returns a URL that can be used
+        to access that object. The URL will expire after `seconds` seconds.
+
+        The only methods supported are GET and PUT. Anything else will raise
+        an InvalidTemporaryURLMethod exception.
+        """
+        cname = self._resolve_name(container)
+        oname = self._resolve_name(obj)
+        mod_method = method.upper().strip()
+        if mod_method not in ("GET", "PUT"):
+            raise exc.InvalidTemporaryURLMethod("Method must be either 'GET' "
+                    "or 'PUT'; received '%s'." % method)
+        key = self.get_temp_url_key()
+        if not key:
+            raise exc.MissingTemporaryURLKey("You must set the key for Temporary "
+                    "URLs before you can generate them. This is done via the "
+                    "`set_temp_url_key()` method.")
+        conn_url = self.connection.url
+        v1pos = conn_url.index("/v1/")
+        base_url = conn_url[:v1pos]
+        pth = os.path.join(conn_url[v1pos:], cname, oname)
+        if isinstance(pth, unicode):
+            pth = pth.encode(pyrax.encoding)
+        expires = int(time.time() + int(seconds))
+        hmac_body = "%s\n%s\n%s" % (mod_method, expires, pth)
+        try:
+            sig = hmac.new(key, hmac_body, hashlib.sha1).hexdigest()
+        except TypeError as e:
+            raise exc.UnicodePathError("Due to a bug in Python, the TempURL "
+                    "function only works with ASCII object paths.")
+        temp_url = "%s%s?temp_url_sig=%s&temp_url_expires=%s" % (base_url, pth,
+                sig, expires)
+        return temp_url
 
 
     @handle_swiftclient_exception
@@ -378,6 +465,27 @@ class CFClient(object):
             self.delete_object(container, obj_name)
         return new_obj_etag
 
+    @handle_swiftclient_exception
+    def change_object_content_type(self, container, obj_name, new_ctype,
+            guess=False):
+        """
+        Copies object to itself, but applies a new content-type. The guess
+        feature requires the container to be CDN-enabled. If not then the
+        content-type must be supplied. If using guess with a CDN-enabled
+        container, new_ctype can be set to None.
+        Failure during the put will result in a swift exception.
+        """
+        cont = self.get_container(container)
+        obj = self.get_object(cont, obj_name)
+        if guess and cont.cdn_enabled:
+            #Test against the CDN url to guess the content-type.
+            obj_url = "%s/%s" % (cont.cdn_uri, obj.name)
+            new_ctype = mimetypes.guess_type(obj_url)[0]
+        hdrs = {"X-Copy-From": "/%s/%s" % (cont.name, obj.name)}
+        self.connection.put_object(cont.name, obj.name, contents=None,
+                headers=hdrs, content_type=new_ctype)
+        cont.remove_from_cache(obj.name)
+        return
 
     @handle_swiftclient_exception
     def upload_file(self, container, file_or_path, obj_name=None,

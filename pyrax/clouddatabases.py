@@ -287,6 +287,7 @@ class CloudDatabaseFlavor(BaseResource):
     objects are read-only.
     """
     get_details = False
+    _non_display = ["links"]
 
 
 class CloudDatabaseClient(BaseClient):
