@@ -129,6 +129,10 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets this object's metadata, optionally clearing existing metadata.  <a href="#a72a400370828e749dd0d63a622a95ee2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a01a67fdfd99526a56bef1e3c0a01a68d">remove_metadata_key</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the specified key from the storage object's metadata.  <a href="#a01a67fdfd99526a56bef1e3c0a01a68d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a9ff9b500eb0d5020f41595749b3b636f">change_content_type</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies object to itself, but applies a new content-type.  <a href="#a9ff9b500eb0d5020f41595749b3b636f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a26cd51b10d04d2f632fc6f12fa2e3b43">get_temp_url</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a URL that can be used to access this object.  <a href="#a26cd51b10d04d2f632fc6f12fa2e3b43"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#ad8b9328939df072e4740cd9a63189744">__repr__</a></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -232,6 +236,42 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a9ff9b500eb0d5020f41595749b3b636f"></a><!-- doxytag: member="pyrax::cf_wrapper::storage_object::StorageObject::change_content_type" ref="a9ff9b500eb0d5020f41595749b3b636f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a9ff9b500eb0d5020f41595749b3b636f">change_content_type</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_ctype</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>guess</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Copies object to itself, but applies a new content-type. </p>
+<p>The guess feature requires the container to be CDN-enabled. If not then the content-type must be supplied. If using guess with a CDN-enabled container, new_ctype can be set to None. Failure during the put will result in a swift exception. </p>
+
+</div>
+</div>
 <a class="anchor" id="ab48bde70a0927a83d62464cb0627c34b"></a><!-- doxytag: member="pyrax::cf_wrapper::storage_object::StorageObject::delete" ref="ab48bde70a0927a83d62464cb0627c34b" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -305,6 +345,43 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Returns this object's metadata. </p>
+
+</div>
+</div>
+<a class="anchor" id="a26cd51b10d04d2f632fc6f12fa2e3b43"></a><!-- doxytag: member="pyrax::cf_wrapper::storage_object::StorageObject::get_temp_url" ref="a26cd51b10d04d2f632fc6f12fa2e3b43" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a26cd51b10d04d2f632fc6f12fa2e3b43">get_temp_url</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>method</em> = <code>&quot;GET&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a URL that can be used to access this object. </p>
+<p>The URL will expire after `seconds` seconds.</p>
+<p>The only methods supported are GET and PUT. Anything else will raise an InvalidTemporaryURLMethod exception. </p>
 
 </div>
 </div>
@@ -515,7 +592,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 5 2012 21:20:47 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 21 2013 10:17:20 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

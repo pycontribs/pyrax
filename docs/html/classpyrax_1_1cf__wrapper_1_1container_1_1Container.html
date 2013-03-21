@@ -149,6 +149,10 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables CDN access for the specified container.  <a href="#a800f9f6744c62cf60897710ef2c9d1b1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#ae4ca302cb84a4ecfc7418e4aa129a4ac">make_private</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Disables CDN access to this container.  <a href="#ae4ca302cb84a4ecfc7418e4aa129a4ac"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a7e76f3530378ae1328a083c7766c2ada">change_object_content_type</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies object to itself, but applies a new content-type.  <a href="#a7e76f3530378ae1328a083c7766c2ada"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a26cd51b10d04d2f632fc6f12fa2e3b43">get_temp_url</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a URL that can be used to access the specified object in this container.  <a href="#a26cd51b10d04d2f632fc6f12fa2e3b43"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#ad8b9328939df072e4740cd9a63189744">__repr__</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a2335e6e10f37188b2c023f9c5575c299">cdn_enabled</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">BEGIN - CDN property definitions ##.  <a href="#a2335e6e10f37188b2c023f9c5575c299"></a><br/></td></tr>
@@ -248,6 +252,48 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>BEGIN - CDN property definitions ##. </p>
+
+</div>
+</div>
+<a class="anchor" id="a7e76f3530378ae1328a083c7766c2ada"></a><!-- doxytag: member="pyrax::cf_wrapper::container::Container::change_object_content_type" ref="a7e76f3530378ae1328a083c7766c2ada" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a7e76f3530378ae1328a083c7766c2ada">change_object_content_type</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_ctype</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>guess</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Copies object to itself, but applies a new content-type. </p>
+<p>The guess feature requires the container to be CDN-enabled. If not then the content-type must be supplied. If using guess with a CDN-enabled container, new_ctype can be set to None. Failure during the put will result in a swift exception. </p>
 
 </div>
 </div>
@@ -524,6 +570,49 @@ Properties</h2></td></tr>
 
 <p>Returns a list of StorageObjects representing the objects in the container. </p>
 <p>You can use the marker and limit params to handle pagination, and the prefix and delimiter params to filter the objects returned. Also, by default only the first 10,000 objects are returned; if you set full_listing to True, all objects in the container are returned. </p>
+
+</div>
+</div>
+<a class="anchor" id="a26cd51b10d04d2f632fc6f12fa2e3b43"></a><!-- doxytag: member="pyrax::cf_wrapper::container::Container::get_temp_url" ref="a26cd51b10d04d2f632fc6f12fa2e3b43" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a26cd51b10d04d2f632fc6f12fa2e3b43">get_temp_url</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>method</em> = <code>&quot;GET&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a URL that can be used to access the specified object in this container. </p>
+<p>The URL will expire after `seconds` seconds.</p>
+<p>The only methods supported are GET and PUT. Anything else will raise an InvalidTemporaryURLMethod exception. </p>
 
 </div>
 </div>
@@ -969,7 +1058,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 4 2013 09:29:01 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 21 2013 10:17:20 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
