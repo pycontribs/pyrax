@@ -141,6 +141,13 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj.client.connection.post_object.assert_called_with(obj.container.name,
                 obj.name, {})
 
+    def test_change_content_type(self):
+        obj = self.storage_object
+        obj.client.change_object_content_type = Mock()
+        obj.change_content_type("foo")
+        obj.client.change_object_content_type.assert_called_once_with(obj.container,
+                obj, new_ctype="foo", guess=False)
+
     def test_get_temp_url(self):
         obj = self.storage_object
         obj.client.get_temp_url = Mock()
