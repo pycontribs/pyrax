@@ -37,6 +37,7 @@ setup(
         "python-swiftclient",
         "httplib2",
         "keyring",
+        "hgtools",
     ] + testing_requires,
     packages=[
         "pyrax",
