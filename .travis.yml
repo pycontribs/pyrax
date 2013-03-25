@@ -14,3 +14,9 @@ install:
 
 script:
   - nosetests -v tests/unit
+
+
+notifications:
+  email:
+    - ed.leafe@rackspace.com
+  irc: "irc.freenode.org#rackspace-dev"
