@@ -33,9 +33,11 @@ EARLY_DATE_STR = "1900-01-01T00:00:00"
 CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
 
-no_such_container_pattern = re.compile(r"Container GET|HEAD failed: .+/(.+) 404")
+no_such_container_pattern = re.compile(
+    r"Container GET|HEAD failed: .+/(.+) 404")
 etag_fail_pat = r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity"
 etag_failed_pattern = re.compile(etag_fail_pat)
+
 
 def handle_swiftclient_exception(fnc):
     @wraps(fnc)
@@ -47,16 +49,15 @@ def handle_swiftclient_exception(fnc):
             bad_container = no_such_container_pattern.search(str_error)
             if bad_container:
                 raise exc.NoSuchContainer("Container '%s' doesn't exist" %
-                        bad_container.groups()[0])
+                                          bad_container.groups()[0])
             failed_upload = etag_failed_pattern.search(str_error)
             if failed_upload:
                 cont, fname = failed_upload.groups()
                 raise exc.UploadFailed("Upload of file '%(fname)s' to container "
-                        "'%(cont)s' failed." % locals())
+                                       "'%(cont)s' failed." % locals())
             # Not handled; re-raise
             raise
     return _wrapped
-
 
 
 class CFClient(object):
@@ -83,30 +84,29 @@ class CFClient(object):
     # will also be used to hold the flag to interrupt uploads in progress.
     folder_upload_status = {}
 
-
     def __init__(self, auth_endpoint, username, api_key, tenant_name,
-            preauthurl=None, preauthtoken=None, auth_version="2",
-            os_options=None, http_log_debug=False):
+                 preauthurl=None, preauthtoken=None, auth_version="2",
+                 os_options=None, http_log_debug=False):
         self.connection = None
         self.http_log_debug = http_log_debug
         self._http_log = _swift_client.http_log
         os.environ["SWIFTCLIENT_DEBUG"] = "True" if http_log_debug else ""
         self._make_connections(auth_endpoint, username, api_key,
-                tenant_name, preauthurl=preauthurl,
-                preauthtoken=preauthtoken, auth_version=auth_version,
-                os_options=os_options, http_log_debug=http_log_debug)
-
+                               tenant_name, preauthurl=preauthurl,
+                               preauthtoken=preauthtoken, auth_version=auth_version,
+                               os_options=os_options, http_log_debug=http_log_debug)
 
     def _make_connections(self, auth_endpoint, username, api_key, tenant_name,
-            preauthurl=None, preauthtoken=None, auth_version="2", os_options=None,
-            http_log_debug=None):
+                          preauthurl=None, preauthtoken=None, auth_version="2",
+                          os_options=None,
+                          http_log_debug=None):
         cdn_url = os_options.pop("object_cdn_url", None)
-        self.connection = Connection(auth_endpoint, username, api_key, tenant_name,
-                preauthurl=preauthurl, preauthtoken=preauthtoken,
-                auth_version=auth_version, os_options=os_options,
-                http_log_debug=http_log_debug)
+        self.connection = Connection(
+            auth_endpoint, username, api_key, tenant_name,
+            preauthurl=preauthurl, preauthtoken=preauthtoken,
+            auth_version=auth_version, os_options=os_options,
+            http_log_debug=http_log_debug)
         self.connection._make_cdn_connection(cdn_url)
-
 
     def _massage_metakeys(self, dct, prfx):
         """
@@ -122,10 +122,8 @@ class CFClient(object):
             ret[k.lower()] = v
         return ret
 
-
     def _resolve_name(self, val):
         return val if isinstance(val, basestring) else val.name
-
 
     @handle_swiftclient_exception
     def get_account_metadata(self):
@@ -136,7 +134,6 @@ class CFClient(object):
             if hkey.lower().startswith(prfx):
                 ret[hkey] = hval
         return ret
-
 
     @handle_swiftclient_exception
     def set_account_metadata(self, metadata, clear=False):
@@ -158,7 +155,6 @@ class CFClient(object):
         new_meta.update(massaged)
         self.connection.post_account(new_meta)
 
-
     @handle_swiftclient_exception
     def get_temp_url_key(self):
         """
@@ -167,7 +163,6 @@ class CFClient(object):
         key = "%stemp-url-key" % self.account_meta_prefix.lower()
         meta = self.get_account_metadata().get(key)
         return meta
-
 
     @handle_swiftclient_exception
     def set_temp_url_key(self, key=None):
@@ -183,7 +178,6 @@ class CFClient(object):
         meta = {"Temp-Url-Key": key}
         self.set_account_metadata(meta)
 
-
     def get_temp_url(self, container, obj, seconds, method="GET"):
         """
         Given a storage object in a container, returns a URL that can be used
@@ -197,12 +191,13 @@ class CFClient(object):
         mod_method = method.upper().strip()
         if mod_method not in ("GET", "PUT"):
             raise exc.InvalidTemporaryURLMethod("Method must be either 'GET' "
-                    "or 'PUT'; received '%s'." % method)
+                                                "or 'PUT'; received '%s'." % method)
         key = self.get_temp_url_key()
         if not key:
-            raise exc.MissingTemporaryURLKey("You must set the key for Temporary "
+            _msg = ("You must set the key for Temporary "
                     "URLs before you can generate them. This is done via the "
                     "`set_temp_url_key()` method.")
+            raise exc.MissingTemporaryURLKey(_msg)
         conn_url = self.connection.url
         v1pos = conn_url.index("/v1/")
         base_url = conn_url[:v1pos]
@@ -215,11 +210,10 @@ class CFClient(object):
             sig = hmac.new(key, hmac_body, hashlib.sha1).hexdigest()
         except TypeError as e:
             raise exc.UnicodePathError("Due to a bug in Python, the TempURL "
-                    "function only works with ASCII object paths.")
+                                       "function only works with ASCII object paths.")
         temp_url = "%s%s?temp_url_sig=%s&temp_url_expires=%s" % (base_url, pth,
-                sig, expires)
+                                                                 sig, expires)
         return temp_url
-
 
     @handle_swiftclient_exception
     def get_container_metadata(self, container):
@@ -232,7 +226,6 @@ class CFClient(object):
             if hkey.lower().startswith(prfx):
                 ret[hkey] = hval
         return ret
-
 
     @handle_swiftclient_exception
     def set_container_metadata(self, container, metadata, clear=False):
@@ -255,7 +248,6 @@ class CFClient(object):
         new_meta.update(massaged)
         self.connection.post_container(cname, new_meta)
 
-
     @handle_swiftclient_exception
     def remove_container_metadata_key(self, container, key):
         """
@@ -264,10 +256,10 @@ class CFClient(object):
         """
         meta_dict = {key: ""}
         # Add the metadata prefix, if needed.
-        massaged = self._massage_metakeys(meta_dict, self.container_meta_prefix)
+        massaged = self._massage_metakeys(
+            meta_dict, self.container_meta_prefix)
         cname = self._resolve_name(container)
         self.connection.post_container(cname, massaged)
-
 
     @handle_swiftclient_exception
     def get_container_cdn_metadata(self, container):
@@ -279,7 +271,6 @@ class CFClient(object):
         response.read()
         # headers is a list of 2-tuples instead of a dict.
         return dict(headers)
-
 
     @handle_swiftclient_exception
     def set_container_cdn_metadata(self, container, metadata):
@@ -300,13 +291,12 @@ class CFClient(object):
                 continue
             hdrs[mkey] = str(mval)
         if bad:
-            raise exc.InvalidCDNMetadata("The only CDN metadata you can "
+            _msg = ("The only CDN metadata you can "
                     "update are: X-Log-Retention, X-CDN-enabled, and X-TTL. "
-                    "Received the following illegal item(s): %s" %
-                    ", ".join(bad))
+                    "Received the following illegal item(s): %s")
+            raise exc.InvalidCDNMetadata(_msg % ", ".join(bad))
         response = self.connection.cdn_request("POST", [ct.name], hdrs=hdrs)
         response.close()
-
 
     @handle_swiftclient_exception
     def get_object_metadata(self, container, obj):
@@ -320,7 +310,6 @@ class CFClient(object):
             if hkey.lower().startswith(prfx):
                 ret[hkey] = hval
         return ret
-
 
     @handle_swiftclient_exception
     def set_object_metadata(self, container, obj, metadata, clear=False):
@@ -343,7 +332,8 @@ class CFClient(object):
         # string to delete them.
         if not clear:
             obj_meta = self.get_object_metadata(cname, oname)
-            new_meta = self._massage_metakeys(obj_meta, self.object_meta_prefix)
+            new_meta = self._massage_metakeys(
+                obj_meta, self.object_meta_prefix)
         new_meta.update(massaged)
         # Remove any empty values, since the object metadata API will
         # store them.
@@ -355,7 +345,6 @@ class CFClient(object):
             new_meta.pop(key)
         self.connection.post_object(cname, oname, new_meta)
 
-
     @handle_swiftclient_exception
     def remove_object_metadata_key(self, container, obj, key):
         """
@@ -364,14 +353,12 @@ class CFClient(object):
         """
         self.set_object_metadata(container, obj, {key: ""})
 
-
     @handle_swiftclient_exception
     def create_container(self, name):
         """Creates a container with the specified name."""
         name = self._resolve_name(name)
         self.connection.put_container(name)
         return self.get_container(name)
-
 
     @handle_swiftclient_exception
     def delete_container(self, container, del_objects=False):
@@ -391,12 +378,10 @@ class CFClient(object):
         self.connection.delete_container(cname)
         return True
 
-
     def _remove_container_from_cache(self, container):
         """Removes the container from the cache."""
         nm = self._resolve_name(container)
         self._container_cache.pop(nm, None)
-
 
     @handle_swiftclient_exception
     def delete_object(self, container, name):
@@ -407,17 +392,15 @@ class CFClient(object):
         self.connection.delete_object(ct.name, oname)
         return True
 
-
     def get_object(self, container, obj_name):
         """Returns a StorageObject instance for the object in the container."""
         cont = self.get_container(container)
         obj = cont.get_object(self._resolve_name(obj_name))
         return obj
 
-
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
-            etag=None):
+                     etag=None):
         """
         Creates a new object in the specified container, and populates it with
         the given data.
@@ -432,9 +415,10 @@ class CFClient(object):
                     tmpfile.write(udata)
             with open(tmp, "rb") as tmpfile:
                 self.connection.put_object(cont.name, obj_name,
-                        contents=tmpfile, content_type=content_type, etag=etag)
+                                           contents=tmpfile,
+                                           content_type=content_type,
+                                           etag=etag)
         return self.get_object(container, obj_name)
-
 
     @handle_swiftclient_exception
     def copy_object(self, container, obj_name, new_container, new_obj_name=None):
@@ -449,8 +433,7 @@ class CFClient(object):
             new_obj_name = obj.name
         hdrs = {"X-Copy-From": "/%s/%s" % (cont.name, obj.name)}
         return self.connection.put_object(new_cont.name, new_obj_name,
-                contents=None, headers=hdrs)
-
+                                          contents=None, headers=hdrs)
 
     @handle_swiftclient_exception
     def move_object(self, container, obj_name, new_container, new_obj_name=None):
@@ -459,7 +442,7 @@ class CFClient(object):
         after a successful copy.
         """
         new_obj_etag = self.copy_object(container, obj_name, new_container,
-                new_obj_name=new_obj_name)
+                                        new_obj_name=new_obj_name)
         if new_obj_etag:
             # Copy succeeded; delete the original.
             self.delete_object(container, obj_name)
@@ -467,7 +450,7 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def change_object_content_type(self, container, obj_name, new_ctype,
-            guess=False):
+                                   guess=False):
         """
         Copies object to itself, but applies a new content-type. The guess
         feature requires the container to be CDN-enabled. If not then the
@@ -478,18 +461,18 @@ class CFClient(object):
         cont = self.get_container(container)
         obj = self.get_object(cont, obj_name)
         if guess and cont.cdn_enabled:
-            #Test against the CDN url to guess the content-type.
+            # Test against the CDN url to guess the content-type.
             obj_url = "%s/%s" % (cont.cdn_uri, obj.name)
             new_ctype = mimetypes.guess_type(obj_url)[0]
         hdrs = {"X-Copy-From": "/%s/%s" % (cont.name, obj.name)}
         self.connection.put_object(cont.name, obj.name, contents=None,
-                headers=hdrs, content_type=new_ctype)
+                                   headers=hdrs, content_type=new_ctype)
         cont.remove_from_cache(obj.name)
         return
 
     @handle_swiftclient_exception
     def upload_file(self, container, file_or_path, obj_name=None,
-            content_type=None, etag=None, return_none=False):
+                    content_type=None, etag=None, return_none=False):
         """
         Uploads the specified file to the container. If no name is supplied, the
         file's name will be used. Either a file path or an open file-like object
@@ -515,8 +498,9 @@ class CFClient(object):
             if fsize < self.max_file_size:
                 # We can just upload it as-is.
                 return self.connection.put_object(cont.name, obj_name,
-                        contents=fileobj, content_type=content_type,
-                        etag=etag)
+                                                  contents=fileobj,
+                                                  content_type=content_type,
+                                                  etag=etag)
             # Files larger than self.max_file_size must be segmented
             # and uploaded separately.
             num_segments = int(math.ceil(float(fsize) / self.max_file_size))
@@ -533,19 +517,20 @@ class CFClient(object):
                         # We have to calculate the etag for each segment
                         etag = utils.get_checksum(tmp)
                         self.connection.put_object(cont.name, seg_name,
-                                contents=tmp, content_type=content_type,
-                                etag=etag)
+                                                   contents=tmp,
+                                                   content_type=content_type,
+                                                   etag=etag)
             # Upload the manifest
             hdr = {"X-Object-Meta-Manifest": "%s." % fname}
             return self.connection.put_object(cont.name, fname,
-                    contents=None, headers=hdr)
+                                              contents=None, headers=hdr)
 
         ispath = isinstance(file_or_path, basestring)
         if ispath:
             # Make sure it exists
             if not os.path.exists(file_or_path):
                 raise exc.FileNotFound("The file '%s' does not exist" %
-                        file_or_path)
+                                       file_or_path)
             fname = os.path.basename(file_or_path)
         else:
             fname = file_or_path.name
@@ -562,7 +547,6 @@ class CFClient(object):
             return None
         else:
             return self.get_object(container, obj_name)
-
 
     def upload_folder(self, folder_path, container=None, ignore=None):
         """
@@ -606,24 +590,23 @@ class CFClient(object):
         total_bytes = utils.folder_size(folder_path, ignore)
         upload_key = str(uuid.uuid4())
         self.folder_upload_status[upload_key] = {"continue": True,
-                "total_bytes": total_bytes,
-                "uploaded": 0,
-                }
+                                                 "total_bytes": total_bytes,
+                                                 "uploaded": 0,
+                                                 }
         self._upload_folder_in_background(folder_path, container, ignore,
-                upload_key)
+                                          upload_key)
         return (upload_key, total_bytes)
 
-
     def _upload_folder_in_background(self, folder_path, container, ignore,
-            upload_key):
+                                     upload_key):
         """Runs the folder upload in the background."""
         uploader = FolderUploader(folder_path, container, ignore, upload_key,
-                self)
+                                  self)
         uploader.start()
 
-
     def sync_folder_to_container(self, folder_path, container, delete=False,
-            include_hidden=False, ignore=None, ignore_timestamps=False):
+                                 include_hidden=False, ignore=None,
+                                 ignore_timestamps=False):
         """
         Compares the contents of the specified folder, and checks to make sure that
         the corresponding object is present in the specified container. If there is
@@ -650,13 +633,13 @@ class CFClient(object):
         """
         cont = self.get_container(container)
         self._local_files = []
-        self._sync_folder_to_container(folder_path, cont, prefix="", delete=delete,
-                include_hidden=include_hidden, ignore=ignore,
-                ignore_timestamps=ignore_timestamps)
-
+        self._sync_folder_to_container(
+            folder_path, cont, prefix="", delete=delete,
+            include_hidden=include_hidden, ignore=ignore,
+            ignore_timestamps=ignore_timestamps)
 
     def _sync_folder_to_container(self, folder_path, cont, prefix, delete,
-            include_hidden, ignore, ignore_timestamps):
+                                  include_hidden, ignore, ignore_timestamps):
         """
         This is the internal method that is called recursively to handle
         nested folder structures.
@@ -674,8 +657,10 @@ class CFClient(object):
                 if prefix:
                     subprefix = "%s/%s" % (prefix, subprefix)
                 self._sync_folder_to_container(pth, cont, prefix=subprefix,
-                        delete=delete, include_hidden=include_hidden,
-                        ignore=ignore, ignore_timestamps=ignore_timestamps)
+                                               delete=delete,
+                                               include_hidden=include_hidden,
+                                               ignore=ignore,
+                                               ignore_timestamps=ignore_timestamps)
                 continue
             self._local_files.append(os.path.join(prefix, fname))
             local_etag = utils.get_checksum(pth)
@@ -695,16 +680,15 @@ class CFClient(object):
                     else:
                         obj_time_str = EARLY_DATE_STR
                     local_mod = datetime.datetime.utcfromtimestamp(
-                            os.stat(pth).st_mtime)
+                        os.stat(pth).st_mtime)
                     local_mod_str = local_mod.isoformat()
                     if obj_time_str >= local_mod_str:
                         # Remote object is newer
                         continue
                 cont.upload_file(pth, obj_name=fullname, etag=local_etag,
-                        return_none=True)
+                                 return_none=True)
         if delete and not prefix:
             self._delete_objects_not_in_list(cont)
-
 
     def _delete_objects_not_in_list(self, cont):
         """
@@ -718,28 +702,24 @@ class CFClient(object):
             if objname not in self._local_files:
                 obj.delete()
 
-
     def _valid_upload_key(fnc):
         def wrapped(self, upload_key, *args, **kwargs):
             try:
                 self.folder_upload_status[upload_key]
             except KeyError:
                 raise exc.InvalidUploadID("There is no folder upload with the "
-                        "key '%s'." % upload_key)
+                                          "key '%s'." % upload_key)
             return fnc(self, upload_key, *args, **kwargs)
         return wrapped
-
 
     @_valid_upload_key
     def _update_progress(self, upload_key, size):
         self.folder_upload_status[upload_key]["uploaded"] += size
 
-
     @_valid_upload_key
     def get_uploaded(self, upload_key):
         """Returns the number of bytes uploaded for the specified process."""
         return self.folder_upload_status[upload_key]["uploaded"]
-
 
     @_valid_upload_key
     def cancel_folder_upload(self, upload_key):
@@ -749,15 +729,13 @@ class CFClient(object):
         """
         self.folder_upload_status[upload_key]["continue"] = False
 
-
     @_valid_upload_key
     def _should_abort_folder_upload(self, upload_key):
         """Returns True if the user has canceled upload; returns False otherwise."""
         return not self.folder_upload_status[upload_key]["continue"]
 
-
     def fetch_object(self, container, obj_name, include_meta=False,
-            chunk_size=None):
+                     chunk_size=None):
         """
         Fetches the object from storage.
 
@@ -774,20 +752,18 @@ class CFClient(object):
         cname = self._resolve_name(container)
         oname = self._resolve_name(obj_name)
         (meta, data) = self.connection.get_object(cname, oname,
-                resp_chunk_size=chunk_size)
+                                                  resp_chunk_size=chunk_size)
         if include_meta:
             return (meta, data)
         else:
             return data
 
-
     @handle_swiftclient_exception
     def get_all_containers(self, limit=None, marker=None, **parms):
         hdrs, conts = self.connection.get_container("")
         ret = [Container(self, name=cont["name"], object_count=cont["count"],
-                total_bytes=cont["bytes"]) for cont in conts]
+                         total_bytes=cont["bytes"]) for cont in conts]
         return ret
-
 
     @handle_swiftclient_exception
     def get_container(self, container):
@@ -798,15 +774,14 @@ class CFClient(object):
         if not cont:
             hdrs = self.connection.head_container(cname)
             cont = Container(self, name=cname,
-                    object_count=hdrs.get("x-container-object-count"),
-                    total_bytes=hdrs.get("x-container-bytes-used"))
+                             object_count=hdrs.get("x-container-object-count"),
+                             total_bytes=hdrs.get("x-container-bytes-used"))
             self._container_cache[cname] = cont
         return cont
 
-
     @handle_swiftclient_exception
     def get_container_objects(self, container, marker=None, limit=None,
-            prefix=None, delimiter=None, full_listing=False):
+                              prefix=None, delimiter=None, full_listing=False):
         """
         Return a list of StorageObjects representing the objects in the
         container. You can use the marker and limit params to handle pagination,
@@ -816,23 +791,23 @@ class CFClient(object):
         """
         cname = self._resolve_name(container)
         hdrs, objs = self.connection.get_container(cname, marker=marker,
-                limit=limit, prefix=prefix, delimiter=delimiter,
-                full_listing=full_listing)
+                                                   limit=limit, prefix=prefix,
+                                                   delimiter=delimiter,
+                                                   full_listing=full_listing)
         cont = self.get_container(cname)
         return [StorageObject(self, container=cont, attdict=obj) for obj in objs
                 if "name" in obj]
 
-
     @handle_swiftclient_exception
     def get_container_object_names(self, container, marker=None, limit=None,
-            prefix=None, delimiter=None, full_listing=False):
+                                   prefix=None, delimiter=None, full_listing=False):
         cname = self._resolve_name(container)
         hdrs, objs = self.connection.get_container(cname, marker=marker,
-                limit=limit, prefix=prefix, delimiter=delimiter,
-                full_listing=full_listing)
+                                                   limit=limit, prefix=prefix,
+                                                   delimiter=delimiter,
+                                                   full_listing=full_listing)
         cont = self.get_container(cname)
         return [obj["name"] for obj in objs]
-
 
     @handle_swiftclient_exception
     def get_info(self):
@@ -843,14 +818,12 @@ class CFClient(object):
         hdrs = self.connection.head_container("")
         return (hdrs["x-account-container-count"], hdrs["x-account-bytes-used"])
 
-
     @handle_swiftclient_exception
     def list_containers(self, limit=None, marker=None, **parms):
         """Returns a list of all container names as strings."""
         hdrs, conts = self.connection.get_container("")
         ret = [cont["name"] for cont in conts]
         return ret
-
 
     @handle_swiftclient_exception
     def list_containers_info(self, limit=None, marker=None, **parms):
@@ -865,21 +838,19 @@ class CFClient(object):
         hdrs, conts = self.connection.get_container("")
         return conts
 
-
     @handle_swiftclient_exception
     def list_public_containers(self):
         """Returns a list of all CDN-enabled containers."""
         response = self.connection.cdn_request("GET", [""])
         status = response.status
         if not 200 <= status < 300:
-            raise exc.CDNFailed("Bad response: (%s) %s" % (status, response.reason))
+            raise exc.CDNFailed("Bad response: (%s) %s" % (
+                status, response.reason))
         return response.read().splitlines()
-
 
     def make_container_public(self, container, ttl=None):
         """Enables CDN access for the specified container."""
         return self._cdn_set_access(container, ttl, True)
-
 
     def make_container_private(self, container):
         """
@@ -887,7 +858,6 @@ class CFClient(object):
         its TTL expires.
         """
         return self._cdn_set_access(container, None, False)
-
 
     def _cdn_set_access(self, container, ttl, enabled):
         """Used to enable or disable CDN access on a container."""
@@ -901,7 +871,8 @@ class CFClient(object):
         response = self.connection.cdn_request(mthd, [ct.name], hdrs=hdrs)
         status = response.status
         if not 200 <= status < 300:
-            raise exc.CDNFailed("Bad response: (%s) %s" % (status, response.reason))
+            raise exc.CDNFailed("Bad response: (%s) %s" % (
+                status, response.reason))
         ct.cdn_ttl = ttl
         for hdr in response.getheaders():
             if hdr[0].lower() == "x-cdn-uri":
@@ -911,7 +882,6 @@ class CFClient(object):
         # Read the response to force it to close for the next request.
         response.read()
 
-
     def set_cdn_log_retention(self, container, enabled):
         """
         Defer the logic to the container. It will end up calling
@@ -920,7 +890,6 @@ class CFClient(object):
         cont = self.get_container(container)
         cont.cdn_log_retention = enabled
 
-
     def _set_cdn_log_retention(self, container, enabled):
         """This does the actual call to the Cloud Files API."""
         hdrs = {"X-Log-Retention": "%s" % enabled}
@@ -928,16 +897,15 @@ class CFClient(object):
         response = self.connection.cdn_request("POST", [cname], hdrs=hdrs)
         status = response.status
         if not 200 <= status < 300:
-            raise exc.CDNFailed("Bad response: (%s) %s" % (status, response.reason))
+            raise exc.CDNFailed("Bad response: (%s) %s" % (
+                status, response.reason))
         # Read the response to force it to close for the next request.
         response.read()
-
 
     def get_container_streaming_uri(self, container):
         """Returns the URI for streaming content, or None if CDN is not enabled."""
         cont = self.get_container(container)
         return cont.cdn_streaming_uri
-
 
     def set_container_web_index_page(self, container, page):
         """
@@ -950,7 +918,6 @@ class CFClient(object):
         hdr = {"X-Container-Meta-Web-Index": page}
         return self.set_container_metadata(container, hdr, clear=False)
 
-
     def set_container_web_error_page(self, container, page):
         """
         Sets the header indicating the error page in a container
@@ -962,25 +929,24 @@ class CFClient(object):
         hdr = {"X-Container-Meta-Web-Error": page}
         return self.set_container_metadata(container, hdr, clear=False)
 
-
     @handle_swiftclient_exception
     def purge_cdn_object(self, container, name, email_addresses=None):
         ct = self.get_container(container)
         oname = self._resolve_name(name)
         if not ct.cdn_enabled:
             raise exc.NotCDNEnabled("The object '%s' is not in a "
-                    "CDN-enabled container." % oname)
+                                    "CDN-enabled container." % oname)
         hdrs = {}
         if email_addresses:
             if not isinstance(email_addresses, (list, tuple)):
                 email_addresses = [email_addresses]
             emls = ", ".join(email_addresses)
             hdrs = {"X-Purge-Email": emls}
-        response = self.connection.cdn_request("DELETE", ct.name, oname, hdrs=hdrs)
+        response = self.connection.cdn_request(
+            "DELETE", ct.name, oname, hdrs=hdrs)
         # Read the response to force it to close for the next request.
         response.read()
         return True
-
 
     def _get_user_agent(self):
         return self.connection.user_agent
@@ -989,7 +955,6 @@ class CFClient(object):
         self.connection.user_agent = val
 
     user_agent = property(_get_user_agent, _set_user_agent)
-
 
     def _get_http_log_debug(self):
         return self._http_log_debug
@@ -1002,9 +967,8 @@ class CFClient(object):
             os.environ.pop("SWIFTCLIENT_DEBUG", False)
 
     http_log_debug = property(_get_http_log_debug, _set_http_log_debug, None,
-            "Determines if all http traffic is logged to the display "
-            "for debugging.")
-
+                              "Determines if all http traffic is logged to the display "
+                              "for debugging.")
 
 
 class Connection(_swift_client.Connection):
@@ -1037,9 +1001,9 @@ class Connection(_swift_client.Connection):
         port = int(port)
         path = parsed.path.strip("/")
         conn_class = httplib.HTTPSConnection if is_ssl else httplib.HTTPConnection
-        self.cdn_connection = conn_class(host, port, timeout=CONNECTION_TIMEOUT)
+        self.cdn_connection = conn_class(
+            host, port, timeout=CONNECTION_TIMEOUT)
         self.cdn_connection.is_ssl = is_ssl
-
 
     def cdn_request(self, method, path=[], data="", hdrs=None):
         """
@@ -1057,8 +1021,8 @@ class Connection(_swift_client.Connection):
         uri_path = urlparse.urlparse(self.uri).path
         path = "%s/%s" % (uri_path.rstrip("/"), pth)
         headers = {"Content-Length": str(len(data)),
-                "User-Agent": self.user_agent,
-                "X-Auth-Token": self.token}
+                   "User-Agent": self.user_agent,
+                   "X-Auth-Token": self.token}
         if isinstance(hdrs, dict):
             headers.update(hdrs)
 
@@ -1082,14 +1046,12 @@ class Connection(_swift_client.Connection):
             attempt += 1
         if self.http_log_debug:
             self._http_log((path, method), {"headers": headers, "data": data},
-                    response, "")
+                           response, "")
         return response
-
 
     @property
     def uri(self):
         return self.url
-
 
 
 class FolderUploader(threading.Thread):
@@ -1114,7 +1076,7 @@ class FolderUploader(threading.Thread):
         if utils.match_pattern(dirname, self.ignore):
             return False
         for fname in (nm for nm in fnames
-                if not utils.match_pattern(nm, self.ignore)):
+                      if not utils.match_pattern(nm, self.ignore)):
             if self.client._should_abort_folder_upload(self.upload_key):
                 return
             full_path = os.path.join(dirname, fname)
@@ -1123,8 +1085,9 @@ class FolderUploader(threading.Thread):
                 continue
             obj_name = os.path.relpath(full_path, self.base_path)
             obj_size = os.stat(full_path).st_size
-            self.client.upload_file(self.container, full_path, obj_name=obj_name,
-                    return_none=True)
+            self.client.upload_file(
+                self.container, full_path, obj_name=obj_name,
+                return_none=True)
             self.client._update_progress(self.upload_key, obj_size)
 
     def run(self):

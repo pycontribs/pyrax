@@ -69,10 +69,10 @@ class BaseClient(httplib2.Http):
     user_agent = None
 
     def __init__(self, user, password, tenant_id=None, auth_url=None,
-            region_name=None, endpoint_type="publicURL", management_url=None,
-            auth_token=None, service_type=None, service_name=None,
-            timings=False, no_cache=False, http_log_debug=False,
-            timeout=None, auth_system="rackspace"):
+                 region_name=None, endpoint_type="publicURL", management_url=None,
+                 auth_token=None, service_type=None, service_name=None,
+                 timings=False, no_cache=False, http_log_debug=False,
+                 timeout=None, auth_system="rackspace"):
         super(BaseClient, self).__init__(timeout=timeout)
         self.user = user
         self.password = password
@@ -113,14 +113,12 @@ class BaseClient(httplib2.Http):
         # without having to override __init__().
         self._configure_manager()
 
-
     def _configure_manager(self):
         """
         This must be overridden in base classes to create
         the required manager class and configure it as needed.
         """
         raise NotImplementedError
-
 
     # The next 6 methods are simple pass-through to the manager.
     def list(self, limit=None, marker=None):
@@ -157,23 +155,19 @@ class BaseClient(httplib2.Http):
         """
         return self._manager.findall(**kwargs)
 
-
     def unauthenticate(self):
         """Clears all of our authentication information."""
         self.management_url = None
         self.auth_token = None
         self.used_keyring = False
 
-
     def get_timings(self):
         """Returns a list of all execution timings."""
         return self.times
 
-
     def reset_timings(self):
         """Clears the timing history."""
         self.times = []
-
 
     def http_log_req(self, args, kwargs):
         """
@@ -198,7 +192,6 @@ class BaseClient(httplib2.Http):
         if "body" in kwargs:
             self._logger.debug("REQ BODY: %s\n" % (kwargs["body"]))
 
-
     def http_log_resp(self, resp, body):
         """
         When self.http_log_debug is True, outputs the response received
@@ -207,7 +200,6 @@ class BaseClient(httplib2.Http):
         if not self.http_log_debug:
             return
         self._logger.debug("RESP:%s %s\n", resp, body)
-
 
     def request(self, *args, **kwargs):
         """
@@ -329,7 +321,6 @@ class BaseClient(httplib2.Http):
         else:
             raise exc.from_response(resp, body)
 
-
     def _fetch_endpoints_from_auth(self, uri):
         """
         We have a token, but don't know the final endpoint for the region. We
@@ -344,12 +335,11 @@ class BaseClient(httplib2.Http):
         """
         # GET ...:5001/v2.0/tokens/#####/endpoints
         uri = "/".join([uri, "tokens", "%s?belongsTo=%s"
-                % (self.proxy_token, self.proxy_tenant_id)])
+                        % (self.proxy_token, self.proxy_tenant_id)])
         resp, body = self._time_request(uri, "GET",
-                headers={"X-Auth_Token": self.proxy_token})
+                                        headers={"X-Auth_Token": self.proxy_token})
         return self._extract_service_catalog(uri, resp, body,
-                extract_token=False)
-
+                                             extract_token=False)
 
     def authenticate(self):
         """
@@ -372,7 +362,8 @@ class BaseClient(httplib2.Http):
                 # If we come through again, it's because the old token
                 # was rejected.
                 try:
-                    block = keyring.get_password("novaclient_auth", keyring_key)
+                    block = keyring.get_password(
+                        "novaclient_auth", keyring_key)
                     if block:
                         self.used_keyring = True
                         self.auth_token, self.management_url = block.split("|")
@@ -443,7 +434,6 @@ class BaseClient(httplib2.Http):
             except Exception:
                 pass
 
-
     def _v1_auth(self, uri):
         """
         The original auth system for OpenStack. Probably not used anymore.
@@ -470,7 +460,6 @@ class BaseClient(httplib2.Http):
         else:
             raise exc.from_response(resp, body)
 
-
     def _plugin_auth(self, auth_url):
         """Loads plugin-based authentication"""
         ep_name = "openstack.client.authenticate"
@@ -478,7 +467,6 @@ class BaseClient(httplib2.Http):
             if ep.name == self.auth_system:
                 return ep.load()(self, auth_url)
         raise exc.AuthSystemNotFound(self.auth_system)
-
 
     def _v2_auth(self, uri):
         """Authenticates against a v2.0 auth service."""
@@ -488,7 +476,6 @@ class BaseClient(httplib2.Http):
         if self.tenant_id:
             body["auth"]["tenantName"] = self.tenant_id
         self._authenticate(uri, body)
-
 
     def _authenticate(self, uri, body):
         """Authenticates and extracts the service catalog."""
@@ -503,7 +490,6 @@ class BaseClient(httplib2.Http):
         finally:
             self.follow_all_redirects = tmp_follow_all_redirects
         return self._extract_service_catalog(uri, resp, body)
-
 
     @property
     def projectid(self):

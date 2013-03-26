@@ -79,9 +79,9 @@ class CloudBlockStorageSnapshot(BaseResource):
         Adds a check to make sure that the snapshot is able to be deleted.
         """
         if not self.status in ("available", "error"):
-            raise exc.SnapshotNotAvailable("Snapshot must be in 'available' "
-                    "or 'error' status before deleting. Current status: %s" %
-                    self.status)
+            msg = ("Snapshot must be in 'available' "
+                   "or 'error' status before deleting. Current status: %s")
+            raise exc.SnapshotNotAvailable(msg % self.status)
         # When there are more thann one snapshot for a given volume, attempting to
         # delete them all will throw a 409 exception. This will help by retrying
         # such an error once after a RETRY_INTERVAL second delay.
@@ -93,7 +93,6 @@ class CloudBlockStorageSnapshot(BaseResource):
                 # Try again; if it fails, oh, well...
                 super(CloudBlockStorageSnapshot, self).delete()
 
-
     def _get_name(self):
         return self.display_name
 
@@ -101,7 +100,7 @@ class CloudBlockStorageSnapshot(BaseResource):
         self.display_name = val
 
     name = property(_get_name, _set_name, None,
-            "Convenience for referencing the display_name.")
+                    "Convenience for referencing the display_name.")
 
     def _get_description(self):
         return self.display_description
@@ -110,7 +109,7 @@ class CloudBlockStorageSnapshot(BaseResource):
         self.display_description = val
 
     description = property(_get_description, _set_description, None,
-            "Convenience for referencing the display_description.")
+                           "Convenience for referencing the display_description.")
 
 
 class CloudBlockStorageVolumeType(BaseResource):
@@ -135,9 +134,9 @@ class CloudBlockStorageVolume(BaseResource):
             # no need for the reference anyway
             pass
         self._snapshot_manager = BaseManager(self.manager.api,
-                resource_class=CloudBlockStorageSnapshot,
-                response_key="snapshot", uri_base="snapshots")
-
+                                             resource_class=CloudBlockStorageSnapshot,
+                                             response_key="snapshot",
+                                             uri_base="snapshots")
 
     def attach_to_instance(self, instance, mountpoint):
         """
@@ -148,10 +147,9 @@ class CloudBlockStorageVolume(BaseResource):
         instance_id = _resolve_id(instance)
         try:
             resp = self._nova_volumes.create_server_volume(instance_id,
-                    self.id, mountpoint)
+                                                           self.id, mountpoint)
         except Exception as e:
             raise exc.VolumeAttachmentFailed("%s" % e)
-
 
     def detach(self):
         """
@@ -172,7 +170,6 @@ class CloudBlockStorageVolume(BaseResource):
         except Exception as e:
             raise exc.VolumeDetachmentFailed("%s" % e)
 
-
     def delete(self, force=False):
         """
         Volumes cannot be deleted if either a) they are attached to a device, or
@@ -191,7 +188,6 @@ class CloudBlockStorageVolume(BaseResource):
             # For now, just re-raise
             raise
 
-
     def create_snapshot(self, name=None, description=None, force=False):
         """
         Creates a snapshot of this volume, with an optional name and
@@ -207,30 +203,31 @@ class CloudBlockStorageVolume(BaseResource):
         # instance.
         try:
             snap = self._snapshot_manager.create(volume=self, name=name,
-                    description=description, force=force)
+                                                 description=description, force=force)
         except exc.BadRequest as e:
             msg = str(e)
             if "Invalid volume: must be available" in msg:
                 # The volume for the snapshot was attached.
-                raise exc.VolumeNotAvailable("Cannot create a snapshot from an "
-                        "attached volume. Detach the volume before trying again, "
-                        "or pass 'force=True' to the create_snapshot() call.")
+                msg = ("Cannot create a snapshot from an "
+                       "attached volume. Detach the volume before trying again, "
+                       "or pass 'force=True' to the create_snapshot() call.")
+                raise exc.VolumeNotAvailable(msg)
             else:
                 # Some other error
                 raise
         except exc.ClientException as e:
             if e.code == 409:
                 if "Request conflicts with in-progress" in str(e):
-                    raise exc.VolumeNotAvailable("The volume is current "
-                            "creating a snapshot. You must wait until that "
-                            "completes before attempting to create an "
-                            "additional snapshot.")
+                    msg = ("The volume is current "
+                           "creating a snapshot. You must wait until that "
+                           "completes before attempting to create an "
+                           "additional snapshot.")
+                    raise exc.VolumeNotAvailable(msg)
                 else:
                     raise
             else:
                 raise
         return snap
-
 
     def list_snapshots(self):
         """
@@ -239,14 +236,12 @@ class CloudBlockStorageVolume(BaseResource):
         return [snap for snap in self._snapshot_manager.list()
                 if snap.volume_id == self.id]
 
-
     def delete_all_snapshots(self):
         """
         Locates all snapshots of this volume and deletes them.
         """
         for snap in self.list_snapshots():
             snap.delete()
-
 
     def _get_name(self):
         return self.display_name
@@ -255,7 +250,7 @@ class CloudBlockStorageVolume(BaseResource):
         self.display_name = val
 
     name = property(_get_name, _set_name, None,
-            "Convenience for referencing the display_name.")
+                    "Convenience for referencing the display_name.")
 
     def _get_description(self):
         return self.display_description
@@ -264,7 +259,7 @@ class CloudBlockStorageVolume(BaseResource):
         self.display_description = val
 
     description = property(_get_description, _set_description, None,
-            "Convenience for referencing the display_description.")
+                           "Convenience for referencing the display_description.")
 
 
 class CloudBlockStorageClient(BaseClient):
@@ -277,44 +272,46 @@ class CloudBlockStorageClient(BaseClient):
         to handle flavors.
         """
         self._manager = BaseManager(self,
-                resource_class=CloudBlockStorageVolume, response_key="volume",
-                uri_base="volumes")
+                                    resource_class=CloudBlockStorageVolume,
+                                    response_key="volume",
+                                    uri_base="volumes")
         self._types_manager = BaseManager(self,
-                resource_class=CloudBlockStorageVolumeType,
-                response_key="volume_type", uri_base="types")
+                                          resource_class=CloudBlockStorageVolumeType,
+                                          response_key="volume_type",
+                                          uri_base="types")
         self._snaps_manager = BaseManager(self,
-                resource_class=CloudBlockStorageSnapshot,
-                response_key="snapshot", uri_base="snapshots")
-
+                                          resource_class=CloudBlockStorageSnapshot,
+                                          response_key="snapshot",
+                                          uri_base="snapshots")
 
     def create(self, name="", size=None, volume_type=None, description=None,
-             metadata=None, snapshot_id=None, availability_zone=None):
+               metadata=None, snapshot_id=None, availability_zone=None):
         """
         Makes sure that the size is passed and is within allowed values.
         """
         if not isinstance(size, (int, long)) or not (
                 MIN_SIZE <= size <= MAX_SIZE):
             raise exc.InvalidSize("Volume sizes must be integers between "
-                    "%s and %s." % (MIN_SIZE, MAX_SIZE))
-        return super(CloudBlockStorageClient, self).create(name, size=size,
-                volume_type=volume_type, description=description,
-                metadata=metadata, snapshot_id=snapshot_id,
-                availability_zone=availability_zone)
-
+                                  "%s and %s." % (MIN_SIZE, MAX_SIZE))
+        creator = super(CloudBlockStorageClient, self).create
+        return creator(name, size=size,
+                       volume_type=volume_type,
+                       description=description,
+                       metadata=metadata,
+                       snapshot_id=snapshot_id,
+                       availability_zone=availability_zone)
 
     def list_types(self):
         """Returns a list of all available volume types."""
         return self._types_manager.list()
 
-
     def list_snapshots(self):
         """Returns a list of all snapshots."""
         return self._snaps_manager.list()
 
-
     def _create_body(self, name, size=None, volume_type=None, description=None,
-             metadata=None, snapshot_id=None, availability_zone=None,
-             volume=None, force=False):
+                     metadata=None, snapshot_id=None, availability_zone=None,
+                     volume=None, force=False):
         """
         Used to create the dict required to create any of the following:
             A new volume
@@ -325,7 +322,7 @@ class CloudBlockStorageClient(BaseClient):
             if not isinstance(size, (int, long)) or not (
                     MIN_SIZE <= size <= MAX_SIZE):
                 raise exc.InvalidSize("Volume sizes must be integers between "
-                        "%s and %s." % (MIN_SIZE, MAX_SIZE))
+                                      "%s and %s." % (MIN_SIZE, MAX_SIZE))
             if volume_type is None:
                 volume_type = "SATA"
             if description is None:
@@ -348,27 +345,23 @@ class CloudBlockStorageClient(BaseClient):
                     "display_description": description,
                     "volume_id": volume.id,
                     "force": str(force).lower(),
-                 }}
+                    }}
         return body
-
 
     @assure_volume
     def attach_to_instance(self, volume, instance, mountpoint):
         """Attaches the volume to the specified instance at the mountpoint."""
         return volume.attach_to_instance(instance, mountpoint)
 
-
     @assure_volume
     def detach(self, volume):
         """Detaches the volume from whatever device it is attached to."""
         return volume.detach()
 
-
     @assure_volume
     def delete_volume(self, volume, force=False):
         """Deletes the volume."""
         return volume.delete(force=force)
-
 
     @assure_volume
     def create_snapshot(self, volume, name=None, description=None, force=False):
@@ -379,8 +372,7 @@ class CloudBlockStorageClient(BaseClient):
         override this default behavior, pass force=True.
         """
         return volume.create_snapshot(name=name, description=description,
-                force=force)
-
+                                      force=force)
 
     @assure_snapshot
     def delete_snapshot(self, snapshot):

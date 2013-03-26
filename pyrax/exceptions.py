@@ -23,209 +23,278 @@ from novaclient import exceptions as _nova_exceptions
 ServerNotFound = _nova_exceptions.NotFound
 ServerClientException = _nova_exceptions.ClientException
 
+
 class PyraxException(Exception):
     pass
+
 
 class AccessListIDNotFound(PyraxException):
     pass
 
+
 class AuthenticationFailed(PyraxException):
     pass
+
 
 class AuthorizationFailure(PyraxException):
     pass
 
+
 class AuthSystemNotFound(PyraxException):
     pass
+
 
 class CDNFailed(PyraxException):
     pass
 
+
 class DomainCreationFailed(PyraxException):
     pass
+
 
 class DomainDeletionFailed(PyraxException):
     pass
 
+
 class DomainRecordAdditionFailed(PyraxException):
     pass
+
 
 class DomainRecordDeletionFailed(PyraxException):
     pass
 
+
 class DomainRecordNotFound(PyraxException):
     pass
+
 
 class DomainRecordNotUnique(PyraxException):
     pass
 
+
 class DomainRecordUpdateFailed(PyraxException):
     pass
+
 
 class DomainUpdateFailed(PyraxException):
     pass
 
+
 class EndpointNotFound(PyraxException):
     pass
+
 
 class FlavorNotFound(PyraxException):
     pass
 
+
 class FileNotFound(PyraxException):
     pass
+
 
 class FolderNotFound(PyraxException):
     pass
 
+
 class KeyringModuleNotInstalled(PyraxException):
     pass
+
 
 class KeyringUsernameMissing(PyraxException):
     pass
 
+
 class InvalidCDNMetadata(PyraxException):
     pass
+
 
 class InvalidConfigurationFile(PyraxException):
     pass
 
+
 class InvalidCredentialFile(PyraxException):
     pass
+
 
 class InvalidDateTimeString(PyraxException):
     pass
 
+
 class InvalidDeviceType(PyraxException):
     pass
+
 
 class InvalidNodeCondition(PyraxException):
     pass
 
+
 class InvalidNodeParameters(PyraxException):
     pass
+
 
 class InvalidPTRRecord(PyraxException):
     pass
 
+
 class InvalidSessionPersistenceType(PyraxException):
     pass
+
 
 class InvalidSize(PyraxException):
     pass
 
+
 class InvalidTemporaryURLMethod(PyraxException):
     pass
+
 
 class InvalidUploadID(PyraxException):
     pass
 
+
 class InvalidVirtualIPType(PyraxException):
     pass
+
 
 class InvalidVirtualIPVersion(PyraxException):
     pass
 
+
 class InvalidVolumeResize(PyraxException):
     pass
+
 
 class MissingDNSSettings(PyraxException):
     pass
 
+
 class MissingHealthMonitorSettings(PyraxException):
     pass
+
 
 class MissingLoadBalancerParameters(PyraxException):
     pass
 
+
 class MissingName(PyraxException):
     pass
+
 
 class MissingTemporaryURLKey(PyraxException):
     pass
 
+
 class NetworkCIDRInvalid(PyraxException):
     pass
+
 
 class NetworkCIDRMalformed(PyraxException):
     pass
 
+
 class NetworkCountExceeded(PyraxException):
     pass
+
 
 class NetworkInUse(PyraxException):
     pass
 
+
 class NetworkNotFound(PyraxException):
     pass
+
 
 class NetworkLabelNotUnique(PyraxException):
     pass
 
+
 class NoMoreResults(PyraxException):
     pass
+
 
 class NoReloadError(PyraxException):
     pass
 
+
 class NoSSLTerminationConfiguration(PyraxException):
     pass
+
 
 class NoSuchContainer(PyraxException):
     pass
 
+
 class NoSuchDatabase(PyraxException):
     pass
+
 
 class NoSuchDatabaseUser(PyraxException):
     pass
 
+
 class NoSuchObject(PyraxException):
     pass
+
 
 class NotAuthenticated(PyraxException):
     pass
 
+
 class NotCDNEnabled(PyraxException):
     pass
+
 
 class NoTokenLookupException(PyraxException):
     pass
 
+
 class ProtocolMismatch(PyraxException):
     pass
+
 
 class PTRRecordCreationFailed(PyraxException):
     pass
 
+
 class PTRRecordDeletionFailed(PyraxException):
     pass
+
 
 class PTRRecordUpdateFailed(PyraxException):
     pass
 
+
 class SnapshotNotAvailable(PyraxException):
     pass
+
 
 class UnattachedNode(PyraxException):
     pass
 
+
 class UnattachedVirtualIP(PyraxException):
     pass
+
 
 class Unauthorized(PyraxException):
     pass
 
+
 class UnicodePathError(PyraxException):
     pass
+
 
 class UploadFailed(PyraxException):
     pass
 
+
 class VolumeAttachmentFailed(PyraxException):
     pass
 
+
 class VolumeDetachmentFailed(PyraxException):
     pass
+
 
 class VolumeNotAvailable(PyraxException):
     pass
@@ -256,6 +325,7 @@ class ClientException(PyraxException):
             formatted_string += " (Request-ID: %s)" % self.request_id
 
         return formatted_string
+
 
 class BadRequest(ClientException):
     """
@@ -315,7 +385,6 @@ class HTTPNotImplemented(ClientException):
     message = "Not Implemented"
 
 
-
 # In Python 2.4 Exception is old-style and thus doesn't have a __subclasses__()
 # so we can do this:
 #     _code_map = dict((c.http_status, c)
@@ -323,7 +392,8 @@ class HTTPNotImplemented(ClientException):
 #
 # Instead, we have to hardcode it:
 _code_map = dict((c.http_status, c) for c in [BadRequest, Unauthorized,
-        Forbidden, NotFound, OverLimit, HTTPNotImplemented])
+                                              Forbidden, NotFound, OverLimit,
+                                              HTTPNotImplemented])
 
 
 def from_response(response, body):

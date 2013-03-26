@@ -22,6 +22,8 @@ import pyrax
 from pyrax import exceptions as exc
 
 # Used to indicate values that are lazy-loaded
+
+
 class Fault(object):
     def __nonzero__(self):
         return False
@@ -43,7 +45,6 @@ class Container(object):
         self._cdn_log_retention = FAULT
         self._object_cache = {}
 
-
     def _set_cdn_defaults(self):
         """Sets all the CDN-related attributes to default values."""
         self._cdn_uri = None
@@ -51,7 +52,6 @@ class Container(object):
         self._cdn_ssl_uri = None
         self._cdn_streaming_uri = None
         self._cdn_log_retention = False
-
 
     def _fetch_cdn_data(self):
         """Fetches the object's CDN data from the CDN service"""
@@ -78,9 +78,8 @@ class Container(object):
         # the next call
         response.read()
 
-
     def get_objects(self, marker=None, limit=None, prefix=None, delimiter=None,
-            full_listing=False):
+                    full_listing=False):
         """
         Returns a list of StorageObjects representing the objects in the
         container. You can use the marker and limit params to handle pagination,
@@ -89,10 +88,10 @@ class Container(object):
         full_listing to True, all objects in the container are returned.
         """
         objs = self.client.get_container_objects(self.name, marker=marker,
-                limit=limit, prefix=prefix, delimiter=delimiter,
-                full_listing=full_listing)
+                                                 limit=limit, prefix=prefix,
+                                                 delimiter=delimiter,
+                                                 full_listing=full_listing)
         return objs
-
 
     def get_object(self, name):
         """
@@ -108,21 +107,21 @@ class Container(object):
             try:
                 ret = objs[0]
             except IndexError:
-                raise exc.NoSuchObject("No object with the name '%s' exists" % name)
+                raise exc.NoSuchObject(
+                    "No object with the name '%s' exists" % name)
             self._object_cache[name] = ret
         return ret
 
-
-    def get_object_names(self, marker=None, limit=None, prefix=None, delimiter=None,
+    def get_object_names(
+        self, marker=None, limit=None, prefix=None, delimiter=None,
             full_listing=False):
         """
         Returns a list of the names of all the objects in this container. The same
         pagination parameters apply as in self.get_objects().
         """
         objs = self.get_objects(marker=marker, limit=limit, prefix=prefix,
-                delimiter=delimiter, full_listing=full_listing)
+                                delimiter=delimiter, full_listing=full_listing)
         return [obj.name for obj in objs]
-
 
     def store_object(self, obj_name, data, content_type=None, etag=None):
         """
@@ -130,10 +129,10 @@ class Container(object):
         the given data.
         """
         return self.client.store_object(self, obj_name, data,
-                content_type=content_type, etag=etag)
+                                        content_type=content_type, etag=etag)
 
-
-    def upload_file(self, file_or_path, obj_name=None, content_type=None, etag=None,
+    def upload_file(
+        self, file_or_path, obj_name=None, content_type=None, etag=None,
             return_none=False):
         """
         Uploads the specified file to this container. If no name is supplied, the
@@ -142,26 +141,23 @@ class Container(object):
         returned, unless 'return_none' is set to True.
         """
         return self.client.upload_file(self, file_or_path, obj_name=obj_name,
-                content_type=content_type, etag=etag, return_none=return_none)
-
+                                       content_type=content_type,
+                                       etag=etag, return_none=return_none)
 
     def delete_object(self, obj):
         """Deletes the specified object from this container."""
         self.remove_from_cache(obj)
         return self.client.delete_object(self, obj)
 
-
     def delete_all_objects(self):
         """Deletes all objects from this container."""
         for obj_name in self.client.get_container_object_names(self):
             self.client.delete_object(self, obj_name)
 
-
     def remove_from_cache(self, obj):
         """Removes the object from the cache."""
         nm = self.client._resolve_name(obj)
         self._object_cache.pop(nm, None)
-
 
     def delete(self, del_objects=False):
         """
@@ -170,7 +166,6 @@ class Container(object):
         case, each object will be deleted first, and then the container.
         """
         return self.client.delete_container(self.name, del_objects=del_objects)
-
 
     def fetch_object(self, obj_name, include_meta=False, chunk_size=None):
         """
@@ -186,17 +181,15 @@ class Container(object):
             Element 0: a dictionary containing metadata about the file.
             Element 1: a stream of bytes representing the object's contents.
         """
-        return self.client.fetch_object(self, obj_name, include_meta=include_meta,
-                chunk_size=chunk_size)
-
+        return self.client.fetch_object(
+            self, obj_name, include_meta=include_meta,
+            chunk_size=chunk_size)
 
     def get_metadata(self):
         return self.client.get_container_metadata(self)
 
-
     def set_metadata(self, metadata, clear=False):
         return self.client.set_container_metadata(self, metadata, clear=clear)
-
 
     def remove_metadata_key(self, key):
         """
@@ -204,7 +197,6 @@ class Container(object):
         does not exist in the metadata, nothing is done.
         """
         return self.client.remove_container_metadata_key(self, key)
-
 
     def set_web_index_page(self, page):
         """
@@ -216,7 +208,6 @@ class Container(object):
         """
         return self.client.set_container_web_index_page(self, page)
 
-
     def set_web_error_page(self, page):
         """
         Sets the header indicating the error page for this container
@@ -227,11 +218,9 @@ class Container(object):
         """
         return self.client.set_container_web_error_page(self, page)
 
-
     def make_public(self, ttl=None):
         """Enables CDN access for the specified container."""
         return self.client.make_container_public(self, ttl)
-
 
     def make_private(self):
         """
@@ -239,7 +228,6 @@ class Container(object):
         its TTL expires.
         """
         return self.client.make_container_private(self)
-
 
     def change_object_content_type(self, obj, new_ctype, guess=False):
         """
@@ -250,8 +238,7 @@ class Container(object):
         Failure during the put will result in a swift exception.
         """
         self.client.change_object_content_type(self, obj, new_ctype=new_ctype,
-                guess=guess)
-
+                                               guess=guess)
 
     def get_temp_url(self, obj, seconds, method="GET"):
         """
@@ -263,10 +250,8 @@ class Container(object):
         """
         return self.client.get_temp_url(self, obj, seconds=seconds, method=method)
 
-
     def __repr__(self):
         return "<Container '%s'>" % self.name
-
 
     ## BEGIN - CDN property definitions ##
     @property
@@ -282,7 +267,6 @@ class Container(object):
         self.client._set_cdn_log_retention(self, val)
         self._cdn_log_retention = val
 
-
     def _get_cdn_uri(self):
         if self._cdn_uri is FAULT:
             self._fetch_cdn_data()
@@ -290,7 +274,6 @@ class Container(object):
 
     def _set_cdn_uri(self, val):
         self._cdn_uri = val
-
 
     def _get_cdn_ttl(self):
         if self._cdn_ttl is FAULT:
@@ -300,7 +283,6 @@ class Container(object):
     def _set_cdn_ttl(self, val):
         self._cdn_ttl = val
 
-
     def _get_cdn_ssl_uri(self):
         if self._cdn_ssl_uri is FAULT:
             self._fetch_cdn_data()
@@ -308,7 +290,6 @@ class Container(object):
 
     def _set_cdn_ssl_uri(self, val):
         self._cdn_ssl_uri = val
-
 
     def _get_cdn_streaming_uri(self):
         if self._cdn_streaming_uri is FAULT:
@@ -318,10 +299,11 @@ class Container(object):
     def _set_cdn_streaming_uri(self, val):
         self._cdn_streaming_uri = val
 
-
-    cdn_log_retention = property(_get_cdn_log_retention, _set_cdn_log_retention)
+    cdn_log_retention = property(
+        _get_cdn_log_retention, _set_cdn_log_retention)
     cdn_uri = property(_get_cdn_uri, _set_cdn_uri)
     cdn_ttl = property(_get_cdn_ttl, _set_cdn_ttl)
     cdn_ssl_uri = property(_get_cdn_ssl_uri, _set_cdn_ssl_uri)
-    cdn_streaming_uri = property(_get_cdn_streaming_uri, _set_cdn_streaming_uri)
+    cdn_streaming_uri = property(
+        _get_cdn_streaming_uri, _set_cdn_streaming_uri)
     ## END - CDN property definitions ##
