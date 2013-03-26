@@ -11,7 +11,7 @@ if sys.version < "2.2.3":
 # Workaround for problems caused by this import
 # It's either this or hardcoding the version.
 #from pyrax.version import version
-with file("pyrax/version.py") as vfile:
+with open("pyrax/version.py", "rt") as vfile:
     version_text = vfile.read()
 vmatch = re.search(r'version ?= ?"(.+)"$', version_text)
 version = vmatch.groups()[0]
