@@ -58,7 +58,7 @@ class PyraxInitTest(unittest.TestCase):
         sav_region = pyrax.default_region
         sav_USER_AGENT = pyrax.USER_AGENT
         with utils.SelfDeletingTempfile() as cfgfile:
-            file(cfgfile, "w").write(dummy_cfg)
+            open(cfgfile, "w").write(dummy_cfg)
             pyrax._read_config_settings(cfgfile)
         self.assertEqual(pyrax.default_region, "FAKE")
         self.assertTrue(pyrax.USER_AGENT.startswith("FAKE "))
@@ -72,12 +72,12 @@ class PyraxInitTest(unittest.TestCase):
         dummy_cfg = dummy_cfg.replace("custom_user_agent", "fake")
         sav_USER_AGENT = pyrax.USER_AGENT
         with utils.SelfDeletingTempfile() as cfgfile:
-            file(cfgfile, "w").write(dummy_cfg)
+            open(cfgfile, "w").write(dummy_cfg)
             pyrax._read_config_settings(cfgfile)
         self.assertEqual(pyrax.USER_AGENT, sav_USER_AGENT)
         # Test bad file
         with utils.SelfDeletingTempfile() as cfgfile:
-            file(cfgfile, "w").write("FAKE")
+            open(cfgfile, "w").write("FAKE")
             self.assertRaises(exc.InvalidConfigurationFile, pyrax._read_config_settings, cfgfile)
         pyrax.default_region = sav_region
         pyrax.USER_AGENT = sav_USER_AGENT
@@ -94,7 +94,7 @@ class PyraxInitTest(unittest.TestCase):
 
     def test_set_credential_file(self):
         with utils.SelfDeletingTempfile() as tmpname:
-            with file(tmpname, "wb") as tmp:
+            with open(tmpname, "wb") as tmp:
                 tmp.write("[rackspace_cloud]\n")
                 tmp.write("username = %s\n" % self.username)
                 tmp.write("api_key = %s\n" % self.api_key)
@@ -105,7 +105,7 @@ class PyraxInitTest(unittest.TestCase):
 
     def test_set_bad_credential_file(self):
         with utils.SelfDeletingTempfile() as tmpname:
-            with file(tmpname, "wb") as tmp:
+            with open(tmpname, "wb") as tmp:
                 tmp.write("[rackspace_cloud]\n")
                 tmp.write("username = bad\n")
                 tmp.write("api_key = creds\n")

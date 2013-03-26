@@ -146,7 +146,7 @@ class CF_ContainerTest(unittest.TestCase):
         with utils.SelfDeletingTempfile() as tmpname:
             small_file_contents = "Test Value " * 25
             cont.client.max_file_size = len(small_file_contents) + 1
-            with file(tmpname, "wb") as tmp:
+            with open(tmpname, "wb") as tmp:
                 tmp.write(small_file_contents)
             fname = os.path.basename(tmpname)
             fake_type = "test/test"

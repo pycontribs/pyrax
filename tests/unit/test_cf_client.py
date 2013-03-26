@@ -312,7 +312,7 @@ class CF_ClientTest(unittest.TestCase):
         with utils.SelfDeletingTempfile() as tmpname:
             small_file_contents = "Test Value " * 25
             client.max_file_size = len(small_file_contents) + 1
-            with file(tmpname, "wb") as tmp:
+            with open(tmpname, "wb") as tmp:
                 tmp.write(small_file_contents)
             fname = os.path.basename(tmpname)
             fake_type = "test/test"
@@ -332,7 +332,7 @@ class CF_ClientTest(unittest.TestCase):
         with utils.SelfDeletingTempfile() as tmpname:
             small_file_contents = "Test Value " * 25
             client.max_file_size = len(small_file_contents) - 1
-            with file(tmpname, "wb") as tmp:
+            with open(tmpname, "wb") as tmp:
                 tmp.write(small_file_contents)
             fname = os.path.basename(tmpname)
             fake_type = "test/test"
@@ -437,7 +437,7 @@ class CF_ClientTest(unittest.TestCase):
             for idx in xrange(num_files):
                 nm = "file%s" % idx
                 pth = os.path.join(tmpdir, nm)
-                file(pth, "w").write("test")
+                open(pth, "w").write("test")
             uploader = FakeFolderUploader(tmpdir, cont, "", fake_upload_key, client)
             # Note that the fake moved the actual run() code to a different method
             uploader.actual_run()
@@ -469,7 +469,7 @@ class CF_ClientTest(unittest.TestCase):
             for idx in xrange(num_files):
                 nm = "file%s" % idx
                 pth = os.path.join(tmpdir, nm)
-                file(pth, "w").write("test")
+                open(pth, "w").write("test")
             clt.sync_folder_to_container(tmpdir, cont)
             self.assertEqual(clt.upload_file.call_count, num_files)
         clt.upload_file = up
@@ -491,11 +491,11 @@ class CF_ClientTest(unittest.TestCase):
             for idx in xrange(num_vis_files):
                 nm = "file%s" % idx
                 pth = os.path.join(tmpdir, nm)
-                file(pth, "w").write("test")
+                open(pth, "w").write("test")
             for idx in xrange(num_hid_files):
                 nm = ".file%s" % idx
                 pth = os.path.join(tmpdir, nm)
-                file(pth, "w").write("test")
+                open(pth, "w").write("test")
             clt.sync_folder_to_container(tmpdir, cont, include_hidden=True)
             self.assertEqual(clt.upload_file.call_count, num_all_files)
         clt.upload_file = up
@@ -517,13 +517,13 @@ class CF_ClientTest(unittest.TestCase):
             for idx in xrange(num_files):
                 nm = "file%s" % idx
                 pth = os.path.join(tmpdir, nm)
-                file(pth, "w").write("test")
+                open(pth, "w").write("test")
             nested_folder = os.path.join(tmpdir, "nested")
             os.mkdir(nested_folder)
             for idx in xrange(num_nested_files):
                 nm = "file%s" % idx
                 pth = os.path.join(nested_folder, nm)
-                file(pth, "w").write("test")
+                open(pth, "w").write("test")
             clt.sync_folder_to_container(tmpdir, cont)
             self.assertEqual(clt.upload_file.call_count, num_all_files)
         clt.upload_file = up

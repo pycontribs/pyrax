@@ -75,9 +75,9 @@ class UtilsTest(unittest.TestCase):
         md.update(test)
         expected = md.hexdigest()
         with utils.SelfDeletingTempfile() as tmp:
-            with file(tmp, "w") as testfile:
+            with open(tmp, "w") as testfile:
                 testfile.write(test)
-            with file(tmp, "r") as testfile:
+            with open(tmp, "r") as testfile:
                 received = utils.get_checksum(testfile)
         self.assertEqual(expected, received)
 
@@ -96,7 +96,7 @@ class UtilsTest(unittest.TestCase):
             content = "x" * 100
             for idx in xrange(10):
                 pth = os.path.join(tmpdir, "test%s" % idx)
-                with file(pth, "w") as ff:
+                with open(pth, "w") as ff:
                     ff.write(content)
             fsize = utils.folder_size(tmpdir)
         self.assertEqual(fsize, 1000)
@@ -107,7 +107,7 @@ class UtilsTest(unittest.TestCase):
             content = "x" * 100
             for idx in xrange(10):
                 pth = os.path.join(tmpdir, "test%s" % idx)
-                with file(pth, "w") as ff:
+                with open(pth, "w") as ff:
                     ff.write(content)
             # ignore one file
             fsize = utils.folder_size(tmpdir, ignore="*7")
@@ -119,7 +119,7 @@ class UtilsTest(unittest.TestCase):
             content = "x" * 100
             for idx in xrange(10):
                 pth = os.path.join(tmpdir, "test%s" % idx)
-                with file(pth, "w") as ff:
+                with open(pth, "w") as ff:
                     ff.write(content)
             # ignore odd files
             ignore = ["*1", "*3", "*5", "*7", "*9"]
