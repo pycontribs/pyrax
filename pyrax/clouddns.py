@@ -16,6 +16,23 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+"""
+Contains Python bindings for the Rackspace Cloud DNS API.
+
+CloudDNSClient, CloudDNSManager, and CloudDNSDomain all contain
+an export of the form:
+
+        Sample export:
+
+            {u'accountId': 000000,
+             u'contentType': u'BIND_9',
+             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com.'
+                          u'foo@example.com. 1354202974 21600 3600 1814400 500',
+                'example.com.\t3600\tIN\tNS\tdns1.stabletransit.com.'
+                'example.com.\t3600\tIN\tNS\tdns2.stabletransit.com.',
+             u'id': 1111111}
+
+"""
 
 from functools import wraps
 import json
@@ -43,7 +60,6 @@ def assure_domain(fnc):
     return _wrapped
 
 
-
 class CloudDNSRecord(BaseResource):
     """
     This class represents a domain record.
@@ -57,14 +73,13 @@ class CloudDNSRecord(BaseResource):
     ttl = None
     comment = None
 
-
     def update(self, data=None, priority=None, ttl=None, comment=None):
         """
         Modifies this record.
         """
         return self.manager.update_record(self.domain_id, self, data=data,
-                priority=priority, ttl=ttl, comment=comment)
-
+                                          priority=priority, ttl=ttl,
+                                          comment=comment)
 
     def get(self):
         """
@@ -72,13 +87,11 @@ class CloudDNSRecord(BaseResource):
         """
         return self.manager.get_record(self.domain_id, self)
 
-
     def delete(self):
         """
         Deletes an existing record for this domain.
         """
         return self.manager.delete_record(self.domain_id, self)
-
 
 
 class CloudDNSDomain(BaseResource):
@@ -92,7 +105,6 @@ class CloudDNSDomain(BaseResource):
         also delete any subdomains, pass True to 'delete_subdomains'.
         """
         self.manager.delete(self, delete_subdomains=delete_subdomains)
-
 
     def changes_since(self, date_or_datetime):
         """
@@ -120,23 +132,13 @@ class CloudDNSDomain(BaseResource):
         """
         return self.manager.changes_since(self, date_or_datetime)
 
-
     def export(self):
         """
         Provides the BIND (Berkeley Internet Name Domain) 9 formatted contents
         of the requested domain. This call is for a single domain only, and as such,
         does not provide subdomain information.
-
-        Sample export:
-            {u'accountId': 000000,
-             u'contentType': u'BIND_9',
-             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. foo@example.com. 1354202974 21600 3600 1814400 500'
-                'example.com.\t3600\tIN\tNS\tdns1.stabletransit.com.'
-                'example.com.\t3600\tIN\tNS\tdns2.stabletransit.com.',
-             u'id': 1111111}
         """
         return self.manager.export_domain(self)
-
 
     def update(self, emailAddress=None, ttl=None, comment=None):
         """
@@ -147,8 +149,7 @@ class CloudDNSDomain(BaseResource):
             - comment
         """
         return self.manager.update_domain(self, emailAddress=emailAddress,
-                ttl=ttl, comment=comment)
-
+                                          ttl=ttl, comment=comment)
 
     def list_subdomains(self, limit=None, offset=None):
         """
@@ -156,13 +157,11 @@ class CloudDNSDomain(BaseResource):
         """
         return self.manager.list_subdomains(self, limit=limit, offset=offset)
 
-
     def list_records(self, limit=None, offset=None):
         """
         Returns a list of all records configured for this domain.
         """
         return self.manager.list_records(self, limit=limit, offset=offset)
-
 
     def search_records(self, record_type, name=None, data=None):
         """
@@ -170,8 +169,7 @@ class CloudDNSDomain(BaseResource):
         the supplied search criteria.
         """
         return self.manager.search_records(self, record_type=record_type,
-                name=name, data=data)
-
+                                           name=name, data=data)
 
     def find_record(self, record_type, name=None, data=None):
         """
@@ -183,13 +181,12 @@ class CloudDNSDomain(BaseResource):
         be raised.
         """
         matches = self.manager.search_records(self, record_type=record_type,
-                name=name, data=data)
+                                              name=name, data=data)
         if not matches:
             raise exc.DomainRecordNotFound
         elif len(matches) > 1:
             raise exc.DomainRecordNotUnique
         return matches[0]
-
 
     def add_records(self, records):
         """
@@ -207,22 +204,20 @@ class CloudDNSDomain(BaseResource):
     # Create an alias, so that adding a single record is more intuitive
     add_record = add_records
 
-
     def get_record(self, record):
         """
         Gets the full information for an existing record for this domain.
         """
         return self.manager.get_record(self, record)
 
-
     def update_record(self, record, data=None, priority=None,
-            ttl=None, comment=None):
+                      ttl=None, comment=None):
         """
         Modifies an existing record for this domain.
         """
         return self.manager.update_record(self, record, data=data,
-                priority=priority, ttl=ttl, comment=comment)
-
+                                          priority=priority, ttl=ttl,
+                                          comment=comment)
 
     def delete_record(self, record):
         """
@@ -243,30 +238,30 @@ class CloudDNSPTRRecord(object):
                 setattr(self, key, val)
         self.device = device
 
-
     def delete(self):
         """
         Deletes this PTR record from its device.
         """
         return pyrax.cloud_dns.delete_ptr_records(self.device, self.data)
 
-
     def __repr__(self):
         reprkeys = ("id", "data", "name", "ttl")
-        info = ", ".join("%s=%s" % (key, getattr(self, key)) for key in reprkeys)
+        info = ", ".join("%s=%s" % (key, getattr(
+            self, key)) for key in reprkeys)
         return "<%s %s>" % (self.__class__.__name__, info)
-
 
 
 class CloudDNSManager(BaseManager):
     def __init__(self, api, resource_class=None, response_key=None,
-            plural_response_key=None, uri_base=None):
-        super(CloudDNSManager, self).__init__(api, resource_class=resource_class,
-                response_key=response_key, plural_response_key=plural_response_key,
-                uri_base=uri_base)
+                 plural_response_key=None, uri_base=None):
+        super(CloudDNSManager,
+              self).__init__(api,
+                             resource_class=resource_class,
+                             response_key=response_key,
+                             plural_response_key=plural_response_key,
+                             uri_base=uri_base)
         self._paging = {"domain": {}, "subdomain": {}, "record": {}}
         self._reset_paging(service="all")
-
 
     def _reset_paging(self, service, body=None):
         """
@@ -296,7 +291,6 @@ class CloudDNSManager(BaseManager):
                 elif link["rel"] == "previous":
                     svc_dct["prev_uri"] = page_uri
 
-
     def _get_pagination_qs(self, limit, offset):
         pagination_items = []
         if limit is not None:
@@ -307,12 +301,10 @@ class CloudDNSManager(BaseManager):
         qs = "?%s" % qs if qs else ""
         return qs
 
-
     def list(self, limit=None, offset=None):
         """Gets a list of all domains, or optionally a page of domains."""
         uri = "/%s%s" % (self.uri_base, self._get_pagination_qs(limit, offset))
         return self._list(uri)
-
 
     def _list(self, uri, obj_class=None, list_all=False):
         """
@@ -325,16 +317,15 @@ class CloudDNSManager(BaseManager):
 
         data = resp_body[self.plural_response_key]
         ret = [obj_class(self, res, loaded=False)
-                for res in data if res]
+               for res in data if res]
         self._reset_paging("domain", resp_body)
         if list_all:
             dom_paging = self._paging.get("domain", {})
             while dom_paging.get("next_uri"):
                 next_uri = dom_paging.get("next_uri")
                 ret.extend(self._list(uri=next_uri, obj_class=obj_class,
-                        list_all=False))
+                                      list_all=False))
         return ret
-
 
     def list_previous_page(self):
         """
@@ -345,9 +336,8 @@ class CloudDNSManager(BaseManager):
         uri = self._paging.get("domain", {}).get("prev_uri")
         if uri is None:
             raise exc.NoMoreResults("There are no previous pages of domains "
-                    "to list.")
+                                    "to list.")
         return self._list(uri)
-
 
     def list_next_page(self):
         """
@@ -358,9 +348,8 @@ class CloudDNSManager(BaseManager):
         uri = self._paging.get("domain", {}).get("next_uri")
         if uri is None:
             raise exc.NoMoreResults("There are no more pages of domains to "
-                    "list.")
+                                    "list.")
         return self._list(uri)
-
 
     def _get(self, uri):
         """
@@ -375,9 +364,8 @@ class CloudDNSManager(BaseManager):
         body["records"] = []
         return self.resource_class(self, body, loaded=True)
 
-
     def _async_call(self, uri, body=None, method="GET", error_class=None,
-            has_response=True, *args, **kwargs):
+                    has_response=True, *args, **kwargs):
         """
         Handles asynchronous call/responses for the DNS API.
 
@@ -389,11 +377,11 @@ class CloudDNSManager(BaseManager):
         to handle the result.
         """
         api_methods = {
-                "GET": self.api.method_get,
-                "POST": self.api.method_post,
-                "PUT": self.api.method_put,
-                "DELETE": self.api.method_delete,
-                }
+            "GET": self.api.method_get,
+            "POST": self.api.method_post,
+            "PUT": self.api.method_put,
+            "DELETE": self.api.method_delete,
+        }
         api_method = api_methods[method]
         if body is None:
             _resp, ret_body = api_method(uri, *args, **kwargs)
@@ -406,7 +394,7 @@ class CloudDNSManager(BaseManager):
                 (time.time() - start < WAIT_LIMIT)):
             _resp, ret_body = self.api.method_get(massagedURL)
         if error_class and (ret_body["status"] == "ERROR"):
-            #This call will handle raising the error.
+            # This call will handle raising the error.
             self._process_async_error(ret_body, error_class)
         if has_response:
             ret = _resp, ret_body["response"]
@@ -417,7 +405,6 @@ class CloudDNSManager(BaseManager):
         except Exception:
             pass
         return ret
-
 
     def _process_async_error(self, ret_body, error_class):
         """
@@ -442,9 +429,8 @@ class CloudDNSManager(BaseManager):
             msg = _fmt_error(error)
         raise error_class(msg)
 
-
     def _create(self, uri, body, records=None, subdomains=None,
-            return_none=False, return_raw=False, **kwargs):
+                return_none=False, return_raw=False, **kwargs):
         """
         Handles the communication with the API when creating a new
         resource managed by this class.
@@ -469,10 +455,9 @@ class CloudDNSManager(BaseManager):
         """
         self.run_hooks("modify_body_for_create", body, **kwargs)
         _resp, ret_body = self._async_call(uri, body=body, method="POST",
-                error_class=exc.DomainCreationFailed)
+                                           error_class=exc.DomainCreationFailed)
         response_body = ret_body[self.response_key][0]
         return self.resource_class(self, response_body)
-
 
     def delete(self, domain, delete_subdomains=False):
         """
@@ -483,9 +468,10 @@ class CloudDNSManager(BaseManager):
         uri = "/%s/%s" % (self.uri_base, utils.get_id(domain))
         if delete_subdomains:
             uri = "%s?deleteSubdomains=true" % uri
-        _resp, ret_body = self._async_call(uri, method="DELETE",
-                error_class=exc.DomainDeletionFailed, has_response=False)
-
+        _resp, ret_body = self._async_call(uri,
+                                           method="DELETE",
+                                           error_class=exc.DomainDeletionFailed,
+                                           has_response=False)
 
     def findall(self, **kwargs):
         """
@@ -502,10 +488,9 @@ class CloudDNSManager(BaseManager):
             uri = "/%s?name=%s" % (self.uri_base, nm)
             matches = self._list(uri, list_all=True)
             return [match for match in matches
-                if match.name == nm]
+                    if match.name == nm]
         else:
             return super(CloudDNSManager, self).findall(**kwargs)
-
 
     def changes_since(self, domain, date_or_datetime):
         """
@@ -537,26 +522,16 @@ class CloudDNSManager(BaseManager):
         resp, body = self.api.method_get(uri)
         return body.get("changes", [])
 
-
     def export_domain(self, domain):
         """
         Provides the BIND (Berkeley Internet Name Domain) 9 formatted contents
         of the requested domain. This call is for a single domain only, and as
         such, does not provide subdomain information.
-
-        Sample export:
-            {u'accountId': 000000,
-             u'contentType': u'BIND_9',
-             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. foo@example.com. 1354202974 21600 3600 1814400 500'
-                'example.com.\t3600\tIN\tNS\tdns1.stabletransit.com.'
-                'example.com.\t3600\tIN\tNS\tdns2.stabletransit.com.',
-             u'id': 1111111}
         """
         uri = "/domains/%s/export" % utils.get_id(domain)
         resp, ret_body = self._async_call(uri, method="GET",
-                error_class=exc.NotFound)
+                                          error_class=exc.NotFound)
         return ret_body.get("contents", "")
-
 
     def import_domain(self, domain_data):
         """
@@ -569,9 +544,8 @@ class CloudDNSManager(BaseManager):
                 "contents": domain_data,
                 }]}
         resp, ret_body = self._async_call(uri, method="POST", body=body,
-                error_class=exc.DomainCreationFailed)
+                                          error_class=exc.DomainCreationFailed)
         return ret_body
-
 
     def update_domain(self, domain, emailAddress=None, ttl=None, comment=None):
         """
@@ -583,20 +557,20 @@ class CloudDNSManager(BaseManager):
         """
         if not any((emailAddress, ttl, comment)):
             raise exc.MissingDNSSettings(
-                    "No settings provided to update_domain().")
+                "No settings provided to update_domain().")
         uri = "/domains/%s" % utils.get_id(domain)
         body = {"comment": comment,
                 "ttl": ttl,
                 "emailAddress": emailAddress,
                 }
         none_keys = [key for key, val in body.items()
-                if val is None]
+                     if val is None]
         for none_key in none_keys:
             body.pop(none_key)
         resp, ret_body = self._async_call(uri, method="PUT", body=body,
-                error_class=exc.DomainUpdateFailed, has_response=False)
+                                          error_class=exc.DomainUpdateFailed,
+                                          has_response=False)
         return ret_body
-
 
     def list_subdomains(self, domain, limit=None, offset=None):
         """
@@ -611,7 +585,6 @@ class CloudDNSManager(BaseManager):
             uri = "%s&%s" % (uri, page_qs[1:])
         return self._list_subdomains(uri, domain.id)
 
-
     def _list_subdomains(self, uri, domain_id):
         resp, body = self.api.method_get(uri)
         self._reset_paging("subdomain", body)
@@ -619,7 +592,6 @@ class CloudDNSManager(BaseManager):
         return [CloudDNSDomain(self, subdomain, loaded=False)
                 for subdomain in subdomains
                 if subdomain["id"] != domain_id]
-
 
     def list_subdomains_previous_page(self):
         """
@@ -630,9 +602,8 @@ class CloudDNSManager(BaseManager):
         uri = self._paging.get("subdomain", {}).get("prev_uri")
         if uri is None:
             raise exc.NoMoreResults("There are no previous pages of subdomains "
-                    "to list.")
+                                    "to list.")
         return self._list_subdomains(uri)
-
 
     def list_subdomains_next_page(self):
         """
@@ -643,18 +614,16 @@ class CloudDNSManager(BaseManager):
         uri = self._paging.get("subdomain", {}).get("next_uri")
         if uri is None:
             raise exc.NoMoreResults("There are no more pages of subdomains "
-                    "to list.")
+                                    "to list.")
         return self._list_subdomains(uri)
-
 
     def list_records(self, domain, limit=None, offset=None):
         """
         Returns a list of all records configured for the specified domain.
         """
         uri = "/domains/%s/records%s" % (utils.get_id(domain),
-                self._get_pagination_qs(limit, offset))
+                                         self._get_pagination_qs(limit, offset))
         return self._list_records(uri)
-
 
     def _list_records(self, uri):
         resp, body = self.api.method_get(uri)
@@ -669,7 +638,6 @@ class CloudDNSManager(BaseManager):
         return [CloudDNSRecord(self, record, loaded=False)
                 for record in records if record]
 
-
     def list_records_previous_page(self):
         """
         When paging through record results, this will return the previous page,
@@ -679,9 +647,8 @@ class CloudDNSManager(BaseManager):
         uri = self._paging.get("record", {}).get("prev_uri")
         if uri is None:
             raise exc.NoMoreResults("There are no previous pages of records "
-                    "to list.")
+                                    "to list.")
         return self._list_records(uri)
-
 
     def list_records_next_page(self):
         """
@@ -691,9 +658,9 @@ class CloudDNSManager(BaseManager):
         """
         uri = self._paging.get("record", {}).get("next_uri")
         if uri is None:
-            raise exc.NoMoreResults("There are no more pages of records to list.")
+            raise exc.NoMoreResults(
+                "There are no more pages of records to list.")
         return self._list_records(uri)
-
 
     def search_records(self, domain, record_type, name=None, data=None):
         """
@@ -723,7 +690,6 @@ class CloudDNSManager(BaseManager):
         return [CloudDNSRecord(self, record, loaded=False)
                 for record in records if record]
 
-
     def add_records(self, domain, records):
         """
         Adds the records to this domain. Each record should be a dict with the
@@ -742,13 +708,13 @@ class CloudDNSManager(BaseManager):
         uri = "/domains/%s/records" % dom_id
         body = {"records": records}
         resp, ret_body = self._async_call(uri, method="POST", body=body,
-                error_class=exc.DomainRecordAdditionFailed, has_response=False)
+                                          error_class=exc.DomainRecordAdditionFailed,
+                                          has_response=False)
         records = ret_body.get("response", {}).get("records", [])
         for record in records:
             record["domain_id"] = dom_id
         return [CloudDNSRecord(self, record, loaded=False)
                 for record in records if record]
-
 
     def get_record(self, domain, record):
         """
@@ -759,9 +725,8 @@ class CloudDNSManager(BaseManager):
         resp, ret_body = self.api.method_get(uri)
         return ret_body
 
-
     def update_record(self, domain, record, data=None, priority=None,
-            ttl=None, comment=None):
+                      ttl=None, comment=None):
         """
         Modifies an existing record for a domain.
         """
@@ -769,24 +734,24 @@ class CloudDNSManager(BaseManager):
         uri = "/domains/%s/records/%s" % (utils.get_id(domain), rec_id)
         body = {"name": record.name}
         all_opts = (("data", data), ("priority", priority), ("ttl", ttl),
-                ("comment", comment))
+                   ("comment", comment))
         opts = [(k, v) for k, v in all_opts if v is not None]
         body.update(dict(opts))
         resp, ret_body = self._async_call(uri, method="PUT", body=body,
-                error_class=exc.DomainRecordUpdateFailed, has_response=False)
+                                          error_class=exc.DomainRecordUpdateFailed,
+                                          has_response=False)
         return ret_body
-
 
     def delete_record(self, domain, record):
         """
         Deletes an existing record for a domain.
         """
         uri = "/domains/%s/records/%s" % (utils.get_id(domain),
-                utils.get_id(record))
+                                          utils.get_id(record))
         resp, ret_body = self._async_call(uri, method="DELETE",
-                error_class=exc.DomainRecordDeletionFailed, has_response=False)
+                                          error_class=exc.DomainRecordDeletionFailed,
+                                          has_response=False)
         return ret_body
-
 
     def _get_ptr_details(self, device, device_type):
         """
@@ -804,7 +769,6 @@ class CloudDNSManager(BaseManager):
         href = "%s/%s/%s" % (ep, svc, utils.get_id(device))
         return (href, svc_name)
 
-
     def _resolve_device_type(self, device):
         """
         Given a device, determines if it is a CloudServer, a CloudLoadBalancer,
@@ -813,7 +777,7 @@ class CloudDNSManager(BaseManager):
         try:
             from tests.unit import fakes
             server_types = (pyrax.CloudServer, fakes.FakeServer,
-                fakes.FakeDNSDevice)
+                            fakes.FakeDNSDevice)
             lb_types = (pyrax.CloudLoadBalancer, fakes.FakeLoadBalancer)
         except ImportError:
             # Not running with tests
@@ -825,9 +789,8 @@ class CloudDNSManager(BaseManager):
             device_type = "loadbalancer"
         else:
             raise exc.InvalidDeviceType("The device '%s' must be a CloudServer "
-                    "or a CloudLoadBalancer." % device)
+                                        "or a CloudLoadBalancer." % device)
         return device_type
-
 
     def list_ptr_records(self, device):
         """
@@ -841,9 +804,8 @@ class CloudDNSManager(BaseManager):
         except exc.NotFound:
             return []
         records = [CloudDNSPTRRecord(rec, device)
-                for rec in ret_body.get("records", [])]
+                   for rec in ret_body.get("records", [])]
         return records
-
 
     def add_ptr_records(self, device, records):
         """
@@ -854,12 +816,12 @@ class CloudDNSManager(BaseManager):
         if not isinstance(records, (list, tuple)):
             records = [records]
         body = {"recordsList": {
-                    "records": records},
-                "link": {
-                    "content": "",
-                    "href": href,
-                    "rel": svc_name,
-                }}
+            "records": records},
+            "link": {
+            "content": "",
+            "href": href,
+            "rel": svc_name,
+            }}
         uri = "/rdns"
         # This is a necessary hack, so here's why: if you attempt to add
         # PTR records to device, and you don't have rights to either the device
@@ -874,18 +836,17 @@ class CloudDNSManager(BaseManager):
         # instead; when that happens this kludge can go away.
         try:
             _resp, ret_body = self._async_call(uri, body=body, method="POST",
-                    error_class=exc.PTRRecordCreationFailed)
+                                               error_class=exc.PTRRecordCreationFailed)
         except exc.EndpointNotFound:
             raise exc.InvalidPTRRecord("The domain/IP address information is not "
-                    "valid for this device.")
+                                       "valid for this device.")
         return ret_body.get("records")
         records = [CloudDNSPTRRecord(rec, device)
-                for rec in ret_body.get("records", [])]
+                   for rec in ret_body.get("records", [])]
         return records
 
-
     def update_ptr_record(self, device, record, domain_name, data=None,
-            ttl=None, comment=None):
+                          ttl=None, comment=None):
         """
         Updates a PTR record with the supplied values.
         """
@@ -896,10 +857,10 @@ class CloudDNSManager(BaseManager):
         except AttributeError:
             rec_id = record
         rec = {"name": domain_name,
-              "id": rec_id,
-              "type": "PTR",
-              "data": data,
-            }
+               "id": rec_id,
+               "type": "PTR",
+               "data": data,
+               }
         if ttl is not None:
             # Minimum TTL is 300 seconds
             rec["ttl"] = max(300, ttl)
@@ -907,21 +868,21 @@ class CloudDNSManager(BaseManager):
             # Maximum comment length is 160 chars
             rec["comment"] = comment[:160]
         body = {"recordsList": {
-                    "records": [rec]},
-                "link": {
-                    "content": "",
-                    "href": href,
-                    "rel": svc_name,
-                }}
+            "records": [rec]},
+            "link": {
+            "content": "",
+            "href": href,
+            "rel": svc_name,
+            }}
         uri = "/rdns"
         try:
             _resp, ret_body = self._async_call(uri, body=body, method="PUT",
-                    has_response=False, error_class=exc.PTRRecordUpdateFailed)
+                                               has_response=False,
+                                               error_class=exc.PTRRecordUpdateFailed)
         except exc.EndpointNotFound as e:
             raise exc.InvalidPTRRecord("The record domain/IP address "
-                    "information is not valid for this device.")
+                                       "information is not valid for this device.")
         return ret_body.get("status") == "COMPLETED"
-
 
     def delete_ptr_records(self, device, ip_address=None):
         """
@@ -934,10 +895,9 @@ class CloudDNSManager(BaseManager):
         if ip_address:
             uri = "%s&ip=%s" % (uri, ip_address)
         _resp, ret_body = self._async_call(uri, method="DELETE",
-                has_response=False,
-                error_class=exc.PTRRecordDeletionFailed)
+                                           has_response=False,
+                                           error_class=exc.PTRRecordDeletionFailed)
         return ret_body.get("status") == "COMPLETED"
-
 
 
 class CloudDNSClient(BaseClient):
@@ -950,12 +910,12 @@ class CloudDNSClient(BaseClient):
         to handle flavors.
         """
         self._manager = CloudDNSManager(self, resource_class=CloudDNSDomain,
-                response_key="domains", plural_response_key="domains",
-                uri_base="domains")
-
+                                        response_key="domains",
+                                        plural_response_key="domains",
+                                        uri_base="domains")
 
     def _create_body(self, name, emailAddress, ttl=3600, comment=None,
-            subdomains=None, records=None):
+                     subdomains=None, records=None):
         """
         Creates the appropriate dict for creating a new domain.
         """
@@ -970,28 +930,24 @@ class CloudDNSClient(BaseClient):
                 "comment": comment,
                 "subdomains": {
                     "domains": subdomains
-                    },
+                },
                 "recordsList": {
                     "records": records
-                    },
+                },
                 }]}
         return body
-
 
     def list(self, limit=None, offset=None):
         """Returns a list of all resources."""
         return self._manager.list(limit=limit, offset=offset)
 
-
     def list_previous_page(self):
         """Returns the previous page of results."""
         return self._manager.list_previous_page()
 
-
     def list_next_page(self):
         """Returns the next page of results."""
         return self._manager.list_next_page()
-
 
     def get_domain_iterator(self):
         """
@@ -1000,7 +956,6 @@ class CloudDNSClient(BaseClient):
         domains from the API until all domains have been returned.
         """
         return DomainResultsIterator(self._manager)
-
 
     @assure_domain
     def changes_since(self, domain, date_or_datetime):
@@ -1029,25 +984,14 @@ class CloudDNSClient(BaseClient):
         """
         return domain.changes_since(date_or_datetime)
 
-
     @assure_domain
     def export_domain(self, domain):
         """
         Provides the BIND (Berkeley Internet Name Domain) 9 formatted contents
         of the requested domain. This call is for a single domain only, and as
         such, does not provide subdomain information.
-
-        Sample export:
-
-            {u'accountId': 000000,
-             u'contentType': u'BIND_9',
-             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. foo@example.com. 1354202974 21600 3600 1814400 500'
-                'example.com.\t3600\tIN\tNS\tdns1.stabletransit.com.'
-                'example.com.\t3600\tIN\tNS\tdns2.stabletransit.com.',
-             u'id': 1111111}
         """
         return domain.export()
-
 
     def import_domain(self, domain_data):
         """
@@ -1055,7 +999,6 @@ class CloudDNSClient(BaseClient):
         'export_domain()' method for a description of the format.
         """
         return self._manager.import_domain(domain_data)
-
 
     @assure_domain
     def update_domain(self, domain, emailAddress=None, ttl=None, comment=None):
@@ -1067,8 +1010,7 @@ class CloudDNSClient(BaseClient):
             - comment
         """
         return domain.update(emailAddress=emailAddress,
-                ttl=ttl, comment=comment)
-
+                             ttl=ttl, comment=comment)
 
     @assure_domain
     def delete(self, domain, delete_subdomains=False):
@@ -1079,14 +1021,12 @@ class CloudDNSClient(BaseClient):
         """
         domain.delete(delete_subdomains=delete_subdomains)
 
-
     @assure_domain
     def list_subdomains(self, domain, limit=None, offset=None):
         """
         Returns a list of all subdomains for the specified domain.
         """
         return domain.list_subdomains(limit=limit, offset=offset)
-
 
     def get_subdomain_iterator(self, domain, limit=None, offset=None):
         """
@@ -1097,16 +1037,13 @@ class CloudDNSClient(BaseClient):
         """
         return SubdomainResultsIterator(self._manager, domain=domain)
 
-
     def list_subdomains_previous_page(self):
         """Returns the previous page of subdomain results."""
         return self._manager.list_subdomains_previous_page()
 
-
     def list_subdomains_next_page(self):
         """Returns the next page of subdomain results."""
         return self._manager.list_subdomains_next_page()
-
 
     @assure_domain
     def list_records(self, domain, limit=None, offset=None):
@@ -1114,7 +1051,6 @@ class CloudDNSClient(BaseClient):
         Returns a list of all records configured for the specified domain.
         """
         return domain.list_records(limit=limit, offset=offset)
-
 
     def get_record_iterator(self, domain):
         """
@@ -1125,16 +1061,13 @@ class CloudDNSClient(BaseClient):
         """
         return RecordResultsIterator(self._manager, domain=domain)
 
-
     def list_records_previous_page(self):
         """Returns the previous page of record results."""
         return self._manager.list_records_previous_page()
 
-
     def list_records_next_page(self):
         """Returns the next page of record results."""
         return self._manager.list_records_next_page()
-
 
     @assure_domain
     def search_records(self, domain, record_type, name=None, data=None):
@@ -1143,8 +1076,7 @@ class CloudDNSClient(BaseClient):
         that match the supplied search criteria.
         """
         return domain.search_records(record_type=record_type,
-                name=name, data=data)
-
+                                     name=name, data=data)
 
     @assure_domain
     def find_record(self, domain, record_type, name=None, data=None):
@@ -1157,8 +1089,7 @@ class CloudDNSClient(BaseClient):
         be raised.
         """
         return domain.find_record(record_type=record_type,
-                name=name, data=data)
-
+                                  name=name, data=data)
 
     @assure_domain
     def add_records(self, domain, records):
@@ -1174,19 +1105,17 @@ class CloudDNSClient(BaseClient):
         """
         return domain.add_records(records)
 
-    #Create an alias, so that adding a single record is more intuitive
+    # Create an alias, so that adding a single record is more intuitive
     add_record = add_records
-
 
     @assure_domain
     def update_record(self, domain, record, data=None, priority=None,
-            ttl=None, comment=None):
+                      ttl=None, comment=None):
         """
         Modifies an existing record for a domain.
         """
         return domain.update_record(record, data=data,
-                priority=priority, ttl=ttl, comment=comment)
-
+                                    priority=priority, ttl=ttl, comment=comment)
 
     @assure_domain
     def delete_record(self, domain, record):
@@ -1195,13 +1124,11 @@ class CloudDNSClient(BaseClient):
         """
         return domain.delete_record(record)
 
-
     def list_ptr_records(self, device):
         """
         Returns a list of all PTR records configured for this device.
         """
         return self._manager.list_ptr_records(device)
-
 
     def add_ptr_records(self, device, records):
         """
@@ -1209,15 +1136,13 @@ class CloudDNSClient(BaseClient):
         """
         return self._manager.add_ptr_records(device, records)
 
-
     def update_ptr_record(self, device, record, domain_name, data=None,
-            ttl=None, comment=None):
+                          ttl=None, comment=None):
         """
         Updates a PTR record with the supplied values.
         """
         return self._manager.update_ptr_record(device, record, domain_name,
-                data=data, ttl=ttl, comment=comment)
-
+                                               data=data, ttl=ttl, comment=comment)
 
     def delete_ptr_records(self, device, ip_address=None):
         """
@@ -1226,7 +1151,6 @@ class CloudDNSClient(BaseClient):
         """
         return self._manager.delete_ptr_records(device, ip_address=ip_address)
 
-
     def get_absolute_limits(self):
         """
         Returns a dict with the absolute limits for the current account.
@@ -1234,7 +1158,6 @@ class CloudDNSClient(BaseClient):
         resp, body = self.method_get("/limits")
         absolute_limits = body.get("limits", {}).get("absolute")
         return absolute_limits
-
 
     def get_rate_limits(self):
         """
@@ -1247,10 +1170,9 @@ class CloudDNSClient(BaseClient):
         for rate_limit in rate_limits:
             limits = rate_limit["limit"]
             uri_limits = {"uri": rate_limit["uri"],
-                    "limits": limits}
+                          "limits": limits}
             ret.append(uri_limits)
         return ret
-
 
 
 class ResultsIterator(object):
@@ -1270,17 +1192,14 @@ class ResultsIterator(object):
         self.extra_args = tuple()
         self._init_methods()
 
-
     def _init_methods(self):
         """
         Must be implemented in subclasses.
         """
         raise NotImplementedError()
 
-
     def __iter__(self):
         return self
-
 
     def next(self):
         """
@@ -1304,7 +1223,7 @@ class ResultsIterator(object):
                     args = self.extra_args
                     self.results = self._list_method(self.next_uri, *args)
                 self.next_uri = self.manager._paging.get(
-                        self.paging_service, {}).get("next_uri")
+                    self.paging_service, {}).get("next_uri")
         # We should have more results.
         try:
             return self.results.pop(0)

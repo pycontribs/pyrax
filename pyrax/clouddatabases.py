@@ -35,7 +35,6 @@ def assure_instance(fnc):
     return _wrapped
 
 
-
 class CloudDatabaseVolume(object):
     instance = None
     size = None
@@ -55,35 +54,34 @@ class CloudDatabaseVolume(object):
         return getattr(self, att)
 
 
-
 class CloudDatabaseInstance(BaseResource):
     """
     This class represents a MySQL instance in the cloud.
     """
     def __init__(self, *args, **kwargs):
         super(CloudDatabaseInstance, self).__init__(*args, **kwargs)
+        base = "instances/%s/databases" % self.id
         self._database_manager = BaseManager(self.manager.api,
-                resource_class=CloudDatabaseDatabase, response_key="database",
-                uri_base="instances/%s/databases" % self.id)
+                                             resource_class=CloudDatabaseDatabase,
+                                             response_key="database",
+                                             uri_base=base)
         self._user_manager = BaseManager(self.manager.api,
-                resource_class=CloudDatabaseUser, response_key="user",
-                uri_base="instances/%s/users" % self.id)
+                                         resource_class=CloudDatabaseUser,
+                                         response_key="user",
+                                         uri_base="instances/%s/users" % self.id)
         # Remove the lazy load
         if not self.loaded:
             self.get()
             # Make the volume into an accessible object instead of a dict
             self.volume = CloudDatabaseVolume(self, self.volume)
 
-
     def list_databases(self):
         """Returns a list of the names of all databases for this instance."""
         return self._database_manager.list()
 
-
     def list_users(self):
         """Returns a list of the names of all users for this instance."""
         return self._user_manager.list()
-
 
     def get_database(self, name):
         """
@@ -96,8 +94,7 @@ class CloudDatabaseInstance(BaseResource):
                     if db.name == name][0]
         except IndexError:
             raise exc.NoSuchDatabase("No database by the name '%s' exists." %
-                    name)
-
+                                     name)
 
     def get_user(self, name):
         """
@@ -110,8 +107,7 @@ class CloudDatabaseInstance(BaseResource):
                     if user.name == name][0]
         except IndexError:
             raise exc.NoSuchDatabaseUser("No user by the name '%s' exists." %
-                    name)
-
+                                         name)
 
     def create_database(self, name, character_set=None, collate=None):
         """
@@ -127,11 +123,10 @@ class CloudDatabaseInstance(BaseResource):
         # method to distinguish between this and the request to create and
         # instance.
         self._database_manager.create(name=name, character_set=character_set,
-                collate=collate, return_none=True)
+                                      collate=collate, return_none=True)
         # Since the API doesn't return the info for creating the database
         # object, we have to do it manually.
         return self._database_manager.find(name=name)
-
 
     def create_user(self, name, password, database_names):
         """
@@ -146,16 +141,15 @@ class CloudDatabaseInstance(BaseResource):
             database_names = [database_names]
         # The API only accepts names, not DB objects
         database_names = [db if isinstance(db, basestring) else db.name
-                for db in database_names]
+                          for db in database_names]
         # Note that passing in non-None values is required for the create_body
         # method to distinguish between this and the request to create and
         # instance.
         self._user_manager.create(name=name, password=password,
-                database_names=database_names, return_none=True)
+                                  database_names=database_names, return_none=True)
         # Since the API doesn't return the info for creating the user object, we
         # have to do it manually.
         return self._user_manager.find(name=name)
-
 
     def _get_name(self, name_or_obj):
         """
@@ -171,7 +165,6 @@ class CloudDatabaseInstance(BaseResource):
             msg = "The object '%s' does not have a 'name' attribute." % name_or_obj
             raise exc.MissingName(msg)
 
-
     def delete_database(self, name_or_obj):
         """
         Deletes the specified database. If no database by that name
@@ -180,7 +173,6 @@ class CloudDatabaseInstance(BaseResource):
         """
         name = self._get_name(name_or_obj)
         self._database_manager.delete(name)
-
 
     def delete_user(self, name_or_obj):
         """
@@ -191,7 +183,6 @@ class CloudDatabaseInstance(BaseResource):
         name = self._get_name(name_or_obj)
         self._user_manager.delete(name)
 
-
     def enable_root_user(self):
         """
         Enables login from any host for the root user and provides
@@ -200,7 +191,6 @@ class CloudDatabaseInstance(BaseResource):
         uri = "/instances/%s/root" % self.id
         resp, body = self.manager.api.method_post(uri)
         return body["user"]["password"]
-
 
     def root_user_status(self):
         """
@@ -211,11 +201,9 @@ class CloudDatabaseInstance(BaseResource):
         resp, body = self.manager.api.method_get(uri)
         return body["rootEnabled"]
 
-
     def restart(self):
         """Restarts this instance."""
         self.manager.action(self, "restart")
-
 
     def resize(self, flavor):
         """Set the size of this instance to a different flavor."""
@@ -224,29 +212,29 @@ class CloudDatabaseInstance(BaseResource):
         body = {"flavorRef": flavorRef}
         self.manager.action(self, "resize", body=body)
 
-
     def resize_volume(self, size):
         """Changes the size of the volume for this instance."""
         curr_size = self.volume.size
         if size <= curr_size:
-            raise exc.InvalidVolumeResize("The new volume size must be larger "
-                    "than the current volume size of '%s'." % curr_size)
+            msg = ("The new volume size must be larger "
+                   "than the current volume size of '%s'.")
+            raise exc.InvalidVolumeResize(msg % curr_size)
         body = {"volume": {"size": size}}
         self.manager.action(self, "resize", body=body)
-
 
     def _get_flavor(self):
         try:
             ret = self._flavor
         except AttributeError:
             ret = self._flavor = CloudDatabaseFlavor(
-                    self.manager.api._flavor_manager, {})
+                self.manager.api._flavor_manager, {})
         return ret
 
     def _set_flavor(self, flavor):
         if isinstance(flavor, dict):
-            self._flavor = CloudDatabaseFlavor(self.manager.api._flavor_manager,
-                    flavor)
+            self._flavor = CloudDatabaseFlavor(
+                self.manager.api._flavor_manager,
+                flavor)
         else:
             # Must be an instance
             self._flavor = flavor
@@ -300,25 +288,23 @@ class CloudDatabaseClient(BaseClient):
         to handle flavors.
         """
         self._manager = BaseManager(self, resource_class=CloudDatabaseInstance,
-                response_key="instance", uri_base="instances")
+                                    response_key="instance", uri_base="instances")
         self._flavor_manager = BaseManager(self,
-                resource_class=CloudDatabaseFlavor, response_key="flavor",
-                uri_base="flavors")
-
+                                           resource_class=CloudDatabaseFlavor,
+                                           response_key="flavor",
+                                           uri_base="flavors")
 
     @assure_instance
     def list_databases(self, instance):
         """Returns all databases for the specified instance."""
         return instance.list_databases()
 
-
     @assure_instance
     def create_database(self, instance, name, character_set=None,
-            collate=None):
+                        collate=None):
         """Creates a database with the specified name on the given instance."""
         return instance.create_database(name, character_set=character_set,
-                collate=collate)
-
+                                        collate=collate)
 
     @assure_instance
     def get_database(self, instance, name):
@@ -329,18 +315,15 @@ class CloudDatabaseClient(BaseClient):
         """
         return instance.get_database(name)
 
-
     @assure_instance
     def delete_database(self, instance, name):
         """Deletes the database by name on the given instance."""
         return instance.delete_database(name)
 
-
     @assure_instance
     def list_users(self, instance):
         """Returns all users for the specified instance."""
         return instance.list_users()
-
 
     @assure_instance
     def create_user(self, instance, name, password, database_names):
@@ -349,8 +332,7 @@ class CloudDatabaseClient(BaseClient):
         user access to the specified database(s).
         """
         return instance.create_user(name=name, password=password,
-                database_names=database_names)
-
+                                    database_names=database_names)
 
     @assure_instance
     def get_user(self, instance, name):
@@ -361,12 +343,10 @@ class CloudDatabaseClient(BaseClient):
         """
         return instance.get_user(name)
 
-
     @assure_instance
     def delete_user(self, instance, name):
         """Deletes the user by name on the given instance."""
         return instance.delete_user(name)
-
 
     @assure_instance
     def enable_root_user(self, instance):
@@ -376,34 +356,28 @@ class CloudDatabaseClient(BaseClient):
         """
         return instance.enable_root_user()
 
-
     @assure_instance
     def root_user_status(self, instance):
         """Returns True if the given instance is root-enabled."""
         return instance.root_user_status()
-
 
     @assure_instance
     def restart(self, instance):
         """Restarts the instance."""
         return instance.restart()
 
-
     @assure_instance
     def resize(self, instance, flavor):
         """Sets the size of the instance to a different flavor."""
         return instance.resize(flavor)
 
-
     def list_flavors(self):
         """Returns a list of all available Flavors."""
         return self._flavor_manager.list()
 
-
     def get_flavor(self, flavor_id):
         """Returns a specific Flavor object by ID."""
         return self._flavor_manager.get(flavor_id)
-
 
     def _get_flavor_ref(self, flavor):
         """
@@ -428,24 +402,23 @@ class CloudDatabaseClient(BaseClient):
             flavors = self.list_flavors()
             try:
                 flavor_obj = [flav for flav in flavors
-                        if flav.name == flavor][0]
+                              if flav.name == flavor][0]
             except IndexError:
                 # No such name; try matching RAM
                 try:
                     flavor_obj = [flav for flav in flavors
-                            if flav.ram == flavor][0]
+                                  if flav.ram == flavor][0]
                 except IndexError:
                     raise exc.FlavorNotFound("Could not determine flavor from "
-                            "'%s'." % flavor)
+                                             "'%s'." % flavor)
         # OK, we have a Flavor object. Get the href
         href = [link["href"] for link in flavor_obj.links
                 if link["rel"] == "self"][0]
         return href
 
-
     def _create_body(self, name, flavor=None, volume=None, databases=None,
-            users=None, character_set=None, collate=None, password=None,
-            database_names=None):
+                     users=None, character_set=None, collate=None, password=None,
+                     database_names=None):
         """
         Used to create the dict required to create any of the following:
             A database instance
@@ -458,7 +431,7 @@ class CloudDatabaseClient(BaseClient):
                     {"name": name,
                     "character_set": character_set,
                     "collate": collate,
-                    }]}
+                     }]}
         elif password is not None:
             # Creating a user
             db_dicts = [{"name": db} for db in database_names]
@@ -466,7 +439,7 @@ class CloudDatabaseClient(BaseClient):
                     {"name": name,
                     "password": password,
                     "databases": db_dicts,
-                    }]}
+                     }]}
         else:
             if flavor is None:
                 flavor = 1

@@ -18,7 +18,6 @@ UTC_API_DATE_PATTERN = re.compile(_utc_pat)
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-
 class Identity(object):
     """
     This class handles all of the authentication requirements for working
@@ -35,15 +34,13 @@ class Identity(object):
     authenticated = False
     services = {}
 
-
     def __init__(self, username=None, api_key=None, token=None,
-            credential_file=None, region=None):
+                 credential_file=None, region=None):
         self.username = username
         self.api_key = api_key
         self.token = token
         self._creds_file = credential_file
         self._region = region
-
 
     @property
     def auth_endpoint(self):
@@ -51,9 +48,8 @@ class Identity(object):
             return self.uk_auth_endpoint
         return self.us_auth_endpoint
 
-
     def set_credentials(self, username, api_key, region=None,
-            authenticate=False):
+                        authenticate=False):
         """Sets the username and api_key directly."""
         self.username = username
         self.api_key = api_key
@@ -62,9 +58,8 @@ class Identity(object):
         if authenticate:
             self.authenticate()
 
-
     def set_credential_file(self, credential_file, region=None,
-            authenticate=False):
+                            authenticate=False):
         """
         Reads in the credentials from the supplied file. It should be
         a standard config file in the format:
@@ -81,7 +76,7 @@ class Identity(object):
                 # If the specified file does not exist, the parser will
                 # return an empty list
                 raise exc.FileNotFound("The specified credential file '%s' "
-                        "does not exist" % credential_file)
+                                       "does not exist" % credential_file)
         except ConfigParser.MissingSectionHeaderError as e:
             # The file exists, but doesn't have the correct format.
             raise exc.InvalidCredentialFile(e)
@@ -95,7 +90,6 @@ class Identity(object):
         if authenticate:
             self.authenticate()
 
-
     def _get_credentials(self):
         """
         Returns the current credentials in the format expected by
@@ -104,7 +98,6 @@ class Identity(object):
         return {"auth": {"RAX-KSKEY:apiKeyCredentials":
                 {"username": "%s" % self.username,
                 "apiKey": "%s" % self.api_key}}}
-
 
     def authenticate(self):
         """
@@ -124,13 +117,12 @@ class Identity(object):
             if errcode == 401:
                 # Invalid authorization
                 raise exc.AuthenticationFailed("Incorrect/unauthorized "
-                        "credentials received")
+                                               "credentials received")
             else:
                 raise exc.AuthenticationFailed("Authentication Error: %s" % e)
         resp = json.loads(raw_resp.read())
         self._parse_response(resp)
         self.authenticated = True
-
 
     def _parse_response(self, resp):
         """Gets the authentication information from the returned JSON."""
@@ -144,7 +136,8 @@ class Identity(object):
         self.services = {}
         for svc in svc_cat:
             # Replace any dashes with underscores.
-            # Also, some service types have RAX-specific identifiers; strip them.
+            # Also, some service types have RAX-specific identifiers; strip
+            # them.
             typ = svc["type"].replace("-", "_").lstrip("rax:")
             self.services[typ] = dict(name=svc["name"], endpoints={})
             svc_ep = self.services[typ]["endpoints"]
@@ -164,7 +157,6 @@ class Identity(object):
         self.user["name"] = user["name"]
         self.user["roles"] = user["roles"]
 
-
     def get_token(self, force=False):
         """Returns the auth token, if it is valid. If not, calls the auth endpoint
         to get a new token. Passing 'True' to 'force' will force a call for a new
@@ -175,10 +167,8 @@ class Identity(object):
             self.authenticate()
         return self.token
 
-
     def _has_valid_token(self):
         return bool(self.token and (self.expires > datetime.datetime.now()))
-
 
     @staticmethod
     def _parse_api_time(timestr):
@@ -199,7 +189,7 @@ class Identity(object):
             off_sign = "+"
             off_hr = off_mn = 0
         base_dt = datetime.datetime(int(yr), int(mth), int(dy), int(hr),
-                int(mn), int(sc))
+                                    int(mn), int(sc))
         delta = datetime.timedelta(hours=int(off_hr), minutes=int(off_mn))
         if off_sign == "+":
             # Time is greater than UTC

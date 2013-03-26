@@ -26,7 +26,6 @@ import pyrax
 import pyrax.exceptions as exc
 
 
-
 class SelfDeletingTempfile(object):
     """
     Convenience class for dealing with temporary files.
@@ -193,7 +192,7 @@ class _WaitThread(threading.Thread):
     verbose will always be False for a background thread.
     """
     def __init__(self, obj, att, desired, callback, interval, attempts,
-            verbose, verbose_atts):
+                 verbose, verbose_atts):
         self.obj = obj
         self.att = att
         self.desired = desired
@@ -206,14 +205,14 @@ class _WaitThread(threading.Thread):
     def run(self):
         """Starts the thread."""
         resp = _wait_until(obj=self.obj, att=self.att,
-                desired=self.desired, callback=None,
-                interval=self.interval, attempts=self.attempts,
-                verbose=False, verbose_atts=None)
+                           desired=self.desired, callback=None,
+                           interval=self.interval, attempts=self.attempts,
+                           verbose=False, verbose_atts=None)
         self.callback(resp)
 
 
 def wait_until(obj, att, desired, callback=None, interval=5, attempts=10,
-        verbose=False, verbose_atts=None):
+               verbose=False, verbose_atts=None):
     """
     When changing the state of an object, it will commonly be in a transitional
     state until the change is complete. This will reload the object ever
@@ -246,19 +245,20 @@ def wait_until(obj, att, desired, callback=None, interval=5, attempts=10,
     process in a separate thread.
     """
     if callback:
-        waiter = _WaitThread(obj=obj, att=att, desired=desired, callback=callback,
-                interval=interval, attempts=attempts, verbose=verbose,
-                verbose_atts=verbose_atts)
+        waiter = _WaitThread(
+            obj=obj, att=att, desired=desired, callback=callback,
+            interval=interval, attempts=attempts, verbose=verbose,
+            verbose_atts=verbose_atts)
         waiter.start()
         return waiter
     else:
         return _wait_until(obj=obj, att=att, desired=desired, callback=None,
-                interval=interval, attempts=attempts, verbose=verbose,
-                verbose_atts=verbose_atts)
+                           interval=interval, attempts=attempts, verbose=verbose,
+                           verbose_atts=verbose_atts)
 
 
 def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
-        verbose_atts):
+                verbose_atts):
     """
     Loops until either the desired value of the attribute is reached, or the
     number of attempts is exceeded.
@@ -284,7 +284,7 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
             except AttributeError:
                 # punt
                 raise exc.NoReloadError("The 'wait_until' method is not supported "
-                  "for '%s' objects." % obj.__class__)
+                                        "for '%s' objects." % obj.__class__)
         attval = getattr(obj, att)
         if verbose:
             elapsed = time.time() - start
@@ -318,9 +318,10 @@ def iso_time_string(val, show_tzinfo=False):
             except ValueError:
                 continue
         if dt is None:
-            raise exc.InvalidDateTimeString("The supplied value '%s' does not "
-              "match either of the formats 'YYYY-MM-DD HH:MM:SS' or "
-              "'YYYY-MM-DD'." % val)
+            _msg = ("The supplied value '%s' does not "
+                    "match either of the formats 'YYYY-MM-DD HH:MM:SS' or "
+                    "'YYYY-MM-DD'.")
+            raise exc.InvalidDateTimeString(_msg % val)
     else:
         dt = val
     if not isinstance(dt, datetime.datetime):

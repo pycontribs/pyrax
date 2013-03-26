@@ -38,13 +38,11 @@ class BaseResource(object):
     # Atts not to display when showing the __repr__()
     _non_display = []
 
-
     def __init__(self, manager, info, loaded=False):
         self._loaded = loaded
         self.manager = manager
         self._info = info
         self._add_details(info)
-
 
     @property
     def human_id(self):
@@ -55,7 +53,6 @@ class BaseResource(object):
             return utils.slugify(getattr(self, self.NAME_ATTR))
         return None
 
-
     def _add_details(self, info):
         """
         Takes the dict returned by the API call and sets the
@@ -65,7 +62,6 @@ class BaseResource(object):
             if isinstance(key, unicode):
                 key = key.encode(pyrax.encoding)
             setattr(self, key, val)
-
 
     def __getattr__(self, key):
         """
@@ -81,18 +77,16 @@ class BaseResource(object):
             return self.__dict__[key]
         except KeyError:
             raise AttributeError("'%s' object has no attribute "
-                    "'%s'." % (self.__class__, key))
-
+                                 "'%s'." % (self.__class__, key))
 
     def __repr__(self):
         reprkeys = sorted(key for key in self.__dict__.keys()
-                if (key[0] != "_")
-                and (key not in ("manager", "created", "updated"))
-                and (key not in self._non_display))
+                          if (key[0] != "_")
+                          and (key not in ("manager", "created", "updated"))
+                          and (key not in self._non_display))
         info = ", ".join("%s=%s" % (key, getattr(self, key))
-                for key in reprkeys)
+                         for key in reprkeys)
         return "<%s %s>" % (self.__class__.__name__, info)
-
 
     def get(self):
         """Gets the details for the object."""
@@ -106,7 +100,6 @@ class BaseResource(object):
         if new:
             self._add_details(new._info)
 
-
     def delete(self):
         """Deletes the object."""
         # set 'loaded' first ... so if we have to bail, we know we tried.
@@ -114,7 +107,6 @@ class BaseResource(object):
         if not hasattr(self.manager, "delete"):
             return
         self.manager.delete(self)
-
 
     def __eq__(self, other):
         """
@@ -128,7 +120,6 @@ class BaseResource(object):
             return self.id == other.id
         return self._info == other._info
 
-
     def reload(self):
         """
         Since resource objects are essentially snapshots of the entity they
@@ -139,7 +130,6 @@ class BaseResource(object):
         """
         new_obj = self.manager.get(self.id)
         self._add_details(new_obj._info)
-
 
     def _get_loaded(self):
         return self._loaded

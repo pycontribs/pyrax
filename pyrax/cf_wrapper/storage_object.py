@@ -21,7 +21,7 @@
 class StorageObject(object):
     """Represents a CloudFiles storage object."""
     def __init__(self, client, container, name=None, total_bytes=None,
-            content_type=None, last_modified=None, etag=None, attdict=None):
+                 content_type=None, last_modified=None, etag=None, attdict=None):
         """
         The object can either be initialized with individual params, or by
         passing the dict that is returned by swiftclient.
@@ -39,7 +39,6 @@ class StorageObject(object):
         if attdict:
             self._read_attdict(attdict)
 
-
     def _read_attdict(self, dct):
         """
         Populates the object attributes using the dict returned by swiftclient.
@@ -54,7 +53,6 @@ class StorageObject(object):
         self.total_bytes = dct.get("bytes")
         self.last_modified = dct.get("last_modified")
         self.etag = dct.get("hash")
-
 
     def get(self, include_meta=False, chunk_size=None):
         """
@@ -72,14 +70,13 @@ class StorageObject(object):
             Element 1: a stream of bytes representing the object's contents.
         """
         return self.client.fetch_object(container=self.container.name,
-                obj_name=self.name, include_meta=include_meta,
-                chunk_size=chunk_size)
-
+                                        obj_name=self.name, include_meta=include_meta,
+                                        chunk_size=chunk_size)
 
     def delete(self):
         """Deletes the object from storage."""
-        self.client.delete_object(container=self.container.name, name=self.name)
-
+        self.client.delete_object(
+            container=self.container.name, name=self.name)
 
     def purge(self, email_addresses=[]):
         """
@@ -87,21 +84,18 @@ class StorageObject(object):
         email confirmation.
         """
         self.client.purge_cdn_object(container=self.container.name,
-                name=self.name, email_addresses=email_addresses)
-
+                                     name=self.name, email_addresses=email_addresses)
 
     def get_metadata(self):
         """Returns this object's metadata."""
         return self.client.get_object_metadata(self.container, self)
-
 
     def set_metadata(self, metadata, clear=False):
         """
         Sets this object's metadata, optionally clearing existing metadata.
         """
         self.client.set_object_metadata(self.container, self, metadata,
-                clear=clear)
-
+                                        clear=clear)
 
     def remove_metadata_key(self, key):
         """
@@ -109,7 +103,6 @@ class StorageObject(object):
         key does not exist in the metadata, nothing is done.
         """
         self.client.remove_object_metadata_key(self.container, self, key)
-
 
     def change_content_type(self, new_ctype, guess=False):
         """
@@ -120,8 +113,7 @@ class StorageObject(object):
         Failure during the put will result in a swift exception.
         """
         self.client.change_object_content_type(self.container, self,
-                new_ctype=new_ctype, guess=guess)
-
+                                               new_ctype=new_ctype, guess=guess)
 
     def get_temp_url(self, seconds, method="GET"):
         """
@@ -132,8 +124,7 @@ class StorageObject(object):
         an InvalidTemporaryURLMethod exception.
         """
         return self.client.get_temp_url(self.container, self, seconds=seconds,
-                method=method)
-
+                                        method=method)
 
     def __repr__(self):
         return "<Object '%s' (%s)>" % (self.name, self.content_type)
