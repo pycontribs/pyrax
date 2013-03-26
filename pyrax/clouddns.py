@@ -810,12 +810,18 @@ class CloudDNSManager(BaseManager):
         Given a device, determines if it is a CloudServer, a CloudLoadBalancer,
         or an invalid device.
         """
-        from tests.unit import fakes
-        if isinstance(device, (pyrax.CloudServer, fakes.FakeServer,
-                fakes.FakeDNSDevice)):
+        try:
+            from tests.unit import fakes
+            server_types = (pyrax.CloudServer, fakes.FakeServer,
+                fakes.FakeDNSDevice)
+            lb_types = (pyrax.CloudLoadBalancer, fakes.FakeLoadBalancer)
+        except ImportError:
+            # Not running with tests
+            server_types = (pyrax.CloudServer, )
+            lb_types = (pyrax.CloudLoadBalancer, )
+        if isinstance(device, server_types):
             device_type = "server"
-        elif isinstance(device, (pyrax.CloudLoadBalancer,
-                fakes.FakeLoadBalancer)):
+        elif isinstance(device, lb_types):
             device_type = "loadbalancer"
         else:
             raise exc.InvalidDeviceType("The device '%s' must be a CloudServer "

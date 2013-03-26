@@ -1,5 +1,9 @@
 # Release Notes for pyrax
 
+###2013.03.26 - Version 1.3.4
+- Fixed an ImportError in Cloud DNS. Thanks to Matt Martz for finding this.
+- Minor improvements to the travis.ci integration.
+
 ###2013.03.21 - Version 1.3.3
 - Added support for creating Temporary URLs for Cloud Files.
 - Added set_account_metadata() for Cloud Files.
