@@ -24,9 +24,9 @@ pyrax.set_credential_file(creds_file)
 cs = pyrax.cloudservers
 
 ubu_image = [img for img in cs.images.list()
-		if "12.04" in img.name][0]
+        if "12.04" in img.name][0]
 flavor_512 = [flavor for flavor in cs.flavors.list()
-		if flavor.ram == 512][0]
+        if flavor.ram == 512][0]
 
 meta = {"test_key": "test_value",
         "meaning_of_life": "42",
@@ -46,7 +46,7 @@ print "ID:", server.id
 print "Admin Password:", server.adminPass
 print "Metadata:", server.metadata
 print
-print "When the server becomes active, shell into it as root with the admin password."
+print "When the server becomes active, shell in as root with the admin password."
 print "Verify that the file '/root/testfile' exists, and contains the exact content"
 print "that was defined above."
 print

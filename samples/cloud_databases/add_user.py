@@ -28,16 +28,18 @@ cdb = pyrax.cloud_databases
 
 instances = cdb.list()
 if not instances:
-    print "There are no cloud database instances. Please create one and re-run this script."
+    print "There are no cloud database instances."
+    print "Please create one and re-run this script."
     sys.exit()
 
 print
 print "Available Instances:"
 for pos, inst in enumerate(instances):
-    print "%s: %s (%s, RAM=%s, volume=%s) Status=%s" % (pos, inst.name, inst.flavor.name,
-            inst.flavor.ram, inst.volume.size, inst.status)
+    print "%s: %s (%s, RAM=%s, volume=%s) Status=%s" % (pos, inst.name,
+            inst.flavor.name, inst.flavor.ram, inst.volume.size, inst.status)
 try:
-    sel = int(raw_input("Enter the number of the instance to which you want to add a user: "))
+    sel = int(raw_input("Enter the number of the instance to which you want to "
+            "add a user: "))
 except ValueError:
     print
     print "Invalid (non-numeric) entry."
@@ -59,7 +61,8 @@ print "Available Databases:"
 dbs = inst.list_databases()
 for pos, db in enumerate(dbs):
     print "%s: %s" % (pos, db.name)
-print "Enter the numbers of the databases which the user can access, separated by spaces: ",
+print "Enter the numbers of the databases which the user can access,",
+print "separated by spaces: ",
 selected = raw_input()
 selnums = [int(val) for val in selected.split()]
 sel_dbs = [db.name for pos, db in enumerate(dbs)

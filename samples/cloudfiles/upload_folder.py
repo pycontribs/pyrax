@@ -30,7 +30,8 @@ cf = pyrax.cloudfiles
 cont_name = pyrax.utils.random_name(8)
 cont = cf.create_container(cont_name)
 
-# pyrax has a utility for creating temporary local directories that clean themselves up.
+# pyrax has a utility for creating temporary local directories that clean
+# themselves up.
 with utils.SelfDeletingTempDirectory() as tmpfolder:
     # Create a bunch of files
     for idx in xrange(13):

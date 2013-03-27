@@ -28,7 +28,8 @@ clb = pyrax.cloud_loadbalancers
 try:
     lb = clb.list()[0]
 except IndexError:
-    "You do not have any load balancers yet. Please create one and then re-run this script."
+    print "You do not have any load balancers yet."
+    print "Please create one and then re-run this script."
     sys.exit()
 
 print "Load Balancer:", lb
@@ -39,4 +40,3 @@ print "Nodes:", lb.nodes
 print "Virtual IPs:", lb.virtual_ips
 print "Algorithm:", lb.algorithm
 print "Protocol:", lb.protocol
-

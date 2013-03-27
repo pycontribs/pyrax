@@ -36,7 +36,8 @@ for i in xrange(5):
 
 # Create 5 files in a "folder", with repeated single-letter names
 start = ord("a")
-for i in xrange(start, start+5):
+end = start + 5
+for i in xrange(start, end):
     chars = chr(i) * 4
     nm = "stuff/%s" % chars
     cont.store_object(nm, text)

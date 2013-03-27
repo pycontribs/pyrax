@@ -49,5 +49,6 @@ else:
     if count == 1:
         print "The one non-NS record for '%s' has been deleted." % domain_name
     else:
-        print "All %s non-NS records for '%s' have been deleted." % (count, domain_name)
+        print "All %s non-NS records for '%s' have been deleted." % (count,
+                domain_name)
 print
