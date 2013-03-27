@@ -36,31 +36,31 @@ To get a list of all the available flavors, run the following:
 
 You should get back something like this:
 
-    [<CloudDatabaseFlavor id=1, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000/flavors/1', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/1', u'rel': u'bookmark'}], name=m1.tiny, ram=512>,
-     <CloudDatabaseFlavor id=2, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000/flavors/2', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/2', u'rel': u'bookmark'}], name=m1.small, ram=1024>,
-     <CloudDatabaseFlavor id=3, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000/flavors/3', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/3', u'rel': u'bookmark'}], name=m1.medium, ram=2048>,
-     <CloudDatabaseFlavor id=4, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000/flavors/4', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/flavors/4', u'rel': u'bookmark'}], name=m1.large, ram=4096>]
+    [<CloudDatabaseFlavor id=1, name=512MB Instance, ram=512>,
+     <CloudDatabaseFlavor id=2, name=1GB Instance, ram=1024>,
+     <CloudDatabaseFlavor id=3, name=2GB Instance, ram=2048>,
+     <CloudDatabaseFlavor id=4, name=4GB Instance, ram=4096>]
 
-The RAM available is listed in MB, so the 'm1.tiny' flavor would create an instance with 512MB of RAM.
+The RAM available is listed in MB, so the flavor with ram=4096 would create an instance with 4GB of RAM.
 
 Assuming that you want to create an instance using the `m1.tiny` flavor and 2GB of disk space, run the following code:
 
-    inst = cdb.create("first_instance", flavor="m1.tiny", volume=2)
+    inst = cdb.create("first_instance", flavor="1GB Instance", volume=2)
     print inst
 
 Assuming that all went well, you should see your new instance:
 
-    <CloudDatabaseInstance created=2012-10-24T20:43:39, hostname=37f6114e50e8767af7b85b7923c619e8063a505e.rackspaceclouddb.com, id=11f604c4-19c6-4653-9a74-104f79a5124e, links=[{u'href': u'https://ord.databases.api.rackspacecloud.com/v1.0/000000/instances/11f604c4-19c6-4653-9a74-104f79a5124e', u'rel': u'self'}, {u'href': u'https://ord.databases.api.rackspacecloud.com/instances/11f604c4-19c6-4653-9a74-104f79a5124e', u'rel': u'bookmark'}], name=first_instance, status=BUILD, updated=2012-10-24T20:43:39, volume={u'size': 2}>
+    <CloudDatabaseInstance hostname=a1d5f7312d85f95071ea658d699962b690bd6b60.rackspaceclouddb.com, id=471eff58-66bb-40af-8030-405451e38c02, links=[{u'href': u'https://localhost:8778/v1.0/728829/instances/471eff58-66bb-40af-8030-405451e38c02', u'rel': u'self'}, {u'href': u'https://localhost:8778/instances/471eff58-66bb-40af-8030-405451e38c02', u'rel': u'bookmark'}], name=first_instance, status=BUILD, volume=<pyrax.clouddatabases.CloudDatabaseVolume object at 0x104f73590>>
 
-If you are planning on using your Cloud Database instance from one of your Cloud Servers, you will need the `hostname` attribute of that instance. In this case, it is `37f6114e50e8767af7b85b7923c619e8063a505e.rackspaceclouddb.com`. Since this host is not publicly accessible, only Cloud Servers and Cloud Load Balancers within the same region can access this instance.
+If you are planning on using your Cloud Database instance from one of your Cloud Servers, you will need the `hostname` attribute of that instance. In this case, it is `a1d5f7312d85f95071ea658d699962b690bd6b60.rackspaceclouddb.com`. Since this host is not publicly accessible, only Cloud Servers and Cloud Load Balancers within the same region can access this instance.
 
 
 ## Resizing an Instance
 Resizing an instance refers to changing the amount of RAM allocated to your instance. To do this, call the instance's `resize()` method, passing in the flavor of the desired size. This can be a `CloudDatabaseFlavor` object, the flavor name, flavor ID or RAM size of the new flavor. For example, the following 3 commands will all change the instance flavor to the `m1.medium` size:
 
     # By name
-    inst.resize("m1.medium")
-    # By RAM
+    inst.resize("1GB Instance")
+    # By RAM (in MB)
     inst.resize(2048)
     # By ID
     inst.resize(3)

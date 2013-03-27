@@ -260,7 +260,7 @@ class CloudDatabaseDatabase(BaseResource):
     a true cloud entity, but a convenience object for dealing with databases
     on instances.
     """
-    get_details = False
+    get_details = True
 
     def delete(self):
         """This class doesn't have an 'id', so pass the name."""
@@ -286,7 +286,7 @@ class CloudDatabaseFlavor(BaseResource):
     which you use to define the memory and CPU size of your instance. These
     objects are read-only.
     """
-    get_details = False
+    get_details = True
     _non_display = ["links"]
 
 

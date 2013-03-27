@@ -47,3 +47,4 @@ instance = cdb.create(nm, flavor=selected, volume=sz)
 print "Name:", instance.name
 print "ID:", instance.id
 print "Status:", instance.status
+print "Flavor:", instance.flavor.name
