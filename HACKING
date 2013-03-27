@@ -12,6 +12,16 @@ When indenting continuation lines, the standard is 2 levels (i.e., 8 spaces).
 Please do not use "visual indentation", as it is fraught with its own
 issues with consistency.
 
+There are several other places where pyrax differs from the "pure" PEP8
+suggestions. Please remember that PEP8 is a guideline, not an absolute dictum.
+Here is the command I use to run the pep8 tool:
+
+    pep8 -r --show-source --max-line-length=84 \
+        --ignore=E123,E124,E126,E127,E128,E303,E302 pyrax/
+
+Any pull requests to address style differences between the above command and
+your interpretation of PEP8 will be rejected.
+
 All changes other than simple typos should be accompanied by unit tests. All
 changes must pass all unit tests. You can run the tests by making sure that
 the `nose` module and running:
