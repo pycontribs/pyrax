@@ -63,6 +63,7 @@ class FakeContainer(Container):
         self._cdn_ttl = self.client.default_cdn_ttl
         self._cdn_ssl_uri = None
         self._cdn_streaming_uri = None
+        self._cdn_ios_uri = None
         self._cdn_log_retention = False
 
 
