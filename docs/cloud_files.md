@@ -421,6 +421,7 @@ Once a container is made public, you can access its CDN-related properties. You 
     print "cdn_uri", cont.cdn_uri
     print "cdn_ssl_uri", cont.cdn_ssl_uri
     print "cdn_streaming_uri", cont.cdn_streaming_uri
+    print "cdn_ios_uri", cont.cdn_ios_uri
 
     # Make it public
     cont.make_public(ttl=1200)
@@ -435,6 +436,7 @@ Once a container is made public, you can access its CDN-related properties. You 
     print "cdn_uri", cont.cdn_uri
     print "cdn_ssl_uri", cont.cdn_ssl_uri
     print "cdn_streaming_uri", cont.cdn_streaming_uri
+    print "cdn_ios_uri", cont.cdn_ios_uri
 
     # clean up
     cont.delete()
@@ -448,6 +450,7 @@ Running this returns the following:
     cdn_uri None
     cdn_ssl_uri None
     cdn_streaming_uri None
+    cdn_ios_uri None
 
     After Making Public
     cdn_enabled True
@@ -456,6 +459,7 @@ Running this returns the following:
     cdn_uri http://6cface6ba364a8b14147-0a7948bc1fe3dbb60c24b92b61e4818f.r83.cf1.rackcdn.com
     cdn_ssl_uri https://8f03601ca5bfb714a8b2-0a7948bc1fe3dbb60c24b92b61e4818f.ssl.cf1.rackcdn.com
     cdn_streaming_uri http://882ea271eef0a907997b-0a7948bc1fe3dbb60c24b92b61e4818f.r83.stream.cf1.rackcdn.com
+    cdn_ios_uri http://797722bf130f8afc2538-5a91ce4f079965bd7f8a88a0a2a855cb.iosr.cf3.rackcdn.com
 
 To remove a container from the public CDN, simply call:
 
