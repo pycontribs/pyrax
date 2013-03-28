@@ -40,6 +40,7 @@ class Container(object):
         self._cdn_ttl = FAULT
         self._cdn_ssl_uri = FAULT
         self._cdn_streaming_uri = FAULT
+        self._cdn_ios_uri = FAULT
         self._cdn_log_retention = FAULT
         self._object_cache = {}
 
@@ -50,6 +51,7 @@ class Container(object):
         self._cdn_ttl = self.client.default_cdn_ttl
         self._cdn_ssl_uri = None
         self._cdn_streaming_uri = None
+        self._cdn_ios_uri = None
         self._cdn_log_retention = False
 
 
@@ -69,6 +71,8 @@ class Container(object):
                     self._cdn_ssl_uri = hdr[1]
                 elif low_hdr == "x-cdn-streaming-uri":
                     self._cdn_streaming_uri = hdr[1]
+                elif low_hdr == "x-cdn-ios-uri":
+                    self._cdn_ios_uri = hdr[1]
                 elif low_hdr == "x-log-retention":
                     self._cdn_log_retention = (hdr[1] == "True")
         elif response.status == 404:
@@ -319,9 +323,19 @@ class Container(object):
         self._cdn_streaming_uri = val
 
 
+    def _get_cdn_ios_uri(self):
+        if self._cdn_ios_uri is FAULT:
+            self._fetch_cdn_data()
+        return self._cdn_ios_uri
+
+    def _set_cdn_ios_uri(self, val):
+        self._cdn_ios_uri = val
+
+
     cdn_log_retention = property(_get_cdn_log_retention, _set_cdn_log_retention)
     cdn_uri = property(_get_cdn_uri, _set_cdn_uri)
     cdn_ttl = property(_get_cdn_ttl, _set_cdn_ttl)
     cdn_ssl_uri = property(_get_cdn_ssl_uri, _set_cdn_ssl_uri)
     cdn_streaming_uri = property(_get_cdn_streaming_uri, _set_cdn_streaming_uri)
+    cdn_ios_uri = property(_get_cdn_ios_uri, _set_cdn_ios_uri)
     ## END - CDN property definitions ##
