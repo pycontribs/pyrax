@@ -32,7 +32,7 @@ class TestCase(unittest.TestCase):
         self.assert_(isinstance(lbs, list))
 
     def test_cloud_db(self):
-        flavors = pyrax.clouddatabases.list_flavors()
+        flavors = pyrax.cloud_databases.list_flavors()
         self.assert_(isinstance(flavors, list))
 
 
