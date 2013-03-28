@@ -38,7 +38,7 @@ with utils.SelfDeletingTempfile() as tmpname:
     print "-" * 44
     print text
     print "-" * 44
-    with file(tmpname, "w") as tmp:
+    with open(tmpname, "w") as tmp:
         tmp.write(text)
     nm = os.path.basename(tmpname)
     print

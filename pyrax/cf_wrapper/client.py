@@ -424,13 +424,13 @@ class CFClient(object):
         """
         cont = self.get_container(container)
         with utils.SelfDeletingTempfile() as tmp:
-            with file(tmp, "wb") as tmpfile:
+            with open(tmp, "wb") as tmpfile:
                 try:
                     tmpfile.write(data)
                 except UnicodeEncodeError:
                     udata = data.encode("utf-8")
                     tmpfile.write(udata)
-            with file(tmp, "rb") as tmpfile:
+            with open(tmp, "rb") as tmpfile:
                 self.connection.put_object(cont.name, obj_name,
                         contents=tmpfile, content_type=content_type, etag=etag)
         return self.get_object(container, obj_name)
@@ -527,9 +527,9 @@ class CFClient(object):
                 sequence = str(segment + 1).zfill(digits)
                 seg_name = "%s.%s" % (fname, sequence)
                 with utils.SelfDeletingTempfile() as tmpname:
-                    with file(tmpname, "wb") as tmp:
+                    with open(tmpname, "wb") as tmp:
                         tmp.write(fileobj.read(self.max_file_size))
-                    with file(tmpname, "rb") as tmp:
+                    with open(tmpname, "rb") as tmp:
                         # We have to calculate the etag for each segment
                         etag = utils.get_checksum(tmp)
                         self.connection.put_object(cont.name, seg_name,
@@ -554,7 +554,7 @@ class CFClient(object):
 
         if ispath and os.path.isfile(file_or_path):
             # Need to wrap the call in a context manager
-            with file(file_or_path, "rb") as ff:
+            with open(file_or_path, "rb") as ff:
                 upload(ff, content_type, etag)
         else:
             upload(file_or_path, content_type, etag)

@@ -36,7 +36,8 @@ print "Current nodes:", lb.nodes
 # the same internal network as your load balancer.
 new_node = clb.Node(address="10.177.1.2", port=80, condition="ENABLED")
 lb.add_nodes([new_node])
-pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30, verbose=True)
+pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30,
+        verbose=True)
 
 print
 print "After adding node:", lb.nodes
@@ -49,6 +50,7 @@ added_node = [node for node in lb.nodes
 print
 print "Added Node:", added_node
 added_node.delete()
-pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30, verbose=True)
+pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30,
+        verbose=True)
 print
 print "After removing node:", lb.nodes

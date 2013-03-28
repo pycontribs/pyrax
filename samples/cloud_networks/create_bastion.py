@@ -67,7 +67,7 @@ pyrax.utils.wait_until(isolated, "status", ("ERROR", "ACTIVE"), attempts=0,
 bastion = cs.servers.get(bas_id)
 isolated = cs.servers.get(iso_id)
 if "ERROR" in (bastion.status, isolated.status):
-    print "There was an error building the servers. Please delete them and try again."
+    print "There was an error building the servers. Please try again."
     exit()
 
 print "Bastion server networks:"

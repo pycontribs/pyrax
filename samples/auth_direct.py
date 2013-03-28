@@ -26,6 +26,7 @@ print "Pass directly:"
 try:
     pyrax.set_credentials("real_username", "real_api_key")
 except exc.AuthenticationFailed:
-	print "Did you remember to replace the credentials with your actual username and api_key?"
+    print "Did you remember to replace the credentials with your actual",
+    print "username and api_key?"
 print "authenticated =", pyrax.identity.authenticated
 print

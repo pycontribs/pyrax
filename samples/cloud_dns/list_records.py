@@ -43,7 +43,8 @@ def print_records(records):
 try:
     dom = dns.find(name=domain_name)
 except exc.NotFound:
-    answer = raw_input("The domain '%s' was not found. Do you want to create it? [y/n]" % domain_name)
+    answer = raw_input("The domain '%s' was not found. Do you want to create "
+            "it? [y/n]" % domain_name)
     if not answer.lower().startswith("y"):
         sys.exit()
     try:

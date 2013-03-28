@@ -67,8 +67,8 @@ class FakeContainer(Container):
 
 
 class FakeStorageObject(StorageObject):
-    def __init__(self, client, container, name=None, total_bytes=None, content_type=None,
-            last_modified=None, etag=None, attdict=None):
+    def __init__(self, client, container, name=None, total_bytes=None,
+            content_type=None, last_modified=None, etag=None, attdict=None):
         """
         The object can either be initialized with individual params, or by
         passing the dict that is returned by swiftclient.
@@ -115,7 +115,10 @@ class FakeService(object):
 class FakeCSClient(FakeService):
     def __init__(self, *args, **kwargs):
         super(FakeCSClient, self).__init__(*args, **kwargs)
-        def dummy(self): pass
+
+        def dummy(self):
+            pass
+
         self.servers = FakeService()
         utils.add_method(self.servers, dummy, "list")
         self.images = FakeService()
@@ -144,21 +147,28 @@ class FakeEntryPoint(object):
             return self.name
         return dummy
 
-fakeEntryPoints = [FakeEntryPoint("a"), FakeEntryPoint("b"), FakeEntryPoint("c")]
+fakeEntryPoints = [FakeEntryPoint("a"), FakeEntryPoint("b"),
+        FakeEntryPoint("c")]
 
 
 class FakeManager(object):
     api = FakeClient()
+
     def list(self):
         pass
+
     def get(self, item):
         pass
+
     def delete(self, item):
         pass
+
     def create(self, *args, **kwargs):
         pass
+
     def find(self, *args, **kwargs):
         pass
+
     def action(self, item, action_type, body={}):
         pass
 
@@ -170,8 +180,10 @@ class FakeException(BaseException):
 class FakeServiceCatalog(object):
     def __init__(self, *args, **kwargs):
         pass
+
     def get_token(self):
         return "fake_token"
+
     def url_for(self, attr=None, filter_value=None,
             service_type=None, endpoint_type="publicURL",
             service_name=None, volume_service_name=None):
@@ -186,8 +198,10 @@ class FakeServiceCatalog(object):
 
 class FakeKeyring(object):
     password_set = False
+
     def get_password(self, *args, **kwargs):
         return "FAKE_TOKEN|FAKE_URL"
+
     def set_password(self, *args, **kwargs):
         self.password_set = True
 
@@ -195,6 +209,7 @@ class FakeKeyring(object):
 class FakeEntity(object):
     def __init__(self, *args, **kwargs):
         self.id = utils.random_name()
+
     def get(self, *args, **kwargs):
         pass
 
@@ -316,16 +331,17 @@ class FakeLoadBalancer(CloudLoadBalancer):
 
 
 class FakeNode(Node):
-    def __init__(self, address=None, port=None, condition=None, weight=None, status=None,
-            parent=None, type=None, id=None):
+    def __init__(self, address=None, port=None, condition=None, weight=None,
+            status=None, parent=None, type=None, id=None):
         if address is None:
             address = "0.0.0.0"
         if port is None:
             port = 80
         if id is None:
             id = utils.random_name()
-        super(FakeNode, self).__init__(address=address, port=port, condition=condition, weight=weight, status=status,
-            parent=parent, type=type, id=id)
+        super(FakeNode, self).__init__(address=address, port=port,
+                condition=condition, weight=weight, status=status,
+                parent=parent, type=type, id=id)
 
 
 class FakeVirtualIP(VirtualIP):
@@ -355,7 +371,8 @@ class FakeCloudNetwork(CloudNetwork):
         info = kwargs.get("info", {"fake": "fake"})
         label = kwargs.get("label", kwargs.pop("name", utils.random_name()))
         info["label"] = label
-        super(FakeCloudNetwork, self).__init__(manager=None, info=info, *args, **kwargs)
+        super(FakeCloudNetwork, self).__init__(manager=None, info=info, *args,
+                **kwargs)
         self.id = uuid.uuid4()
 
 
@@ -365,6 +382,7 @@ class FakeIdentity(Identity):
         super(FakeIdentity, self).__init__(*args, **kwargs)
         self._good_username = "fakeuser"
         self._good_api_key = "fakeapikey"
+
     def authenticate(self):
         if ((self.username == self._good_username) and
                 (self.api_key == self._good_api_key)):
@@ -372,10 +390,13 @@ class FakeIdentity(Identity):
             self.authenticated = True
         else:
             self.authenticated = False
-            raise exc.AuthenticationFailed("No match for '%s'/'%s' username/api_key"
-                    % (self.username, self.api_key))
+            raise exc.AuthenticationFailed(
+                    "No match for '%s'/'%s' username/api_key" %
+                    (self.username, self.api_key))
+
     def get_token(self, force=False):
         return self.token
+
     def fake_response(self):
         return fake_identity_response
 

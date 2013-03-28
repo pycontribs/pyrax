@@ -30,13 +30,14 @@ cf = pyrax.cloudfiles
 cont_name = pyrax.utils.random_name(8)
 cont = cf.create_container(cont_name)
 
-# pyrax has a utility for creating temporary local directories that clean themselves up.
+# pyrax has a utility for creating temporary local directories that clean
+# themselves up.
 with utils.SelfDeletingTempDirectory() as tmpfolder:
     # Create a bunch of files
     for idx in xrange(13):
         fname = "file_%s" % idx
         pth = os.path.join(tmpfolder, fname)
-        with file(pth, "w") as tmp:
+        with open(pth, "w") as tmp:
             tmp.write("This is some text")
     # Create a subfolder. It will be deleted automatically as part of
     # the cleanup of SelfDeletingTempDirectory.
@@ -46,7 +47,7 @@ with utils.SelfDeletingTempDirectory() as tmpfolder:
     for idx in xrange(7):
         fname = "subfile_%s" % idx
         pth = os.path.join(subfolder_path, fname)
-        with file(pth, "w") as tmp:
+        with open(pth, "w") as tmp:
             tmp.write("This is some text. " * 100)
 
     # OK, we've created our local file system. Now upload it to a container

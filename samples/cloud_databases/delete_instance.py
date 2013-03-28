@@ -33,8 +33,8 @@ if not instances:
 print
 print "Available Instances:"
 for pos, inst in enumerate(instances):
-    print "%s: %s (%s, RAM=%s, volume=%s) Status=%s" % (pos, inst.name, inst.flavor.name,
-            inst.flavor.ram, inst.volume["size"], inst.status)
+    print "%s: %s (%s, RAM=%s, volume=%s) Status=%s" % (pos, inst.name,
+            inst.flavor.name, inst.flavor.ram, inst.volume.size, inst.status)
 try:
     sel = int(raw_input("Enter the number of the instance to delete: "))
 except ValueError:

@@ -17,6 +17,14 @@ from pyrax import rax_identity
 from tests.unit import fakes
 
 
+class DummyResponse(object):
+    def read(self):
+        pass
+
+    def readline(self):
+        pass
+
+
 class IdentityTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(IdentityTest, self).__init__(*args, **kwargs)
@@ -34,7 +42,8 @@ class IdentityTest(unittest.TestCase):
         pass
 
     def test_init(self):
-        ident = self.identity_class(username=self.username, api_key=self.api_key)
+        ident = self.identity_class(username=self.username,
+                api_key=self.api_key)
         self.assertEqual(ident.username, self.username)
         self.assertEqual(ident.api_key, self.api_key)
         self.assertIsNone(ident.token)
@@ -53,7 +62,7 @@ class IdentityTest(unittest.TestCase):
         user = "fakeuser"
         key = "fakeapikey"
         with utils.SelfDeletingTempfile() as tmpname:
-            with file(tmpname, "wb") as ff:
+            with open(tmpname, "wb") as ff:
                 ff.write("[rackspace_cloud]\n")
                 ff.write("username = %s\n" % user)
                 ff.write("api_key = %s\n" % key)
@@ -61,25 +70,30 @@ class IdentityTest(unittest.TestCase):
         self.assertEqual(ident.username, user)
         self.assertEqual(ident.api_key, key)
         # File doesn't exist
-        self.assertRaises(exc.FileNotFound, ident.set_credential_file, "doesn't exist")
+        self.assertRaises(exc.FileNotFound, ident.set_credential_file,
+                "doesn't exist")
         # Missing section
         with utils.SelfDeletingTempfile() as tmpname:
-            with file(tmpname, "wb") as ff:
+            with open(tmpname, "wb") as ff:
                 ff.write("user = x\n")
-            self.assertRaises(exc.InvalidCredentialFile, ident.set_credential_file, tmpname)
+            self.assertRaises(exc.InvalidCredentialFile,
+                    ident.set_credential_file, tmpname)
         # Incorrect section
         with utils.SelfDeletingTempfile() as tmpname:
-            with file(tmpname, "wb") as ff:
+            with open(tmpname, "wb") as ff:
                 ff.write("[bad_section]\nusername = x\napi_key = y\n")
-            self.assertRaises(exc.InvalidCredentialFile, ident.set_credential_file, tmpname)
+            self.assertRaises(exc.InvalidCredentialFile,
+                    ident.set_credential_file, tmpname)
         # Incorrect option
         with utils.SelfDeletingTempfile() as tmpname:
-            with file(tmpname, "wb") as ff:
+            with open(tmpname, "wb") as ff:
                 ff.write("[rackspace_cloud]\nuserbad = x\napi_key = y\n")
-            self.assertRaises(exc.InvalidCredentialFile, ident.set_credential_file, tmpname)
+            self.assertRaises(exc.InvalidCredentialFile,
+                    ident.set_credential_file, tmpname)
 
     def test_get_credentials(self):
-        ident = self.identity_class(username=self.username, api_key=self.api_key)
+        ident = self.identity_class(username=self.username,
+                api_key=self.api_key)
         creds = ident._get_credentials()
         user = creds["auth"]["RAX-KSKEY:apiKeyCredentials"]["username"]
         key = creds["auth"]["RAX-KSKEY:apiKeyCredentials"]["apiKey"]
@@ -87,7 +101,8 @@ class IdentityTest(unittest.TestCase):
         self.assertEqual(self.api_key, key)
 
     def test_authenticate(self):
-        ident = self.identity_class(username=self.username, api_key=self.api_key)
+        ident = self.identity_class(username=self.username,
+                api_key=self.api_key)
         savopen = urllib2.urlopen
         urllib2.urlopen = Mock(return_value=fakes.FakeIdentityResponse())
         ident.authenticate()
@@ -96,27 +111,22 @@ class IdentityTest(unittest.TestCase):
     def test_authenticate_fail_creds(self):
         ident = self.identity_class(username="BAD", api_key="BAD")
         savopen = urllib2.urlopen
-        class DummyResponse(object):
-            def read(self): pass
-            def readline(self): pass
         urllib2.urlopen = Mock(side_effect=urllib2.HTTPError(fakes.example_uri,
-                401, "Bad", {}, DummyResponse()))  
+                401, "Bad", {}, DummyResponse()))
         self.assertRaises(exc.AuthenticationFailed, ident.authenticate)
         urllib2.urlopen = savopen
 
     def test_authenticate_fail_other(self):
         ident = self.identity_class(username="BAD", api_key="BAD")
         savopen = urllib2.urlopen
-        class DummyResponse(object):
-            def read(self): pass
-            def readline(self): pass
         urllib2.urlopen = Mock(side_effect=urllib2.HTTPError(fakes.example_uri,
-                500, "Bad", {}, DummyResponse()))  
+                500, "Bad", {}, DummyResponse()))
         self.assertRaises(exc.AuthenticationFailed, ident.authenticate)
         urllib2.urlopen = savopen
 
     def test_get_token(self):
-        ident = self.identity_class(username=self.username, api_key=self.api_key)
+        ident = self.identity_class(username=self.username,
+                api_key=self.api_key)
         ident.token = "test_token"
         sav_valid = ident._has_valid_token
         sav_auth = ident.authenticate
@@ -136,7 +146,8 @@ class IdentityTest(unittest.TestCase):
         ident.authenticate = sav_auth
 
     def test_has_valid_token(self):
-        ident = self.identity_class(username=self.username, api_key=self.api_key)
+        ident = self.identity_class(username=self.username,
+                api_key=self.api_key)
         savopen = urllib2.urlopen
         urllib2.urlopen = Mock(return_value=fakes.FakeIdentityResponse())
         ident.authenticate()

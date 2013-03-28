@@ -125,7 +125,7 @@ Static Public Attributes</h2></td></tr>
 <p>The temp folder is created in a secure fashion, and is automatically deleted when the context manager exits, along with any files that may be contained within. When you instantiate this class, you receive the full path to the temporary directory.</p>
 <p>Usage:</p>
 <div class="fragment"><pre class="fragment">     with SelfDeletingTempDirectory() <span class="keyword">as</span> tmpdir:
-         f1 = file(os.path.join(tmpdir, <span class="stringliteral">&quot;my_file.txt&quot;</span>, <span class="stringliteral">&quot;w&quot;</span>)
+         f1 = open(os.path.join(tmpdir, <span class="stringliteral">&quot;my_file.txt&quot;</span>, <span class="stringliteral">&quot;w&quot;</span>)
          f1.write(<span class="stringliteral">&quot;blah...&quot;</span>)
          f1.close()
          some_func(tmpdir)
@@ -224,7 +224,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 5 2012 21:20:48 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 27 2013 21:03:42 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

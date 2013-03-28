@@ -53,7 +53,8 @@ except Exception as e:
 if sacrifice.status != "ACTIVE":
     print "Please wait until the 'sacrifice' server is in ACTIVE status."
     print "Current status:", sacrifice.status
-    raw_answer = raw_input("Do you want this script to cycle every 10 seconds to check? [y/n] ")
+    raw_answer = raw_input("Do you want this script to cycle every 10 seconds "
+            "to check? [y/n] ")
     answer = raw_answer[0].lower()
     if answer != "y":
         sys.exit()
@@ -69,4 +70,3 @@ if sacrifice.status != "ACTIVE":
 print "Deleting 'sacrifice' server...",
 sacrifice.delete()
 print "  Done!"
-

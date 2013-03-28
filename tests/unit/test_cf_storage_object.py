@@ -22,9 +22,11 @@ class CF_StorageObjectTest(unittest.TestCase):
         reload(pyrax)
         self.orig_connect_to_cloudservers = pyrax.connect_to_cloudservers
         self.orig_connect_to_cloudfiles = pyrax.connect_to_cloudfiles
-        self.orig_connect_to_cloud_loadbalancers = pyrax.connect_to_cloud_loadbalancers
         self.orig_connect_to_cloud_databases = pyrax.connect_to_cloud_databases
-        self.orig_connect_to_cloud_blockstorage = pyrax.connect_to_cloud_blockstorage
+        ctclb = pyrax.connect_to_cloud_loadbalancers
+        self.orig_connect_to_cloud_loadbalancers = ctclb
+        ctcbs = pyrax.connect_to_cloud_blockstorage
+        self.orig_connect_to_cloud_blockstorage = ctcbs
         super(CF_StorageObjectTest, self).__init__(*args, **kwargs)
         self.obj_name = "testobj"
         self.container_name = "testcont"
@@ -63,9 +65,11 @@ class CF_StorageObjectTest(unittest.TestCase):
         self.storage_object = None
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
         pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
-        pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
         pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
-        pyrax.connect_to_cloud_blockstorage = self.orig_connect_to_cloud_blockstorage
+        octclb = self.orig_connect_to_cloud_loadbalancers
+        pyrax.connect_to_cloud_loadbalancers = octclb
+        octcbs = self.orig_connect_to_cloud_blockstorage
+        pyrax.connect_to_cloud_blockstorage = octcbs
 
     def test_read_attdict(self):
         tname = "something"
@@ -105,7 +109,8 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj = self.storage_object
         obj.client.connection.delete_object = Mock()
         obj.delete()
-        obj.client.connection.delete_object.assert_called_with(obj.container.name, obj.name)
+        obj.client.connection.delete_object.assert_called_with(
+                obj.container.name, obj.name)
 
     def test_purge(self):
         obj = self.storage_object
@@ -115,12 +120,14 @@ class CF_StorageObjectTest(unittest.TestCase):
         cont.cdn_uri = "http://example.com"
         obj.client.connection.cdn_request = Mock()
         obj.purge()
-        obj.client.connection.cdn_request.assert_called_with("DELETE", cont.name, obj.name, hdrs={})
+        obj.client.connection.cdn_request.assert_called_with("DELETE",
+                cont.name, obj.name, hdrs={})
 
     def test_get_metadata(self):
         obj = self.storage_object
         obj.client.connection.head_object = Mock()
-        obj.client.connection.head_object.return_value = {"X-Object-Meta-Foo": "yes",
+        obj.client.connection.head_object.return_value = {
+                "X-Object-Meta-Foo": "yes",
                 "Some-Other-Key": "no"}
         meta = obj.get_metadata()
         self.assertEqual(meta, {"X-Object-Meta-Foo": "yes"})
@@ -145,8 +152,8 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj = self.storage_object
         obj.client.change_object_content_type = Mock()
         obj.change_content_type("foo")
-        obj.client.change_object_content_type.assert_called_once_with(obj.container,
-                obj, new_ctype="foo", guess=False)
+        obj.client.change_object_content_type.assert_called_once_with(
+                obj.container, obj, new_ctype="foo", guess=False)
 
     def test_get_temp_url(self):
         obj = self.storage_object
@@ -162,6 +169,7 @@ class CF_StorageObjectTest(unittest.TestCase):
         self.assert_("<Object " in rep)
         self.assert_(obj.name in rep)
         self.assert_(obj.content_type in rep)
+
 
 if __name__ == "__main__":
     unittest.main()

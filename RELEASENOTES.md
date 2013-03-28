@@ -1,5 +1,12 @@
 # Release Notes for pyrax
 
+###2013.03.27 - Version 1.3.5
+- Updated the Cloud Databases code to work with recent API changes.
+- Updated HACKING doc to include specific PEP8 exclusions.
+- Cleaned up the code in the tests/ and samples/ directories for PEP8.
+- Changed all uses of `file()` to `open()`.
+- Added tox support.
+
 ###2013.03.26 - Version 1.3.4
 - Fixed an ImportError in Cloud DNS. Thanks to Matt Martz for finding this.
 - Minor improvements to the travis.ci integration.

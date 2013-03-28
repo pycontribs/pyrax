@@ -70,7 +70,7 @@ class SelfDeletingTempDirectory(object):
 
     \code
     with SelfDeletingTempDirectory() as tmpdir:
-        f1 = file(os.path.join(tmpdir, "my_file.txt", "w")
+        f1 = open(os.path.join(tmpdir, "my_file.txt", "w")
         f1.write("blah...")
         f1.close()
         some_func(tmpdir)
@@ -104,7 +104,7 @@ def get_checksum(content, encoding="utf8"):
         txt = content.read()
         content.seek(pos)
     elif os.path.isfile(content):
-        with file(content, "rb") as ff:
+        with open(content, "rb") as ff:
             txt = ff.read()
     else:
         txt = content

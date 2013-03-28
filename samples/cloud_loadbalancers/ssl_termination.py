@@ -28,7 +28,8 @@ clb = pyrax.cloud_loadbalancers
 try:
     lb = clb.list()[0]
 except IndexError:
-    "You do not have any load balancers yet. Please create one and then re-run this script."
+    print "You do not have any load balancers yet."
+    print "Please create one and then re-run this script."
     sys.exit()
 
 orig = lb.get_ssl_termination()
@@ -42,7 +43,7 @@ if orig:
     lb.update_ssl_termination(enabled=new_enabled)
 else:
     print "Adding SSL Termination info..."
-    lb.add_ssl_termination(securePort=443, secureTrafficOnly=False, certificate="dummy_certificate",
-            privatekey="dummy_private_key")
+    lb.add_ssl_termination(securePort=443, secureTrafficOnly=False,
+            certificate="dummy_certificate", privatekey="dummy_private_key")
 print
 print "New setting of SSL Termination:", lb.get_ssl_termination()
