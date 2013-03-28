@@ -20,7 +20,8 @@ class PyraxInitTest(unittest.TestCase):
         reload(pyrax)
         self.orig_connect_to_cloudservers = pyrax.connect_to_cloudservers
         self.orig_connect_to_cloudfiles = pyrax.connect_to_cloudfiles
-        self.orig_connect_to_cloud_loadbalancers = pyrax.connect_to_cloud_loadbalancers
+        ctclb = pyrax.connect_to_cloud_loadbalancers
+        self.orig_connect_to_cloud_loadbalancers = ctclb
         self.orig_connect_to_cloud_databases = pyrax.connect_to_cloud_databases
         self.orig_get_service_endpoint = pyrax._get_service_endpoint
         super(PyraxInitTest, self).__init__(*args, **kwargs)
@@ -41,13 +42,17 @@ class PyraxInitTest(unittest.TestCase):
     def tearDown(self):
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
         pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
-        pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
+        octclb = self.orig_connect_to_cloud_loadbalancers
+        pyrax.connect_to_cloud_loadbalancers = octclb
         pyrax.connect_to_cloud_databases = self.orig_connect_to_cloud_databases
         pyrax._get_service_endpoint = self.orig_get_service_endpoint
 
     def test_require_auth(self):
+
         @pyrax._require_auth
-        def testfunc(): pass
+        def testfunc():
+            pass
+
         pyrax.identity.authenticated = True
         testfunc()
         pyrax.identity.authenticated = False
@@ -78,7 +83,8 @@ class PyraxInitTest(unittest.TestCase):
         # Test bad file
         with utils.SelfDeletingTempfile() as cfgfile:
             open(cfgfile, "w").write("FAKE")
-            self.assertRaises(exc.InvalidConfigurationFile, pyrax._read_config_settings, cfgfile)
+            self.assertRaises(exc.InvalidConfigurationFile,
+                    pyrax._read_config_settings, cfgfile)
         pyrax.default_region = sav_region
         pyrax.USER_AGENT = sav_USER_AGENT
 
@@ -89,7 +95,8 @@ class PyraxInitTest(unittest.TestCase):
         self.assert_(pyrax.identity.authenticated)
 
     def test_set_bad_credentials(self):
-        self.assertRaises(exc.AuthenticationFailed, pyrax.set_credentials, "bad", "creds")
+        self.assertRaises(exc.AuthenticationFailed, pyrax.set_credentials,
+                "bad", "creds")
         self.assertFalse(pyrax.identity.authenticated)
 
     def test_set_credential_file(self):
@@ -109,7 +116,8 @@ class PyraxInitTest(unittest.TestCase):
                 tmp.write("[rackspace_cloud]\n")
                 tmp.write("username = bad\n")
                 tmp.write("api_key = creds\n")
-            self.assertRaises(exc.AuthenticationFailed, pyrax.set_credential_file, tmpname)
+            self.assertRaises(exc.AuthenticationFailed,
+                    pyrax.set_credential_file, tmpname)
             self.assertFalse(pyrax.identity.authenticated)
 
     def test_keyring_auth_no_module(self):
@@ -174,7 +182,8 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.connect_to_services()
         pyrax.connect_to_cloudservers.assert_called_once_with(region=None)
         pyrax.connect_to_cloudfiles.assert_called_once_with(region=None)
-        pyrax.connect_to_cloud_loadbalancers.assert_called_once_with(region=None)
+        pyrax.connect_to_cloud_loadbalancers.assert_called_once_with(
+                region=None)
         pyrax.connect_to_cloud_databases.assert_called_once_with(region=None)
 
     @patch('pyrax._cs_client.Client', new=fakes.FakeCSClient)
@@ -194,7 +203,8 @@ class PyraxInitTest(unittest.TestCase):
     @patch('pyrax.CloudLoadBalancerClient', new=fakes.FakeService)
     def test_connect_to_cloud_loadbalancers(self):
         pyrax.cloud_loadbalancers = None
-        pyrax.connect_to_cloud_loadbalancers = self.orig_connect_to_cloud_loadbalancers
+        octclb = self.orig_connect_to_cloud_loadbalancers
+        pyrax.connect_to_cloud_loadbalancers = octclb
         pyrax.cloud_loadbalancers = pyrax.connect_to_cloud_loadbalancers()
         self.assertIsNotNone(pyrax.cloud_loadbalancers)
 
@@ -213,6 +223,7 @@ class PyraxInitTest(unittest.TestCase):
     def test_import_fail(self):
         import __builtin__
         sav_import = __builtin__.__import__
+
         def fake_import(nm, *args):
             if nm == "rax_identity":
                 raise ImportError

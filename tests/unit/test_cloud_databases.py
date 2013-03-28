@@ -99,15 +99,18 @@ class CloudDatabasesTest(unittest.TestCase):
         inst._database_manager.create = Mock()
         db = inst.create_database(name="test")
         inst._database_manager.create.assert_called_once_with(name="test",
-                character_set="utf8", collate="utf8_general_ci", return_none=True)
+                character_set="utf8", collate="utf8_general_ci",
+                return_none=True)
         inst._database_manager.create = sav
 
     def test_create_user(self):
         inst = self.instance
         sav = inst._user_manager.create
         inst._user_manager.create = Mock()
-        inst.create_user(name="test", password="testpw", database_names="testdb")
-        inst._user_manager.create.assert_called_once_with(name="test", password="testpw",
+        inst.create_user(name="test", password="testpw",
+                database_names="testdb")
+        inst._user_manager.create.assert_called_once_with(name="test",
+                password="testpw",
         database_names=["testdb"], return_none=True)
         inst._user_manager.create = sav
 
@@ -160,7 +163,8 @@ class CloudDatabasesTest(unittest.TestCase):
         inst.manager.action = Mock()
         ret = inst.resize(42)
         call_uri = "/instances/%s/action" % inst.id
-        inst.manager.action.assert_called_once_with(inst, "resize", body=fake_body)
+        inst.manager.action.assert_called_once_with(inst, "resize",
+                body=fake_body)
 
     def test_resize_volume_too_small(self):
         inst = self.instance
@@ -172,7 +176,8 @@ class CloudDatabasesTest(unittest.TestCase):
         fake_body = {"volume": {"size": 2}}
         inst.manager.action = Mock()
         ret = inst.resize_volume(2)
-        inst.manager.action.assert_called_once_with(inst, "resize", body=fake_body)
+        inst.manager.action.assert_called_once_with(inst, "resize",
+                body=fake_body)
 
     def test_resize_volume_direct(self):
         inst = self.instance
@@ -180,7 +185,8 @@ class CloudDatabasesTest(unittest.TestCase):
         fake_body = {"volume": {"size": 2}}
         inst.manager.action = Mock()
         ret = vol.resize(2)
-        inst.manager.action.assert_called_once_with(inst, "resize", body=fake_body)
+        inst.manager.action.assert_called_once_with(inst, "resize",
+                body=fake_body)
 
     def test_volume_get(self):
         inst = self.instance

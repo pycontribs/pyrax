@@ -78,7 +78,8 @@ class CloudNetworksTest(unittest.TestCase):
         clt._manager.create = Mock(return_value=fakes.FakeCloudNetwork())
         nm = utils.random_name()
         new = clt.create(label=nm, cidr=example_cidr)
-        clt._manager.create.assert_called_once_with(label=nm, name=None, cidr=example_cidr)
+        clt._manager.create.assert_called_once_with(label=nm, name=None,
+                cidr=example_cidr)
 
     def test_create_fail_count(self):
         clt = self.client
@@ -86,7 +87,8 @@ class CloudNetworksTest(unittest.TestCase):
         err.message = "Request failed: too many networks."
         clt._manager.create = Mock(side_effect=err)
         nm = utils.random_name()
-        self.assertRaises(exc.NetworkCountExceeded, clt.create, label=nm, cidr=example_cidr)
+        self.assertRaises(exc.NetworkCountExceeded, clt.create, label=nm,
+                cidr=example_cidr)
 
     def test_create_fail_cidr(self):
         clt = self.client
@@ -94,7 +96,8 @@ class CloudNetworksTest(unittest.TestCase):
         err.message = "CIDR does not contain enough addresses."
         clt._manager.create = Mock(side_effect=err)
         nm = utils.random_name()
-        self.assertRaises(exc.NetworkCIDRInvalid, clt.create, label=nm, cidr=example_cidr)
+        self.assertRaises(exc.NetworkCIDRInvalid, clt.create, label=nm,
+                cidr=example_cidr)
 
     def test_create_fail_cidr_malformed(self):
         clt = self.client
@@ -102,7 +105,8 @@ class CloudNetworksTest(unittest.TestCase):
         err.message = "CIDR is malformed."
         clt._manager.create = Mock(side_effect=err)
         nm = utils.random_name()
-        self.assertRaises(exc.NetworkCIDRMalformed, clt.create, label=nm, cidr=example_cidr)
+        self.assertRaises(exc.NetworkCIDRMalformed, clt.create, label=nm,
+                cidr=example_cidr)
 
     def test_create_fail_other(self):
         clt = self.client
@@ -110,7 +114,8 @@ class CloudNetworksTest(unittest.TestCase):
         err.message = "Something strange happened."
         clt._manager.create = Mock(side_effect=err)
         nm = utils.random_name()
-        self.assertRaises(exc.BadRequest, clt.create, label=nm, cidr=example_cidr)
+        self.assertRaises(exc.BadRequest, clt.create, label=nm,
+                cidr=example_cidr)
 
     def test_find_network_by_label(self):
         clt = self.client
@@ -127,7 +132,8 @@ class CloudNetworksTest(unittest.TestCase):
         net2 = fakes.FakeCloudNetwork(name="Second")
         net3 = fakes.FakeCloudNetwork(name="Third")
         clt.list = Mock(return_value=[net1, net2, net3])
-        self.assertRaises(exc.NetworkNotFound, clt.find_network_by_label, "Fourth")
+        self.assertRaises(exc.NetworkNotFound, clt.find_network_by_label,
+                "Fourth")
 
     def test_find_network_by_label_multiple(self):
         clt = self.client
@@ -135,7 +141,8 @@ class CloudNetworksTest(unittest.TestCase):
         net2 = fakes.FakeCloudNetwork(name="Third")
         net3 = fakes.FakeCloudNetwork(name="Third")
         clt.list = Mock(return_value=[net1, net2, net3])
-        self.assertRaises(exc.NetworkLabelNotUnique, clt.find_network_by_label, "Third")
+        self.assertRaises(exc.NetworkLabelNotUnique, clt.find_network_by_label,
+                "Third")
 
 
 if __name__ == "__main__":

@@ -166,7 +166,8 @@ class ManagerTest(unittest.TestCase):
         mgr.api.method_post = Mock()
         item = fakes.FakeEntity()
         mgr.action(item, "fake")
-        mgr.api.method_post.assert_called_once_with("/testing/%s/action" % item.id, body={"fake": {}})
+        mgr.api.method_post.assert_called_once_with("/testing/%s/action" %
+                item.id, body={"fake": {}})
 
     def test_find_no_match(self):
         mgr = self.manager

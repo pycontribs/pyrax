@@ -88,7 +88,8 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(len(nm), 9999)
 
     def test_folder_size_bad_folder(self):
-        self.assertRaises(exc.FolderNotFound, utils.folder_size, "/doesnt_exist")
+        self.assertRaises(exc.FolderNotFound, utils.folder_size,
+                "/doesnt_exist")
 
     def test_folder_size_no_ignore(self):
         with utils.SelfDeletingTempDirectory() as tmpdir:
@@ -143,12 +144,14 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(ret, "test")
 
     def test_unauthenticated(self):
-        def dummy(): pass
+        def dummy():
+            pass
         utils.unauthenticated(dummy)
         self.assertTrue(hasattr(dummy, "unauthenticated"))
 
     def test_isunauthenticated(self):
-        def dummy(): pass
+        def dummy():
+            pass
         self.assertFalse(utils.isunauthenticated(dummy))
         utils.unauthenticated(dummy)
         self.assertTrue(utils.isunauthenticated(dummy))
@@ -170,7 +173,8 @@ class UtilsTest(unittest.TestCase):
 
     def test_wait_until(self):
         status_obj = fakes.FakeStatusChanger()
-        self.assertRaises(exc.NoReloadError, utils.wait_until, status_obj, "status", "available")
+        self.assertRaises(exc.NoReloadError, utils.wait_until, status_obj,
+                "status", "available")
         status_obj.manager = fakes.FakeManager()
         status_obj.manager.get = Mock(return_value=status_obj)
         ret = utils.wait_until(status_obj, "status", "ready", interval=0.1)
@@ -179,10 +183,12 @@ class UtilsTest(unittest.TestCase):
 
     def test_wait_until_fail(self):
         status_obj = fakes.FakeStatusChanger()
-        self.assertRaises(exc.NoReloadError, utils.wait_until, status_obj, "status", "available")
+        self.assertRaises(exc.NoReloadError, utils.wait_until, status_obj,
+                "status", "available")
         status_obj.manager = fakes.FakeManager()
         status_obj.manager.get = Mock(return_value=status_obj)
-        ret = utils.wait_until(status_obj, "status", "fake", interval=0.1, attempts=2)
+        ret = utils.wait_until(status_obj, "status", "fake", interval=0.1,
+                attempts=2)
         self.assertIsNone(ret)
 
     def test_wait_until_callback(self):
@@ -201,7 +207,8 @@ class UtilsTest(unittest.TestCase):
 
     def test_time_string_invalid(self):
         testval = "abcde"
-        self.assertRaises(exc.InvalidDateTimeString, utils.iso_time_string, testval)
+        self.assertRaises(exc.InvalidDateTimeString, utils.iso_time_string,
+                testval)
 
     def test_time_string_date(self):
         dt = "1999-12-31"
@@ -217,19 +224,28 @@ class UtilsTest(unittest.TestCase):
 
     def test_time_string_datetime_add_tz(self):
         dt = "1999-12-31 23:59:59"
-        self.assertEqual(utils.iso_time_string(dt, show_tzinfo=True), "1999-12-31T23:59:59+0000")
+        self.assertEqual(utils.iso_time_string(dt, show_tzinfo=True),
+                "1999-12-31T23:59:59+0000")
 
     def test_time_string_datetime_show_tz(self):
+
         class TZ(datetime.tzinfo):
-            def utcoffset(self, dt): return datetime.timedelta(minutes=-120)
+            def utcoffset(self, dt):
+                return datetime.timedelta(minutes=-120)
+
         dt = datetime.datetime(1999, 12, 31, 23, 59, 59, tzinfo=TZ())
-        self.assertEqual(utils.iso_time_string(dt, show_tzinfo=True), "1999-12-31T23:59:59-0200")
+        self.assertEqual(utils.iso_time_string(dt, show_tzinfo=True),
+                "1999-12-31T23:59:59-0200")
 
     def test_time_string_datetime_hide_tz(self):
+
         class TZ(datetime.tzinfo):
-            def utcoffset(self, dt): return datetime.timedelta(minutes=-120)
+            def utcoffset(self, dt):
+                return datetime.timedelta(minutes=-120)
+
         dt = datetime.datetime(1999, 12, 31, 23, 59, 59, tzinfo=TZ())
-        self.assertEqual(utils.iso_time_string(dt, show_tzinfo=False), "1999-12-31T23:59:59")
+        self.assertEqual(utils.iso_time_string(dt, show_tzinfo=False),
+                "1999-12-31T23:59:59")
 
     def test_match_pattern(self):
         ignore_pat = "*.bad"
@@ -238,8 +254,10 @@ class UtilsTest(unittest.TestCase):
 
     def test_get_id(self):
         target = "test_id"
+
         class Obj_with_id(object):
             id = target
+
         obj = Obj_with_id()
         self.assertEqual(utils.get_id(obj), target)
         self.assertEqual(utils.get_id(obj), target)
