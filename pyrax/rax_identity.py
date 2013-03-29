@@ -11,11 +11,22 @@ import urlparse
 
 import pyrax.exceptions as exc
 
-_pat = (r"(\d{4})-(\d{2})-(\d{2})T"
-        r"(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})")
-_utc_pat = r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z"
-API_DATE_PATTERN = re.compile(_pat)
-UTC_API_DATE_PATTERN = re.compile(_utc_pat)
+_pat = r"""
+        (\d{4})-(\d{2})-(\d{2})     # YYYY-MM-DD
+        T                           # Separator
+        (\d{2}):(\d{2}):(\d{2})     # HH:MM:SS
+        \.\d+                       # Decimal and fractional seconds
+        ([\-\+])(\d{2}):(\d{2})     # TZ offset, in ±HH:00 format
+        """
+_utc_pat = r"""
+        (\d{4})-(\d{2})-(\d{2})     # YYYY-MM-DD
+        T                           # Separator
+        (\d{2}):(\d{2}):(\d{2})     # HH:MM:SS
+        \.\d+                       # Decimal and fractional seconds
+        Z                           # UTC indicator
+        """
+API_DATE_PATTERN = re.compile(_pat, re.VERBOSE)
+UTC_API_DATE_PATTERN = re.compile(_utc_pat, re.VERBOSE)
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
