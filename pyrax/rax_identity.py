@@ -11,7 +11,8 @@ import urlparse
 
 import pyrax.exceptions as exc
 
-_pat = r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})"
+_pat = (r"(\d{4})-(\d{2})-(\d{2})T"
+        r"(\d{2}):(\d{2}):(\d{2})\.\d+([\-\+])(\d{2}):(\d{2})")
 _utc_pat = r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z"
 API_DATE_PATTERN = re.compile(_pat)
 UTC_API_DATE_PATTERN = re.compile(_utc_pat)
