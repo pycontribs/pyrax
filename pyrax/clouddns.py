@@ -130,7 +130,8 @@ class CloudDNSDomain(BaseResource):
         Sample export:
             {u'accountId': 000000,
              u'contentType': u'BIND_9',
-             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. foo@example.com. 1354202974 21600 3600 1814400 500'
+             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. '
+                'foo@example.com. 1354202974 21600 3600 1814400 500'
                 'example.com.\t3600\tIN\tNS\tdns1.stabletransit.com.'
                 'example.com.\t3600\tIN\tNS\tdns2.stabletransit.com.',
              u'id': 1111111}
@@ -547,7 +548,8 @@ class CloudDNSManager(BaseManager):
         Sample export:
             {u'accountId': 000000,
              u'contentType': u'BIND_9',
-             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. foo@example.com. 1354202974 21600 3600 1814400 500'
+             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. '
+                'foo@example.com. 1354202974 21600 3600 1814400 500'
                 'example.com.\t3600\tIN\tNS\tdns1.stabletransit.com.'
                 'example.com.\t3600\tIN\tNS\tdns2.stabletransit.com.',
              u'id': 1111111}
@@ -1041,7 +1043,8 @@ class CloudDNSClient(BaseClient):
 
             {u'accountId': 000000,
              u'contentType': u'BIND_9',
-             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. foo@example.com. 1354202974 21600 3600 1814400 500'
+             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. '
+                'foo@example.com. 1354202974 21600 3600 1814400 500'
                 'example.com.\t3600\tIN\tNS\tdns1.stabletransit.com.'
                 'example.com.\t3600\tIN\tNS\tdns2.stabletransit.com.',
              u'id': 1111111}
