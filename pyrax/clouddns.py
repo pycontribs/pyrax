@@ -409,8 +409,10 @@ class CloudDNSManager(BaseManager):
         if error_class and (ret_body["status"] == "ERROR"):
             #This call will handle raising the error.
             self._process_async_error(ret_body, error_class)
-        if has_response:
+        if has_response and "response" in ret_body:
             ret = _resp, ret_body["response"]
+        elif has_response:
+            ret = _resp, ret_body["jobId"]
         else:
             ret = _resp, ret_body
         try:
