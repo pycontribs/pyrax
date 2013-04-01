@@ -219,6 +219,26 @@ class CloudDatabasesTest(unittest.TestCase):
         inst.flavor = flavor
         self.assertTrue(isinstance(inst.flavor, CloudDatabaseFlavor))
 
+    def test_grant_access(self):
+        inst = self.instance
+        user = utils.random_name()
+        database = utils.random_name()
+        inst.manager.api.method_put = Mock()
+        ret = inst.grant_access(user, database)
+        call_uri = "/instances/%s/users/%s/databases" % (inst.id, user)
+        body = {"databases": [{"name": database}]}
+        inst.manager.api.method_put.assert_called_once_with(call_uri, body=body)
+
+    def test_revoke_access(self):
+        inst = self.instance
+        user = utils.random_name()
+        database = utils.random_name()
+        inst.manager.api.method_delete = Mock()
+        ret = inst.revoke_access(user, database)
+        call_uri = "/instances/%s/users/%s/databases/%s" % (inst.id, user, database)
+        inst.manager.api.method_delete.assert_called_once_with(call_uri)
+
+
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_list_databases_for_instance(self):
         clt = self.client

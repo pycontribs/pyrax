@@ -253,6 +253,22 @@ class CloudDatabaseInstance(BaseResource):
 
     flavor = property(_get_flavor, _set_flavor)
 
+    def grant_access(self, user, database):
+        """
+        Grant a user access to a database.
+        user is the name of the user and database is the name of the database.
+        """
+        self.manager.api.method_put(("/instances/%s/users/%s/databases"
+            % (self.id, user)), body={"databases": [{"name": database}]})
+
+    def revoke_access(self, user, database):
+        """
+        Revoke a user's access to a database
+        user is the name of the user and database is the name of the database.
+        """
+        self.manager.api.method_delete(("/instances/%s/users/%s/databases/%s"
+            % (self.id, user, database)))
+
 
 class CloudDatabaseDatabase(BaseResource):
     """
@@ -265,6 +281,7 @@ class CloudDatabaseDatabase(BaseResource):
     def delete(self):
         """This class doesn't have an 'id', so pass the name."""
         self.manager.delete(self.name)
+
 
 
 class CloudDatabaseUser(BaseResource):
