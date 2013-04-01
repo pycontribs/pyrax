@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import random
+import time
 import unittest
 
 from mock import call
@@ -53,6 +54,13 @@ class CloudDNSTest(unittest.TestCase):
         self.assertEqual(d1, d2)
         self.assertTrue(isinstance(d1, CloudDNSDomain))
         self.assertTrue(isinstance(d2, CloudDNSDomain))
+
+    def test_set_timeout(self):
+        clt = self.client
+        mgr = clt._manager
+        new_timeout = random.randint(0, 99)
+        clt.set_timeout(new_timeout)
+        self.assertEqual(mgr._timeout, new_timeout)
 
     def test_reset_paging_all(self):
         clt = self.client
@@ -327,6 +335,17 @@ class CloudDNSTest(unittest.TestCase):
         clt.method_delete.assert_called_once_with(uri)
         clt.method_get.assert_called_once_with(massaged_uri)
         self.assertEqual(ret, ({}, get_resp))
+
+    def test_async_call_timeout(self):
+        clt = self.client
+        mgr = clt._manager
+        uri = "http://example.com"
+        callback_uri = "https://fake.example.com/status/fake"
+        clt.set_timeout(0.001)
+        clt.method_get = Mock(return_value=({}, {"callbackUrl": callback_uri,
+                "status": "RUNNING"}))
+        self.assertRaises(exc.DNSCallTimedOut, mgr._async_call, uri,
+                method="GET")
 
     def test_async_call_error(self):
         clt = self.client

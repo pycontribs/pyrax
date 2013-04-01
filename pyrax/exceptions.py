@@ -41,6 +41,9 @@ class AuthSystemNotFound(PyraxException):
 class CDNFailed(PyraxException):
     pass
 
+class DNSCallTimedOut(PyraxException):
+    pass
+
 class DomainCreationFailed(PyraxException):
     pass
 
