@@ -506,8 +506,7 @@ An error page is the HTML file that is shown to the end user when there is an at
 
     clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
-    ep_mgr = lb.errorpage()
-    print ep_mgr.get()
+    print lb.get_error_page()
 
 If no custom error page has been set, you should see:
 
@@ -516,11 +515,11 @@ If no custom error page has been set, you should see:
 To create a custom error page for this load balancer, run the following:
 
     html = "<html><body>Sorry, something is amiss!</body></html>"
-    ep_mgr.add(html)
+    lb.set_error_page(html)
 
 To remove the custom error page and return to the default, run:
 
-    ep_mgr.delete()
+    lb.clear_error_page()
 
 
 ## Content Caching
