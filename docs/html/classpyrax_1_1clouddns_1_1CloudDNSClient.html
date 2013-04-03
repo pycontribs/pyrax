@@ -123,6 +123,8 @@ Inheritance diagram for CloudDNSClient:</div>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a095ce5c15e8d86c06b68342d3ef66c66">set_timeout</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the amount of time that calls will wait for a response from the DNS system before timing out.  <a href="#a095ce5c15e8d86c06b68342d3ef66c66"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all resources.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#aa4b6fcc0a8d9e480ddda1300e9e44322">list_previous_page</a></td></tr>
@@ -444,7 +446,7 @@ Static Public Attributes</h2></td></tr>
 <p>Provides the BIND (Berkeley Internet Name Domain) 9 formatted contents of the requested domain. </p>
 <p>This call is for a single domain only, and as such, does not provide subdomain information.</p>
 <p>Sample export:</p>
-<p>{u'accountId': 000000, u'contentType': u'BIND_9', u'contents': u'example.com..rackspace.com. <a href="mailto:foo@example.com">foo@example.com</a>. 1354202974 21600 3600 1814400 500' 'example.com..stabletransit.com.' 'example.com..stabletransit.com.', u'id': 1111111} </p>
+<p>{u'accountId': 000000, u'contentType': u'BIND_9', u'contents': u'example.com..rackspace.com. ' '<a href="mailto:foo@example.com">foo@example.com</a>. 1354202974 21600 3600 1814400 500' 'example.com..stabletransit.com.' 'example.com..stabletransit.com.', u'id': 1111111} </p>
 
 </div>
 </div>
@@ -965,6 +967,36 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a095ce5c15e8d86c06b68342d3ef66c66"></a><!-- doxytag: member="pyrax::clouddns::CloudDNSClient::set_timeout" ref="a095ce5c15e8d86c06b68342d3ef66c66" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a095ce5c15e8d86c06b68342d3ef66c66">set_timeout</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>timeout</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Sets the amount of time that calls will wait for a response from the DNS system before timing out. </p>
+<p>Setting the timeout to zero will cause execution to wait indefinitely until the call completes. </p>
+
+</div>
+</div>
 <a class="anchor" id="a8ee67d6346234099ee06b44af2cb229b"></a><!-- doxytag: member="pyrax::clouddns::CloudDNSClient::update_domain" ref="a8ee67d6346234099ee06b44af2cb229b" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1170,7 +1202,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 6 2013 09:10:16 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 3 2013 10:34:11 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

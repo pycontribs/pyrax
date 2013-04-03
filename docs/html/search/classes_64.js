@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['dnscalltimedout',['DNSCallTimedOut',['../classpyrax_1_1exceptions_1_1DNSCallTimedOut.html',1,'pyrax::exceptions']]],
   ['domaincreationfailed',['DomainCreationFailed',['../classpyrax_1_1exceptions_1_1DomainCreationFailed.html',1,'pyrax::exceptions']]],
   ['domaindeletionfailed',['DomainDeletionFailed',['../classpyrax_1_1exceptions_1_1DomainDeletionFailed.html',1,'pyrax::exceptions']]],
   ['domainrecordadditionfailed',['DomainRecordAdditionFailed',['../classpyrax_1_1exceptions_1_1DomainRecordAdditionFailed.html',1,'pyrax::exceptions']]],

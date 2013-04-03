@@ -6,6 +6,7 @@ var searchData=
   ['catalog',['catalog',['../classpyrax_1_1service__catalog_1_1ServiceCatalog.html#a6be3d84fa45e3612e5d22f1015b288af',1,'pyrax::service_catalog::ServiceCatalog']]],
   ['cdn_5fconnection',['cdn_connection',['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html#a9ebd30d3926b0fe246ca66e564caf148',1,'pyrax::cf_wrapper::client::Connection']]],
   ['cdn_5fenabled',['cdn_enabled',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a15b27a248ed9133d6a84543a420fe2f9',1,'pyrax::cf_wrapper::client::CFClient.cdn_enabled()'],['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a2335e6e10f37188b2c023f9c5575c299',1,'pyrax::cf_wrapper::container::Container.cdn_enabled()']]],
+  ['cdn_5fios_5furi',['cdn_ios_uri',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a905e4199215ee5839e09aba563d40a39',1,'pyrax::cf_wrapper::container::Container']]],
   ['cdn_5flog_5fretention',['cdn_log_retention',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a7ab42343f8fb8b6a8c8464effc0f6765',1,'pyrax::cf_wrapper::container::Container']]],
   ['cdn_5fmeta_5fprefix',['cdn_meta_prefix',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a2952143e08d5da585f27b1b2271c03be',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['cdn_5frequest',['cdn_request',['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html#ad1c79a1e8a4bbf3b8286ca87c62e6da5',1,'pyrax::cf_wrapper::client::Connection']]],
