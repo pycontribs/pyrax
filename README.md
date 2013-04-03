@@ -60,6 +60,8 @@ Please see the HACKING file for contribution guidelines. Make sure pull requests
 
 
 ## Support and Feedback
+You can find documentation for using the **pyrax** SDK at [docs.rackspace.com](http://docs.rackspace.com/sdks/guide/content/python.html).
+
 Your feedback is appreciated! If you have specific issues with the **pyrax** SDK, developers should file an [issue via Github](https://github.com/rackspace/pyrax/issues).
 
 For general feedback and support requests, send an email to: <sdk-support@rackspace.com>.
