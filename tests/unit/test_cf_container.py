@@ -72,10 +72,12 @@ class CF_ContainerTest(unittest.TestCase):
         test_ttl = "6666"
         test_ssl_uri = "http://ssl.example.com"
         test_streaming_uri = "http://streaming.example.com"
+        test_ios_uri = "http://ios.example.com"
         test_log_retention = True
         resp.getheaders.return_value = [("x-cdn-uri", test_uri),
                 ("x-ttl", test_ttl), ("x-cdn-ssl-uri", test_ssl_uri),
                 ("x-cdn-streaming-uri", test_streaming_uri),
+                ("x-cdn-ios-uri", test_ios_uri),
                 ("x-log-retention", test_log_retention)]
         self.client.connection.cdn_request.return_value = resp
         # We need an actual container
@@ -91,6 +93,7 @@ class CF_ContainerTest(unittest.TestCase):
         test_ttl = "6666"
         test_ssl_uri = "http://ssl.example.com"
         test_streaming_uri = "http://streaming.example.com"
+        test_ios_uri = "http://ios.example.com"
         test_log_retention = True
         resp.getheaders.return_value = []
         self.client.connection.cdn_request.return_value = resp

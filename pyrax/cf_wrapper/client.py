@@ -939,6 +939,12 @@ class CFClient(object):
         return cont.cdn_streaming_uri
 
 
+    def get_container_ios_uri(self, container):
+        """Returns the iOS URI, or None if CDN is not enabled."""
+        cont = self.get_container(container)
+        return cont.cdn_ios_uri
+
+
     def set_container_web_index_page(self, container, page):
         """
         Sets the header indicating the index page in a container

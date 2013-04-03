@@ -59,6 +59,7 @@ try:
     from cf_wrapper.storage_object import StorageObject
     from cf_wrapper.container import Container
     from novaclient import exceptions as _cs_exceptions
+    from novaclient import auth_plugin as _cs_auth_plugin
     from novaclient.v1_1 import client as _cs_client
     from novaclient.v1_1.servers import Server as CloudServer
 
@@ -335,11 +336,17 @@ def _get_service_endpoint(svc, region=None, public=True):
 @_require_auth
 def connect_to_cloudservers(region=None):
     """Creates a client for working with cloud servers."""
+    _cs_auth_plugin.discover_auth_systems()
+    if default_identity_type and default_identity_type != "keystone":
+        auth_plugin = _cs_auth_plugin.load_plugin(default_identity_type)
+    else:
+        auth_plugin = None
     region = safe_region(region)
     mgt_url = _get_service_endpoint("compute", region)
     cloudservers = _cs_client.Client(identity.username, identity.api_key,
             project_id=identity.tenant_name, auth_url=identity.auth_endpoint,
             auth_system="rackspace", region_name=region, service_type="compute",
+            auth_plugin=auth_plugin,
             http_log_debug=_http_debug)
     agt = cloudservers.client.USER_AGENT
     cloudservers.client.USER_AGENT = _make_agent_name(agt)

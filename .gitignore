@@ -1,3 +1,7 @@
-*.egg*
+*~
+.DS_Store
+*.swp
 *.pyc
+*.pyo
+*.egg*
 .tox

@@ -1,5 +1,9 @@
 # Release Notes for pyrax
 
+###2013.04.03 - Version 1.3.6
+- Fixed the auth issues with python-novaclient introduced in the most
+    recent release of that library. Thanks to Matt Martz for this fix.
+
 ###2013.03.27 - Version 1.3.5
 - Updated the Cloud Databases code to work with recent API changes.
 - Updated HACKING doc to include specific PEP8 exclusions.
