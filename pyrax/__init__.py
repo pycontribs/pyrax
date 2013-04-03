@@ -346,7 +346,7 @@ def connect_to_cloudservers(region=None):
     cloudservers = _cs_client.Client(identity.username, identity.api_key,
             project_id=identity.tenant_name, auth_url=identity.auth_endpoint,
             auth_system="rackspace", region_name=region, service_type="compute",
-            http_log_debug=_http_debug)
+            http_log_debug=_http_debug, auth_plugin=auth_plugin)
     agt = cloudservers.client.USER_AGENT
     cloudservers.client.USER_AGENT = _make_agent_name(agt)
     cloudservers.client.management_url = mgt_url
