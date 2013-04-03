@@ -32,7 +32,7 @@ setup(
         "Programming Language :: Python :: 2",
     ],
     install_requires=[
-        "python-novaclient>=2.10.0",
+        "python-novaclient>=2.13.0",
         "rackspace-novaclient",
         "python-swiftclient",
         "httplib2",
