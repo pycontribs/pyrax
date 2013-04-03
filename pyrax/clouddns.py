@@ -30,7 +30,7 @@ from pyrax.resource import BaseResource
 import pyrax.utils as utils
 
 # How long (in seconds) to wait for a response from async operations
-WAIT_LIMIT = 5
+DEFAULT_TIMEOUT = 5
 
 
 def assure_domain(fnc):
@@ -130,7 +130,8 @@ class CloudDNSDomain(BaseResource):
         Sample export:
             {u'accountId': 000000,
              u'contentType': u'BIND_9',
-             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. foo@example.com. 1354202974 21600 3600 1814400 500'
+             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. '
+                'foo@example.com. 1354202974 21600 3600 1814400 500'
                 'example.com.\t3600\tIN\tNS\tdns1.stabletransit.com.'
                 'example.com.\t3600\tIN\tNS\tdns2.stabletransit.com.',
              u'id': 1111111}
@@ -266,6 +267,16 @@ class CloudDNSManager(BaseManager):
                 uri_base=uri_base)
         self._paging = {"domain": {}, "subdomain": {}, "record": {}}
         self._reset_paging(service="all")
+        self._timeout = DEFAULT_TIMEOUT
+
+
+    def _set_timeout(self, timeout):
+        """
+        Changes the duration for which the program will wait for a response from
+        the DNS system. Setting the timeout to zero will make that program wait
+        an indefinite amount of time.
+        """
+        self._timeout = timeout
 
 
     def _reset_paging(self, service, body=None):
@@ -402,12 +413,17 @@ class CloudDNSManager(BaseManager):
         callbackURL = ret_body["callbackUrl"].split("/status/")[-1]
         massagedURL = "/status/%s?showDetails=true" % callbackURL
         start = time.time()
-        while ((ret_body["status"] == "RUNNING") and
-                (time.time() - start < WAIT_LIMIT)):
+        timed_out = False
+        while (ret_body["status"] == "RUNNING") and not timed_out:
             _resp, ret_body = self.api.method_get(massagedURL)
+            if self._timeout:
+                timed_out = ((time.time() - start) > self._timeout)
         if error_class and (ret_body["status"] == "ERROR"):
-            #This call will handle raising the error.
+            # This call will handle raising the error.
             self._process_async_error(ret_body, error_class)
+        if timed_out:
+            raise exc.DNSCallTimedOut("The API call to '%s' did not complete "
+                    "after %s seconds." % (uri, self._timeout))
         if has_response:
             ret = _resp, ret_body["response"]
         else:
@@ -547,7 +563,8 @@ class CloudDNSManager(BaseManager):
         Sample export:
             {u'accountId': 000000,
              u'contentType': u'BIND_9',
-             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. foo@example.com. 1354202974 21600 3600 1814400 500'
+             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. '
+                'foo@example.com. 1354202974 21600 3600 1814400 500'
                 'example.com.\t3600\tIN\tNS\tdns1.stabletransit.com.'
                 'example.com.\t3600\tIN\tNS\tdns2.stabletransit.com.',
              u'id': 1111111}
@@ -978,6 +995,15 @@ class CloudDNSClient(BaseClient):
         return body
 
 
+    def set_timeout(self, timeout):
+        """
+        Sets the amount of time that calls will wait for a response from
+        the DNS system before timing out. Setting the timeout to zero will
+        cause execution to wait indefinitely until the call completes.
+        """
+        self._manager._set_timeout(timeout)
+
+
     def list(self, limit=None, offset=None):
         """Returns a list of all resources."""
         return self._manager.list(limit=limit, offset=offset)
@@ -1041,7 +1067,8 @@ class CloudDNSClient(BaseClient):
 
             {u'accountId': 000000,
              u'contentType': u'BIND_9',
-             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. foo@example.com. 1354202974 21600 3600 1814400 500'
+             u'contents': u'example.com.\t3600\tIN\tSOA\tns.rackspace.com. '
+                'foo@example.com. 1354202974 21600 3600 1814400 500'
                 'example.com.\t3600\tIN\tNS\tdns1.stabletransit.com.'
                 'example.com.\t3600\tIN\tNS\tdns2.stabletransit.com.',
              u'id': 1111111}

@@ -15,13 +15,27 @@ For the purposes of this document, the domain **example.edu** is used. This is n
 ## Cloud DNS in pyrax
 Once you have authenticated and connected to the Cloud DNS service, you can reference the DNS module via `pyrax.cloud_dns`. This module provides methods for managing your DNS entries for the cloud.
 
-All of the code samples in this document assume that you have already imported pyrax, authenticated, and created the name `dns` at the top of the script, like this:
+All of the code samples in this document assume that you have already imported `pyrax`, authenticated, and created the name `dns` at the top of the script, like this:
 
     import pyrax
     pyrax.set_credential_file("my_cred_file")
     # or
     # pyrax.set_credentials("my_username", "my_api_key")
     dns = pyrax.cloud_dns
+
+
+## Response Timeouts
+Many API calls in Cloud DNS do not wait to complete before returning; instead, they return immediately with a URI that can be used to get updates on the request. This is done because the API server has to communicate with the DNS servers, and that can take a while sometimes.
+
+This is generally of no concern to a developer, as the calls almost always complete within less than a second, so `pyrax` handles the checking of the status update of a call for you, and when complete, will return the final results. By default, `pyrax` will wait for up to 5 seconds for the call to complete; if it has not completed by then, a `DNSCallTimedOut``` exception will be raised.
+
+If you need to change that timeout period from the default, make the following call:
+
+    pyrax.cloud_dns.set_timeout(new_time)
+
+The value of `new_time` is in seconds. You can tell `pyrax` to wait indefinitely for the call to complete by passing zero to `set_timeout()`:
+
+    pyrax.cloud_dns.set_timeout(0)
 
 
 ## Listing Domains
@@ -37,7 +51,7 @@ You could have hundreds of domains, and by default the `list()` method returns o
 
 The `limit` parameter determines how many records are returned, and must be a value between 1 and 100. If no `limit` is passed, a value of 100 is used. The `offset` parameter determines where in the listing to begin when fetching. The value of `offset` defaults to 0 if not specified. Additionally, the value of `offset` must be either zero or a multiple of the limit. Together they enable paging across all of your domains.
 
-To make things easier, pyrax offers two convenience methods: `list_previous_page()` and `list_next_page()` for traversing your domain records. After the initial call to `list()`, you can then navigate through the pages of results with these methods. Each raises a `NoMoreResults` exception when there are no additional pages of results to fetch. For example, assume that there are 15 domain records, and you want to show them in pages of up to 4 at a time. This code does that for you:
+To make things easier, `pyrax` offers two convenience methods: `list_previous_page()` and `list_next_page()` for traversing your domain records. After the initial call to `list()`, you can then navigate through the pages of results with these methods. Each raises a `NoMoreResults` exception when there are no additional pages of results to fetch. For example, assume that there are 15 domain records, and you want to show them in pages of up to 4 at a time. This code does that for you:
 
     domains = dns.list(limit=4)
     print domains

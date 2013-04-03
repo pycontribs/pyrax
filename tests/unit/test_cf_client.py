@@ -693,6 +693,15 @@ class CF_ClientTest(unittest.TestCase):
         self.assertEqual(uri, example_uri)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_get_container_ios_uri(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        example_uri = "http://example.com"
+        client.get_container(self.cont_name).cdn_ios_uri = example_uri
+        uri = client.get_container_ios_uri(self.cont_name)
+        self.assertEqual(uri, example_uri)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_list_containers(self):
         client = self.client
         client.connection.get_container = Mock()
