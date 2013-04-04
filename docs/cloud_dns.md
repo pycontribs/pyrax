@@ -31,11 +31,17 @@ This is generally of no concern to a developer, as the calls almost always compl
 
 If you need to change that timeout period from the default, make the following call:
 
-    pyrax.cloud_dns.set_timeout(new_time)
+    dns.set_timeout(new_time)
 
 The value of `new_time` is in seconds. You can tell `pyrax` to wait indefinitely for the call to complete by passing zero to `set_timeout()`:
 
-    pyrax.cloud_dns.set_timeout(0)
+    dns.set_timeout(0)
+
+By default, `pyrax` pauses for 0.5 seconds in between each check of the async call to see if it has completed. This helps to avoid rate limits by not checking continuously. You can adjust this if you want a different delay interval by calling:
+
+    dns.set_delay(2.2)
+
+The call above causes `pyrax` to wait 2.2 seconds in between calls to check if an async API call has completed.
 
 
 ## Listing Domains

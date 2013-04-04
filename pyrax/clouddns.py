@@ -31,6 +31,8 @@ import pyrax.utils as utils
 
 # How long (in seconds) to wait for a response from async operations
 DEFAULT_TIMEOUT = 5
+# How long (in seconds) to wait in between checks for async completion
+DEFAULT_DELAY = 0.5
 
 
 def assure_domain(fnc):
@@ -268,6 +270,7 @@ class CloudDNSManager(BaseManager):
         self._paging = {"domain": {}, "subdomain": {}, "record": {}}
         self._reset_paging(service="all")
         self._timeout = DEFAULT_TIMEOUT
+        self._delay = DEFAULT_DELAY
 
 
     def _set_timeout(self, timeout):
@@ -277,6 +280,14 @@ class CloudDNSManager(BaseManager):
         an indefinite amount of time.
         """
         self._timeout = timeout
+
+
+    def _set_delay(self, delay):
+        """
+        Changes the interval that the program will pause in between attempts to
+        see if a request has completed.
+        """
+        self._delay = delay
 
 
     def _reset_paging(self, service, body=None):
@@ -418,6 +429,7 @@ class CloudDNSManager(BaseManager):
             _resp, ret_body = self.api.method_get(massagedURL)
             if self._timeout:
                 timed_out = ((time.time() - start) > self._timeout)
+                time.sleep(self._delay)
         if error_class and (ret_body["status"] == "ERROR"):
             # This call will handle raising the error.
             self._process_async_error(ret_body, error_class)
@@ -1002,6 +1014,14 @@ class CloudDNSClient(BaseClient):
         cause execution to wait indefinitely until the call completes.
         """
         self._manager._set_timeout(timeout)
+
+
+    def set_delay(self, delay):
+        """
+        Changes the interval that the program will pause in between attempts to
+        see if a request has completed.
+        """
+        self._manager._set_delay(delay)
 
 
     def list(self, limit=None, offset=None):
