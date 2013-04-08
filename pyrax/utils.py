@@ -280,7 +280,7 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
             # use different client/resource classes.
             try:
                 # For servers:
-                obj = obj.get()
+                obj.get()
             except AttributeError:
                 try:
                     # For other objects that don't support .get() or .reload()
