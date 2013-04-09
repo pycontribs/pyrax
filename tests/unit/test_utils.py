@@ -177,6 +177,7 @@ class UtilsTest(unittest.TestCase):
                 "status", "available")
         status_obj.manager = fakes.FakeManager()
         status_obj.manager.get = Mock(return_value=status_obj)
+        status_obj.get = status_obj.manager.get
         ret = utils.wait_until(status_obj, "status", "ready", interval=0.1)
         self.assertTrue(isinstance(ret, fakes.FakeStatusChanger))
         self.assertEqual(ret.status, "ready")
@@ -187,6 +188,7 @@ class UtilsTest(unittest.TestCase):
                 "status", "available")
         status_obj.manager = fakes.FakeManager()
         status_obj.manager.get = Mock(return_value=status_obj)
+        status_obj.get = status_obj.manager.get
         ret = utils.wait_until(status_obj, "status", "fake", interval=0.1,
                 attempts=2)
         self.assertIsNone(ret)
@@ -196,6 +198,7 @@ class UtilsTest(unittest.TestCase):
         status_obj = fakes.FakeStatusChanger()
         status_obj.manager = fakes.FakeManager()
         status_obj.manager.get = Mock(return_value=status_obj)
+        status_obj.get = status_obj.manager.get
         thread = utils.wait_until(obj=status_obj, att="status", desired="ready",
                 interval=0.1, callback=cback)
         thread.join()
