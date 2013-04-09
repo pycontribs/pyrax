@@ -287,9 +287,8 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
                     obj = obj.manager.get(obj.id)
                 except AttributeError:
                     # punt
-                    raise exc.NoReloadError("The 'wait_until' method is not"
-                                            " supported for '%s' objects."
-                                            % obj.__class__)
+                    raise exc.NoReloadError("The 'wait_until' method is not "
+                            "supported for '%s' objects." % obj.__class__)
         attval = getattr(obj, att)
         if verbose:
             elapsed = time.time() - start
