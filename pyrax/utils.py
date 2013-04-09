@@ -280,11 +280,16 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
             # use different client/resource classes.
             try:
                 # For servers:
-                obj = obj.manager.get(obj.id)
+                obj.get()
             except AttributeError:
-                # punt
-                raise exc.NoReloadError("The 'wait_until' method is not supported "
-                  "for '%s' objects." % obj.__class__)
+                try:
+                    # For other objects that don't support .get() or .reload()
+                    obj = obj.manager.get(obj.id)
+                except AttributeError:
+                    # punt
+                    raise exc.NoReloadError("The 'wait_until' method is not"
+                                            " supported for '%s' objects."
+                                            % obj.__class__)
         attval = getattr(obj, att)
         if verbose:
             elapsed = time.time() - start
