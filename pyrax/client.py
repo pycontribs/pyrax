@@ -87,7 +87,6 @@ class BaseClient(httplib2.Http):
         self.service_name = service_name
         self.management_url = management_url
         self.auth_token = auth_token
-        # TODO: simplify by removing these next few atts
         self.proxy_token = None
         self.proxy_tenant_id = None
 

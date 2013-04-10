@@ -9,6 +9,7 @@ import random
 import re
 import shutil
 import string
+from subprocess import Popen, PIPE
 import sys
 import tempfile
 import threading
@@ -25,6 +26,22 @@ trace = pudb.set_trace
 import pyrax
 import pyrax.exceptions as exc
 
+
+def runproc(cmd):
+    """
+    Convenience method for executing operating system commands.
+
+    Accepts a single string that would be the command as executed on the
+    command line.
+
+    Returns a 2-tuple consisting of the output of (STDOUT, STDERR). In your
+    code you should check for an empty STDERR output to determine if your
+    command completed successfully.
+    """
+    proc = Popen([cmd], shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE,
+            close_fds=True)
+    stdoutdata, stderrdata = proc.communicate()
+    return (stdoutdata, stderrdata)
 
 
 class SelfDeletingTempfile(object):
