@@ -324,10 +324,10 @@ class FakeLoadBalancerManager(CloudLoadBalancerManager):
 
 class FakeLoadBalancer(CloudLoadBalancer):
     def __init__(self, name=None, info=None, *args, **kwargs):
-        name = name or utils.random_name()
+        name = name or utils.random_name(ascii_only=True)
         info = info or {"fake": "fake"}
         super(FakeLoadBalancer, self).__init__(name, info, *args, **kwargs)
-        self.id = utils.random_name()
+        self.id = utils.random_name(ascii_only=True)
         self.manager = FakeLoadBalancerManager()
 
 

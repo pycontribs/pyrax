@@ -81,6 +81,13 @@ class CloudLoadBalancerTest(unittest.TestCase):
         clt.add_virtualip(lb, vip)
         lb.manager.add_virtualip.assert_called_once_with(lb, vip)
 
+    def test_get_usage(self):
+        lb = self.loadbalancer
+        mgr = lb.manager
+        mgr.get_usage = Mock()
+        lb.get_usage()
+        mgr.get_usage.assert_called_once_with(lb, start=None, end=None)
+
     def test_add_details_nodes(self):
         fake_node_info = {"address": "0.0.0.0", "id": 1, "type": "PRIMARY",
                 "port": 80, "status": "OFFLINE", "condition": "ENABLED"}
