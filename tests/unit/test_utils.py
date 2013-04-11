@@ -191,7 +191,7 @@ class UtilsTest(unittest.TestCase):
         status_obj.get = status_obj.manager.get
         ret = utils.wait_until(status_obj, "status", "fake", interval=0.1,
                 attempts=2)
-        self.assertIsNone(ret)
+        self.assertFalse(ret.status == "fake")
 
     def test_wait_until_callback(self):
         cback = Mock()
