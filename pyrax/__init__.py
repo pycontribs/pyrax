@@ -227,7 +227,8 @@ def keyring_auth(username=None, region=None):
     from the config file is used.
 
     If there is no username defined, or if the keyring module is not installed,
-    the appropriate errors will be raised.
+    or there is no password set for the given username, the appropriate errors
+    will be raised.
 
     If the region is passed, it will authenticate against the proper endpoint
     for that region, and set the default region for connections.
@@ -242,8 +243,10 @@ def keyring_auth(username=None, region=None):
         raise exc.KeyringUsernameMissing("No username specified for keyring "
                 "authentication.")
     password = keyring.get_password("pyrax", username)
-    if password:
-        set_credentials(username, password, region=region)
+    if password is None:
+        raise exc.KeyringPasswordNotFound("No password was found for the "
+                "username '%s'." % username)
+    set_credentials(username, password, region=region)
 
 
 def authenticate():

@@ -265,8 +265,6 @@ class BaseClient(httplib2.Http):
                                             **kwargs)
             return resp, body
         except exc.Unauthorized as ex:
-            print "AUTH"
-            print ex
             try:
                 self.authenticate()
                 kwargs["headers"]["X-Auth-Token"] = self.auth_token
@@ -313,15 +311,14 @@ class BaseClient(httplib2.Http):
                     service_name=self.service_name)
                 self.management_url = management_url.rstrip("/")
                 return None
-            except exc.AmbiguousEndpoints:
-                print "Found more than one valid endpoint."
-                print "You need to use a more restrictive filter."
-                raise
+            except exc.AmbiguousEndpoints as e:
+                raise utils.update_exc(e, "Found more than one valid endpoint. "
+                        "You need to use a more restrictive filter.")
             except KeyError:
                 raise exc.AuthorizationFailure()
-            except exc.EndpointNotFound:
-                print "Could not find any suitable endpoint. Correct region?"
-                raise
+            except exc.EndpointNotFound as e:
+                raise utils.update_exc(e, "Could not find any suitable "
+                        "endpoint. Correct region?")
 
         elif resp.status == 305:
             return resp["location"]

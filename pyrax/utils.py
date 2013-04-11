@@ -389,6 +389,28 @@ def match_pattern(nm, patterns):
     return False
 
 
+def update_exc(exc, msg, before=True, separator="\n"):
+    """
+    Adds additional text to an exception's error message.
+
+    The new text will be added before the existing text by default; to append
+    it after the original text, pass False to the `before` parameter.
+
+    By default the old and new text will be separated by a newline. If you wish
+    to use a different separator, pass that as the `separator` parameter.
+    """
+    emsg = exc.message
+    if before:
+        parts = (msg, separator, emsg)
+    else:
+        parts = (emsg, separator, msg)
+    new_msg = "%s%s%s" % parts
+    new_args = (new_msg, ) + exc.args[1:]
+    exc.message = new_msg
+    exc.args = new_args
+    return exc
+
+
 def env(*args, **kwargs):
     """
     Returns the first environment variable set

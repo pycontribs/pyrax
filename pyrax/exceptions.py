@@ -83,6 +83,9 @@ class FolderNotFound(PyraxException):
 class KeyringModuleNotInstalled(PyraxException):
     pass
 
+class KeyringPasswordNotFound(PyraxException):
+    pass
+
 class KeyringUsernameMissing(PyraxException):
     pass
 
