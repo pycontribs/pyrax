@@ -124,6 +124,7 @@ class Identity(object):
         authentication endpoint and attempts to log in. If successful,
         records the token information.
         """
+        self.authenticated = False
         creds = self._get_credentials()
         url = urlparse.urljoin(self.auth_endpoint, "tokens")
         auth_req = urllib2.Request(url, data=json.dumps(creds))
