@@ -177,6 +177,15 @@ class Identity(object):
         self.user["roles"] = user["roles"]
 
 
+    def unauthenticate(self):
+        """
+        Clears all authentication information.
+        """
+        self.token = self.expires = self.tenant_id = self.tenant_name = ""
+        self.authenticated = False
+        self.services = {}
+
+
     def get_token(self, force=False):
         """Returns the auth token, if it is valid. If not, calls the auth endpoint
         to get a new token. Passing 'True' to 'force' will force a call for a new
