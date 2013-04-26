@@ -115,6 +115,8 @@ Classes</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Threading class to wait for object status in the background.  <a href="classpyrax_1_1utils_1_1__WaitThread.html#details">More...</a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a246bab6cd0c9c356c323014ce9724a72">runproc</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience method for executing operating system commands.  <a href="#a246bab6cd0c9c356c323014ce9724a72"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a9e1881e14792f2c07dd799fd7b9d53d1">get_checksum</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the MD5 checksum in hex for the given content.  <a href="#a9e1881e14792f2c07dd799fd7b9d53d1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a15ae8eb19e0cbaf0281e950aebca0962">random_name</a></td></tr>
@@ -133,6 +135,8 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the 'id' attribute of 'id_or_obj' if present; if not, returns 'id_or_obj'.  <a href="#a9cc7cce8ec3ad4b58c806254ca8ea58e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#ab32790e8c29f35cd0c810dd86dedba2c">match_pattern</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares `nm` with the supplied patterns, and returns True if it matches at least one.  <a href="#ab32790e8c29f35cd0c810dd86dedba2c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#aa76e326dca328bf4b12f55a0b94be973">update_exc</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds additional text to an exception's error message.  <a href="#aa76e326dca328bf4b12f55a0b94be973"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a9790d3a239a8e290bffbeef17c48f017">env</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the first environment variable set if none are non-empty, defaults to "" or keyword arg default.  <a href="#a9790d3a239a8e290bffbeef17c48f017"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a662924ed2118b3ba66f1d1521a7c2b40">unauthenticated</a></td></tr>
@@ -440,6 +444,27 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a246bab6cd0c9c356c323014ce9724a72"></a><!-- doxytag: member="pyrax::utils::runproc" ref="a246bab6cd0c9c356c323014ce9724a72" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1utils.html#a246bab6cd0c9c356c323014ce9724a72">pyrax.utils.runproc</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>cmd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Convenience method for executing operating system commands. </p>
+<p>Accepts a single string that would be the command as executed on the command line.</p>
+<p>Returns a 2-tuple consisting of the output of (STDOUT, STDERR). In your code you should check for an empty STDERR output to determine if your command completed successfully. </p>
+
+</div>
+</div>
 <a class="anchor" id="ab35ae0f6f47300275663bd32a957c5f2"></a><!-- doxytag: member="pyrax::utils::safe_issubclass" ref="ab35ae0f6f47300275663bd32a957c5f2" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -499,6 +524,49 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="aa76e326dca328bf4b12f55a0b94be973"></a><!-- doxytag: member="pyrax::utils::update_exc" ref="aa76e326dca328bf4b12f55a0b94be973" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1utils.html#aa76e326dca328bf4b12f55a0b94be973">pyrax.utils.update_exc</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>exc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>msg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>before</em> = <code>True</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>separator</em> = <code>&quot;\n&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Adds additional text to an exception's error message. </p>
+<p>The new text will be added before the existing text by default; to append it after the original text, pass False to the `before` parameter.</p>
+<p>By default the old and new text will be separated by a newline. If you wish to use a different separator, pass that as the `separator` parameter. </p>
+
+</div>
+</div>
 <a class="anchor" id="a4f112fac24f62fe301a4a65d389a8d0b"></a><!-- doxytag: member="pyrax::utils::wait_until" ref="a4f112fac24f62fe301a4a65d389a8d0b" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -537,7 +605,7 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>attempts</em> = <code>10</code>, </td>
+          <td class="paramname"><em>attempts</em> = <code>0</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -561,7 +629,9 @@ Variables</h2></td></tr>
 <div class="memdoc">
 
 <p>When changing the state of an object, it will commonly be in a transitional state until the change is complete. </p>
-<p>This will reload the object ever `interval` seconds, and check its `att` attribute. If the desired value of the attribute is reached, the updated object is returned. If not, it will re-try a maximum of `attempts` times; if the attribute has not reached the desired value by then, this method will exit and return None. If `attempts` is 0, this will loop forever until the attribute matches. If `verbose` is True, each attempt will print out the current value of the watched attribute and the time that has elapsed since the original request. Also, if `verbose_atts` is specified, the values of those attributes will also be output. If `verbose` is False, then `verbose_atts` has no effect.</p>
+<p>This will reload the object every `interval` seconds, and check its `att` attribute until the `desired` value is reached, or until the maximum number of attempts is reached. The updated object is returned. It is up to the calling program to check the returned object to make sure that it successfully reached the desired state.</p>
+<p>Once the desired value of the attribute is reached, the method returns. If not, it will re-try until the attribute's value matches one of the `desired` values. By default (attempts=0) it will loop infinitely until the attribute reaches the desired value. You can optionally limit the number of times that the object is reloaded by passing a positive value to `attempts`. If the attribute has not reached the desired value by then, the method will exit.</p>
+<p>If `verbose` is True, each attempt will print out the current value of the watched attribute and the time that has elapsed since the original request. Also, if `verbose_atts` is specified, the values of those attributes will also be output. If `verbose` is False, then `verbose_atts` has no effect.</p>
 <p>Note that `desired` can be a list of values; if the attribute becomes equal to any of those values, this will succeed. For example, when creating a new cloud server, it will initially have a status of 'BUILD', and you can't work with it until its status is 'ACTIVE'. However, there might be a problem with the build process, and the server will change to a status of 'ERROR'. So for this case you need to set the `desired` parameter to `['ACTIVE', 'ERROR']`. If you simply pass 'ACTIVE' as the desired state, this will loop indefinitely if a build fails, as the server will never reach a status of 'ACTIVE'.</p>
 <p>Since this process of waiting can take a potentially long time, and will block your program's execution until the desired state of the object is reached, you may specify a callback function. The callback can be any callable that accepts a single parameter; the parameter it receives will be either the updated object (success), or None (failure). If a callback is specified, the program will return immediately after spawning the wait process in a separate thread. </p>
 
@@ -599,7 +669,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Mar 21 2013 10:17:22 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 26 2013 10:27:14 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

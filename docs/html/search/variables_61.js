@@ -8,9 +8,6 @@ var searchData=
   ['api_5fkey',['api_key',['../classpyrax_1_1rax__identity_1_1Identity.html#ab7e8405f143a8f7c34a68418464e5d21',1,'pyrax::rax_identity::Identity.api_key()'],['../classpyrax_1_1rax__identity_1_1Identity.html#a70651ad93f531b836bca3257d615c95e',1,'pyrax::rax_identity::Identity.api_key()']]],
   ['att',['att',['../classpyrax_1_1utils_1_1__WaitThread.html#ac356deedcb6c8bb875aaedf10db0a455',1,'pyrax::utils::_WaitThread']]],
   ['attempts',['attempts',['../classpyrax_1_1utils_1_1__WaitThread.html#abb0145d5080497f5f4212ca51fbc6316',1,'pyrax::utils::_WaitThread']]],
-  ['auth_5fsystem',['auth_system',['../classpyrax_1_1client_1_1BaseClient.html#a391b45e1423db4100b5f4880f0ab6bdb',1,'pyrax::client::BaseClient']]],
-  ['auth_5ftoken',['auth_token',['../classpyrax_1_1client_1_1BaseClient.html#add52e88b2591a28567e6fab71dc52e8d',1,'pyrax::client::BaseClient']]],
-  ['auth_5furl',['auth_url',['../classpyrax_1_1client_1_1BaseClient.html#aad975e16d524a70e8fbf240e51db478b',1,'pyrax::client::BaseClient']]],
   ['authenticated',['authenticated',['../classpyrax_1_1rax__identity_1_1Identity.html#a48f0dc4cf47cd14cdfda7e8495b0a76b',1,'pyrax::rax_identity::Identity']]],
   ['author',['author',['../namespacesetup.html#ab873cebb3b7e47db4fe59837d1aaa210',1,'setup']]],
   ['author_5femail',['author_email',['../namespacesetup.html#a9b3c5cceb9178d1968dd26e6f147265d',1,'setup']]]
