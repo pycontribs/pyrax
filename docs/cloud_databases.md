@@ -15,18 +15,18 @@ Once you have authenticated and connected to the database service, you can refer
 
     cdb = pyrax.cloud_databases
 
-Then you can simply use `cdb` to reference the module. All of the code samples in this document will assume that `cdb` has been defined this way.
+Then you can simply use `cdb` to reference the module. All of the code samples in this document assume that `cdb` has been defined this way.
 
 ## Listing Database Instances
 To get a list of all your instances, just run:
 
     cdb.list()
 
-This will return a list of `CloudDatabaseInstance` objects. Assuming that you are just starting out and have not yet created any instances, you will get back an empty list. A good first step, then would be to create an instance.
+This returns a list of `CloudDatabaseInstance` objects. Assuming that you are just starting out and have not yet created any instances, you get back an empty list. A good first step, then, would be to create an instance.
 
 
 ## Create the Instance
-To create an instance, you will need to specify the flavor and volume size for that instance. 'Flavor' refers to the amount of RAM allocated to your instance. Volume size is the disk space available to your instance for storing its data. The volume size is in GB, and must be a whole number between 1 and 50.
+To create an instance, you need to specify the flavor and volume size for that instance. 'Flavor' refers to the amount of RAM allocated to your instance. Volume size is the disk space available to your instance for storing its data. The volume size is in GB, and must be a whole number between 1 and 50.
 
 
 ### List Available Flavors
@@ -56,7 +56,7 @@ If you are planning on using your Cloud Database instance from one of your Cloud
 
 
 ## Resizing an Instance
-Resizing an instance refers to changing the amount of RAM allocated to your instance. To do this, call the instance's `resize()` method, passing in the flavor of the desired size. This can be a `CloudDatabaseFlavor` object, the flavor name, flavor ID or RAM size of the new flavor. For example, the following 3 commands will all change the instance flavor to the `m1.medium` size:
+Resizing an instance refers to changing the amount of RAM allocated to your instance. To do this, call the instance's `resize()` method, passing in the flavor of the desired size. This can be a `CloudDatabaseFlavor` object, the flavor name, flavor ID or RAM size of the new flavor. For example, the following 3 commands all change the instance flavor to the `m1.medium` size:
 
     # By name
     inst.resize("1GB Instance")
@@ -67,15 +67,15 @@ Resizing an instance refers to changing the amount of RAM allocated to your inst
 
 
 ## Resizing a Volume
-Resizing a volume refers to increasing the amount of disk space for your instance. To do this, call the instance's `resize_volume()` method, passing in the new volume size. Note that you cannot reduce the volume size. Trying to reduce the size of the volume will raise an `InvalidVolumeResize` exception.
+Resizing a volume refers to increasing the amount of disk space for your instance. To do this, call the instance's `resize_volume()` method, passing in the new volume size. Note that you cannot reduce the volume size. Trying to reduce the size of the volume raises an `InvalidVolumeResize` exception.
 
     inst.resize_volume(8)
 
 
 ## Create a Database
-Once you have an instance, you need to create a database. You must specify a name for the new database, as well as the optional parameters for `character_set` and `collate`. If these are not specified, the defaults of `utf8` and `utf8_general_ci` will be used, respectively.
+Once you have an instance, you need to create a database. You must specify a name for the new database, as well as the optional parameters for `character_set` and `collate`. If these are not specified, the defaults of `utf8` and `utf8_general_ci` are used, respectively.
 
-There are two variations: calling the `create_database()` method of a `CloudDatabaseInstance` object, or calling the `create_database()` method of the cloud_databases module itself. With the second version, you must specify the instance in which the database will be created. Either a `CloudDatabaseInstance` object or its `id` will work. Assuming that `inst` is a reference to the instance you created above, here are both versions:
+There are two variations: calling the `create_database()` method of a `CloudDatabaseInstance` object, or calling the `create_database()` method of the cloud_databases module itself. With the second version, you must specify the instance in which to create the database. Either a `CloudDatabaseInstance` object or its `id` will work. Assuming that `inst` is a reference to the instance you created above, here are both versions:
 
     db = inst.create_database("db_name")
     print "DB:", db
@@ -85,20 +85,20 @@ or:
     db = cdb.create_instance(inst, "db_name")
     print "DB:", db
 
-Both calls will return an object representing the newly-created database:
+Both calls return an object representing the newly-created database:
 
     DB: <CloudDatabaseDatabase name=db_name>
 
 
 ## Create a User
-You can create a user on an instance with its own username/password credentials, with access to one or more databases on that instance. Similar to database creation, you can call `create_user()` either on the instance object, or on the module. To simplify these examples, only the call on the instance will be displayed.
+You can create a user on an instance with its own username/password credentials, with access to one or more databases on that instance. Similar to database creation, you can call `create_user()` either on the instance object, or on the module. To simplify these examples, only the call on the instance is displayed.
 
 Assuming that you have the references `inst` and `db` from the previous examples, you can create a user like this:
 
     user = inst.create_user(name="groucho", password="top secret", database_names=[db])
     print "User:", user
 
-This will print out:
+This prints out:
 
     User: <CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>
 
@@ -111,7 +111,7 @@ Instances have a `list_databases()` and a `list_users()` method:
     print "DBs:", dbs
     print "Users:", users
 
-which will output:
+which outputs:
 
     DBs: [<CloudDatabaseDatabase name=db_name>]
     Users: [<CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>]
@@ -125,16 +125,16 @@ You can get a `CloudDatabaseDatabase` or `CloudDatabaseUser` object from an `Clo
     print "DB:", db
     print "User:", user
 
-which will output:
+which outputs:
 
     DB: <CloudDatabaseDatabase name=db_name>
     User: <CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>
 
 
 ## Working with `CloudDatabaseDatabase` and `CloudDatabaseUser` Objects
-These objects are essentially read-only representations of the underlying MySQL database running in your instance. You cannot update the attributes of these objects and expect them to change anything in the instance. They are useful mostly to determine the state of your database. The one method they have is `delete()`, which will cause them to be deleted from their instance.
+These objects are essentially read-only representations of the underlying MySQL database running in your instance. You cannot update the attributes of these objects and expect them to change anything in the instance. They are useful mostly to determine the state of your database. The one method they have is `delete()`, which causes them to be deleted from their instance.
 
-Note that there is a bug in the underlying Python library for the API that affects user names that contain a period. With such users, the API will truncate the name at the first period, and attempt to delete the shortened name. Example: if you have two users with the names `"john.doe"` and `"john"`, and you call:
+Note that there is a bug in the underlying Python library for the API that affects user names that contain a period. With such users, the API truncates the name at the first period, and attempt to delete the shortened name. Example: if you have two users with the names `"john.doe"` and `"john"`, and you call:
 
     inst.delete("john.doe")
 

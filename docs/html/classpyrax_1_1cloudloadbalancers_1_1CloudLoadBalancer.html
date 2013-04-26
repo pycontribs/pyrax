@@ -128,6 +128,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the nodes to this load balancer.  <a href="#aaaa90c99f97822834b7407096d0b1dce"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#ab264d37d545101c96e50d1e2924724cc">add_virtualip</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the virtual IP to this load balancer.  <a href="#ab264d37d545101c96e50d1e2924724cc"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a7a26606bf20204d1650ddad60fb25a3b">get_usage</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the usage records for this load balancer.  <a href="#a7a26606bf20204d1650ddad60fb25a3b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a616947868beb4492f797b21aeb320d90">delete_node</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the node from the load balancer.  <a href="#a616947868beb4492f797b21aeb320d90"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a4712372bbfec39b9fdb36157aac37257">update_node</a></td></tr>
@@ -893,6 +895,42 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a7a26606bf20204d1650ddad60fb25a3b"></a><!-- doxytag: member="pyrax::cloudloadbalancers::CloudLoadBalancer::get_usage" ref="a7a26606bf20204d1650ddad60fb25a3b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a7a26606bf20204d1650ddad60fb25a3b">get_usage</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>start</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>end</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Return the usage records for this load balancer. </p>
+<p>You may optionally include a start datetime or an end datetime, or both, which will limit the records to those on or after the start time, and those before or on the end time. These times should be Python datetime.datetime objects, Python datetime.date objects, or strings in the format: "YYYY-MM-DD HH:MM:SS" or "YYYY-MM-DD". </p>
+
+</div>
+</div>
 <a class="anchor" id="a9e8cf14c622fff01da294f2c2352fd92"></a><!-- doxytag: member="pyrax::cloudloadbalancers::CloudLoadBalancer::set_error_page" ref="a9e8cf14c622fff01da294f2c2352fd92" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1200,7 +1238,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Feb 15 2013 15:48:41 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 26 2013 10:27:12 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

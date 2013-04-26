@@ -124,6 +124,7 @@ class Identity(object):
         authentication endpoint and attempts to log in. If successful,
         records the token information.
         """
+        self.authenticated = False
         creds = self._get_credentials()
         url = urlparse.urljoin(self.auth_endpoint, "tokens")
         auth_req = urllib2.Request(url, data=json.dumps(creds))
@@ -175,6 +176,15 @@ class Identity(object):
         self.user["id"] = user["id"]
         self.user["name"] = user["name"]
         self.user["roles"] = user["roles"]
+
+
+    def unauthenticate(self):
+        """
+        Clears all authentication information.
+        """
+        self.token = self.expires = self.tenant_id = self.tenant_name = ""
+        self.authenticated = False
+        self.services = {}
 
 
     def get_token(self, force=False):

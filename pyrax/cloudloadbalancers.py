@@ -20,6 +20,7 @@
 import datetime
 from functools import wraps
 
+import pyrax
 from pyrax.client import BaseClient
 import pyrax.exceptions as exc
 from pyrax.manager import BaseManager
@@ -68,6 +69,18 @@ class CloudLoadBalancer(BaseResource):
     def add_virtualip(self, vip):
         """Adds the virtual IP to this load balancer."""
         return self.manager.add_virtualip(self, vip)
+
+
+    def get_usage(self, start=None, end=None):
+        """
+        Return the usage records for this load balancer. You may optionally
+        include a start datetime or an end datetime, or both, which will limit
+        the records to those on or after the start time, and those before or on the
+        end time. These times should be Python datetime.datetime objects, Python
+        datetime.date objects, or strings in the format: "YYYY-MM-DD HH:MM:SS" or
+        "YYYY-MM-DD".
+        """
+        return self.manager.get_usage(self, start=start, end=end)
 
 
     def _add_details(self, info):
@@ -1031,6 +1044,20 @@ class Node(object):
             #Nothing to do!
             return
         self.parent.update_node(self, diff)
+
+
+    def get_device(self):
+        """
+        Returns a reference to the device that is represented by this node.
+        Returns None if no such device can be determined.
+        """
+        addr = self.address
+        servers = [server for server in pyrax.cloudservers.list()
+                if addr in server.networks.get("private", "")]
+        try:
+            return servers[0]
+        except IndexError:
+            return None
 
 
 

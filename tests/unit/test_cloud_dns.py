@@ -62,6 +62,13 @@ class CloudDNSTest(unittest.TestCase):
         clt.set_timeout(new_timeout)
         self.assertEqual(mgr._timeout, new_timeout)
 
+    def test_set_delay(self):
+        clt = self.client
+        mgr = clt._manager
+        new_delay = random.randint(0, 99)
+        clt.set_delay(new_delay)
+        self.assertEqual(mgr._delay, new_delay)
+
     def test_reset_paging_all(self):
         clt = self.client
         mgr = clt._manager

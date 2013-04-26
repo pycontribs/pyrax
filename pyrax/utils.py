@@ -9,6 +9,7 @@ import random
 import re
 import shutil
 import string
+from subprocess import Popen, PIPE
 import sys
 import tempfile
 import threading
@@ -25,6 +26,22 @@ trace = pudb.set_trace
 import pyrax
 import pyrax.exceptions as exc
 
+
+def runproc(cmd):
+    """
+    Convenience method for executing operating system commands.
+
+    Accepts a single string that would be the command as executed on the
+    command line.
+
+    Returns a 2-tuple consisting of the output of (STDOUT, STDERR). In your
+    code you should check for an empty STDERR output to determine if your
+    command completed successfully.
+    """
+    proc = Popen([cmd], shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE,
+            close_fds=True)
+    stdoutdata, stderrdata = proc.communicate()
+    return (stdoutdata, stderrdata)
 
 
 class SelfDeletingTempfile(object):
@@ -212,20 +229,28 @@ class _WaitThread(threading.Thread):
         self.callback(resp)
 
 
-def wait_until(obj, att, desired, callback=None, interval=5, attempts=10,
+def wait_until(obj, att, desired, callback=None, interval=5, attempts=0,
         verbose=False, verbose_atts=None):
     """
     When changing the state of an object, it will commonly be in a transitional
-    state until the change is complete. This will reload the object ever
-    `interval` seconds, and check its `att` attribute. If the desired value of
-    the attribute is reached, the updated object is returned. If not, it will
-    re-try a maximum of `attempts` times; if the attribute has not reached the
-    desired value by then, this method will exit and return None. If `attempts`
-    is 0, this will loop forever until the attribute matches. If `verbose` is
-    True, each attempt will print out the current value of the watched
-    attribute and the time that has elapsed since the original request. Also,
-    if `verbose_atts` is specified, the values of those attributes will also
-    be output. If `verbose` is False, then `verbose_atts` has no effect.
+    state until the change is complete. This will reload the object every
+    `interval` seconds, and check its `att` attribute until the `desired` value
+    is reached, or until the maximum number of attempts is reached. The updated
+    object is returned. It is up to the calling program to check the returned
+    object to make sure that it successfully reached the desired state.
+
+    Once the desired value of the attribute is reached, the method returns. If
+    not, it will re-try until the attribute's value matches one of the
+    `desired` values. By default (attempts=0) it will loop infinitely until the
+    attribute reaches the desired value. You can optionally limit the number of
+    times that the object is reloaded by passing a positive value to
+    `attempts`. If the attribute has not reached the desired value by then, the
+    method will exit.
+
+    If `verbose` is True, each attempt will print out the current value of the
+    watched attribute and the time that has elapsed since the original request.
+    Also, if `verbose_atts` is specified, the values of those attributes will
+    also be output. If `verbose` is False, then `verbose_atts` has no effect.
 
     Note that `desired` can be a list of values; if the attribute becomes equal
     to any of those values, this will succeed. For example, when creating a new
@@ -280,11 +305,15 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
             # use different client/resource classes.
             try:
                 # For servers:
-                obj = obj.manager.get(obj.id)
+                obj.get()
             except AttributeError:
-                # punt
-                raise exc.NoReloadError("The 'wait_until' method is not supported "
-                  "for '%s' objects." % obj.__class__)
+                try:
+                    # For other objects that don't support .get() or .reload()
+                    obj = obj.manager.get(obj.id)
+                except AttributeError:
+                    # punt
+                    raise exc.NoReloadError("The 'wait_until' method is not "
+                            "supported for '%s' objects." % obj.__class__)
         attval = getattr(obj, att)
         if verbose:
             elapsed = time.time() - start
@@ -298,7 +327,7 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
             return obj
         time.sleep(interval)
         attempt += 1
-    return None
+    return obj
 
 
 def iso_time_string(val, show_tzinfo=False):
@@ -366,6 +395,28 @@ def match_pattern(nm, patterns):
         if fnmatch.fnmatch(nm, pat):
             return True
     return False
+
+
+def update_exc(exc, msg, before=True, separator="\n"):
+    """
+    Adds additional text to an exception's error message.
+
+    The new text will be added before the existing text by default; to append
+    it after the original text, pass False to the `before` parameter.
+
+    By default the old and new text will be separated by a newline. If you wish
+    to use a different separator, pass that as the `separator` parameter.
+    """
+    emsg = exc.message
+    if before:
+        parts = (msg, separator, emsg)
+    else:
+        parts = (emsg, separator, msg)
+    new_msg = "%s%s%s" % parts
+    new_args = (new_msg, ) + exc.args[1:]
+    exc.message = new_msg
+    exc.args = new_args
+    return exc
 
 
 def env(*args, **kwargs):

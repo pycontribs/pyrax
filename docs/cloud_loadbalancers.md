@@ -14,7 +14,7 @@ To get a list of all the load balancers in your cloud, run:
     clb = pyrax.cloud_loadbalancers
     clb.list()
 
-This will return a list of `LoadBalancer` objects. You can then interact with the individual `LoadBalancer` objects. Assuming that you are just starting out and do not have any load balancers configured yet, you will get back an empty list. A good first step, then, would be to create a typical setup: two servers behind a load balancer that will distribute web traffic to these two servers.
+This returns a list of `LoadBalancer` objects. You can then interact with the individual `LoadBalancer` objects. Assuming that you are just starting out and do not have any load balancers configured yet, you get back an empty list. A good first step, then, would be to create a typical setup: two servers behind a load balancer that distributes web traffic to these two servers.
 
 
 ### Create the Servers
@@ -47,7 +47,7 @@ Next you need to create the `Nodes` that represent these servers. `Nodes` requir
 | DISABLED | Node is not permitted to accept any new connections regardless of session persistence configuration. Existing connections are forcibly terminated. |
 | DRAINING | Node is allowed to service existing established connections and connections that are being directed to it as a result of the session persistence configuration. |
 
-While you can set an existing `Node` to any of these three conditions, you can only create new nodes in either 'ENABLED' or 'DISABLED' condition.
+While you can set an existing `Node` to any of these three conditions, **you can only create new nodes in either 'ENABLED' or 'DISABLED' condition**.
 
 A `Node` is logically linked to the server it represents by the IP address. Since the servers and load balancer are all being created in the same datacenter, you can use the private IP address of the server.
 
@@ -115,7 +115,7 @@ The load balancer's 'algorithm' refers to the logic that determines how connecti
 
     print pyrax.cloud_loadbalancers.algorithms
 
-This will print:
+This prints:
 
     [u'LEAST_CONNECTIONS', u'RANDOM', u'ROUND_ROBIN', u'WEIGHTED_LEAST_CONNECTIONS', u'WEIGHTED_ROUND_ROBIN']
 
@@ -131,11 +131,11 @@ WEIGHTED_ROUND_ROBIN | A round robin algorithm, but with different proportions o
 
 
 ## Load Balancer Protocols
-All load balancers must define the protocol of the service which is being load balanced. The protocol selection should be based on the protocol of the back-end nodes. When configuring a load balancer, the default port for the given protocol will be selected unless otherwise specified. You can get a list of the available protocols by calling:
+All load balancers must define the protocol of the service which is being load balanced. The protocol selection should be based on the protocol of the back-end nodes. When configuring a load balancer, the default port for the given protocol is selected unless otherwise specified. You can get a list of the available protocols by calling:
 
     print clb.protocols
 
-This will print out:
+This prints out:
 
     [u'DNS_TCP', u'DNS_UDP', u'FTP', u'HTTP', u'HTTPS', u'IMAPS', u'IMAPv2', u'IMAPv3', u'IMAPv4', u'LDAP', u'LDAPS', u'MYSQL', u'POP3', u'POP3S', u'SFTP', u'SMTP', u'TCP', u'TCP_CLIENT_FIRST', u'UDP', u'UDP_STREAM']
 
@@ -168,7 +168,7 @@ UDP_STRE (UDP_STREAM) | This protocol is designed to stream media over networks 
 ## SSL Termination
 The SSL Termination feature allows a load balancer user to terminate SSL traffic at the load balancer layer versus at the web server layer. A user may choose to configure SSL Termination using a key and an SSL certificate or an (Intermediate) SSL certificate.
 
-When SSL Termination is configured on a load balancer, a secure shadow server is created that listens only for secure traffic on a user-specified port. This shadow server is only visible to and manageable by the system. Existing or updated attributes on a load balancer with SSL Termination will also apply to its shadow server. For example, if Connection Logging is enabled on an SSL load balancer, it will also be enabled on the shadow server and Cloud Files logs will contain log files for both.
+When SSL Termination is configured on a load balancer, a secure shadow server is created that listens only for secure traffic on a user-specified port. This shadow server is only visible to and manageable by the system. Existing or updated attributes on a load balancer with SSL Termination also apply to its shadow server. For example, if Connection Logging is enabled on an SSL load balancer, it will also be enabled on the shadow server and Cloud Files logs will contain log files for both.
 
 NOTE: SSL termination should not be used when transferring certain types of Personally Identifiable Information (PII). For the definition of PII, see this [Knowledge Center article](http://www.rackspace.com/knowledge_center/article/definition-of-personally-identifiable-information-pii).
 
@@ -188,9 +188,9 @@ Once SSL Termination is configured, you can only update the `securePort`, `secur
 
 
 ## Metadata
-Each load balancer can have arbitrary key/value pairs associated with it. These keys and values must be valid UTF-8 characters, of 256 characters or less. To see the metadata for a load balancer, call its `get_metadata()` method. This will return a dict that contains the keys and associated values, or an empty dict if the load balancer does not have any metadata.
+Each load balancer can have arbitrary key/value pairs associated with it. These keys and values must be valid UTF-8 characters, of 256 characters or less. To see the metadata for a load balancer, call its `get_metadata()` method. This returns a dict that contains the keys and associated values, or an empty dict if the load balancer does not have any metadata.
 
-There are two methods for creating metadata for a load balancer: `set_metadata()` and `update_metadata()`. The difference is that `update_metadata()` will only affect the keys in the update, whereas `set_metadata()` will delete any existing metadata first before setting the values passed to it. The following code illustrates the different methods for working with metadata:
+There are two methods for creating metadata for a load balancer: `set_metadata()` and `update_metadata()`. The difference is that `update_metadata()` only affects the keys in the update, whereas `set_metadata()` deletes any existing metadata first before setting the values passed to it. The following code illustrates the different methods for working with metadata:
 
     print "Initial metadata:", lb.get_metadata()
     lb.set_metadata({"a": "one", "b": "two", "c": "three"})
@@ -202,7 +202,7 @@ There are two methods for creating metadata for a load balancer: `set_metadata()
     lb.delete_metadata()
     print "After delete_metadata:", lb.get_metadata()
 
-This will result in:
+This results in:
 
     Initial metadata: {}
     New metadata: {u'a': u'one', u'c': u'three', u'b': u'two'}
@@ -246,7 +246,7 @@ This will result in:
     pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30, verbose=True)    print
     print "After removing node:", lb.nodes
 
-Note the `wait_until()` method. After modifying a load balancer, its status will be set to `PENDING_UPDATE`. While it is in that status, no further changes can be made. Once the changes have completed, the status will be set back to `ACTIVE`. All that `wait_until()` does is loop until the load balancer is ready. It is a convenient routine for processes that require intermediate steps that must complete before the next step is taken.
+Note the `wait_until()` method. After modifying a load balancer, its status is set to `PENDING_UPDATE`. While it is in that status, no further changes can be made. Once the changes have completed, the status is set back to `ACTIVE`. All that `wait_until()` does is loop until the load balancer is ready. It is a convenient routine for processes that require intermediate steps that must complete before the next step is taken.
 
 Running the above code results in:
 
@@ -288,7 +288,7 @@ Each node can have metadata associated with it, just as load balancers can. The 
 
 
 ## Usage Data
-You can get load balancer usage data for your entire account by calling `pyrax.cloud_loadbalancers.get_usage()`. Individual instances of the `LoadBalancer` class also have a `get_usage()` method that returns the usage for just that load balancer. Please note that usage statistics are very fine-grained, with a record for every hour that the load balancer is active. Each record is a dict with the following format:
+You can get load balancer usage data for your entire account by calling `pyrax.cloud_loadbalancers.get_usage()`. Individual instances of the `CloudLoadBalancer` class also have a `get_usage()` method that returns the usage for just that load balancer. Please note that usage statistics are very fine-grained, with a record for every hour that the load balancer is active. Each record is a dict with the following format:
 
     {'averageNumConnections': 0.0,
       'averageNumConnectionsSsl': 0.0,
@@ -313,11 +313,11 @@ The call to `get_usage()` can return a *lot* of data. Many times you may only be
 * A string in the format "YYYY-MM-DD HH:MM:SS"
 * A string in the format "YYYY-MM-DD"
 
-When both starting and ending times are specified, the resulting usage data will only include records within that time period. When only the starting time is specified, all records from that point to the present are returned. When only the ending time is specified, all records from the earliest up to the ending time are returned.
+When both starting and ending times are specified, the resulting usage data only includes records within that time period. When only the starting time is specified, all records from that point to the present are returned. When only the ending time is specified, all records from the earliest up to the ending time are returned.
 
 
 ## Load Balancer Statistics
-To get the statistics for an individual load balancer, call its `get_stats()` method. You will get back a dictionary like this:
+To get the statistics for an individual load balancer, call its `get_stats()` method. You get back a dictionary like this:
 
     {'connectError': 0,
      'connectFailure': 0,
@@ -344,7 +344,7 @@ There are 3 types of Health Monitor probes:
 * HTTP
 * HTTPS
 
-Health Monitors have an `attemptsBeforeDeactivation` setting that specifies how many failures for a node will be needed before the node is removed from the load balancer's rotation.
+Health Monitors have an `attemptsBeforeDeactivation` setting that specifies how many failures for a node are needed before the node is removed from the load balancer's rotation.
 
 
 ### Adding a TCP Connection Health Monitor
@@ -376,18 +376,18 @@ These types of monitors check whether the load balancer's nodes can be reached v
             bodyRegex=".* testing .*"i,
             hostHeader="example.com")
 
-The `path` parameter indicates the HTTP path for the request; the `statusRegex` parameter is compared against the returned status code, and the `bodyRegex` parameter is compared with the body of the response. If both response patterns match, the node is considered healthy. The `hostHeader` parameter is the only one that is optional. If included, the monitor will check that hostname.
+The `path` parameter indicates the HTTP path for the request; the `statusRegex` parameter is compared against the returned status code, and the `bodyRegex` parameter is compared with the body of the response. If both response patterns match, the node is considered healthy. The `hostHeader` parameter is the only one that is optional. If included, the monitor checks that hostname.
 
 
 ####Health Monitor Parameters
 Name | Description | Default | Required
 ---- | ---- | ---- | ----
 attemptsBeforeDeactivation | Number of permissible monitor failures before removing a node from rotation. Must be a number between 1 and 10. | 3 | Yes
-bodyRegex | A regular expression that will be used to evaluate the contents of the body of the response. | None | Yes
+bodyRegex | A regular expression that is used to evaluate the contents of the body of the response. | None | Yes
 delay | The minimum number of seconds to wait before executing the health monitor. Must be a number betwe en 1 and 3600. | 10 | Yes
 hostHeader | The name of a host for which the health monitors will check. | None | No
 path | The HTTP path that will be used in the sample request. | "/" | Yes
-statusRegex | A regular expression that will be used to evaluate the HTTP status code returned in the res ponse. | None | Yes
+statusRegex | A regular expression that is used to evaluate the HTTP status code returned in the res ponse. | None | Yes
 timeout | Maximum number of seconds to wait for a connection to be established before timing out. Must be a number between 1 and 300. | 10 | Yes
 type | Type of the health monitor. Must be specified as "HTTP" to monitor an HTTP response or "HTTPS" to monitor an HTTPS response. | None | Yes
 
@@ -458,7 +458,7 @@ After running the above code, you should see output like this:
 
 
 ## Access Lists
-The access list management feature allows fine-grained network access controls to be applied to the load balancer's virtual IP address. A single IP address, multiple IP addresses, or entire network subnets can be added as a `networkItem`. Items that are configured with the `ALLOW` type will always take precedence over items with the `DENY` type. To reject traffic from all items except for those with the `ALLOW` type, add a `networkItem` with an address of "0.0.0.0/0" and a `DENY` type.
+The access list management feature allows fine-grained network access controls to be applied to the load balancer's virtual IP address. A single IP address, multiple IP addresses, or entire network subnets can be added as a `networkItem`. Items that are configured with the `ALLOW` type always take precedence over items with the `DENY` type. To reject traffic from all items except for those with the `ALLOW` type, add a `networkItem` with an address of "0.0.0.0/0" and a `DENY` type.
 
 To see the access lists for a load balancer, call the load balancer's `get_access_list()` method:
 
@@ -523,7 +523,7 @@ To remove the custom error page and return to the default, run:
 
 
 ## Content Caching
-When content caching is enabled, recently-accessed files are stored on the load balancer for easy retrieval by web clients. Content caching improves the performance of high traffic web sites by temporarily storing data that was recently accessed. While it's cached, requests for that data will be served by the load balancer, which in turn reduces load off the back end nodes. The result is improved response times for those requests and less load on the web server.
+When content caching is enabled, recently-accessed files are stored on the load balancer for easy retrieval by web clients. Content caching improves the performance of high traffic web sites by temporarily storing data that was recently accessed. While it's cached, requests for that data are served by the load balancer, which in turn reduces load off the back end nodes. The result is improved response times for those requests and less load on the web server.
 
 This is a simple on/off setting on the load balancer object. Assuming that you have a reference `lb` to the load balancer:
 

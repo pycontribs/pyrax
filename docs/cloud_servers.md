@@ -166,8 +166,32 @@ This should return something like:
 
     {u'private': [u'10.179.xxx.xxx'], u'public': [u'198.101.xxx.xxx', u'2001:4800:780d:0509:8ca7:b42c:xxxx:xxxx']}
 
+### Waiting for Server Completion
+Since you can't do anything with your new server until it finishes building, it would be helpful to have a way of determining when the build is complete. So `pyrax` includes the `wait_until()` method in its `utils` module. Here is a typical usage:
 
-### Additional parameters to create()
+    srv = cs.servers.create(…)
+    new_srv = pyrax.utils.wait_until(srv, "status", 
+            ["ACTIVE", "ERROR"], attempts=0)
+
+When you run the above code, execution will block until the server's status reaches one of the two values in the list. Note that we just don't want to check for "ACTIVE" status, since server creation can fail, and the `wait_until()` call will wait forever.
+
+Another common use case is when you are creating several servers, and you don't want to block your app's execution while each server builds. For this case, you can pass a callback function to `wait_until()`, which will create a separate thread for the wait process, and that callback function will be called when `wait_until()` completes.
+
+#### Parameters for wait_until():
+
+| Name | Required? | Description |
+| ---- | ---- | ---- |
+| obj | Yes | The object to examine. |
+| att | Yes | The name of the attribute of the object to examine. |
+| desired | Yes | The desired value(s) of the attribute. |
+| callback | No | An optional function that will be called when the `wait_until()` process completes. Providing the callback makes wait_until() non-blocking. The callback function should accept a single parameter: the updated version of the object. |
+| interval | No | How long (in seconds) to wait between checking the object for changes in the target attribute. |
+| attempts | No | How many times should wait_until() check the object before giving up? Passing `attempts=0` will cause `wait_until()` to loop until the desired attribute value is reached. |
+| verbose | No | When True, each attempt will print out the current value of the watched attribute and the time that has elapsed since the original request. Note that if a callback function is specified, the value of `verbose` is ignored; all print output is suppressed. |
+| verbose_atts | No | A list of additional attributes whose values will be printed out for each attempt. If `verbose=False`, this parameter has no effect. |
+
+
+### Additional Parameters to Create()
 There are several optional parameters that you can include when creating a server. Here are the two most common:
 
 `meta` - An arbitrary dict of up to 5 key/value pairs that can be stored with the server. Note that the keys and values must be simple strings, and not numbers, datetimes, tuples, or anything else.

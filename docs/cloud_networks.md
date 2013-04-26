@@ -74,7 +74,7 @@ To create a server that uses *only* this isolated network, call:
 
     networks = isolated.get_server_networks()
     cs.servers.create("test", img_id, flavor_id,
-            networks=networks)
+            nics=networks)
 
 When the server has completed building, you can check its `networks` attribute to verify that this worked as expected. The code above creates a server whose `networks` attribute looks like:
 
@@ -84,7 +84,7 @@ To create a server with the isolated network and the ServiceNet network, use thi
 
     networks = isolated.get_server_networks(private=True)
     cs.servers.create("test", img_id, flavor_id,
-            networks=networks)
+            nics=networks)
 
 This results in a server whose `networks` attribute looks like:
 
@@ -95,7 +95,7 @@ Finally, to create a server with the isolated network as well as the default net
 
     networks = isolated.get_server_networks(public=True, private=True)
     cs.servers.create("test", img_id, flavor_id,
-            networks=networks)
+            nics=networks)
 
 This server's `networks` attribute shows all three networks:
 

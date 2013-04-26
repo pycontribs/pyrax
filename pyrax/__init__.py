@@ -227,7 +227,8 @@ def keyring_auth(username=None, region=None):
     from the config file is used.
 
     If there is no username defined, or if the keyring module is not installed,
-    the appropriate errors will be raised.
+    or there is no password set for the given username, the appropriate errors
+    will be raised.
 
     If the region is passed, it will authenticate against the proper endpoint
     for that region, and set the default region for connections.
@@ -242,8 +243,10 @@ def keyring_auth(username=None, region=None):
         raise exc.KeyringUsernameMissing("No username specified for keyring "
                 "authentication.")
     password = keyring.get_password("pyrax", username)
-    if password:
-        set_credentials(username, password, region=region)
+    if password is None:
+        raise exc.KeyringPasswordNotFound("No password was found for the "
+                "username '%s'." % username)
+    set_credentials(username, password, region=region)
 
 
 def authenticate():
@@ -407,10 +410,9 @@ def connect_to_cloud_databases(region=None):
     """Creates a client for working with cloud databases."""
     region = safe_region(region)
     ep = _get_service_endpoint("database", region)
-    cloud_databases = CloudDatabaseClient(identity.username, identity.api_key,
-            region_name=region, management_url=ep, auth_token=identity.token,
-            http_log_debug=_http_debug,
-            tenant_id=identity.tenant_id, service_type="rax:database")
+    cloud_databases = CloudDatabaseClient(region_name=region,
+            management_url=ep, http_log_debug=_http_debug,
+            service_type="rax:database")
     cloud_databases.user_agent = _make_agent_name(cloud_databases.user_agent)
     return cloud_databases
 
@@ -420,10 +422,9 @@ def connect_to_cloud_loadbalancers(region=None):
     """Creates a client for working with cloud loadbalancers."""
     region = safe_region(region)
     ep = _get_service_endpoint("load_balancer", region)
-    cloud_loadbalancers = CloudLoadBalancerClient(identity.username,
-            identity.api_key, region_name=region, management_url=ep,
-            auth_token=identity.token, http_log_debug=_http_debug,
-            tenant_id=identity.tenant_id, service_type="rax:load-balancer")
+    cloud_loadbalancers = CloudLoadBalancerClient(region_name=region,
+            management_url=ep, http_log_debug=_http_debug,
+            service_type="rax:load-balancer")
     agt = cloud_loadbalancers.user_agent
     cloud_loadbalancers.user_agent = _make_agent_name(agt)
     return cloud_loadbalancers
@@ -434,10 +435,9 @@ def connect_to_cloud_blockstorage(region=None):
     """Creates a client for working with cloud blockstorage."""
     region = safe_region(region)
     ep = _get_service_endpoint("volume", region)
-    cloud_blockstorage = CloudBlockStorageClient(identity.username,
-            identity.api_key, region_name=region, management_url=ep,
-            auth_token=identity.token, http_log_debug=_http_debug,
-            tenant_id=identity.tenant_id, service_type="volume")
+    cloud_blockstorage = CloudBlockStorageClient(region_name=region,
+            management_url=ep, http_log_debug=_http_debug,
+            service_type="volume")
     agt = cloud_blockstorage.user_agent
     cloud_blockstorage.user_agent = _make_agent_name(agt)
     return cloud_blockstorage
@@ -448,10 +448,9 @@ def connect_to_cloud_dns(region=None):
     """Creates a client for working with cloud dns."""
     region = safe_region(region)
     ep = _get_service_endpoint("dns", region)
-    cloud_dns = CloudDNSClient(identity.username, identity.api_key,
-            region_name=region, management_url=ep, auth_token=identity.token,
-            http_log_debug=_http_debug,
-            tenant_id=identity.tenant_id, service_type="rax:dns")
+    cloud_dns = CloudDNSClient(region_name=region,
+            management_url=ep, http_log_debug=_http_debug,
+            service_type="rax:dns")
     cloud_dns.user_agent = _make_agent_name(cloud_dns.user_agent)
     return cloud_dns
 
@@ -462,10 +461,9 @@ def connect_to_cloud_networks(region=None):
     region = safe_region(region)
     # Networks uses the same endpoint as compute
     ep = _get_service_endpoint("compute", region)
-    cloud_networks = CloudNetworkClient(identity.username, identity.api_key,
-            region_name=region, management_url=ep, auth_token=identity.token,
-            http_log_debug=_http_debug,
-            tenant_id=identity.tenant_id, service_type="compute")
+    cloud_networks = CloudNetworkClient(region_name=region,
+            management_url=ep, http_log_debug=_http_debug,
+            service_type="compute")
     cloud_networks.user_agent = _make_agent_name(cloud_networks.user_agent)
     return cloud_networks
 
