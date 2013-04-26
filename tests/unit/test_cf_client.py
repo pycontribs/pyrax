@@ -111,6 +111,17 @@ class CF_ClientTest(unittest.TestCase):
         self.assert_("?temp_url_sig=" in ret)
         self.assert_("&temp_url_expires=" in ret)
 
+    def test_get_temp_url_windows(self):
+        client = self.client
+        nm = "%s\\" % utils.random_name(ascii_only=True)
+        cname = "\\%s\\" % utils.random_name(ascii_only=True)
+        oname = utils.random_name(ascii_only=True)
+        client.connection.head_account = Mock()
+        client.connection.head_account.return_value = {
+                "x-account-meta-temp-url-key": nm, "some-other-key": "no"}
+        ret = client.get_temp_url(cname, oname, seconds=120, method="GET")
+        self.assertFalse("\\" in ret)
+
     def test_get_temp_url_unicode(self):
         client = self.client
         nm = utils.random_name(ascii_only=False)
