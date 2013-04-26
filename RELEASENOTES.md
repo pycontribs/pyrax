@@ -1,5 +1,18 @@
 # Release Notes for pyrax
 
+###2013.04.26 - Version 1.3.7
+- Removed a lot of the duplicated identity code from the main client
+    class. This is in anticipation of a major re-working of identity
+    that will work with non-Rackspace OpenStack deployments.
+- Added methods to Cloud Load Balancer code to make it easier to get
+    individual device usages and links.
+- Added a customizable delay period for Cloud DNS.
+- Changed the default behavior of utils.wait_until() to wait forever
+    for the desired state to be reached. Previous default was 10 attempts,
+    and it seemed that over 90% of use cases required waiting indefinitely,
+    so the default was changed.
+- Cleaned up some of the documentation style.
+
 ###2013.04.03 - Version 1.3.6
 - Fixed the auth issues with python-novaclient introduced in the most
     recent release of that library. Thanks to Matt Martz for this fix.
