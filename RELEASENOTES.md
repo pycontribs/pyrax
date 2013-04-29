@@ -1,5 +1,9 @@
 # Release Notes for pyrax
 
+###2013.04.29 - Version 1.3.8
+- Fixed a bug that prevented the Cloud Servers code from running properly
+    in the UK.
+
 ###2013.04.26 - Version 1.3.7
 - Removed a lot of the duplicated identity code from the main client
     class. This is in anticipation of a major re-working of identity
