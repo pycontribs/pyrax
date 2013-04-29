@@ -157,7 +157,7 @@ class UtilsTest(unittest.TestCase):
         self.assertTrue(utils.isunauthenticated(dummy))
 
     def test_safe_issubclass_good(self):
-        ret = utils.safe_issubclass(fakes.FakeIdentity, fakes.Identity)
+        ret = utils.safe_issubclass(fakes.FakeIdentity, fakes.RaxIdentity)
         self.assertTrue(ret)
 
     def test_safe_issubclass_bad(self):

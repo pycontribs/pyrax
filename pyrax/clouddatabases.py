@@ -71,8 +71,16 @@ class CloudDatabaseInstance(BaseResource):
         # Remove the lazy load
         if not self.loaded:
             self.get()
-            # Make the volume into an accessible object instead of a dict
-            self.volume = CloudDatabaseVolume(self, self.volume)
+
+
+    def get(self):
+        """
+        Need to override the default get() behavior by making the 'volume'
+        attribute into a CloudDatabaseVolume object instead of the raw dict.
+        """
+        super(CloudDatabaseInstance, self).get()
+        # Make the volume into an accessible object instead of a dict
+        self.volume = CloudDatabaseVolume(self, self.volume)
 
 
     def list_databases(self):

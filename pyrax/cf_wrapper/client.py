@@ -84,28 +84,30 @@ class CFClient(object):
     folder_upload_status = {}
 
 
-    def __init__(self, auth_endpoint, username, api_key, tenant_name,
-            preauthurl=None, preauthtoken=None, auth_version="2",
-            os_options=None, http_log_debug=False):
+    def __init__(self, auth_endpoint, username, api_key=None, password=None,
+            tenant_name=None, preauthurl=None, preauthtoken=None,
+            auth_version="2", os_options=None, http_log_debug=False):
         self.connection = None
         self.http_log_debug = http_log_debug
         self._http_log = _swift_client.http_log
         os.environ["SWIFTCLIENT_DEBUG"] = "True" if http_log_debug else ""
-        self._make_connections(auth_endpoint, username, api_key,
-                tenant_name, preauthurl=preauthurl,
+        self._make_connections(auth_endpoint, username, api_key, password,
+                tenant_name=tenant_name, preauthurl=preauthurl,
                 preauthtoken=preauthtoken, auth_version=auth_version,
                 os_options=os_options, http_log_debug=http_log_debug)
 
 
-    def _make_connections(self, auth_endpoint, username, api_key, tenant_name,
-            preauthurl=None, preauthtoken=None, auth_version="2", os_options=None,
-            http_log_debug=None):
+    def _make_connections(self, auth_endpoint, username, api_key, password,
+            tenant_name=None, preauthurl=None, preauthtoken=None,
+            auth_version="2", os_options=None, http_log_debug=None):
         cdn_url = os_options.pop("object_cdn_url", None)
-        self.connection = Connection(auth_endpoint, username, api_key, tenant_name,
+        pw_key = api_key or password
+        self.connection = Connection(auth_endpoint, username, pw_key, tenant_name,
                 preauthurl=preauthurl, preauthtoken=preauthtoken,
                 auth_version=auth_version, os_options=os_options,
                 http_log_debug=http_log_debug)
-        self.connection._make_cdn_connection(cdn_url)
+        if cdn_url:
+            self.connection._make_cdn_connection(cdn_url)
 
 
     def _massage_metakeys(self, dct, prfx):
@@ -210,7 +212,7 @@ class CFClient(object):
         cleaned = (part.strip("/\\") for part in path_parts)
         pth = "/".join(cleaned)
         if isinstance(pth, unicode):
-            pth = pth.encode(pyrax.encoding)
+            pth = pth.encode(pyrax.get_encoding())
         expires = int(time.time() + int(seconds))
         hmac_body = "%s\n%s\n%s" % (mod_method, expires, pth)
         try:
