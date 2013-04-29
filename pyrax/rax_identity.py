@@ -159,6 +159,10 @@ class Identity(object):
             # Replace any dashes with underscores.
             # Also, some service types have RAX-specific identifiers; strip them.
             typ = svc["type"].replace("-", "_").lstrip("rax:")
+            if typ == "compute":
+                if svc["name"].lower() == "cloudservers":
+                    # First-generation Rackspace cloud servers
+                    continue
             self.services[typ] = dict(name=svc["name"], endpoints={})
             svc_ep = self.services[typ]["endpoints"]
             for ep in svc["endpoints"]:
