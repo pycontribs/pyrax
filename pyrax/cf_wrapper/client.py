@@ -208,7 +208,7 @@ class CFClient(object):
         base_url = conn_url[:v1pos]
         path_parts = (conn_url[v1pos:], cname, oname)
         cleaned = (part.strip("/\\") for part in path_parts)
-        pth = "/".join(cleaned)
+        pth = "/%s" % "/".join(cleaned)
         if isinstance(pth, unicode):
             pth = pth.encode(pyrax.encoding)
         expires = int(time.time() + int(seconds))
