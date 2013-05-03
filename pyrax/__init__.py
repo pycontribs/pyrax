@@ -516,7 +516,7 @@ def set_http_debug(val):
 
 def get_encoding():
     """Returns the unicode encoding type."""
-    return _get_setting("encoding")
+    return _get_setting("encoding") or default_encoding
 
 
 # Read in the configuration file, if any
