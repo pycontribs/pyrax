@@ -151,7 +151,7 @@ def _require_auth(fnc):
 @_assure_identity
 def safe_region(region=None):
     """Value to use when no region is specified."""
-    return region or _get_setting("default_region") or region
+    return region or _get_setting("default_region") or default_region
 
 
 def _read_config_settings(config_file):

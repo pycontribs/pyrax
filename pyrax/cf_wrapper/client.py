@@ -88,6 +88,7 @@ class CFClient(object):
             tenant_name=None, preauthurl=None, preauthtoken=None,
             auth_version="2", os_options=None, http_log_debug=False):
         self.connection = None
+        self.cdn_connection = None
         self.http_log_debug = http_log_debug
         self._http_log = _swift_client.http_log
         os.environ["SWIFTCLIENT_DEBUG"] = "True" if http_log_debug else ""
