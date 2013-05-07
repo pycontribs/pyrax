@@ -323,7 +323,8 @@ class CF_ClientTest(unittest.TestCase):
         content = u"something with ü†ƒ-8"
         etag = utils.get_checksum(content)
         obj = client.store_object(self.cont_name, self.obj_name, content,
-                content_type="test/test", etag=etag)
+                content_type="test/test", etag=etag,
+                headers={"Content-Encoding": "gzip"})
         self.assertEqual(client.connection.put_object.call_count, 1)
         client.get_object = gobj
 
