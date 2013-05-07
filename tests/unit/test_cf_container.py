@@ -143,7 +143,8 @@ class CF_ContainerTest(unittest.TestCase):
         content = "something"
         etag = utils.get_checksum(content)
         obj = cont.store_object(self.obj_name, content,
-                content_type="test/test", etag=etag)
+                content_type="test/test", etag=etag,
+                headers={"Content-Encoding": "gzip"})
         self.assertEqual(cont.client.connection.put_object.call_count, 1)
         cont.client.get_object = gobj
 
