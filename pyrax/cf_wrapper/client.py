@@ -422,12 +422,15 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
-            etag=None):
+            etag=None, content_encoding=None):
         """
         Creates a new object in the specified container, and populates it with
         the given data.
         """
         cont = self.get_container(container)
+        headers = {}
+        if content_encoding is not None:
+            headers["Content-Encoding"] = content_encoding
         with utils.SelfDeletingTempfile() as tmp:
             with open(tmp, "wb") as tmpfile:
                 try:
@@ -437,7 +440,8 @@ class CFClient(object):
                     tmpfile.write(udata)
             with open(tmp, "rb") as tmpfile:
                 self.connection.put_object(cont.name, obj_name,
-                        contents=tmpfile, content_type=content_type, etag=etag)
+                        contents=tmpfile, content_type=content_type, etag=etag,
+                        headers=headers)
         return self.get_object(container, obj_name)
 
 
@@ -494,7 +498,8 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def upload_file(self, container, file_or_path, obj_name=None,
-            content_type=None, etag=None, return_none=False):
+            content_type=None, etag=None, return_none=False,
+            content_encoding=None):
         """
         Uploads the specified file to the container. If no name is supplied, the
         file's name will be used. Either a file path or an open file-like object
@@ -511,7 +516,7 @@ class CFClient(object):
             fileobj.seek(currpos)
             return total_size
 
-        def upload(fileobj, content_type, etag):
+        def upload(fileobj, content_type, etag, headers):
             if isinstance(fileobj, basestring):
                 # This is an empty directory file
                 fsize = 0
@@ -521,7 +526,7 @@ class CFClient(object):
                 # We can just upload it as-is.
                 return self.connection.put_object(cont.name, obj_name,
                         contents=fileobj, content_type=content_type,
-                        etag=etag)
+                        etag=etag, headers=headers)
             # Files larger than self.max_file_size must be segmented
             # and uploaded separately.
             num_segments = int(math.ceil(float(fsize) / self.max_file_size))
@@ -539,11 +544,11 @@ class CFClient(object):
                         etag = utils.get_checksum(tmp)
                         self.connection.put_object(cont.name, seg_name,
                                 contents=tmp, content_type=content_type,
-                                etag=etag)
+                                etag=etag, headers=headers)
             # Upload the manifest
-            hdr = {"X-Object-Meta-Manifest": "%s." % fname}
+            headers["X-Object-Meta-Manifest"] = "%s." % fname
             return self.connection.put_object(cont.name, fname,
-                    contents=None, headers=hdr)
+                    contents=None, headers=headers)
 
         ispath = isinstance(file_or_path, basestring)
         if ispath:
@@ -557,12 +562,16 @@ class CFClient(object):
         if not obj_name:
             obj_name = fname
 
+        headers = {}
+        if content_encoding is not None:
+            headers["Content-Encoding"] = content_encoding
+
         if ispath and os.path.isfile(file_or_path):
             # Need to wrap the call in a context manager
             with open(file_or_path, "rb") as ff:
-                upload(ff, content_type, etag)
+                upload(ff, content_type, etag, headers)
         else:
-            upload(file_or_path, content_type, etag)
+            upload(file_or_path, content_type, etag, headers)
         if return_none:
             return None
         else:

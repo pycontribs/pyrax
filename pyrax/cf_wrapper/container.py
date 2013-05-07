@@ -107,7 +107,7 @@ class Container(object):
             name = name.decode(pyrax.get_encoding())
         ret = self._object_cache.get(name)
         if not ret:
-            objs = [obj for obj in self.client.get_container_objects(self.name)
+            objs = [obj for obj in self.client.get_container_objects(self.name, full_listing=True)
                     if obj.name == name]
             try:
                 ret = objs[0]
@@ -128,17 +128,19 @@ class Container(object):
         return [obj.name for obj in objs]
 
 
-    def store_object(self, obj_name, data, content_type=None, etag=None):
+    def store_object(self, obj_name, data, content_type=None, etag=None,
+            content_encoding=None):
         """
         Creates a new object in this container, and populates it with
         the given data.
         """
         return self.client.store_object(self, obj_name, data,
-                content_type=content_type, etag=etag)
+                content_type=content_type, etag=etag,
+                content_encoding=content_encoding)
 
 
     def upload_file(self, file_or_path, obj_name=None, content_type=None, etag=None,
-            return_none=False):
+            return_none=False, content_encoding=None):
         """
         Uploads the specified file to this container. If no name is supplied, the
         file's name will be used. Either a file path or an open file-like object
@@ -146,7 +148,8 @@ class Container(object):
         returned, unless 'return_none' is set to True.
         """
         return self.client.upload_file(self, file_or_path, obj_name=obj_name,
-                content_type=content_type, etag=etag, return_none=return_none)
+                content_type=content_type, etag=etag, return_none=return_none,
+                content_encoding=content_encoding)
 
 
     def delete_object(self, obj):
