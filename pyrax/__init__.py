@@ -51,8 +51,9 @@ except ImportError:
 # since importing the version info in setup.py tries to import this
 # entire module.
 try:
+    from identity import *
+
     import exceptions as exc
-    import rax_identity as _rax_identity
     import version
 
     import cf_wrapper.client as _cf
@@ -92,18 +93,17 @@ cloud_databases = None
 cloud_blockstorage = None
 cloud_dns = None
 cloud_networks = None
-# Class used to handle auth/identity
-identity_class = None
 # Default identity type.
 default_identity_type = "rackspace"
-# Identity object
-identity = None
 # Default region for all services. Can be individually overridden if needed
 default_region = "DFW"
-# If credentials are stored using keyring, this holds the username
-keyring_username = None
 # Encoding to use when working with non-ASCII names
-encoding = "utf-8"
+default_encoding = "utf-8"
+
+# Config settings
+settings = {}
+environment = "default"
+identity = None
 
 # Value to plug into the user-agent headers
 USER_AGENT = "pyrax/%s" % version.version
@@ -112,14 +112,50 @@ USER_AGENT = "pyrax/%s" % version.version
 _http_debug = False
 
 
+def _get_setting(key, env=None):
+    """
+    Returns the config setting for the specified environment. If no environment
+    is specified, the value for the current environment is returned. If an
+    unknown key or environment is passed, None is returned.
+    """
+    if env is None:
+        env = environment
+    try:
+        return settings[env][key]
+    except KeyError:
+        return None
+
+
+def _assure_identity(fnc):
+    """Ensures that the 'identity' attribute is not None."""
+    def _wrapped(*args, **kwargs):
+        global identity
+        if identity is None:
+            identity = settings[environment]["identity_class"]()
+        return fnc(*args, **kwargs)
+    return _wrapped
+
+
+def _require_auth(fnc):
+    """Authentication decorator."""
+    @wraps(fnc)
+    @_assure_identity
+    def _wrapped(*args, **kwargs):
+        if not identity.authenticated:
+            msg = "Authentication required before calling '%s'." % fnc.__name__
+            raise exc.NotAuthenticated(msg)
+        return fnc(*args, **kwargs)
+    return _wrapped
+
+
+@_assure_identity
 def safe_region(region=None):
     """Value to use when no region is specified."""
-    return region or default_region
+    return region or _get_setting("default_region") or default_region
 
 
 def _read_config_settings(config_file):
-    global default_region, default_identity_type, USER_AGENT
-    global _http_debug, encoding, keyring_username
+    global settings
     cfg = ConfigParser.SafeConfigParser()
     try:
         cfg.read(config_file)
@@ -133,61 +169,56 @@ def _read_config_settings(config_file):
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
             return default
 
-    default_region = safe_get("settings", "region", default_region)
-    default_identity_type = safe_get("settings", "identity_type",
-            default_identity_type)
-    app_agent = safe_get("settings", "custom_user_agent")
-    _http_debug = safe_get("settings", "debug", "False") == "True"
-    keyring_username = safe_get("settings", "keyring_username")
-    encoding = safe_get("settings", "encoding", encoding)
-    if app_agent:
-        # Customize the user-agent string with the app name.
-        USER_AGENT = "%s %s" % (app_agent, USER_AGENT)
+    def import_identity(import_str):
+        full_str = "pyrax.identity.%s" % import_str
+        return utils.import_class(full_str)
+
+    for section in cfg.sections():
+        if section == "settings":
+            section_name = "default"
+        else:
+            section_name = section
+        dct = settings[section_name] = {}
+        dct["default_region"] = safe_get(section, "region", default_region)
+        ityp = safe_get(section, "identity_type", default_identity_type)
+        if ityp == "rackspace":
+            # Previous identity type style
+            ityp = "rax_identity.RaxIdentity"
+        dct["identity_type"] = ityp
+        dct["identity_class"] = import_identity(ityp)
+        dct["http_debug"] = safe_get(section, "debug", "False") == "True"
+        dct["keyring_username"] = safe_get(section, "keyring_username")
+        dct["encoding"] = safe_get(section, "encoding", default_encoding)
+        dct["auth_endpoint"] = safe_get(section, "auth_endpoint")
+        dct["tenant_name"] = safe_get(section, "tenant_name")
+        dct["tenant_id"] = safe_get(section, "tenant_id")
+        app_agent = safe_get(section, "custom_user_agent")
+        if app_agent:
+            # Customize the user-agent string with the app name.
+            dct["user_agent"] = "%s %s" % (app_agent, USER_AGENT)
+        else:
+            dct["user_agent"] = USER_AGENT
+
+        # If this is the first section, make it the default
+        if not "default" in settings:
+            settings["default"] = settings[section]
 
 
-def set_identity_class(cls):
+@_assure_identity
+def set_credentials(username, api_key=None, password=None, region=None,
+        tenant_id=None, authenticate=True):
     """
-    Different applications may require different classes to handle
-    identity management. This allows the app to configure itself
-    for its auth requirements.
-    """
-    global identity_class
-    identity_class = cls
-
-
-def create_identity():
-    """
-    Sets the 'identity' attribute to an instance of
-    the current identity_class.
-    """
-    global identity, identity_class
-    if not identity_class:
-        identity_class = _rax_identity.Identity
-    identity = identity_class(region=safe_region())
-
-
-def _require_auth(fnc):
-    """Authentication decorator."""
-    @wraps(fnc)
-    def _wrapped(*args, **kwargs):
-        if not identity.authenticated:
-            msg = "Authentication required before calling '%s'." % fnc.__name__
-            raise exc.NotAuthenticated(msg)
-        return fnc(*args, **kwargs)
-    return _wrapped
-
-
-def set_credentials(username, api_key, region=None, authenticate=True):
-    """
-    Set the username and api_key directly, and then try to authenticate.
+    Set the credentials directly, and then try to authenticate.
 
     If the region is passed, it will authenticate against the proper endpoint
     for that region, and set the default region for connections.
     """
     identity.authenticated = False
+    pw_key = password or api_key
     try:
-        identity.set_credentials(username=username, api_key=api_key,
-                region=region, authenticate=authenticate)
+        identity.set_credentials(username=username, password=pw_key,
+                tenant_id=_get_setting("tenant_id"), region=region,
+                authenticate=authenticate)
     except exc.AuthenticationFailed:
         clear_credentials()
         raise
@@ -197,14 +228,23 @@ def set_credentials(username, api_key, region=None, authenticate=True):
         connect_to_services(region=region)
 
 
+@_assure_identity
 def set_credential_file(cred_file, region=None, authenticate=True):
     """
     Read in the credentials from the supplied file path, and then try to
-    authenticate. The file should be a standard config file in the format:
+    authenticate. The file should be a standard config file in one of the
+    following formats:
 
-    [rackspace_cloud]
-    username = myusername
-    api_key = 1234567890abcdef
+    For Keystone authentication:
+        [keystone]
+        username = myusername
+        password = 1234567890abcdef
+        tenant_id = abcdef1234567890
+
+    For Rackspace authentication:
+        [rackspace_cloud]
+        username = myusername
+        api_key = 1234567890abcdef
 
     If the region is passed, it will authenticate against the proper endpoint
     for that region, and set the default region for connections.
@@ -238,7 +278,7 @@ def keyring_auth(username=None, region=None):
         raise exc.KeyringModuleNotInstalled("The 'keyring' Python module is "
                 "not installed on this system.")
     if username is None:
-        username = keyring_username
+        username = _get_setting("keyring_username")
     if not username:
         raise exc.KeyringUsernameMissing("No username specified for keyring "
                 "authentication.")
@@ -249,6 +289,7 @@ def keyring_auth(username=None, region=None):
     set_credentials(username, password, region=region)
 
 
+@_assure_identity
 def authenticate():
     """
     Generally you will not need to call this directly; passing in your
@@ -266,7 +307,7 @@ def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, cloudservers, cloudfiles, cloud_loadbalancers
     global cloud_databases, cloud_blockstorage, cloud_dns, cloud_networks
-    identity = identity_class()
+    identity = None
     cloudservers = None
     cloudfiles = None
     cloud_loadbalancers = None
@@ -306,23 +347,10 @@ def connect_to_services(region=None):
     cloud_networks = connect_to_cloud_networks(region=region)
 
 
-def _fix_uri(ep, region):
-    """
-    Compute URIs returned by the "ALL" region need to be manipulated
-    in order to provide the correct endpoints.
-    """
-    ep = ep.replace("//", "//%s." % region.lower())
-    # Change the version string
-    ep = ep.replace("v1.0", "v2")
-    return ep
-
-
 def _get_service_endpoint(svc, region=None, public=True):
     """
     Parses the services dict to get the proper endpoint for the given service.
     """
-    if region is None:
-        region = safe_region()
     region = safe_region(region)
     url_type = {True: "public_url", False: "internal_url"}[public]
     ep = identity.services.get(svc, {}).get("endpoints", {}).get(
@@ -331,8 +359,6 @@ def _get_service_endpoint(svc, region=None, public=True):
         # Try the "ALL" region, and substitute the actual region
         ep = identity.services.get(svc, {}).get("endpoints", {}).get(
                 "ALL", {}).get(url_type)
-        if svc == "compute":
-            ep = _fix_uri(ep, region)
     return ep
 
 
@@ -346,8 +372,8 @@ def connect_to_cloudservers(region=None):
         auth_plugin = None
     region = safe_region(region)
     mgt_url = _get_service_endpoint("compute", region)
-    cloudservers = _cs_client.Client(identity.username, identity.api_key,
-            project_id=identity.tenant_name, auth_url=identity.auth_endpoint,
+    cloudservers = _cs_client.Client(identity.username, identity.password,
+            project_id=identity.tenant_id, auth_url=identity.auth_endpoint,
             auth_system="rackspace", region_name=region, service_type="compute",
             auth_plugin=auth_plugin,
             http_log_debug=_http_debug)
@@ -398,7 +424,7 @@ def connect_to_cloudfiles(region=None, public=True):
             "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
     cloudfiles = _cf.CFClient(identity.auth_endpoint, identity.username,
-            identity.api_key, tenant_name=identity.tenant_name,
+            identity.password, tenant_name=identity.tenant_name,
             preauthurl=cf_url, preauthtoken=identity.token, auth_version="2",
             os_options=opts, http_log_debug=_http_debug)
     cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)
@@ -488,15 +514,12 @@ def set_http_debug(val):
                 swift_logger.removeHandler(handler)
 
 
+def get_encoding():
+    """Returns the unicode encoding type."""
+    return _get_setting("encoding") or default_encoding
+
+
 # Read in the configuration file, if any
 config_file = os.path.expanduser("~/.pyrax.cfg")
 if os.path.exists(config_file):
     _read_config_settings(config_file)
-
-if identity_class is None:
-    if default_identity_type == "rackspace":
-        # Default to the rax_identity class.
-        identity_class = _rax_identity.Identity
-
-# Create an instance of the identity_class
-create_identity()

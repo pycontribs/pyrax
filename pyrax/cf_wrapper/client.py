@@ -84,28 +84,31 @@ class CFClient(object):
     folder_upload_status = {}
 
 
-    def __init__(self, auth_endpoint, username, api_key, tenant_name,
-            preauthurl=None, preauthtoken=None, auth_version="2",
-            os_options=None, http_log_debug=False):
+    def __init__(self, auth_endpoint, username, api_key=None, password=None,
+            tenant_name=None, preauthurl=None, preauthtoken=None,
+            auth_version="2", os_options=None, http_log_debug=False):
         self.connection = None
+        self.cdn_connection = None
         self.http_log_debug = http_log_debug
         self._http_log = _swift_client.http_log
         os.environ["SWIFTCLIENT_DEBUG"] = "True" if http_log_debug else ""
-        self._make_connections(auth_endpoint, username, api_key,
-                tenant_name, preauthurl=preauthurl,
+        self._make_connections(auth_endpoint, username, api_key, password,
+                tenant_name=tenant_name, preauthurl=preauthurl,
                 preauthtoken=preauthtoken, auth_version=auth_version,
                 os_options=os_options, http_log_debug=http_log_debug)
 
 
-    def _make_connections(self, auth_endpoint, username, api_key, tenant_name,
-            preauthurl=None, preauthtoken=None, auth_version="2", os_options=None,
-            http_log_debug=None):
+    def _make_connections(self, auth_endpoint, username, api_key, password,
+            tenant_name=None, preauthurl=None, preauthtoken=None,
+            auth_version="2", os_options=None, http_log_debug=None):
         cdn_url = os_options.pop("object_cdn_url", None)
-        self.connection = Connection(auth_endpoint, username, api_key, tenant_name,
+        pw_key = api_key or password
+        self.connection = Connection(auth_endpoint, username, pw_key, tenant_name,
                 preauthurl=preauthurl, preauthtoken=preauthtoken,
                 auth_version=auth_version, os_options=os_options,
                 http_log_debug=http_log_debug)
-        self.connection._make_cdn_connection(cdn_url)
+        if cdn_url:
+            self.connection._make_cdn_connection(cdn_url)
 
 
     def _massage_metakeys(self, dct, prfx):
@@ -208,9 +211,9 @@ class CFClient(object):
         base_url = conn_url[:v1pos]
         path_parts = (conn_url[v1pos:], cname, oname)
         cleaned = (part.strip("/\\") for part in path_parts)
-        pth = "/".join(cleaned)
+        pth = "/%s" % "/".join(cleaned)
         if isinstance(pth, unicode):
-            pth = pth.encode(pyrax.encoding)
+            pth = pth.encode(pyrax.get_encoding())
         expires = int(time.time() + int(seconds))
         hmac_body = "%s\n%s\n%s" % (mod_method, expires, pth)
         try:
@@ -419,7 +422,7 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
-            etag=None):
+            etag=None, headers=None):
         """
         Creates a new object in the specified container, and populates it with
         the given data.
@@ -434,7 +437,8 @@ class CFClient(object):
                     tmpfile.write(udata)
             with open(tmp, "rb") as tmpfile:
                 self.connection.put_object(cont.name, obj_name,
-                        contents=tmpfile, content_type=content_type, etag=etag)
+                        contents=tmpfile, content_type=content_type, etag=etag,
+                        headers=headers)
         return self.get_object(container, obj_name)
 
 
@@ -491,7 +495,7 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def upload_file(self, container, file_or_path, obj_name=None,
-            content_type=None, etag=None, return_none=False):
+            content_type=None, etag=None, return_none=False, headers=None):
         """
         Uploads the specified file to the container. If no name is supplied, the
         file's name will be used. Either a file path or an open file-like object
@@ -508,7 +512,7 @@ class CFClient(object):
             fileobj.seek(currpos)
             return total_size
 
-        def upload(fileobj, content_type, etag):
+        def upload(fileobj, content_type, etag, headers):
             if isinstance(fileobj, basestring):
                 # This is an empty directory file
                 fsize = 0
@@ -518,7 +522,7 @@ class CFClient(object):
                 # We can just upload it as-is.
                 return self.connection.put_object(cont.name, obj_name,
                         contents=fileobj, content_type=content_type,
-                        etag=etag)
+                        etag=etag, headers=headers)
             # Files larger than self.max_file_size must be segmented
             # and uploaded separately.
             num_segments = int(math.ceil(float(fsize) / self.max_file_size))
@@ -536,11 +540,12 @@ class CFClient(object):
                         etag = utils.get_checksum(tmp)
                         self.connection.put_object(cont.name, seg_name,
                                 contents=tmp, content_type=content_type,
-                                etag=etag)
+                                etag=etag, headers=headers)
             # Upload the manifest
-            hdr = {"X-Object-Meta-Manifest": "%s." % fname}
+            headers = headers or {}
+            headers["X-Object-Meta-Manifest"] = "%s." % fname
             return self.connection.put_object(cont.name, fname,
-                    contents=None, headers=hdr)
+                    contents=None, headers=headers)
 
         ispath = isinstance(file_or_path, basestring)
         if ispath:
@@ -557,9 +562,9 @@ class CFClient(object):
         if ispath and os.path.isfile(file_or_path):
             # Need to wrap the call in a context manager
             with open(file_or_path, "rb") as ff:
-                upload(ff, content_type, etag)
+                upload(ff, content_type, etag, headers)
         else:
-            upload(file_or_path, content_type, etag)
+            upload(file_or_path, content_type, etag, headers)
         if return_none:
             return None
         else:

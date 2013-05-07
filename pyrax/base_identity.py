@@ -6,10 +6,12 @@ import datetime
 import json
 import os
 import re
-import urllib2
+import requests
 import urlparse
 
+import pyrax
 import pyrax.exceptions as exc
+
 
 _pat = r"""
         (\d{4})-(\d{2})-(\d{2})     # YYYY-MM-DD
@@ -22,7 +24,7 @@ _utc_pat = r"""
         (\d{4})-(\d{2})-(\d{2})     # YYYY-MM-DD
         T                           # Separator
         (\d{2}):(\d{2}):(\d{2})     # HH:MM:SS
-        \.\d+                       # Decimal and fractional seconds
+        \.?\d*                      # Decimal and fractional seconds
         Z                           # UTC indicator
         """
 API_DATE_PATTERN = re.compile(_pat, re.VERBOSE)
@@ -30,45 +32,56 @@ UTC_API_DATE_PATTERN = re.compile(_utc_pat, re.VERBOSE)
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-
-class Identity(object):
+class BaseAuth(object):
     """
-    This class handles all of the authentication requirements for working
-    with the Rackspace Cloud.
+    This class handles all of the basic authentication requirements for working
+    with an OpenStack Cloud system.
     """
-    us_auth_endpoint = "https://identity.api.rackspacecloud.com/v2.0/"
-    uk_auth_endpoint = "https://lon.identity.api.rackspacecloud.com/v2.0/"
     username = ""
-    api_key = ""
+    password = ""
     token = ""
     expires = ""
     tenant_id = ""
     tenant_name = ""
     authenticated = False
     services = {}
+    http_log_debug = False
+    user_agent = "pyrax"
 
 
-    def __init__(self, username=None, api_key=None, token=None,
-            credential_file=None, region=None):
+    def __init__(self, username=None, password=None, token=None,
+            credential_file=None, region=None, timeout=None):
         self.username = username
-        self.api_key = api_key
+        self.password = password
         self.token = token
         self._creds_file = credential_file
         self._region = region
 
 
     @property
+    def auth_token(self):
+        """Simple alias to self.token."""
+        return self.token
+
+
+    @property
     def auth_endpoint(self):
-        if self._region and self._region.upper() in ("LON", ):
-            return self.uk_auth_endpoint
-        return self.us_auth_endpoint
+        """Abstracts out the logic for connecting to different auth endpoints."""
+        return self._get_auth_endpoint()
 
 
-    def set_credentials(self, username, api_key, region=None,
-            authenticate=False):
-        """Sets the username and api_key directly."""
+    def _get_auth_endpoint(self):
+        """Each subclass will have to implement its own method."""
+        raise NotImplementedError("The _get_auth_endpoint() method must be "
+                "defined in Auth subclasses.")
+
+
+    def set_credentials(self, username, password=None, region=None,
+            tenant_id=None, authenticate=False):
+        """Sets the username and password directly."""
         self.username = username
-        self.api_key = api_key
+        self.password = password
+        self.tenant_id = tenant_id
         if region:
             self._region = region
         if authenticate:
@@ -76,14 +89,15 @@ class Identity(object):
 
 
     def set_credential_file(self, credential_file, region=None,
-            authenticate=False):
+            tenant_id=tenant_id, authenticate=False):
         """
         Reads in the credentials from the supplied file. It should be
         a standard config file in the format:
 
-        [rackspace_cloud]
+        [keystone]
         username = myusername
-        api_key = 1234567890abcdef
+        password = top_secret
+        tenant_id = my_id
 
         """
         self._creds_file = credential_file
@@ -98,8 +112,7 @@ class Identity(object):
             # The file exists, but doesn't have the correct format.
             raise exc.InvalidCredentialFile(e)
         try:
-            self.username = cfg.get("rackspace_cloud", "username")
-            self.api_key = cfg.get("rackspace_cloud", "api_key")
+            self._read_credential_file(cfg)
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as e:
             raise exc.InvalidCredentialFile(e)
         if region:
@@ -108,14 +121,72 @@ class Identity(object):
             self.authenticate()
 
 
+    def _read_credential_file(self, cfg):
+        """Implements the default (keystone) behavior."""
+        self.username = cfg.get("keystone", "username")
+        self.password = cfg.get("keystone", "password")
+        self.tenant_id = cfg.get("keystone", "tenant_id")
+
+
     def _get_credentials(self):
         """
         Returns the current credentials in the format expected by
         the authentication service.
         """
-        return {"auth": {"RAX-KSKEY:apiKeyCredentials":
-                {"username": "%s" % self.username,
-                "apiKey": "%s" % self.api_key}}}
+        tenant_name = self.tenant_name or self.username
+        tenant_id = self.tenant_id or self.username
+        return {"auth": {"passwordCredentials":
+                {"username": self.username,
+                "password": self.password,
+                },
+                "tenantId": tenant_id}}
+
+
+    # The following method_* methods wrap the _call() method.
+    def method_get(self, uri, data=None, headers=None, std_headers=True):
+        return self._call(requests.get, uri, data, headers, std_headers)
+
+    def method_head(self, uri, data=None, headers=None, std_headers=True):
+        return self._call(requests.head, uri, data, headers, std_headers)
+
+    def method_post(self, uri, data=None, headers=None, std_headers=True):
+        return self._call(requests.post, uri, data, headers, std_headers)
+
+    def method_put(self, uri, data=None, headers=None, std_headers=True):
+        return self._call(requests.put, uri, data, headers, std_headers)
+
+    def method_delete(self, uri, data=None, headers=None, std_headers=True):
+        return self._call(requests.delete, uri, data, headers, std_headers)
+
+
+    def _call(self, mthd, uri, data, headers, std_headers):
+        """
+        Handles all the common functionality required for API calls. Returns
+        the resulting response object.
+        """
+        if not uri.startswith("http"):
+            uri = urlparse.urljoin(self.auth_endpoint, uri)
+        if std_headers:
+            hdrs = self._standard_headers()
+        else:
+            hdrs = {}
+        if headers:
+            hdrs.update(headers)
+        jdata = json.dumps(data) if data else None
+        if self.http_log_debug:
+            print "REQ:", uri
+            print "HDRS:", hdrs
+            if data:
+                print "DATA", jdata
+        return mthd(uri, data=jdata, headers=hdrs)
+
+
+    def tenants(self):
+        ret = self.method_get("tenants")
+
+        import pyrax.utils as utils
+        utils.trace()
+        print ret
 
 
     def authenticate(self):
@@ -124,24 +195,23 @@ class Identity(object):
         authentication endpoint and attempts to log in. If successful,
         records the token information.
         """
-        self.authenticated = False
         creds = self._get_credentials()
-        url = urlparse.urljoin(self.auth_endpoint, "tokens")
-        auth_req = urllib2.Request(url, data=json.dumps(creds))
-        auth_req.add_header("Content-Type", "application/json")
-        # TODO: dabo: add better error reporting
-        try:
-            raw_resp = urllib2.urlopen(auth_req)
-        except urllib2.HTTPError as e:
-            errcode = e.getcode()
-            if errcode == 401:
-                # Invalid authorization
-                raise exc.AuthenticationFailed("Incorrect/unauthorized "
-                        "credentials received")
-            else:
-                raise exc.AuthenticationFailed("Authentication Error: %s" % e)
-        resp = json.loads(raw_resp.read())
-        self._parse_response(resp)
+        headers = {"Content-Type": "application/json",
+                "Accept": "application/json",
+                }
+        resp = self.method_post("tokens", data=creds, headers=headers,
+                std_headers=False)
+
+        if resp.status_code == 401:
+            # Invalid authorization
+            raise exc.AuthenticationFailed("Incorrect/unauthorized "
+                    "credentials received")
+        elif resp.status_code > 299:
+            msg_dict = resp.json()
+            msg = msg_dict[msg_dict.keys()[0]]["message"]
+            raise exc.AuthenticationFailed("%s - %s." % (resp.reason, msg))
+        resp_body = resp.json()
+        self._parse_response(resp_body)
         self.authenticated = True
 
 
@@ -151,8 +221,6 @@ class Identity(object):
         token = access.get("token")
         self.token = token["id"]
         self.expires = self._parse_api_time(token["expires"])
-        self.tenant_id = token["tenant"]["id"]
-        self.tenant_name = token["tenant"]["name"]
         svc_cat = access.get("serviceCatalog")
         self.services = {}
         for svc in svc_cat:
@@ -176,7 +244,6 @@ class Identity(object):
 
         user = access["user"]
         self.user = {}
-        self.user["default_region"] = user["RAX-AUTH:defaultRegion"]
         self.user["id"] = user["id"]
         self.user["name"] = user["name"]
         self.user["roles"] = user["roles"]
@@ -190,6 +257,16 @@ class Identity(object):
         self.authenticated = False
         self.services = {}
 
+
+    def _standard_headers(self):
+        """
+        Returns a dict containing the standard headers for API calls.
+        """
+        return {"Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-Auth-Token": self.token,
+                "X-Auth-Project-Id": self.tenant_id,
+                }
 
     def get_token(self, force=False):
         """Returns the auth token, if it is valid. If not, calls the auth endpoint

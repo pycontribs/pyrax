@@ -68,6 +68,9 @@ class DomainRecordUpdateFailed(PyraxException):
 class DomainUpdateFailed(PyraxException):
     pass
 
+class EndpointNotDefined(PyraxException):
+    pass
+
 class EndpointNotFound(PyraxException):
     pass
 
@@ -132,6 +135,9 @@ class InvalidVirtualIPVersion(PyraxException):
     pass
 
 class InvalidVolumeResize(PyraxException):
+    pass
+
+class MissingAuthSettings(PyraxException):
     pass
 
 class MissingDNSSettings(PyraxException):
@@ -218,13 +224,13 @@ class UnattachedNode(PyraxException):
 class UnattachedVirtualIP(PyraxException):
     pass
 
-class Unauthorized(PyraxException):
-    pass
-
 class UnicodePathError(PyraxException):
     pass
 
 class UploadFailed(PyraxException):
+    pass
+
+class UserNotFound(PyraxException):
     pass
 
 class VolumeAttachmentFailed(PyraxException):
