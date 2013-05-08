@@ -1,8 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+try:
+    import eventlet
+    eventlet.patcher.monkey_patch(all=False, socket=True, time=True,
+            thread=True)
+except ImportError:
+    pass
+
 import os
 import sys
+import time
 import unittest
 
 import pyrax
@@ -27,7 +35,7 @@ class SmokeTester(object):
                 {"service": self.cbs, "name": "Cloud Block Storage"},
                 {"service": self.cdb, "name": "Cloud Databases"},
                 {"service": self.clb, "name": "Cloud Load Balancers"},
-                {"service": self.dns, "name": "Cloud self.dns"},
+                {"service": self.dns, "name": "Cloud DNS"},
                 {"service": self.cnw, "name": "Cloud Networks"},
                 )
 
@@ -271,6 +279,7 @@ class SmokeTester(object):
 
 
 if __name__ == "__main__":
+    start = time.time()
     for dc in DCs:
         print
         print "=" * 77
@@ -306,3 +315,7 @@ if __name__ == "__main__":
             print " -", failure
     else:
         print "All tests passed!"
+    end = time.time()
+    print
+    print "Running the smoketests took %6.1f seconds." % (end - start)
+    print

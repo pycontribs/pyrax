@@ -29,7 +29,7 @@ class PyraxInitTest(unittest.TestCase):
         self.password = "fakeapikey"
 
     def setUp(self):
-        pyrax.settings = {"default": {"auth_endpoint": None,
+        pyrax.settings._settings = {"default": {"auth_endpoint": None,
                 "default_region": "DFW",
                 "encoding": "utf-8",
                 "http_debug": False,
@@ -73,9 +73,9 @@ class PyraxInitTest(unittest.TestCase):
         sav_USER_AGENT = pyrax.USER_AGENT
         with utils.SelfDeletingTempfile() as cfgfile:
             open(cfgfile, "w").write(dummy_cfg)
-            pyrax._read_config_settings(cfgfile)
-        self.assertEqual(pyrax._get_setting("default_region"), "FAKE")
-        self.assertTrue(pyrax._get_setting("user_agent").startswith("FAKE "))
+            pyrax.settings.read_config(cfgfile)
+        self.assertEqual(pyrax.get_setting("default_region"), "FAKE")
+        self.assertTrue(pyrax.get_setting("user_agent").startswith("FAKE "))
         pyrax.default_region = sav_region
         pyrax.USER_AGENT = sav_USER_AGENT
 
@@ -87,13 +87,13 @@ class PyraxInitTest(unittest.TestCase):
         sav_USER_AGENT = pyrax.USER_AGENT
         with utils.SelfDeletingTempfile() as cfgfile:
             open(cfgfile, "w").write(dummy_cfg)
-            pyrax._read_config_settings(cfgfile)
+            pyrax.settings.read_config(cfgfile)
         self.assertEqual(pyrax.USER_AGENT, sav_USER_AGENT)
         # Test bad file
         with utils.SelfDeletingTempfile() as cfgfile:
             open(cfgfile, "w").write("FAKE")
             self.assertRaises(exc.InvalidConfigurationFile,
-                    pyrax._read_config_settings, cfgfile)
+                    pyrax.settings.read_config, cfgfile)
         pyrax.default_region = sav_region
         pyrax.USER_AGENT = sav_USER_AGENT
 
@@ -135,7 +135,9 @@ class PyraxInitTest(unittest.TestCase):
 
     def test_keyring_auth_no_username(self):
         pyrax.keyring = object()
-        pyrax.settings[pyrax.environment]["keyring_username"] = ""
+        set_obj = pyrax.settings
+        env = set_obj.environment
+        set_obj._settings[env]["keyring_username"] = ""
         self.assertRaises(exc.KeyringUsernameMissing, pyrax.keyring_auth)
 
     def test_keyring_auth(self):
@@ -219,6 +221,15 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.cloudservers.http_log_debug = False
         pyrax.set_http_debug(True)
         self.assertTrue(pyrax.cloudservers.http_log_debug)
+        pyrax.set_http_debug(False)
+        self.assertFalse(pyrax.cloudservers.http_log_debug)
+
+    def test_get_encoding(self):
+        sav = pyrax.get_setting
+        pyrax.get_setting = Mock(return_value=None)
+        enc = pyrax.get_encoding()
+        self.assertEqual(enc, pyrax.default_encoding)
+        pyrax.get_setting = sav
 
     def test_import_fail(self):
         import __builtin__

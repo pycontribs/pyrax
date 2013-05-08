@@ -2,13 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from pyrax.base_identity import BaseAuth
+from pyrax.base_identity import User
 import pyrax.exceptions as exc
-from pyrax.resource import BaseResource
 import pyrax.utils as utils
-
-
-class User(BaseResource):
-    pass
 
 
 class RaxIdentity(BaseAuth):
@@ -62,26 +58,6 @@ class RaxIdentity(BaseAuth):
         user = resp["access"]["user"]
         self.user["default_region"] = user["RAX-AUTH:defaultRegion"]
 
-    def list_users(self):
-        """
-        Returns a list of objects for all users for the tenant (account) if
-        this request is issued by a user holding the admin role
-        (identity:user-admin).
-
-        If this request is issued by a user holding the user role
-        (identity:default), it returns a list containing only the single User
-        object for the user who issued the request.
-        """
-        resp = self.method_get("users")
-        users = resp.json()
-        # The API is inconsistent; if only one user exists, it will not return
-        # a list.
-        if "users" in users:
-            users = users["users"]
-        else:
-            users = [users]
-        return [User(self, user) for user in users]
-
 
     def find_user_by_name(self, name):
         """
@@ -111,31 +87,6 @@ class RaxIdentity(BaseAuth):
         return User(self, user_info)
 
 
-    def create_user(self, name, email, password=None, enabled=True):
-        """
-        Creates a new user for this tenant (account). The username and email
-        address must be supplied. You may optionally supply the password for
-        this user; if not, the API server will generate a password and return
-        it in the 'password' attribute of the resulting User object. NOTE:
-        this is the ONLY time the password will be returned; after the initial
-        user creation, there is NO WAY to retrieve the user's password.
-
-        You may also specify that the user should be created but not active by
-        passing False to the enabled parameter.
-        """
-        data = {"user": {
-                "username": name,
-                "email": email,
-                "OS-KSADM:password": password,
-                "enabled": enabled,
-                }}
-        resp = self.method_post("users", data=data)
-        return User(self, resp.json())
-
-
-# Can we really update the ID? Docs seem to say we can
-# Can we specify default region when creating user? Just RAX only? Or not at all
-
     def update_user(self, user, email=None, username=None,
             uid=None, defaultRegion=None, enabled=None):
         user_id = utils.get_id(user)
@@ -152,19 +103,6 @@ class RaxIdentity(BaseAuth):
         data = {"user": upd}
         resp = self.method_put(uri, data=data)
         return User(self, resp.json())
-
-
-    def delete_user(self, user):
-        """
-        Removes the user from the system. There is no 'undo' available, so
-        you should be certain that the user specified is the user you wish
-        to delete.
-        """
-        user_id = utils.get_id(user)
-        uri = "users/%s" % user_id
-        resp = self.method_delete(uri)
-        if resp.status_code == 404:
-            raise exc.UserNotFound("User '%s' does not exist." % user)
 
 
     def list_credentials(self, user):

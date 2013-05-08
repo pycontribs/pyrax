@@ -14,7 +14,7 @@ class KeystoneIdentity(BaseAuth):
     than the config file to control your auth endpoint.
     """
     def _get_auth_endpoint(self):
-        ep = pyrax._get_setting("auth_endpoint")
+        ep = pyrax.get_setting("auth_endpoint")
         if ep is None:
             raise exc.EndpointNotDefined("No auth enpoint has been specified.")
         return ep

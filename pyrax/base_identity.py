@@ -11,6 +11,8 @@ import urlparse
 
 import pyrax
 import pyrax.exceptions as exc
+from pyrax.resource import BaseResource
+import pyrax.utils as utils
 
 
 _pat = r"""
@@ -30,6 +32,14 @@ _utc_pat = r"""
 API_DATE_PATTERN = re.compile(_pat, re.VERBOSE)
 UTC_API_DATE_PATTERN = re.compile(_utc_pat, re.VERBOSE)
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+
+class Tenant(BaseResource):
+    pass
+
+
+class User(BaseResource):
+    pass
 
 
 class BaseAuth(object):
@@ -122,7 +132,9 @@ class BaseAuth(object):
 
 
     def _read_credential_file(self, cfg):
-        """Implements the default (keystone) behavior."""
+        """
+        Implements the default (keystone) behavior.
+        """
         self.username = cfg.get("keystone", "username")
         self.password = cfg.get("keystone", "password")
         self.tenant_id = cfg.get("keystone", "tenant_id")
@@ -143,29 +155,38 @@ class BaseAuth(object):
 
 
     # The following method_* methods wrap the _call() method.
-    def method_get(self, uri, data=None, headers=None, std_headers=True):
-        return self._call(requests.get, uri, data, headers, std_headers)
+    def method_get(self, uri, admin=False, data=None, headers=None,
+            std_headers=True):
+        return self._call(requests.get, uri, admin, data, headers, std_headers)
 
-    def method_head(self, uri, data=None, headers=None, std_headers=True):
-        return self._call(requests.head, uri, data, headers, std_headers)
+    def method_head(self, uri, admin=False, data=None, headers=None,
+            std_headers=True):
+        return self._call(requests.head, uri, admin, data, headers, std_headers)
 
-    def method_post(self, uri, data=None, headers=None, std_headers=True):
-        return self._call(requests.post, uri, data, headers, std_headers)
+    def method_post(self, uri, admin=False, data=None, headers=None,
+            std_headers=True):
+        return self._call(requests.post, uri, admin, data, headers, std_headers)
 
-    def method_put(self, uri, data=None, headers=None, std_headers=True):
-        return self._call(requests.put, uri, data, headers, std_headers)
+    def method_put(self, uri, admin=False, data=None, headers=None,
+            std_headers=True):
+        return self._call(requests.put, uri, admin, data, headers, std_headers)
 
-    def method_delete(self, uri, data=None, headers=None, std_headers=True):
-        return self._call(requests.delete, uri, data, headers, std_headers)
+    def method_delete(self, uri, admin=False, data=None, headers=None,
+            std_headers=True):
+        return self._call(requests.delete, uri, admin, data, headers,
+                std_headers)
 
 
-    def _call(self, mthd, uri, data, headers, std_headers):
+    def _call(self, mthd, uri, admin, data, headers, std_headers):
         """
         Handles all the common functionality required for API calls. Returns
         the resulting response object.
         """
         if not uri.startswith("http"):
             uri = urlparse.urljoin(self.auth_endpoint, uri)
+        if admin:
+            # Admin calls use a different port
+            uri = re.sub(r":\d+/", ":35357/", uri)
         if std_headers:
             hdrs = self._standard_headers()
         else:
@@ -174,19 +195,12 @@ class BaseAuth(object):
             hdrs.update(headers)
         jdata = json.dumps(data) if data else None
         if self.http_log_debug:
-            print "REQ:", uri
+            print "REQ:", mthd.func_name.upper(), uri
             print "HDRS:", hdrs
             if data:
                 print "DATA", jdata
+            print
         return mthd(uri, data=jdata, headers=hdrs)
-
-
-    def tenants(self):
-        ret = self.method_get("tenants")
-
-        import pyrax.utils as utils
-        utils.trace()
-        print ret
 
 
     def authenticate(self):
@@ -241,7 +255,6 @@ class BaseAuth(object):
                     svc_ep[rgn]["internal_url"] = ep["internalURL"]
                 except KeyError:
                     pass
-
         user = access["user"]
         self.user = {}
         self.user["id"] = user["id"]
@@ -268,6 +281,15 @@ class BaseAuth(object):
                 "X-Auth-Project-Id": self.tenant_id,
                 }
 
+
+    def get_extensions(self):
+        """
+        Returns a list of extensions enabled on this service.
+        """
+        resp = self.method_get("extensions")
+        return resp.json().get("extensions", {}).get("values")
+
+
     def get_token(self, force=False):
         """Returns the auth token, if it is valid. If not, calls the auth endpoint
         to get a new token. Passing 'True' to 'force' will force a call for a new
@@ -280,7 +302,240 @@ class BaseAuth(object):
 
 
     def _has_valid_token(self):
+        """
+        This only checks the token's existence and expiration. If it has been
+        invalidated on the server, this method may indicate that the token is
+        valid when it might actually not be.
+        """
         return bool(self.token and (self.expires > datetime.datetime.now()))
+
+
+    def list_tokens(self):
+        """
+        ADMIN ONLY. Returns a dict containing tokens, endpoints, user info, and
+        role metadata.
+        """
+        resp = self.method_get("tokens/%s" % self.token, admin=True)
+        if resp.status_code in (401, 403):
+            raise exc.AuthorizationFailure("You must be an admin to make this "
+                    "call.")
+        token_dct = resp.json()
+        return token_dct.get("access")
+
+
+    def check_token(self, token=None):
+        """
+        ADMIN ONLY. Returns True or False, depending on whether the current
+        token is valid.
+        """
+        if token is None:
+            token = self.token
+        resp = self.method_head("tokens/%s" % token, admin=True)
+        if resp.status_code in (401, 403):
+            raise exc.AuthorizationFailure("You must be an admin to make this "
+                    "call.")
+        return 200 <= resp.status_code < 300
+
+
+    def get_token_endpoints(self):
+        """
+        ADMIN ONLY. Returns a list of all endpoints for the current auth token.
+        """
+        resp = self.method_get("tokens/%s/endpoints" % self.token, admin=True)
+        if resp.status_code in (401, 403, 404):
+            raise exc.AuthorizationFailure("You are not authorized to list "
+                    "token endpoints.")
+        token_dct = resp.json()
+        return token_dct.get("access", {}).get("endpoints")
+
+
+    def list_users(self):
+        """
+        ADMIN ONLY. Returns a list of objects for all users for the tenant
+        (account) if this request is issued by a user holding the admin role
+        (identity:user-admin).
+        """
+        resp = self.method_get("users", admin=True)
+        if resp.status_code in (401, 403, 404):
+            raise exc.AuthorizationFailure("You are not authorized to list "
+                    "users.")
+        users = resp.json()
+        # The API is inconsistent; if only one user exists, it will not return
+        # a list.
+        if "users" in users:
+            users = users["users"]
+        else:
+            users = [users]
+        # The returned values may contain password data. Strip that out.
+        for user in users:
+            bad_keys = [key for key in user.keys()
+                    if "password" in key.lower()]
+            for bad_key in bad_keys:
+                user.pop(bad_key)
+        return [User(self, user) for user in users]
+
+
+    def create_user(self, name, email, password=None, enabled=True):
+        """
+        ADMIN ONLY. Creates a new user for this tenant (account). The username
+        and email address must be supplied. You may optionally supply the
+        password for this user; if not, the API server will generate a password
+        and return it in the 'password' attribute of the resulting User object.
+        NOTE: this is the ONLY time the password will be returned; after the
+        initial user creation, there is NO WAY to retrieve the user's password.
+
+        You may also specify that the user should be created but not active by
+        passing False to the enabled parameter.
+        """
+        # NOTE: the OpenStack docs say that the name key in the following dict
+        # is supposed to be 'username', but the service actually expects 'name'.
+        data = {"user": {
+                "name": name,
+                "email": email,
+                "enabled": enabled,
+                }}
+        if password:
+            data["user"]["OS-KSADM:password"] = password
+        resp = self.method_post("users", data=data, admin=True)
+        if resp.status_code == 201:
+            jresp = resp.json()
+            return User(self, jresp)
+        elif resp.status_code in (401, 403, 404):
+            raise exc.AuthorizationFailure("You are not authorized to create "
+                    "users.")
+        elif resp.status_code == 409:
+            raise exc.DuplicateUser("User '%s' already exists." % name)
+
+
+    # Can we really update the ID? Docs seem to say we can
+    def update_user(self, user, email=None, username=None,
+            uid=None, enabled=None):
+        """
+        ADMIN ONLY. Updates the user attributes with the supplied values.
+        """
+        user_id = utils.get_id(user)
+        uri = "users/%s" % user_id
+        upd = {"id": user_id}
+        if email is not None:
+            upd["email"] = email
+        if username is not None:
+            upd["username"] = username
+        if enabled is not None:
+            upd["enabled"] = enabled
+        data = {"user": upd}
+        resp = self.method_put(uri, data=data)
+        if resp.status_code in (401, 403, 404):
+            raise exc.AuthorizationFailure("You are not authorized to update "
+                    "users.")
+        return User(self, resp.json())
+
+
+    def delete_user(self, user):
+        """
+        ADMIN ONLY. Removes the user from the system. There is no 'undo'
+        available, so you should be certain that the user specified is the user
+        you wish to delete.
+        """
+        user_id = utils.get_id(user)
+        uri = "users/%s" % user_id
+        resp = self.method_delete(uri)
+        if resp.status_code == 404:
+            raise exc.UserNotFound("User '%s' does not exist." % user)
+        elif resp.status_code in (401, 403):
+            raise exc.AuthorizationFailure("You are not authorized to delete "
+                    "users.")
+
+
+    def list_roles_for_user(self, user):
+        """
+        ADMIN ONLY. Returns a list of roles for the specified user. Each role
+        will be a 3-tuple, consisting of (role_id, role_name,
+        role_description).
+        """
+        user_id = utils.get_id(user)
+        uri = "users/%s/roles" % user_id
+        resp = self.method_get(uri)
+        if resp.status_code in (401, 403):
+            raise exc.AuthorizationFailure("You are not authorized to list "
+                    "user roles.")
+        roles = resp.json().get("roles")
+        return roles
+
+
+    def get_tenant(self):
+        """
+        Returns the tenant for the current user.
+        """
+        tenants = self._list_tenants(admin=False)
+        if tenants:
+            return tenants[0]
+        return None
+
+
+    def list_tenants(self):
+        """
+        ADMIN ONLY. Returns a list of all tenants.
+        """
+        return self._list_tenants(admin=True)
+
+
+    def _list_tenants(self, admin):
+        """
+        Returns either a list of all tenants (admin=True), or the tenant for
+        the currently-authenticated user (admin=False).
+        """
+        resp = self.method_get("tenants", admin=admin)
+        if 200 <= resp.status_code < 300:
+            tenants = resp.json().get("tenants", [])
+            return [Tenant(self, tenant) for tenant in tenants]
+        elif resp.status_code in (401, 403):
+            raise exc.AuthorizationFailure("You are not authorized to list "
+                    "tenants.")
+        else:
+            raise exc.TenantNotFound("Could not get a list of tenants.")
+
+
+    def create_tenant(self, name, description=None, enabled=True):
+        """
+        ADMIN ONLY. Creates a new tenant.
+        """
+        data = {"tenant": {
+                "name": name,
+                "enabled": enabled,
+                }}
+        if description:
+            data["tenant"]["description"] = description
+        resp = self.method_post("tenants", data=data)
+        return Tenant(self, resp.json())
+
+
+    def update_tenant(self, tenant, name=None, description=None, enabled=True):
+        """
+        ADMIN ONLY. Updates an existing tenant.
+        """
+        tenant_id = utils.get_id(tenant)
+        data = {"tenant": {
+                "enabled": enabled,
+                }}
+        if name:
+            data["tenant"]["name"] = name
+        if description:
+            data["tenant"]["description"] = description
+        resp = self.method_put("tenants/%s" % tenant_id, data=data)
+        return Tenant(self, resp.json())
+
+
+    def delete_tenant(self, tenant):
+        """
+        ADMIN ONLY. Removes the tenant from the system. There is no 'undo'
+        available, so you should be certain that the tenant specified is the
+        tenant you wish to delete.
+        """
+        tenant_id = utils.get_id(tenant)
+        uri = "tenants/%s" % tenant_id
+        resp = self.method_delete(uri)
+        if resp.status_code == 404:
+            raise exc.TenantNotFound("Tenant '%s' does not exist." % tenant)
 
 
     @staticmethod

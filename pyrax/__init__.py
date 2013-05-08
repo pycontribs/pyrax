@@ -102,7 +102,7 @@ default_encoding = "utf-8"
 
 # Config settings
 settings = {}
-environment = "default"
+_environment = "default"
 identity = None
 
 # Value to plug into the user-agent headers
@@ -112,18 +112,119 @@ USER_AGENT = "pyrax/%s" % version.version
 _http_debug = False
 
 
-def _get_setting(key, env=None):
+class Settings(object):
     """
-    Returns the config setting for the specified environment. If no environment
-    is specified, the value for the current environment is returned. If an
-    unknown key or environment is passed, None is returned.
+    Holds and manages the settings for pyrax.
     """
-    if env is None:
-        env = environment
-    try:
-        return settings[env][key]
-    except KeyError:
-        return None
+    _environment = None
+    _settings = {}
+
+
+    def get(self, key, env=None):
+        """
+        Returns the config setting for the specified environment. If no
+        environment is specified, the value for the current environment is
+        returned. If an unknown key or environment is passed, None is returned.
+        """
+        if env is None:
+            env = self.environment
+        try:
+            return self._settings[env][key]
+        except KeyError:
+            return None
+
+
+    def _getEnvironment(self):
+        return self._environment or "default"
+
+    def _setEnvironment(self, val):
+        if val not in self._settings:
+            raise exc.EnvironmentNotFound("The environment '%s' has not been "
+                    "defined.")
+        self._environment = val
+        pyrax.authenticate()
+        if pyrax.identity.authenticated:
+            pyrax.connect_to_services()
+
+    environment = property(_getEnvironment, _setEnvironment, None,
+            """Users can define several environments for use with pyrax. This
+            holds the name of the current environment they are working in.
+            Changing this value will result in authenticating against the new
+            endpoint with the new creds, and will re-define the internal
+            services for pyrax, such as pyrax.cloudservers, etc.""")
+
+
+    @property
+    def environments(self):
+        return self._settings.keys()
+
+
+    def read_config(self, config_file):
+        """
+        Parses the specified configuration file and stores the values. Raises
+        an InvalidConfigurationFile exception if the file is not well-formed.
+        """
+        cfg = ConfigParser.SafeConfigParser()
+        try:
+            cfg.read(config_file)
+        except ConfigParser.MissingSectionHeaderError as e:
+            # The file exists, but doesn't have the correct format.
+            raise exc.InvalidConfigurationFile(e)
+
+        def safe_get(section, option, default=None):
+            try:
+                return cfg.get(section, option)
+            except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+                return default
+
+        def import_identity(import_str):
+            full_str = "pyrax.identity.%s" % import_str
+            return utils.import_class(full_str)
+
+        for section in cfg.sections():
+            if section == "settings":
+                section_name = "default"
+            else:
+                section_name = section
+            dct = self._settings[section_name] = {}
+            dct["default_region"] = safe_get(section, "region", default_region)
+            ityp = safe_get(section, "identity_type", default_identity_type)
+            if ityp == "rackspace":
+                # Previous identity type style
+                ityp = "rax_identity.RaxIdentity"
+            dct["identity_type"] = ityp
+            dct["identity_class"] = import_identity(ityp)
+            dct["http_debug"] = safe_get(section, "debug", "False") == "True"
+            dct["keyring_username"] = safe_get(section, "keyring_username")
+            dct["encoding"] = safe_get(section, "encoding", default_encoding)
+            dct["auth_endpoint"] = safe_get(section, "auth_endpoint")
+            dct["tenant_name"] = safe_get(section, "tenant_name")
+            dct["tenant_id"] = safe_get(section, "tenant_id")
+            app_agent = safe_get(section, "custom_user_agent")
+            if app_agent:
+                # Customize the user-agent string with the app name.
+                dct["user_agent"] = "%s %s" % (app_agent, USER_AGENT)
+            else:
+                dct["user_agent"] = USER_AGENT
+
+            # If this is the first section, make it the default
+            if not "default" in self._settings:
+                self._settings["default"] = self._settings[section]
+
+
+def get_environments():
+    """
+    Returns a list of all defined environments.
+    """
+    return settings.environments
+
+
+def get_setting(val, env=None):
+    """
+    Returns the config setting for the specified key. If no environment is
+    specified, returns the setting for the current environment.
+    """
+    return settings.get(val, env=env)
 
 
 def _assure_identity(fnc):
@@ -131,7 +232,8 @@ def _assure_identity(fnc):
     def _wrapped(*args, **kwargs):
         global identity
         if identity is None:
-            identity = settings[environment]["identity_class"]()
+            cls = settings.get("identity_class")
+            identity = cls()
         return fnc(*args, **kwargs)
     return _wrapped
 
@@ -151,57 +253,7 @@ def _require_auth(fnc):
 @_assure_identity
 def safe_region(region=None):
     """Value to use when no region is specified."""
-    return region or _get_setting("default_region") or default_region
-
-
-def _read_config_settings(config_file):
-    global settings
-    cfg = ConfigParser.SafeConfigParser()
-    try:
-        cfg.read(config_file)
-    except ConfigParser.MissingSectionHeaderError as e:
-        # The file exists, but doesn't have the correct format.
-        raise exc.InvalidConfigurationFile(e)
-
-    def safe_get(section, option, default=None):
-        try:
-            return cfg.get(section, option)
-        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
-            return default
-
-    def import_identity(import_str):
-        full_str = "pyrax.identity.%s" % import_str
-        return utils.import_class(full_str)
-
-    for section in cfg.sections():
-        if section == "settings":
-            section_name = "default"
-        else:
-            section_name = section
-        dct = settings[section_name] = {}
-        dct["default_region"] = safe_get(section, "region", default_region)
-        ityp = safe_get(section, "identity_type", default_identity_type)
-        if ityp == "rackspace":
-            # Previous identity type style
-            ityp = "rax_identity.RaxIdentity"
-        dct["identity_type"] = ityp
-        dct["identity_class"] = import_identity(ityp)
-        dct["http_debug"] = safe_get(section, "debug", "False") == "True"
-        dct["keyring_username"] = safe_get(section, "keyring_username")
-        dct["encoding"] = safe_get(section, "encoding", default_encoding)
-        dct["auth_endpoint"] = safe_get(section, "auth_endpoint")
-        dct["tenant_name"] = safe_get(section, "tenant_name")
-        dct["tenant_id"] = safe_get(section, "tenant_id")
-        app_agent = safe_get(section, "custom_user_agent")
-        if app_agent:
-            # Customize the user-agent string with the app name.
-            dct["user_agent"] = "%s %s" % (app_agent, USER_AGENT)
-        else:
-            dct["user_agent"] = USER_AGENT
-
-        # If this is the first section, make it the default
-        if not "default" in settings:
-            settings["default"] = settings[section]
+    return region or settings.get("default_region") or default_region
 
 
 @_assure_identity
@@ -213,19 +265,11 @@ def set_credentials(username, api_key=None, password=None, region=None,
     If the region is passed, it will authenticate against the proper endpoint
     for that region, and set the default region for connections.
     """
-    identity.authenticated = False
     pw_key = password or api_key
-    try:
-        identity.set_credentials(username=username, password=pw_key,
-                tenant_id=_get_setting("tenant_id"), region=region,
-                authenticate=authenticate)
-    except exc.AuthenticationFailed:
-        clear_credentials()
-        raise
-    if region:
-        default_region = region
-    if identity.authenticated:
-        connect_to_services(region=region)
+    identity.set_credentials(username=username, password=pw_key,
+            tenant_id=settings.get("tenant_id"), region=region)
+    if authenticate:
+        _auth_and_connect(region=region)
 
 
 @_assure_identity
@@ -249,18 +293,12 @@ def set_credential_file(cred_file, region=None, authenticate=True):
     If the region is passed, it will authenticate against the proper endpoint
     for that region, and set the default region for connections.
     """
-    identity.authenticated = False
-    try:
-        identity.set_credential_file(cred_file, region=region,
-                authenticate=authenticate)
-    except exc.AuthenticationFailed:
-        clear_credentials()
-        raise
-    if identity.authenticated:
-        connect_to_services(region=region)
+    identity.set_credential_file(cred_file, region=region)
+    if authenticate:
+        _auth_and_connect(region=region)
 
 
-def keyring_auth(username=None, region=None):
+def keyring_auth(username=None, region=None, authenticate=True):
     """
     Use the password stored within the keyring to authenticate. If a username
     is supplied, that name is used; otherwise, the keyring_username value
@@ -278,7 +316,7 @@ def keyring_auth(username=None, region=None):
         raise exc.KeyringModuleNotInstalled("The 'keyring' Python module is "
                 "not installed on this system.")
     if username is None:
-        username = _get_setting("keyring_username")
+        username = settings.get("keyring_username")
     if not username:
         raise exc.KeyringUsernameMissing("No username specified for keyring "
                 "authentication.")
@@ -286,11 +324,29 @@ def keyring_auth(username=None, region=None):
     if password is None:
         raise exc.KeyringPasswordNotFound("No password was found for the "
                 "username '%s'." % username)
-    set_credentials(username, password, region=region)
+    set_credentials(username, password, region=region,
+            authenticate=authenticate)
+
+
+def _auth_and_connect(region=None, connect=True):
+    """
+    Handles the call to authenticate, and if successful, connects to the
+    various services.
+    """
+    global default_region
+    identity.authenticated = False
+    default_region = region or default_region
+    try:
+        identity.authenticate()
+    except exc.AuthenticationFailed:
+        clear_credentials()
+        raise
+    if connect:
+        connect_to_services(region=region)
 
 
 @_assure_identity
-def authenticate():
+def authenticate(connect=True):
     """
     Generally you will not need to call this directly; passing in your
     credentials via set_credentials() and set_credential_file() will call
@@ -299,8 +355,12 @@ def authenticate():
     the authentication sequence, this method will call the identity object's
     authenticate() method, and an AuthenticationFailed exception will be raised
     if your credentials have not been properly set first.
+
+    Normally after successful authentication, connections to the various
+    services will be made. However, passing False to the `connect` parameter
+    will skip the service connection step.
     """
-    identity.authenticate()
+    _auth_and_connect(connect=connect)
 
 
 def clear_credentials():
@@ -498,10 +558,12 @@ def get_http_debug():
     return _http_debug
 
 
+@_assure_identity
 def set_http_debug(val):
     global _http_debug
     _http_debug = val
     # Set debug on the various services
+    identity.http_log_debug = val
     for svc in (cloudservers, cloudfiles, cloud_loadbalancers,
             cloud_blockstorage, cloud_databases, cloud_dns, cloud_networks):
         if svc is not None:
@@ -516,10 +578,11 @@ def set_http_debug(val):
 
 def get_encoding():
     """Returns the unicode encoding type."""
-    return _get_setting("encoding") or default_encoding
+    return settings.get("encoding") or default_encoding
 
 
 # Read in the configuration file, if any
+settings = Settings()
 config_file = os.path.expanduser("~/.pyrax.cfg")
 if os.path.exists(config_file):
-    _read_config_settings(config_file)
+    settings.read_config(config_file)

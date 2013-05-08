@@ -68,10 +68,16 @@ class DomainRecordUpdateFailed(PyraxException):
 class DomainUpdateFailed(PyraxException):
     pass
 
+class DuplicateUser(PyraxException):
+    pass
+
 class EndpointNotDefined(PyraxException):
     pass
 
 class EndpointNotFound(PyraxException):
+    pass
+
+class EnvironmentNotFound(PyraxException):
     pass
 
 class FlavorNotFound(PyraxException):
@@ -216,6 +222,9 @@ class PTRRecordUpdateFailed(PyraxException):
     pass
 
 class SnapshotNotAvailable(PyraxException):
+    pass
+
+class TenantNotFound(PyraxException):
     pass
 
 class UnattachedNode(PyraxException):

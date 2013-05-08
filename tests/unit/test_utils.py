@@ -27,6 +27,12 @@ class UtilsTest(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_runproc(self):
+        currdir = os.getcwd()
+        out, err = utils.runproc("pwd")
+        self.assertEqual(err, "")
+        self.assertEqual(out.strip(), currdir)
+
     def test_self_deleting_temp_file(self):
         with utils.SelfDeletingTempfile() as tmp:
             self.assert_(isinstance(tmp, basestring))
