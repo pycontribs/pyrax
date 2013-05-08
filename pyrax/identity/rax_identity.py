@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import ConfigParser
 
 from pyrax.base_identity import BaseAuth
 from pyrax.base_identity import User
@@ -35,7 +36,10 @@ class RaxIdentity(BaseAuth):
 
     def _read_credential_file(self, cfg):
         self.username = cfg.get("rackspace_cloud", "username")
-        self.password = cfg.get("rackspace_cloud", "api_key")
+        try:
+            self.password = cfg.get("rackspace_cloud", "api_key")
+        except ConfigParser.NoOptionError:
+            self.password = cfg.get("rackspace_cloud", "password")
 
 
     def _get_credentials(self):

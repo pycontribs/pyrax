@@ -10,7 +10,7 @@ Because the Rackspace Cloud is powered by OpenStack, most of pyrax will work wit
 
 
 ## Prerequisites
-You will need Python 2.7 or later to run pyrax. As of this writing pyrax has not been extensively tested with earlier versions of Python, nor has it been tested with Python 3.x, but such testing is planned for the near future. If you run pyrax with any of these versions and encounter a problem, please report it on [https://github.com/rackspace/pyrax/issues](https://github.com/rackspace/pyrax/issues).
+You will need Python 2.7 or later to run pyrax. As of this writing, pyrax has been tested with Python 2.6 and seems to work well. It has not been extensively tested with earlier versions of Python. There are plans to port it to run in both 2.x and 3.x, but that work has not yet been started. But no matter what version you run, if you encounter a problem with pyrax, please report it on [https://github.com/rackspace/pyrax/issues](https://github.com/rackspace/pyrax/issues).
 
 The documentation assumes that you are experienced with programming in Python, and have a basic understanding of cloud computing concepts. If you would like to brush up on cloud computing, you should visit the [Rackspace Knowledge Center](http://www.rackspace.com/knowledge_center/).
 
@@ -32,18 +32,34 @@ To upgrade your installation in the future, re-run the same command, but this ti
 
 
 ## Set up Authentication
-You will need to submit your Rackspace Cloud username and API key in order to authenticate. You can do this in any one of three ways: explicitly pass them to pyrax, create a file containing those credentials and pass that file path to pyrax, or add them to your operating system's keychain. The credential file is a standard configuration file, with the format:
+You will need to submit your username and password in order to authenticate. If you are using the Rackspace Public Cloud, that would be your account username and API key. If you are using another OpenStack cloud, you will also need to include your tenant ID, which you should be able to get from your provider.
+
+You can authenticate in any one of three ways:
+
+* explicitly pass your credentials to pyrax
+* create a file containing those credentials and pass that file path to pyrax
+* add them to your operating system's keychain
+
+The credential file is a standard configuration file, with the following format:
+
+    [keystone]
+    username = myusername
+    password = top_secret
+    tenant_id = 01234567890abcdef
+
+For the Rackspace Public Cloud, the credential file should look like this:
 
     [rackspace_cloud]
     username = myusername
     api_key = 01234567890abcdef
 
-To use the keychain method, you will need to add your API key to your operating system's keychain in the `pyrax` namespace. As of version 1.2.4, pyrax will install the Python module [`keyring`](http://pypi.python.org/pypi/keyring), which provides ready access to this feature. To configure your keychain credentials, run the following in Python:
+To use the keychain method, you will need to add your password or API key to your operating system's keychain in the `pyrax` namespace. Doing a `pip install pyrax` will install the Python module [`keyring`](http://pypi.python.org/pypi/keyring), which provides ready access to this feature. To configure your keychain credentials, run the following in Python:
 
-    pyrax.keyring.set_password("pyrax", "myusername",
-            "01234567890abcdef")
+    import keyring
+    keyring.set_password("pyrax", "myusername",
+            "my_password")
 
-To authenticate, run the following code using one of the following: `set_credentials()`, `set_credential_file()`, or `keyring_auth()`. Which method you choose depends on your preference for passing credentials.
+To authenticate, run the following code using one of these authentication methods; which method you choose depends on your preference for passing credentials.
 
     import pyrax
 
@@ -58,7 +74,7 @@ To authenticate, run the following code using one of the following: `set_credent
     # Using keychain with username set in config file
     pyrax.keyring_auth()
 
-Note that the `keyring_auth()` command allows you to specify a particular username. This is especially useful if you need to connect to multiple cloud accounts. If you only have a single account, you can specify the username for your account in the config file (explained below), and pyrax will use that by default.
+Note that the `keyring_auth()` command allows you to specify a particular username. This is especially useful if you need to connect to multiple cloud accounts in a particular environment. If you only have a single account, you can specify the username for your account in the config file (explained below), and pyrax will use that by default.
 
 Once you have authenticated, you now have access to Cloud Servers, Cloud Files, Cloud Block Storage, Cloud Databases, Cloud Load Balancers, Cloud DNS, and Cloud Networks using the following references:
 
@@ -73,8 +89,19 @@ Once you have authenticated, you now have access to Cloud Servers, Cloud Files, 
 You don't have to authenticate to each service separately; pyrax handles that for you.
 
 
-## Configuring pyrax
-You can control how pyrax operates by including the optional configuration file. The configuration file should be named `~/.pyrax.cfg`, and allows you to specify the default region. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. You may specify any of the following settings:
+## Pyrax Configuration
+You can control how pyrax behaves through the configuration file. It should be named `~/.pyrax.cfg`. Like the credential file, `~/.pyrax.cfg` is a standard configuration file.
+
+Pyrax supports multiple configurations, which are referred to as ***envrironments***. An envrironment is a separate OpenStack deployment with which you want to interact. A common situation is when you have a private cloud for some of your work, but also have a public cloud account for the rest. Each of these clouds require different authentication endpoints, and may require different settings for other things such as region, identity type, etc.
+
+Each envrironment is a separate section in the configuration file, and the section name is used as the name of the envrironment. You can name your environments whatever makes sense to you, but there are two special names: '**default**' and '**settings**'. If a section is named 'default', it will be used by pyrax unless you explicitly set a different environment. Also, for backwards compatibility with versions of pyrax before 1.4, a section named 'settings' will be interpreted as the default. Those versions only supported a single environment in the configuration file, and used 'settings' as the section name. **NOTE**: if you do not have a section named either 'default' or 'settings', then the first section listed will be used as the default environment.
+
+If you have multiple environments, you need to set the desired envrironment before you authenticate and connect to the services. To do that, you should run the following:
+
+    import pyrax
+    pyrax.set_environment("desired_env")
+
+You may specify any of the following settings:
 
 Setting | Affects | Default
 ---- | ---- | ----
