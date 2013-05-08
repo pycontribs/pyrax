@@ -134,6 +134,25 @@ class Settings(object):
             return None
 
 
+    def set(self, key, val, env=None):
+        """
+        Changes the value for the setting specified by 'key' to the new value.
+        By default this will change the current environment, but you can change
+        values in other environments by passing the name of that environment as
+        the 'env' parameter.
+        """
+        if env is None:
+            env = self.environment
+        else:
+            if env not in self._settings:
+                raise EnvironmentNotFound("There is no environment named '%s'."
+                        % env)
+        dct = self._settings[env]
+        if key not in dct:
+            raise exc.InvalidSetting("The setting '%s' is not defined." % key)
+        dct[key] = val
+
+
     def _getEnvironment(self):
         return self._environment or "default"
 
@@ -141,10 +160,10 @@ class Settings(object):
         if val not in self._settings:
             raise exc.EnvironmentNotFound("The environment '%s' has not been "
                     "defined." % val)
-        self._environment = val
-        authenticate()
-        if identity.authenticated:
-            connect_to_services()
+        if val != self.environment:
+            self._environment = val
+            if identity:
+                authenticate(connect=True)
 
     environment = property(_getEnvironment, _setEnvironment, None,
             """Users can define several environments for use with pyrax. This
@@ -189,12 +208,18 @@ class Settings(object):
             dct = self._settings[section_name] = {}
             dct["default_region"] = safe_get(section, "region", default_region)
             ityp = safe_get(section, "identity_type", default_identity_type)
-            if ityp == "rackspace":
-                # Previous identity type style
+            # Allow for shorthand names for the most common types.
+            if ityp.lower() == "rackspace":
                 ityp = "rax_identity.RaxIdentity"
+            elif ityp.lower() == "keystone":
+                ityp = "keystone_identity.KeystoneIdentity"
             dct["identity_type"] = ityp
             dct["identity_class"] = import_identity(ityp)
-            dct["http_debug"] = safe_get(section, "debug", "False") == "True"
+            # Handle both the old and new names for this setting.
+            debug = safe_get(section, "debug")
+            if debug is None:
+                debug = safe_get(section, "http_debug", False)
+            dct["http_debug"] = debug == "True"
             dct["keyring_username"] = safe_get(section, "keyring_username")
             dct["encoding"] = safe_get(section, "encoding", default_encoding)
             dct["auth_endpoint"] = safe_get(section, "auth_endpoint")
@@ -212,6 +237,21 @@ class Settings(object):
                 self._settings["default"] = self._settings[section]
 
 
+def get_environment():
+    """
+    Returns the name of the current environment.
+    """
+    return settings.environment
+
+
+def set_environment(env):
+    """
+    Change your configuration environment. An EnvironmentNotFound exception
+    is raised if you pass in an undefined environment name.
+    """
+    settings.environment = env
+
+
 def list_environments():
     """
     Returns a list of all defined environments.
@@ -219,12 +259,26 @@ def list_environments():
     return settings.environments
 
 
-def get_setting(val, env=None):
+def get_setting(key, env=None):
     """
     Returns the config setting for the specified key. If no environment is
     specified, returns the setting for the current environment.
     """
-    return settings.get(val, env=env)
+    return settings.get(key, env=env)
+
+
+def set_setting(key, val, env=None):
+    """
+    Changes the value of the specified key in the current environment, or in
+    another environment if specified.
+    """
+    return settings.get(key, val, env=env)
+
+
+def set_default_region(region):
+    """Changes the default_region setting."""
+    global default_region
+    default_region = region
 
 
 def _assure_identity(fnc):
@@ -251,7 +305,7 @@ def _require_auth(fnc):
 
 
 @_assure_identity
-def safe_region(region=None):
+def _safe_region(region=None):
     """Value to use when no region is specified."""
     return region or settings.get("default_region") or default_region
 
@@ -377,27 +431,6 @@ def clear_credentials():
     cloud_networks = None
 
 
-def get_environment():
-    """
-    Returns the name of the current environment.
-    """
-    return settings.environment
-
-
-def set_environment(env):
-    """
-    Change your configuration environment. An EnvironmentNotFound exception
-    is raised if you pass in an undefined environment name.
-    """
-    settings.environment = env
-
-
-def set_default_region(region):
-    """Changes the default_region setting."""
-    global default_region
-    default_region = region
-
-
 def _make_agent_name(base):
     """Appends pyrax information to the underlying library's user agent."""
     if base:
@@ -426,7 +459,7 @@ def _get_service_endpoint(svc, region=None, public=True):
     """
     Parses the services dict to get the proper endpoint for the given service.
     """
-    region = safe_region(region)
+    region = _safe_region(region)
     url_type = {True: "public_url", False: "internal_url"}[public]
     ep = identity.services.get(svc, {}).get("endpoints", {}).get(
             region, {}).get(url_type)
@@ -440,12 +473,13 @@ def _get_service_endpoint(svc, region=None, public=True):
 @_require_auth
 def connect_to_cloudservers(region=None):
     """Creates a client for working with cloud servers."""
+    print "CS" * 33
     _cs_auth_plugin.discover_auth_systems()
     if default_identity_type and default_identity_type != "keystone":
         auth_plugin = _cs_auth_plugin.load_plugin(default_identity_type)
     else:
         auth_plugin = None
-    region = safe_region(region)
+    region = _safe_region(region)
     mgt_url = _get_service_endpoint("compute", region)
     cloudservers = _cs_client.Client(identity.username, identity.password,
             project_id=identity.tenant_id, auth_url=identity.auth_endpoint,
@@ -490,7 +524,7 @@ def connect_to_cloudfiles(region=None, public=True):
     to the public URL; if you need to work with the ServiceNet connection, pass
     False to the 'public' parameter.
     """
-    region = safe_region(region)
+    region = _safe_region(region)
     cf_url = _get_service_endpoint("object_store", region, public=public)
     cdn_url = _get_service_endpoint("object_cdn", region)
     ep_type = {True: "publicURL", False: "internalURL"}[public]
@@ -509,7 +543,7 @@ def connect_to_cloudfiles(region=None, public=True):
 @_require_auth
 def connect_to_cloud_databases(region=None):
     """Creates a client for working with cloud databases."""
-    region = safe_region(region)
+    region = _safe_region(region)
     ep = _get_service_endpoint("database", region)
     cloud_databases = CloudDatabaseClient(region_name=region,
             management_url=ep, http_log_debug=_http_debug,
@@ -521,7 +555,7 @@ def connect_to_cloud_databases(region=None):
 @_require_auth
 def connect_to_cloud_loadbalancers(region=None):
     """Creates a client for working with cloud loadbalancers."""
-    region = safe_region(region)
+    region = _safe_region(region)
     ep = _get_service_endpoint("load_balancer", region)
     cloud_loadbalancers = CloudLoadBalancerClient(region_name=region,
             management_url=ep, http_log_debug=_http_debug,
@@ -534,7 +568,7 @@ def connect_to_cloud_loadbalancers(region=None):
 @_require_auth
 def connect_to_cloud_blockstorage(region=None):
     """Creates a client for working with cloud blockstorage."""
-    region = safe_region(region)
+    region = _safe_region(region)
     ep = _get_service_endpoint("volume", region)
     cloud_blockstorage = CloudBlockStorageClient(region_name=region,
             management_url=ep, http_log_debug=_http_debug,
@@ -547,7 +581,7 @@ def connect_to_cloud_blockstorage(region=None):
 @_require_auth
 def connect_to_cloud_dns(region=None):
     """Creates a client for working with cloud dns."""
-    region = safe_region(region)
+    region = _safe_region(region)
     ep = _get_service_endpoint("dns", region)
     cloud_dns = CloudDNSClient(region_name=region,
             management_url=ep, http_log_debug=_http_debug,
@@ -559,7 +593,7 @@ def connect_to_cloud_dns(region=None):
 @_require_auth
 def connect_to_cloud_networks(region=None):
     """Creates a client for working with cloud networks."""
-    region = safe_region(region)
+    region = _safe_region(region)
     # Networks uses the same endpoint as compute
     ep = _get_service_endpoint("compute", region)
     cloud_networks = CloudNetworkClient(region_name=region,

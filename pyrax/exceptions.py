@@ -125,6 +125,9 @@ class InvalidPTRRecord(PyraxException):
 class InvalidSessionPersistenceType(PyraxException):
     pass
 
+class InvalidSetting(PyraxException):
+    pass
+
 class InvalidSize(PyraxException):
     pass
 

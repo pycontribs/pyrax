@@ -101,42 +101,60 @@ If you have multiple environments, you need to set the desired envrironment befo
     import pyrax
     pyrax.set_environment("desired_env")
 
-You may specify any of the following settings:
+Note that changing the environment will attempt to authenticate against the new envrironment, and create new connections to the various services. In other words, if you had already authenticated so that a service such as `pyrax.cloudservers` referenced the compute service on that cloud, changing the environment to point to a different cloud will re-authenticate and re-connect, so that now `pyrax.cloudservers` will reference the compute service on the new cloud.
 
-Setting | Affects | Default
----- | ---- | ----
-**identity_type** | The system used for authentication. | rackspace
-**keyring_username** | User name used when fetching password from keyring. | -none-
-**region** | Regional datacenter to connect to; either 'DFW', 'ORD', or 'LON'. | DFW
+
+### Available Configuration Settings
+Setting | Affects | Default | Notes
+---- | ---- | ---- | ----
+**identity_type** | The system used for authentication.  | rackspace | This should be "rackspace" (for the Rackspace Public Cloud) or "keystone" (for all Keystone-based auth systems). Any other system will need a class defined to handle that auth system, and its script added to the pyrax/identity directory. The entry for such custom classes should be in the format of 'module_name.ClassName'.
+**auth_endpoint** | The URI of the authentication service | -none- | Not required for the Rackspace Public Cloud, where it can be determined from the region. For everything else it is required.
+**keyring_username** | User name used when fetching password from keyring. | -none- | Without setting this, you will need to supply the username every time you use keyring_auth().
+**region** | Regional datacenter to connect to; either 'DFW', 'ORD', or 'LON' for Rackspace; typically 'RegionOne' in Keystone. | DFW | This must be specified for all non-Rackspace environments.
+**tenant_id** | The tenant ID used for authentication. | -none- | Not used in the Rackspace Public Cloud.
+**tenant_name** | The tenant name used for authentication. | -none- | Not used in the Rackspace Public Cloud.
 **encoding** | The encoding to use when working with non-ASCII values. Unless you have a specific need, the default should work fine. | utf-8
 **custom_user_agent** | Customizes the User-agent string sent to the server. | -none-
-**http_debug** | When True, causes all HTTP requests and responses to be output to the console to aid in debugging. | False
+**debug** | When True, causes all HTTP requests and responses to be output to the console to aid in debugging. | False | Previous versions called this setting 'http_debug'.
 
 Here is a sample:
 
-    [settings]
+    [private]
+    identity_type = keystone
+    region = RegionOne
+    custom_user_agent =
+    debug = True
+    auth_endpoint = http://192.168.0.1:5000/v2.0/
+    tenant_name = demo
+    tenant_id = abc123456
+    keyring_username = demo
+
+    [public]
     identity_type = rackspace
-    keyring_username = myusername
+    keyring_username = joeracker
     region = ORD
-    custom_user_agent = AwesomeApp/1.2
-    http_debug = False
+    custom_user_agent = CrazyApp/2.0
+    debug = False
 
-With the above example, pyrax will:
+The above configuration file defines two environments: **private** and **public**. Since there is no 'default' or 'settings' section, the 'private' environment is the default, since it is listed first.
 
-* use the default Rackspace authentication
-* use "myusername" as the username for keyring authentication
-* provision resources in the `ORD` region
-* not output HTTP requests and responses to the console
-* use UTF-8 encoding (the default) when working with non-ASCII values
-* customize the **User-agent** string sent to the API servers on each request by prepending the string "AwesomeApp/1.2" to the standard pyrax User-agent setting, allowing requests from your application to be distinguished from other  applications built with pyrax.
+When using the 'private' envrironment, pyrax uses Keystone authentication with the tenant name of 'demo', the tenant ID of 'abc123456', and the password stored in the keyring for user 'demo'. It also emits debugging messages for all HTTP requests and responses, and each request will have the standard `User-agent` header of 'pyrax/1.4.x'.
+
+If the environment is then changed to 'public', pyrax switches to Rackspace authentication against the ORD region, using the username 'joeracker'. It no longer emits debug messages, and all requests have the custom `User-agent` header of 'CrazyApp/2.0 pyrax/1.4.x'.
+
+
+### Accessing Environment Information
+Pyrax offers several methods for querying and modifying envrionments and their settings. To start, you can determine the current environment by calling `pyrax.get_environment()`. You can also get a list of all defined envrionments by calling `pyrax.list_environments()`. And as mentioned above, you can switch the current envrionment by calling `pyrax.set_environment(new_env_name)`.
+
+To get the value of a setting, call `pyrax.get_setting(key)`. Normally you will not need to change settings in the middle of a session, but just in case you do, you can use the `pyrax.set_setting(key, val)` method. Both of these methods work on the current environment by default. You can get/set settings in other environments with those calls by passing in the envrionment name as the optional `env` parameter to those methods.
 
 
 ## Debugging HTTP requests
-Sometimes when developing an application, the results received from the server are not what were expected. In those cases, it is helpful to be able to see the requests being sent to the API server, along with the responses received from the server. For those situations, there is the pyrax *`http_debug`* setting. There are two ways to enable this behavior globally. First, if you want to track all HTTP activity, you can change the `http_debug` entry in the `settings` sections of the configuration file mentioned above to 'True'. This will cause all API calls and responses to be printed out to the terminal screen. Alternatively, you can call `pyrax.set_http_debug(True)` to turn on debug output, and `pyrax.set_http_debug(False)` to turn it off. This will enable you to fine-tune the logging behavior for only the portion of your application that is of concern. Finally, if you only wish to debug HTTP requests for a single service, you can set the `http_log_debug` attribute of that service to True. For example, if you wanted to only see the HTTP traffic for the block storage service, you would call `pyrax.cloud_blockstorage.http_log_debug = True`.
+Sometimes when developing an application, the results received from the server are not what were expected. In those cases, it is helpful to be able to see the requests being sent to the API server, along with the responses received from the server. For those situations, there is the pyrax **`http_debug`** setting. There are two ways to enable this behavior globally. First, if you want to track all HTTP activity, you can change the `debug` entry in the configuration file mentioned above to 'True'. This will cause all API calls and responses to be printed out to the terminal screen. Alternatively, you can call `pyrax.set_http_debug(True)` to turn on debug output, and `pyrax.set_http_debug(False)` to turn it off. This will enable you to fine-tune the logging behavior for only the portion of your application that is of concern. Finally, if you only wish to debug HTTP requests for a single service, you can set the `http_log_debug` attribute of that service to True. For example, if you wanted to only see the HTTP traffic for the block storage service, you would call `pyrax.cloud_blockstorage.http_log_debug = True`.
 
 
-## Working with Multiple Regions
-Rackspace divides its cloud infrastructure into "regions", and some interactions are only possible if the entities share a region. For example, if you wish to access a Cloud Database from a Cloud Server, that is only possible if the two are in the same region. Furthermore, if you connect to a region and call `pyrax.cloudservers.servers.list()`, you will only get a list of servers in that region. To get a list of all your servers, you will have to query each region separately. This is simple to do in pyrax.
+## Working with Rackspace's Multiple Regions
+Rackspace divides its cloud infrastructure into "regions", and some interactions are only possible if the entities share a region. For example, if you wish to access a Cloud Database from a Cloud Server, that is only possible if the two are in the same region. Furthermore, if you connect to a region and call `pyrax.cloudservers.list()`, you will only get a list of servers in that region. To get a list of all your servers, you will have to query each region separately. This is simple to do in pyrax.
 
 As of this writing, Rackspace has two cloud regions in the US: "DFW" and "ORD". It also has one UK region: "LON", which has separate login credentials. To get a list of all your US servers, you can do the following
 
