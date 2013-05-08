@@ -82,7 +82,7 @@ except ImportError:
         if stack[1].endswith("/setup.py"):
             in_setup = True
     if not in_setup:
-        # This isn't a normal import problem during setup; re-raise
+         # This isn't a normal import problem during setup; re-raise
         raise
 
 # Initiate the services to None until we are authenticated.
@@ -140,11 +140,11 @@ class Settings(object):
     def _setEnvironment(self, val):
         if val not in self._settings:
             raise exc.EnvironmentNotFound("The environment '%s' has not been "
-                    "defined.")
+                    "defined." % val)
         self._environment = val
-        pyrax.authenticate()
-        if pyrax.identity.authenticated:
-            pyrax.connect_to_services()
+        authenticate()
+        if identity.authenticated:
+            connect_to_services()
 
     environment = property(_getEnvironment, _setEnvironment, None,
             """Users can define several environments for use with pyrax. This
@@ -212,7 +212,7 @@ class Settings(object):
                 self._settings["default"] = self._settings[section]
 
 
-def get_environments():
+def list_environments():
     """
     Returns a list of all defined environments.
     """
@@ -375,6 +375,21 @@ def clear_credentials():
     cloud_blockstorage = None
     cloud_dns = None
     cloud_networks = None
+
+
+def get_environment():
+    """
+    Returns the name of the current environment.
+    """
+    return settings.environment
+
+
+def set_environment(env):
+    """
+    Change your configuration environment. An EnvironmentNotFound exception
+    is raised if you pass in an undefined environment name.
+    """
+    settings.environment = env
 
 
 def set_default_region(region):

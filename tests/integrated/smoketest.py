@@ -8,14 +8,14 @@ try:
 except ImportError:
     pass
 
+import argparse
 import os
 import sys
 import time
 import unittest
 
 import pyrax
-
-DCs = ("DFW", "ORD")
+import pyrax.exceptions as exc
 
 
 class SmokeTester(object):
@@ -101,7 +101,12 @@ class SmokeTester(object):
 
     def cnw_list_networks(self):
         print "Listing networks..."
-        networks = self.cnw.list()
+        try:
+            networks = self.cnw.list()
+        except exc.NotFound:
+            # Many non-rax system do no support networking.
+            print "Networking not available"
+            return
         for network in networks:
             print " - %s: %s (%s)" % (network.id, network.name, network.cidr)
         if not networks:
@@ -110,11 +115,10 @@ class SmokeTester(object):
 
     def cs_create_server(self):
         print "Creating server..."
-        cent_img = [img for img in self.cs_images
-                if "centos" in img.name.lower()][0]
+        img = self.cs_images[0]
         flavor = self.cs_flavors[0]
         self.smoke_server = self.cs.servers.create("SMOKETEST_SERVER",
-                cent_img.id, flavor.id)
+                img.id, flavor.id)
         self.cleanup_items.append(self.smoke_server)
         self.smoke_server = pyrax.utils.wait_until(self.smoke_server, "status",
                 ["ACTIVE", "ERROR"], interval=15, attempts=0, verbose=True,
@@ -279,6 +283,13 @@ class SmokeTester(object):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run the smoke tests!")
+    parser.add_argument("--dcs", "-d", action="append",
+                        help="DC to run tests against. Can be specified "
+                        "multiple times. If not specified, the default "
+                        "of ('DFW', 'ORD') will be used.")
+    args = parser.parse_args()
+    DCs = args.dcs or ("DFW", "ORD")
     start = time.time()
     for dc in DCs:
         print
@@ -292,17 +303,29 @@ if __name__ == "__main__":
             smoke_tester.cs_create_server()
             smoke_tester.cs_reboot_server()
             smoke_tester.cs_list_servers()
-            smoke_tester.cnw_create_network()
-            smoke_tester.cnw_list_networks()
-            smoke_tester.cdb_list_flavors()
-            smoke_tester.cdb_create_instance()
-            smoke_tester.cdb_create_db()
-            smoke_tester.cdb_create_user()
-            smoke_tester.cf_create_container()
-            smoke_tester.cf_list_containers()
-            smoke_tester.cf_make_container_public()
-            smoke_tester.cf_make_container_private()
-            smoke_tester.cf_upload_file()
+            try:
+                smoke_tester.cnw_create_network()
+                smoke_tester.cnw_list_networks()
+            except exc.NotFound:
+                # Networking not supported
+                print "Networking not supported"
+            # see if CDB is available
+            if smoke_tester.cdb.management_url:
+                smoke_tester.cdb_list_flavors()
+                smoke_tester.cdb_create_instance()
+                smoke_tester.cdb_create_db()
+                smoke_tester.cdb_create_user()
+            else:
+                print "Databases not supported"
+            if smoke_tester.cf.connection.uri:
+                # Will be None if no swift available.
+                smoke_tester.cf_create_container()
+                smoke_tester.cf_list_containers()
+                smoke_tester.cf_make_container_public()
+                smoke_tester.cf_make_container_private()
+                smoke_tester.cf_upload_file()
+            else:
+                print "Swift storage not supported"
 
         finally:
             smoke_tester.cleanup()

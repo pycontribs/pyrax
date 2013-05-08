@@ -29,16 +29,32 @@ class PyraxInitTest(unittest.TestCase):
         self.password = "fakeapikey"
 
     def setUp(self):
-        pyrax.settings._settings = {"default": {"auth_endpoint": None,
-                "default_region": "DFW",
-                "encoding": "utf-8",
-                "http_debug": False,
-                "identity_class": pyrax.rax_identity.RaxIdentity,
-                "identity_type": "rax_identity.RaxIdentity",
-                "keyring_username": "fakeuser",
-                "tenant_id": None,
-                "tenant_name": None,
-                "user_agent": "pyrax/1.3.6"}}
+        vers = pyrax.version.version
+        pyrax.settings._settings = {
+                "default": {
+                    "auth_endpoint": None,
+                    "default_region": "DFW",
+                    "encoding": "utf-8",
+                    "http_debug": False,
+                    "identity_class": pyrax.rax_identity.RaxIdentity,
+                    "identity_type": "rax_identity.RaxIdentity",
+                    "keyring_username": "fakeuser",
+                    "tenant_id": None,
+                    "tenant_name": None,
+                    "user_agent": "pyrax/%s" % vers,
+                },
+                "alternate": {
+                    "auth_endpoint": None,
+                    "default_region": "NOWHERE",
+                    "encoding": "utf-8",
+                    "http_debug": False,
+                    "identity_class": pyrax.keystone_identity.KeystoneIdentity,
+                    "identity_type": "keystone_identity.KeystoneIdentity",
+                    "keyring_username": "fakeuser",
+                    "tenant_id": None,
+                    "tenant_name": None,
+                    "user_agent": "pyrax/%s" % vers,
+                }}
         pyrax.identity = fakes.FakeIdentity()
         pyrax.identity.authenticated = True
         pyrax.connect_to_cloudservers = Mock()
@@ -167,6 +183,26 @@ class PyraxInitTest(unittest.TestCase):
         self.assertIsNone(pyrax.cloudfiles)
         self.assertIsNone(pyrax.cloud_loadbalancers)
         self.assertIsNone(pyrax.cloud_databases)
+
+    def test_get_environment(self):
+        env = pyrax.get_environment()
+        all_envs = pyrax.list_environments()
+        self.assertTrue(env in all_envs)
+
+    def test_set_environment(self):
+        env = "alternate"
+        sav = pyrax.authenticate
+        pyrax.authenticate = Mock()
+        pyrax.set_environment(env)
+        self.assertEqual(pyrax.get_environment(), env)
+        pyrax.authenticate = sav
+
+    def test_set_environment_fail(self):
+        sav = pyrax.authenticate
+        pyrax.authenticate = Mock()
+        env = "doesn't exist"
+        self.assertRaises(exc.EnvironmentNotFound, pyrax.set_environment, env)
+        pyrax.authenticate = sav
 
     def test_set_default_region(self):
         orig_region = pyrax.default_region
