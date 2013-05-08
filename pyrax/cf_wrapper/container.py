@@ -107,21 +107,24 @@ class Container(object):
             name = name.decode(pyrax.get_encoding())
         ret = self._object_cache.get(name)
         if not ret:
-            objs = [obj for obj in self.client.get_container_objects(self.name, full_listing=True)
+            cont_objs = self.client.get_container_objects(self.name,
+                    full_listing=True)
+            objs = [obj for obj in cont_objs
                     if obj.name == name]
             try:
                 ret = objs[0]
             except IndexError:
-                raise exc.NoSuchObject("No object with the name '%s' exists" % name)
+                raise exc.NoSuchObject("No object with the name '%s' exists"
+                        % name)
             self._object_cache[name] = ret
         return ret
 
 
-    def get_object_names(self, marker=None, limit=None, prefix=None, delimiter=None,
-            full_listing=False):
+    def get_object_names(self, marker=None, limit=None, prefix=None,
+            delimiter=None, full_listing=False):
         """
-        Returns a list of the names of all the objects in this container. The same
-        pagination parameters apply as in self.get_objects().
+        Returns a list of the names of all the objects in this container. The
+        same pagination parameters apply as in self.get_objects().
         """
         objs = self.get_objects(marker=marker, limit=limit, prefix=prefix,
                 delimiter=delimiter, full_listing=full_listing)
@@ -139,13 +142,13 @@ class Container(object):
                 content_encoding=content_encoding)
 
 
-    def upload_file(self, file_or_path, obj_name=None, content_type=None, etag=None,
-            return_none=False, content_encoding=None):
+    def upload_file(self, file_or_path, obj_name=None, content_type=None,
+            etag=None, return_none=False, content_encoding=None):
         """
-        Uploads the specified file to this container. If no name is supplied, the
-        file's name will be used. Either a file path or an open file-like object
-        may be supplied. A StorageObject reference to the uploaded file will be
-        returned, unless 'return_none' is set to True.
+        Uploads the specified file to this container. If no name is supplied,
+        the file's name will be used. Either a file path or an open file-like
+        object may be supplied. A StorageObject reference to the uploaded file
+        will be returned, unless 'return_none' is set to True.
         """
         return self.client.upload_file(self, file_or_path, obj_name=obj_name,
                 content_type=content_type, etag=etag, return_none=return_none,
@@ -189,12 +192,13 @@ class Container(object):
         Note: if 'chunk_size' is defined, you must fully read the object's
         contents before making another request.
 
-        When 'include_meta' is True, what is returned from this method is a 2-tuple:
+        When 'include_meta' is True, what is returned from this method is
+        a 2-tuple:
             Element 0: a dictionary containing metadata about the file.
             Element 1: a stream of bytes representing the object's contents.
         """
-        return self.client.fetch_object(self, obj_name, include_meta=include_meta,
-                chunk_size=chunk_size)
+        return self.client.fetch_object(self, obj_name,
+                include_meta=include_meta, chunk_size=chunk_size)
 
 
     def get_metadata(self):
@@ -268,7 +272,8 @@ class Container(object):
         The only methods supported are GET and PUT. Anything else will raise
         an InvalidTemporaryURLMethod exception.
         """
-        return self.client.get_temp_url(self, obj, seconds=seconds, method=method)
+        return self.client.get_temp_url(self, obj, seconds=seconds,
+                method=method)
 
 
     def __repr__(self):
