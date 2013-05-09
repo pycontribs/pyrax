@@ -473,7 +473,6 @@ def _get_service_endpoint(svc, region=None, public=True):
 @_require_auth
 def connect_to_cloudservers(region=None):
     """Creates a client for working with cloud servers."""
-    print "CS" * 33
     _cs_auth_plugin.discover_auth_systems()
     if default_identity_type and default_identity_type != "keystone":
         auth_plugin = _cs_auth_plugin.load_plugin(default_identity_type)
