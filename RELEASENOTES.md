@@ -1,5 +1,10 @@
 # Release Notes for pyrax
 
+###2013.05.10 - Version 1.3.9
+- This fixes two issues: #63 and #67. The first fixes an incorrect path in the
+    cloudfiles get_temp_url() function; the second adds the ability to specify
+    the content_encoding for an object in cloudfiles.
+
 ###2013.04.29 - Version 1.3.8
 - Fixed a bug that prevented the Cloud Servers code from running properly
     in the UK.
