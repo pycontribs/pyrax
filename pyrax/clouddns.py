@@ -441,7 +441,7 @@ class CloudDNSManager(BaseManager):
         else:
             ret = _resp, ret_body
         try:
-            body = json.loads(body)
+            ret_body = json.loads(ret_body)
         except Exception:
             pass
         return ret

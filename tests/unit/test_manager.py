@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import random
 import unittest
 
 from mock import MagicMock as Mock
@@ -35,6 +36,18 @@ class ManagerTest(unittest.TestCase):
         mgr._list.assert_called_once_with("/test")
         mgr._list = sav
 
+    def test_list_paged(self):
+        mgr = self.manager
+        sav = mgr._list
+        mgr._list = Mock()
+        mgr.uri_base = "test"
+        fake_limit = random.randint(10, 20)
+        fake_marker = random.randint(100, 200)
+        mgr.list(limit=fake_limit, marker=fake_marker)
+        expected_uri = "/test?limit=%s&marker=%s" % (fake_limit, fake_marker)
+        mgr._list.assert_called_once_with(expected_uri)
+        mgr._list = sav
+
     def test_get(self):
         mgr = self.manager
         sav = mgr._get
@@ -46,6 +59,14 @@ class ManagerTest(unittest.TestCase):
         expected = "/%s/%s" % ("test", x.id)
         mgr._get.assert_called_once_with(expected)
         mgr._get = sav
+
+    def test_api_get(self):
+        mgr = self.manager
+        mgr.resource_class = fakes.FakeEntity
+        mgr.response_key = "fake"
+        mgr.api.method_get = Mock(return_value=(None, {"fake": ""}))
+        resp = mgr._get(fake_url)
+        self.assert_(isinstance(resp, fakes.FakeEntity))
 
     def test_create(self):
         mgr = self.manager

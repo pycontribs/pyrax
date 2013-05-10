@@ -27,6 +27,12 @@ class UtilsTest(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_runproc(self):
+        currdir = os.getcwd()
+        out, err = utils.runproc("pwd")
+        self.assertEqual(err, "")
+        self.assertEqual(out.strip(), currdir)
+
     def test_self_deleting_temp_file(self):
         with utils.SelfDeletingTempfile() as tmp:
             self.assert_(isinstance(tmp, basestring))
@@ -157,7 +163,7 @@ class UtilsTest(unittest.TestCase):
         self.assertTrue(utils.isunauthenticated(dummy))
 
     def test_safe_issubclass_good(self):
-        ret = utils.safe_issubclass(fakes.FakeIdentity, fakes.Identity)
+        ret = utils.safe_issubclass(fakes.FakeIdentity, fakes.RaxIdentity)
         self.assertTrue(ret)
 
     def test_safe_issubclass_bad(self):

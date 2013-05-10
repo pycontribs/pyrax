@@ -41,5 +41,6 @@ setup(
     packages=[
         "pyrax",
         "pyrax/cf_wrapper",
+        "pyrax/identity",
     ],
 )

@@ -41,8 +41,8 @@ class CF_StorageObjectTest(unittest.TestCase):
         pyrax.connect_to_cloud_loadbalancers = Mock()
         pyrax.connect_to_cloud_databases = Mock()
         pyrax.connect_to_cloud_blockstorage = Mock()
-        pyrax.identity_class = FakeIdentity
         pyrax.clear_credentials()
+        pyrax.identity = FakeIdentity()
         pyrax.set_credentials("fakeuser", "fakeapikey")
         pyrax.connect_to_cloudfiles()
         self.client = pyrax.cloudfiles

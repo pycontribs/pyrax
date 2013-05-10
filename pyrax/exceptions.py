@@ -68,7 +68,16 @@ class DomainRecordUpdateFailed(PyraxException):
 class DomainUpdateFailed(PyraxException):
     pass
 
+class DuplicateUser(PyraxException):
+    pass
+
+class EndpointNotDefined(PyraxException):
+    pass
+
 class EndpointNotFound(PyraxException):
+    pass
+
+class EnvironmentNotFound(PyraxException):
     pass
 
 class FlavorNotFound(PyraxException):
@@ -116,6 +125,9 @@ class InvalidPTRRecord(PyraxException):
 class InvalidSessionPersistenceType(PyraxException):
     pass
 
+class InvalidSetting(PyraxException):
+    pass
+
 class InvalidSize(PyraxException):
     pass
 
@@ -132,6 +144,9 @@ class InvalidVirtualIPVersion(PyraxException):
     pass
 
 class InvalidVolumeResize(PyraxException):
+    pass
+
+class MissingAuthSettings(PyraxException):
     pass
 
 class MissingDNSSettings(PyraxException):
@@ -212,19 +227,22 @@ class PTRRecordUpdateFailed(PyraxException):
 class SnapshotNotAvailable(PyraxException):
     pass
 
+class TenantNotFound(PyraxException):
+    pass
+
 class UnattachedNode(PyraxException):
     pass
 
 class UnattachedVirtualIP(PyraxException):
     pass
 
-class Unauthorized(PyraxException):
-    pass
-
 class UnicodePathError(PyraxException):
     pass
 
 class UploadFailed(PyraxException):
+    pass
+
+class UserNotFound(PyraxException):
     pass
 
 class VolumeAttachmentFailed(PyraxException):

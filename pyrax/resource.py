@@ -63,7 +63,7 @@ class BaseResource(object):
         """
         for (key, val) in info.iteritems():
             if isinstance(key, unicode):
-                key = key.encode(pyrax.encoding)
+                key = key.encode(pyrax.get_encoding())
             setattr(self, key, val)
 
 

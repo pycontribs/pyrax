@@ -26,11 +26,36 @@ class PyraxInitTest(unittest.TestCase):
         self.orig_get_service_endpoint = pyrax._get_service_endpoint
         super(PyraxInitTest, self).__init__(*args, **kwargs)
         self.username = "fakeuser"
-        self.api_key = "fakeapikey"
+        self.password = "fakeapikey"
 
     def setUp(self):
-        pyrax.set_identity_class(fakes.FakeIdentity)
-        pyrax.identity = pyrax.identity_class()
+        vers = pyrax.version.version
+        pyrax.settings._settings = {
+                "default": {
+                    "auth_endpoint": None,
+                    "default_region": "DFW",
+                    "encoding": "utf-8",
+                    "http_debug": False,
+                    "identity_class": pyrax.rax_identity.RaxIdentity,
+                    "identity_type": "rax_identity.RaxIdentity",
+                    "keyring_username": "fakeuser",
+                    "tenant_id": None,
+                    "tenant_name": None,
+                    "user_agent": "pyrax/%s" % vers,
+                },
+                "alternate": {
+                    "auth_endpoint": None,
+                    "default_region": "NOWHERE",
+                    "encoding": "utf-8",
+                    "http_debug": False,
+                    "identity_class": pyrax.keystone_identity.KeystoneIdentity,
+                    "identity_type": "keystone_identity.KeystoneIdentity",
+                    "keyring_username": "fakeuser",
+                    "tenant_id": None,
+                    "tenant_name": None,
+                    "user_agent": "pyrax/%s" % vers,
+                }}
+        pyrax.identity = fakes.FakeIdentity()
         pyrax.identity.authenticated = True
         pyrax.connect_to_cloudservers = Mock()
         pyrax.connect_to_cloudfiles = Mock()
@@ -64,9 +89,9 @@ class PyraxInitTest(unittest.TestCase):
         sav_USER_AGENT = pyrax.USER_AGENT
         with utils.SelfDeletingTempfile() as cfgfile:
             open(cfgfile, "w").write(dummy_cfg)
-            pyrax._read_config_settings(cfgfile)
-        self.assertEqual(pyrax.default_region, "FAKE")
-        self.assertTrue(pyrax.USER_AGENT.startswith("FAKE "))
+            pyrax.settings.read_config(cfgfile)
+        self.assertEqual(pyrax.get_setting("default_region"), "FAKE")
+        self.assertTrue(pyrax.get_setting("user_agent").startswith("FAKE "))
         pyrax.default_region = sav_region
         pyrax.USER_AGENT = sav_USER_AGENT
 
@@ -78,36 +103,36 @@ class PyraxInitTest(unittest.TestCase):
         sav_USER_AGENT = pyrax.USER_AGENT
         with utils.SelfDeletingTempfile() as cfgfile:
             open(cfgfile, "w").write(dummy_cfg)
-            pyrax._read_config_settings(cfgfile)
+            pyrax.settings.read_config(cfgfile)
         self.assertEqual(pyrax.USER_AGENT, sav_USER_AGENT)
         # Test bad file
         with utils.SelfDeletingTempfile() as cfgfile:
             open(cfgfile, "w").write("FAKE")
             self.assertRaises(exc.InvalidConfigurationFile,
-                    pyrax._read_config_settings, cfgfile)
+                    pyrax.settings.read_config, cfgfile)
         pyrax.default_region = sav_region
         pyrax.USER_AGENT = sav_USER_AGENT
 
     def test_set_credentials(self):
-        pyrax.set_credentials(self.username, self.api_key)
+        pyrax.set_credentials(self.username, self.password)
         self.assertEqual(pyrax.identity.username, self.username)
-        self.assertEqual(pyrax.identity.api_key, self.api_key)
+        self.assertEqual(pyrax.identity.password, self.password)
         self.assert_(pyrax.identity.authenticated)
 
     def test_set_bad_credentials(self):
         self.assertRaises(exc.AuthenticationFailed, pyrax.set_credentials,
                 "bad", "creds")
-        self.assertFalse(pyrax.identity.authenticated)
+        self.assertIsNone(pyrax.identity)
 
     def test_set_credential_file(self):
         with utils.SelfDeletingTempfile() as tmpname:
             with open(tmpname, "wb") as tmp:
                 tmp.write("[rackspace_cloud]\n")
                 tmp.write("username = %s\n" % self.username)
-                tmp.write("api_key = %s\n" % self.api_key)
+                tmp.write("api_key = %s\n" % self.password)
             pyrax.set_credential_file(tmpname)
             self.assertEqual(pyrax.identity.username, self.username)
-            self.assertEqual(pyrax.identity.api_key, self.api_key)
+            self.assertEqual(pyrax.identity.password, self.password)
             self.assert_(pyrax.identity.authenticated)
 
     def test_set_bad_credential_file(self):
@@ -118,7 +143,7 @@ class PyraxInitTest(unittest.TestCase):
                 tmp.write("api_key = creds\n")
             self.assertRaises(exc.AuthenticationFailed,
                     pyrax.set_credential_file, tmpname)
-            self.assertFalse(pyrax.identity.authenticated)
+            self.assertIsNone(pyrax.identity)
 
     def test_keyring_auth_no_module(self):
         pyrax.keyring = None
@@ -126,7 +151,9 @@ class PyraxInitTest(unittest.TestCase):
 
     def test_keyring_auth_no_username(self):
         pyrax.keyring = object()
-        pyrax.keyring_username = ""
+        set_obj = pyrax.settings
+        env = set_obj.environment
+        set_obj._settings[env]["keyring_username"] = ""
         self.assertRaises(exc.KeyringUsernameMissing, pyrax.keyring_auth)
 
     def test_keyring_auth(self):
@@ -140,7 +167,7 @@ class PyraxInitTest(unittest.TestCase):
         self.assertTrue(pyrax.identity.authenticated)
 
     def test_clear_credentials(self):
-        pyrax.set_credentials(self.username, self.api_key)
+        pyrax.set_credentials(self.username, self.password)
         # These next lines are required to test that clear_credentials
         # actually resets them to None.
         pyrax.cloudservers = object()
@@ -151,26 +178,37 @@ class PyraxInitTest(unittest.TestCase):
         self.assert_(pyrax.identity.authenticated)
         self.assertIsNotNone(pyrax.cloudfiles)
         pyrax.clear_credentials()
-        self.assertFalse(pyrax.identity.authenticated)
-        self.assertIsNone(pyrax.identity.username)
-        self.assertIsNone(pyrax.identity.api_key)
+        self.assertIsNone(pyrax.identity)
         self.assertIsNone(pyrax.cloudservers)
         self.assertIsNone(pyrax.cloudfiles)
         self.assertIsNone(pyrax.cloud_loadbalancers)
         self.assertIsNone(pyrax.cloud_databases)
+
+    def test_get_environment(self):
+        env = pyrax.get_environment()
+        all_envs = pyrax.list_environments()
+        self.assertTrue(env in all_envs)
+
+    def test_set_environment(self):
+        env = "alternate"
+        sav = pyrax.authenticate
+        pyrax.authenticate = Mock()
+        pyrax.set_environment(env)
+        self.assertEqual(pyrax.get_environment(), env)
+        pyrax.authenticate = sav
+
+    def test_set_environment_fail(self):
+        sav = pyrax.authenticate
+        pyrax.authenticate = Mock()
+        env = "doesn't exist"
+        self.assertRaises(exc.EnvironmentNotFound, pyrax.set_environment, env)
+        pyrax.authenticate = sav
 
     def test_set_default_region(self):
         orig_region = pyrax.default_region
         new_region = "test"
         pyrax.set_default_region(new_region)
         self.assertEqual(pyrax.default_region, new_region)
-
-    def test_fix_uri(self):
-        region = "abc"
-        orig = "http://example.com/v1.0/fake"
-        expected = "http://abc.example.com/v2/fake"
-        fixed = pyrax._fix_uri(orig, region)
-        self.assertEqual(fixed, expected)
 
     def test_make_agent_name(self):
         test_agent = "TEST"
@@ -219,13 +257,22 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.cloudservers.http_log_debug = False
         pyrax.set_http_debug(True)
         self.assertTrue(pyrax.cloudservers.http_log_debug)
+        pyrax.set_http_debug(False)
+        self.assertFalse(pyrax.cloudservers.http_log_debug)
+
+    def test_get_encoding(self):
+        sav = pyrax.get_setting
+        pyrax.get_setting = Mock(return_value=None)
+        enc = pyrax.get_encoding()
+        self.assertEqual(enc, pyrax.default_encoding)
+        pyrax.get_setting = sav
 
     def test_import_fail(self):
         import __builtin__
         sav_import = __builtin__.__import__
 
         def fake_import(nm, *args):
-            if nm == "rax_identity":
+            if nm == "identity":
                 raise ImportError
             else:
                 return sav_import(nm, *args)

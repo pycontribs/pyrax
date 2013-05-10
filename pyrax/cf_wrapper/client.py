@@ -51,8 +51,8 @@ def handle_swiftclient_exception(fnc):
             failed_upload = etag_failed_pattern.search(str_error)
             if failed_upload:
                 cont, fname = failed_upload.groups()
-                raise exc.UploadFailed("Upload of file '%(fname)s' to container "
-                        "'%(cont)s' failed." % locals())
+                raise exc.UploadFailed("Upload of file '%(fname)s' to "
+                        "container '%(cont)s' failed." % locals())
             # Not handled; re-raise
             raise
     return _wrapped
@@ -84,35 +84,38 @@ class CFClient(object):
     folder_upload_status = {}
 
 
-    def __init__(self, auth_endpoint, username, api_key, tenant_name,
-            preauthurl=None, preauthtoken=None, auth_version="2",
-            os_options=None, http_log_debug=False):
+    def __init__(self, auth_endpoint, username, api_key=None, password=None,
+            tenant_name=None, preauthurl=None, preauthtoken=None,
+            auth_version="2", os_options=None, http_log_debug=False):
         self.connection = None
+        self.cdn_connection = None
         self.http_log_debug = http_log_debug
         self._http_log = _swift_client.http_log
         os.environ["SWIFTCLIENT_DEBUG"] = "True" if http_log_debug else ""
-        self._make_connections(auth_endpoint, username, api_key,
-                tenant_name, preauthurl=preauthurl,
+        self._make_connections(auth_endpoint, username, api_key, password,
+                tenant_name=tenant_name, preauthurl=preauthurl,
                 preauthtoken=preauthtoken, auth_version=auth_version,
                 os_options=os_options, http_log_debug=http_log_debug)
 
 
-    def _make_connections(self, auth_endpoint, username, api_key, tenant_name,
-            preauthurl=None, preauthtoken=None, auth_version="2", os_options=None,
-            http_log_debug=None):
+    def _make_connections(self, auth_endpoint, username, api_key, password,
+            tenant_name=None, preauthurl=None, preauthtoken=None,
+            auth_version="2", os_options=None, http_log_debug=None):
         cdn_url = os_options.pop("object_cdn_url", None)
-        self.connection = Connection(auth_endpoint, username, api_key, tenant_name,
-                preauthurl=preauthurl, preauthtoken=preauthtoken,
+        pw_key = api_key or password
+        self.connection = Connection(auth_endpoint, username, pw_key,
+                tenant_name, preauthurl=preauthurl, preauthtoken=preauthtoken,
                 auth_version=auth_version, os_options=os_options,
                 http_log_debug=http_log_debug)
-        self.connection._make_cdn_connection(cdn_url)
+        if cdn_url:
+            self.connection._make_cdn_connection(cdn_url)
 
 
     def _massage_metakeys(self, dct, prfx):
         """
-        Returns a copy of the supplied dictionary, prefixing any keys that do not
-        begin with the specified prefix accordingly. Also lowercases all of the keys
-        since that's what is returned by the API.
+        Returns a copy of the supplied dictionary, prefixing any keys that do
+        not begin with the specified prefix accordingly. Also lowercases all of
+        the keys since that's what is returned by the API.
         """
         lowprefix = prfx.lower()
         ret = {}
@@ -200,9 +203,9 @@ class CFClient(object):
                     "or 'PUT'; received '%s'." % method)
         key = self.get_temp_url_key()
         if not key:
-            raise exc.MissingTemporaryURLKey("You must set the key for Temporary "
-                    "URLs before you can generate them. This is done via the "
-                    "`set_temp_url_key()` method.")
+            raise exc.MissingTemporaryURLKey("You must set the key for "
+                    "Temporary URLs before you can generate them. This is "
+                    "done via the `set_temp_url_key()` method.")
         conn_url = self.connection.url
         v1pos = conn_url.index("/v1/")
         base_url = conn_url[:v1pos]
@@ -210,7 +213,7 @@ class CFClient(object):
         cleaned = (part.strip("/\\") for part in path_parts)
         pth = "/%s" % "/".join(cleaned)
         if isinstance(pth, unicode):
-            pth = pth.encode(pyrax.encoding)
+            pth = pth.encode(pyrax.get_encoding())
         expires = int(time.time() + int(seconds))
         hmac_body = "%s\n%s\n%s" % (mod_method, expires, pth)
         try:
@@ -273,7 +276,9 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def get_container_cdn_metadata(self, container):
-        """Returns a dictionary containing the CDN metadata for the container."""
+        """
+        Returns a dictionary containing the CDN metadata for the container.
+        """
         cname = self._resolve_name(container)
         response = self.connection.cdn_request("HEAD", [cname])
         headers = response.getheaders()
@@ -498,10 +503,10 @@ class CFClient(object):
             content_type=None, etag=None, return_none=False,
             content_encoding=None):
         """
-        Uploads the specified file to the container. If no name is supplied, the
-        file's name will be used. Either a file path or an open file-like object
-        may be supplied. A StorageObject reference to the uploaded file will be
-        returned, unless 'return_none' is set to True.
+        Uploads the specified file to the container. If no name is supplied,
+        the file's name will be used. Either a file path or an open file-like
+        object may be supplied. A StorageObject reference to the uploaded file
+        will be returned, unless 'return_none' is set to True.
         """
         cont = self.get_container(container)
 
@@ -580,35 +585,35 @@ class CFClient(object):
         Convenience method for uploading an entire folder, including any
         sub-folders, to Cloud Files.
 
-        All files will be uploaded to objects with the same name as the file. In the
-        case of nested folders, files will be named with the full path relative to
-        the base folder. E.g., if the folder you specify contains a folder named
-        'docs', and 'docs' contains a file named 'install.html', that file will be
-        uploaded to an object named 'docs/install.html'.
+        All files will be uploaded to objects with the same name as the file.
+        In the case of nested folders, files will be named with the full path
+        relative to the base folder. E.g., if the folder you specify contains a
+        folder named 'docs', and 'docs' contains a file named 'install.html',
+        that file will be uploaded to an object named 'docs/install.html'.
 
-        If 'container' is specified, the folder's contents will be uploaded to that
-        container. If it is not specified, a new container with the same name as the
-        specified folder will be created, and the files uploaded to this new
-        container.
+        If 'container' is specified, the folder's contents will be uploaded to
+        that container. If it is not specified, a new container with the same
+        name as the specified folder will be created, and the files uploaded to
+        this new container.
 
-        You can selectively ignore files by passing either a single pattern or a
-        list of patterns; these will be applied to the individual folder and file
-        names, and any names that match any of the 'ignore' patterns will not be
-        uploaded. The patterns should be standard *nix-style shell patterns; e.g.,
-        '*pyc' will ignore all files ending in 'pyc', such as 'program.pyc' and
-        'abcpyc'.
+        You can selectively ignore files by passing either a single pattern or
+        a list of patterns; these will be applied to the individual folder and
+        file names, and any names that match any of the 'ignore' patterns will
+        not be uploaded. The patterns should be standard *nix-style shell
+        patterns; e.g., '*pyc' will ignore all files ending in 'pyc', such as
+        'program.pyc' and 'abcpyc'.
 
         The upload will happen asynchronously; in other words, the call to
         upload_folder() will generate a UUID and return a 2-tuple of (UUID,
-        total_bytes) immediately. Uploading will happen in the background; your app
-        can call get_uploaded(uuid) to get the current status of the upload. When
-        the upload is complete, the value returned by get_uploaded(uuid) will match
-        the total_bytes for the upload.
+        total_bytes) immediately. Uploading will happen in the background; your
+        app can call get_uploaded(uuid) to get the current status of the
+        upload. When the upload is complete, the value returned by
+        get_uploaded(uuid) will match the total_bytes for the upload.
 
         If you start an upload and need to cancel it, call
-        cancel_folder_upload(uuid), passing the uuid returned by the initial call.
-        It will then be up to you to either keep or delete the partially-uploaded
-        content.
+        cancel_folder_upload(uuid), passing the uuid returned by the initial
+        call.  It will then be up to you to either keep or delete the
+        partially-uploaded content.
         """
         if not os.path.isdir(folder_path):
             raise exc.FolderNotFound("No such folder: '%s'" % folder_path)
@@ -636,33 +641,32 @@ class CFClient(object):
     def sync_folder_to_container(self, folder_path, container, delete=False,
             include_hidden=False, ignore=None, ignore_timestamps=False):
         """
-        Compares the contents of the specified folder, and checks to make sure that
-        the corresponding object is present in the specified container. If there is
-        no remote object matching the local file, it is created. If a matching
-        object exists, the etag is examined to determine if the object in the
-        container matches the local file; if they differ, the container is updated
-        with the local file if the local file is newer when `ignore_timestamps' is
-        False (default). If `ignore_timestamps` is True, the object is overwritten
-        with the local file contents whenever the etags differ. NOTE: the timestamp
-        of a remote object is the time it was uploaded, not the original
-        modification time of the file stored in that object.  Unless
-        'include_hidden' is True, files beginning with an initial period are
-        ignored.
+        Compares the contents of the specified folder, and checks to make sure
+        that the corresponding object is present in the specified container. If
+        there is no remote object matching the local file, it is created. If a
+        matching object exists, the etag is examined to determine if the object
+        in the container matches the local file; if they differ, the container
+        is updated with the local file if the local file is newer when
+        `ignore_timestamps' is False (default). If `ignore_timestamps` is True,
+        the object is overwritten with the local file contents whenever the
+        etags differ. NOTE: the timestamp of a remote object is the time it was
+        uploaded, not the original modification time of the file stored in that
+        object.  Unless 'include_hidden' is True, files beginning with an
+        initial period are ignored.
 
-        If the 'delete' option is True, any objects in the container that do not
-        have corresponding files in the local folder are deleted.
+        If the 'delete' option is True, any objects in the container that do
+        not have corresponding files in the local folder are deleted.
 
-        You can selectively ignore files by passing either a single pattern or a
-        list of patterns; these will be applied to the individual folder and file
-        names, and any names that match any of the 'ignore' patterns will not be
-        uploaded. The patterns should be standard *nix-style shell patterns; e.g.,
-        '*pyc' will ignore all files ending in 'pyc', such as 'program.pyc' and
-        'abcpyc'.
-        """
+        You can selectively ignore files by passing either a single pattern or
+        a list of patterns; these will be applied to the individual folder and
+        file names, and any names that match any of the 'ignore' patterns will
+        not be uploaded. The patterns should be standard *nix-style shell
+        patterns; e.g., '*pyc' will ignore all files ending in 'pyc', such as
+        'program.pyc' and 'abcpyc'.  """
         cont = self.get_container(container)
         self._local_files = []
-        self._sync_folder_to_container(folder_path, cont, prefix="", delete=delete,
-                include_hidden=include_hidden, ignore=ignore,
+        self._sync_folder_to_container(folder_path, cont, prefix="",
+                delete=delete, include_hidden=include_hidden, ignore=ignore,
                 ignore_timestamps=ignore_timestamps)
 
 
@@ -719,8 +723,8 @@ class CFClient(object):
 
     def _delete_objects_not_in_list(self, cont):
         """
-        Finds all the objects in the specified container that are not present in the
-        self._local_files list, and deletes them.
+        Finds all the objects in the specified container that are not present
+        in the self._local_files list, and deletes them.
         """
         for obj in cont.get_objects(full_listing=True):
             objname = obj.name
@@ -755,15 +759,17 @@ class CFClient(object):
     @_valid_upload_key
     def cancel_folder_upload(self, upload_key):
         """
-        Cancels any folder upload happening in the background. If there is no such
-        upload in progress, calling this method has no effect.
+        Cancels any folder upload happening in the background. If there is no
+        such upload in progress, calling this method has no effect.
         """
         self.folder_upload_status[upload_key]["continue"] = False
 
 
     @_valid_upload_key
     def _should_abort_folder_upload(self, upload_key):
-        """Returns True if the user has canceled upload; returns False otherwise."""
+        """
+        Returns True if the user has canceled upload; returns False otherwise.
+        """
         return not self.folder_upload_status[upload_key]["continue"]
 
 
@@ -778,7 +784,8 @@ class CFClient(object):
         Note: if 'chunk_size' is defined, you must fully read the object's
         contents before making another request.
 
-        When 'include_meta' is True, what is returned from this method is a 2-tuple:
+        When 'include_meta' is True, what is returned from this method is a
+        2-tuple:
             Element 0: a dictionary containing metadata about the file.
             Element 1: a stream of bytes representing the object's contents.
         """
@@ -883,7 +890,8 @@ class CFClient(object):
         response = self.connection.cdn_request("GET", [""])
         status = response.status
         if not 200 <= status < 300:
-            raise exc.CDNFailed("Bad response: (%s) %s" % (status, response.reason))
+            raise exc.CDNFailed("Bad response: (%s) %s" % (status,
+                    response.reason))
         return response.read().splitlines()
 
 
@@ -912,7 +920,8 @@ class CFClient(object):
         response = self.connection.cdn_request(mthd, [ct.name], hdrs=hdrs)
         status = response.status
         if not 200 <= status < 300:
-            raise exc.CDNFailed("Bad response: (%s) %s" % (status, response.reason))
+            raise exc.CDNFailed("Bad response: (%s) %s" % (status,
+                    response.reason))
         ct.cdn_ttl = ttl
         for hdr in response.getheaders():
             if hdr[0].lower() == "x-cdn-uri":
@@ -939,13 +948,16 @@ class CFClient(object):
         response = self.connection.cdn_request("POST", [cname], hdrs=hdrs)
         status = response.status
         if not 200 <= status < 300:
-            raise exc.CDNFailed("Bad response: (%s) %s" % (status, response.reason))
+            raise exc.CDNFailed("Bad response: (%s) %s" % (status,
+                    response.reason))
         # Read the response to force it to close for the next request.
         response.read()
 
 
     def get_container_streaming_uri(self, container):
-        """Returns the URI for streaming content, or None if CDN is not enabled."""
+        """
+        Returns the URI for streaming content, or None if CDN is not enabled.
+        """
         cont = self.get_container(container)
         return cont.cdn_streaming_uri
 
@@ -993,7 +1005,8 @@ class CFClient(object):
                 email_addresses = [email_addresses]
             emls = ", ".join(email_addresses)
             hdrs = {"X-Purge-Email": emls}
-        response = self.connection.cdn_request("DELETE", ct.name, oname, hdrs=hdrs)
+        response = self.connection.cdn_request("DELETE", ct.name, oname,
+                hdrs=hdrs)
         # Read the response to force it to close for the next request.
         response.read()
         return True
@@ -1029,12 +1042,15 @@ class Connection(_swift_client.Connection):
     def __init__(self, *args, **kwargs):
         self.http_log_debug = kwargs.pop("http_log_debug", False)
         self._http_log = _swift_client.http_log
+        self.url = None
         super(Connection, self).__init__(*args, **kwargs)
         # Add the user_agent, if not defined
         try:
             self.user_agent
         except AttributeError:
             self.user_agent = "swiftclient"
+        self.cdn_connection = None
+
 
     def _make_cdn_connection(self, cdn_url=None):
         if cdn_url is not None:
@@ -1110,7 +1126,9 @@ class Connection(_swift_client.Connection):
 
 
 class FolderUploader(threading.Thread):
-    """Threading class to allow for uploading multiple files in the background."""
+    """
+    Threading class to allow for uploading multiple files in the background.
+    """
     def __init__(self, root_folder, container, ignore, upload_key, client):
         self.root_folder = root_folder.rstrip("/")
         if container:
@@ -1140,8 +1158,8 @@ class FolderUploader(threading.Thread):
                 continue
             obj_name = os.path.relpath(full_path, self.base_path)
             obj_size = os.stat(full_path).st_size
-            self.client.upload_file(self.container, full_path, obj_name=obj_name,
-                    return_none=True)
+            self.client.upload_file(self.container, full_path,
+                    obj_name=obj_name, return_none=True)
             self.client._update_progress(self.upload_key, obj_size)
 
     def run(self):
