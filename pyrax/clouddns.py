@@ -971,7 +971,7 @@ class CloudDNSManager(BaseManager):
 
 class CloudDNSClient(BaseClient):
     """
-    This is the primary class for interacting with Cloud Databases.
+    This is the primary class for interacting with Cloud DNS.
     """
     def _configure_manager(self):
         """
