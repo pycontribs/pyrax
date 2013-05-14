@@ -784,9 +784,11 @@ class CloudDNSManager(BaseManager):
         Gets the full information for an existing record for this domain.
         """
         rec_id = utils.get_id(record)
-        uri = "/domains/%s/records/%s" % (utils.get_id(domain), rec_id)
-        resp, ret_body = self.api.method_get(uri)
-        return ret_body
+        domain_id = utils.get_id(domain)
+        uri = "/domains/%s/records/%s" % (domain_id, rec_id)
+        resp, record = self.api.method_get(uri)
+        record['domain_id'] = domain_id
+        return CloudDNSRecord(self, record, loaded=False)
 
 
     def update_record(self, domain, record, data=None, priority=None,
