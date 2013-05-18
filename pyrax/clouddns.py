@@ -341,7 +341,7 @@ class CloudDNSManager(BaseManager):
         Handles the communication with the API when getting
         a full listing of the resources managed by this class.
         """
-        _resp, resp_body = self.api.method_get(uri)
+        resp, resp_body = self.api.method_get(uri)
         if obj_class is None:
             obj_class = self.resource_class
 
@@ -393,7 +393,7 @@ class CloudDNSManager(BaseManager):
         the BaseManager method must be overridden here.
         """
         uri = "%s?showRecords=false&showSubdomains=false" % uri
-        _resp, body = self.api.method_get(uri)
+        resp, body = self.api.method_get(uri)
         body["records"] = []
         return self.resource_class(self, body, loaded=True)
 
@@ -418,36 +418,36 @@ class CloudDNSManager(BaseManager):
                 }
         api_method = api_methods[method]
         if body is None:
-            _resp, ret_body = api_method(uri, *args, **kwargs)
+            resp, resp_body = api_method(uri, *args, **kwargs)
         else:
-            _resp, ret_body = api_method(uri, body=body, *args, **kwargs)
-        callbackURL = ret_body["callbackUrl"].split("/status/")[-1]
+            resp, resp_body = api_method(uri, body=body, *args, **kwargs)
+        callbackURL = resp_body["callbackUrl"].split("/status/")[-1]
         massagedURL = "/status/%s?showDetails=true" % callbackURL
         start = time.time()
         timed_out = False
-        while (ret_body["status"] == "RUNNING") and not timed_out:
-            _resp, ret_body = self.api.method_get(massagedURL)
+        while (resp_body["status"] == "RUNNING") and not timed_out:
+            resp, resp_body = self.api.method_get(massagedURL)
             if self._timeout:
                 timed_out = ((time.time() - start) > self._timeout)
                 time.sleep(self._delay)
-        if error_class and (ret_body["status"] == "ERROR"):
+        if error_class and (resp_body["status"] == "ERROR"):
             # This call will handle raising the error.
-            self._process_async_error(ret_body, error_class)
+            self._process_async_error(resp_body, error_class)
         if timed_out:
             raise exc.DNSCallTimedOut("The API call to '%s' did not complete "
                     "after %s seconds." % (uri, self._timeout))
         if has_response:
-            ret = _resp, ret_body["response"]
+            ret = resp, resp_body["response"]
         else:
-            ret = _resp, ret_body
+            ret = resp, resp_body
         try:
-            ret_body = json.loads(ret_body)
+            resp_body = json.loads(resp_body)
         except Exception:
             pass
         return ret
 
 
-    def _process_async_error(self, ret_body, error_class):
+    def _process_async_error(self, resp_body, error_class):
         """
         The DNS API does not return a consistent format for their error
         messages. This abstracts out the differences in order to present
@@ -460,7 +460,7 @@ class CloudDNSManager(BaseManager):
                 details = err["message"]
             return "%s (%s)" % (details, err["code"])
 
-        error = ret_body["error"]
+        error = resp_body["error"]
         if "failedItems" in error:
             # Multi-error response
             faults = error["failedItems"]["faults"]
@@ -496,9 +496,9 @@ class CloudDNSManager(BaseManager):
              "emailAddress": "sample@rackspace.com"}
         """
         self.run_hooks("modify_body_for_create", body, **kwargs)
-        _resp, ret_body = self._async_call(uri, body=body, method="POST",
+        resp, resp_body = self._async_call(uri, body=body, method="POST",
                 error_class=exc.DomainCreationFailed)
-        response_body = ret_body[self.response_key][0]
+        response_body = resp_body[self.response_key][0]
         return self.resource_class(self, response_body)
 
 
@@ -511,7 +511,7 @@ class CloudDNSManager(BaseManager):
         uri = "/%s/%s" % (self.uri_base, utils.get_id(domain))
         if delete_subdomains:
             uri = "%s?deleteSubdomains=true" % uri
-        _resp, ret_body = self._async_call(uri, method="DELETE",
+        resp, resp_body = self._async_call(uri, method="DELETE",
                 error_class=exc.DomainDeletionFailed, has_response=False)
 
 
@@ -582,9 +582,9 @@ class CloudDNSManager(BaseManager):
              u'id': 1111111}
         """
         uri = "/domains/%s/export" % utils.get_id(domain)
-        resp, ret_body = self._async_call(uri, method="GET",
+        resp, resp_body = self._async_call(uri, method="GET",
                 error_class=exc.NotFound)
-        return ret_body.get("contents", "")
+        return resp_body.get("contents", "")
 
 
     def import_domain(self, domain_data):
@@ -597,9 +597,9 @@ class CloudDNSManager(BaseManager):
                 "contentType": "BIND_9",
                 "contents": domain_data,
                 }]}
-        resp, ret_body = self._async_call(uri, method="POST", body=body,
+        resp, resp_body = self._async_call(uri, method="POST", body=body,
                 error_class=exc.DomainCreationFailed)
-        return ret_body
+        return resp_body
 
 
     def update_domain(self, domain, emailAddress=None, ttl=None, comment=None):
@@ -622,9 +622,9 @@ class CloudDNSManager(BaseManager):
                 if val is None]
         for none_key in none_keys:
             body.pop(none_key)
-        resp, ret_body = self._async_call(uri, method="PUT", body=body,
+        resp, resp_body = self._async_call(uri, method="PUT", body=body,
                 error_class=exc.DomainUpdateFailed, has_response=False)
-        return ret_body
+        return resp_body
 
 
     def list_subdomains(self, domain, limit=None, offset=None):
@@ -770,9 +770,9 @@ class CloudDNSManager(BaseManager):
         dom_id = utils.get_id(domain)
         uri = "/domains/%s/records" % dom_id
         body = {"records": records}
-        resp, ret_body = self._async_call(uri, method="POST", body=body,
+        resp, resp_body = self._async_call(uri, method="POST", body=body,
                 error_class=exc.DomainRecordAdditionFailed, has_response=False)
-        records = ret_body.get("response", {}).get("records", [])
+        records = resp_body.get("response", {}).get("records", [])
         for record in records:
             record["domain_id"] = dom_id
         return [CloudDNSRecord(self, record, loaded=False)
@@ -786,9 +786,9 @@ class CloudDNSManager(BaseManager):
         rec_id = utils.get_id(record)
         domain_id = utils.get_id(domain)
         uri = "/domains/%s/records/%s" % (domain_id, rec_id)
-        resp, record = self.api.method_get(uri)
-        record['domain_id'] = domain_id
-        return CloudDNSRecord(self, record, loaded=False)
+        resp, resp_body = self.api.method_get(uri)
+        resp_body['domain_id'] = domain_id
+        return CloudDNSRecord(self, resp_body, loaded=False)
 
 
     def update_record(self, domain, record, data=None, priority=None,
@@ -803,9 +803,9 @@ class CloudDNSManager(BaseManager):
                 ("comment", comment))
         opts = [(k, v) for k, v in all_opts if v is not None]
         body.update(dict(opts))
-        resp, ret_body = self._async_call(uri, method="PUT", body=body,
+        resp, resp_body = self._async_call(uri, method="PUT", body=body,
                 error_class=exc.DomainRecordUpdateFailed, has_response=False)
-        return ret_body
+        return resp_body
 
 
     def delete_record(self, domain, record):
@@ -814,9 +814,9 @@ class CloudDNSManager(BaseManager):
         """
         uri = "/domains/%s/records/%s" % (utils.get_id(domain),
                 utils.get_id(record))
-        resp, ret_body = self._async_call(uri, method="DELETE",
+        resp, resp_body = self._async_call(uri, method="DELETE",
                 error_class=exc.DomainRecordDeletionFailed, has_response=False)
-        return ret_body
+        return resp_body
 
 
     def _get_ptr_details(self, device, device_type):
@@ -868,11 +868,11 @@ class CloudDNSManager(BaseManager):
         href, svc_name = self._get_ptr_details(device, device_type)
         uri = "/rdns/%s?href=%s" % (svc_name, href)
         try:
-            resp, ret_body = self.api.method_get(uri)
+            resp, resp_body = self.api.method_get(uri)
         except exc.NotFound:
             return []
         records = [CloudDNSPTRRecord(rec, device)
-                for rec in ret_body.get("records", [])]
+                for rec in resp_body.get("records", [])]
         return records
 
 
@@ -904,14 +904,14 @@ class CloudDNSManager(BaseManager):
         # The Rackspace DNS team is working on changing this to return a 403
         # instead; when that happens this kludge can go away.
         try:
-            _resp, ret_body = self._async_call(uri, body=body, method="POST",
+            resp, resp_body = self._async_call(uri, body=body, method="POST",
                     error_class=exc.PTRRecordCreationFailed)
         except exc.EndpointNotFound:
             raise exc.InvalidPTRRecord("The domain/IP address information is not "
                     "valid for this device.")
-        return ret_body.get("records")
+        return resp_body.get("records")
         records = [CloudDNSPTRRecord(rec, device)
-                for rec in ret_body.get("records", [])]
+                for rec in resp_body.get("records", [])]
         return records
 
 
@@ -946,12 +946,12 @@ class CloudDNSManager(BaseManager):
                 }}
         uri = "/rdns"
         try:
-            _resp, ret_body = self._async_call(uri, body=body, method="PUT",
+            resp, resp_body = self._async_call(uri, body=body, method="PUT",
                     has_response=False, error_class=exc.PTRRecordUpdateFailed)
         except exc.EndpointNotFound as e:
             raise exc.InvalidPTRRecord("The record domain/IP address "
                     "information is not valid for this device.")
-        return ret_body.get("status") == "COMPLETED"
+        return resp_body.get("status") == "COMPLETED"
 
 
     def delete_ptr_records(self, device, ip_address=None):
@@ -964,10 +964,10 @@ class CloudDNSManager(BaseManager):
         uri = "/rdns/%s?href=%s" % (svc_name, href)
         if ip_address:
             uri = "%s&ip=%s" % (uri, ip_address)
-        _resp, ret_body = self._async_call(uri, method="DELETE",
+        resp, resp_body = self._async_call(uri, method="DELETE",
                 has_response=False,
                 error_class=exc.PTRRecordDeletionFailed)
-        return ret_body.get("status") == "COMPLETED"
+        return resp_body.get("status") == "COMPLETED"
 
 
 
