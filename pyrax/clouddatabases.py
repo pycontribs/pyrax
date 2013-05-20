@@ -192,8 +192,8 @@ class CloudDatabaseInstance(BaseResource):
         try:
             return name_or_obj.name
         except AttributeError:
-            msg = "The object '%s' does not have a 'name' attribute." % name_or_obj
-            raise exc.MissingName(msg)
+            msg = "The object '%s' does not have a 'name' attribute."
+            raise exc.MissingName(msg % name_or_obj)
 
 
     def delete_database(self, name_or_obj):
@@ -323,8 +323,9 @@ class CloudDatabaseClient(BaseClient):
         Creates a manager to handle the instances, and another
         to handle flavors.
         """
-        self._manager = CloudDatabaseManager(self, resource_class=CloudDatabaseInstance,
-                response_key="instance", uri_base="instances")
+        self._manager = CloudDatabaseManager(self,
+                resource_class=CloudDatabaseInstance, response_key="instance",
+                uri_base="instances")
         self._flavor_manager = BaseManager(self,
                 resource_class=CloudDatabaseFlavor, response_key="flavor",
                 uri_base="flavors")
