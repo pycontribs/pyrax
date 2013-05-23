@@ -66,6 +66,13 @@ class BaseAuth(object):
         self.token = token
         self._creds_file = credential_file
         self._region = region
+        self._regions = []
+
+
+    @property
+    def get_regions(self):
+        """Simple alias to self.regions."""
+        return tuple(self._regions)
 
 
     @property
@@ -251,6 +258,8 @@ class BaseAuth(object):
                 rgn = ep.get("region", "ALL")
                 svc_ep[rgn] = {}
                 svc_ep[rgn]["public_url"] = ep["publicURL"]
+                if rgn != 'ALL' and rgn not in self._regions:
+                    self._regions.append(rgn)
                 try:
                     svc_ep[rgn]["internal_url"] = ep["internalURL"]
                 except KeyError:
