@@ -70,7 +70,7 @@ class BaseAuth(object):
 
 
     @property
-    def regions(self):
+    def get_regions(self):
         """Simple alias to self.regions."""
         return tuple(self.regions)
 
