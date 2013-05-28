@@ -56,6 +56,7 @@ class BaseAuth(object):
     authenticated = False
     services = {}
     http_log_debug = False
+    regions = set()
     user_agent = "pyrax"
 
 
@@ -249,12 +250,15 @@ class BaseAuth(object):
             svc_ep = self.services[typ]["endpoints"]
             for ep in svc["endpoints"]:
                 rgn = ep.get("region", "ALL")
+                self.regions.add(rgn)
                 svc_ep[rgn] = {}
                 svc_ep[rgn]["public_url"] = ep["publicURL"]
                 try:
                     svc_ep[rgn]["internal_url"] = ep["internalURL"]
                 except KeyError:
                     pass
+        self.regions.discard("ALL")
+        pyrax.regions = tuple(self.regions)
         user = access["user"]
         self.user = {}
         self.user["id"] = user["id"]

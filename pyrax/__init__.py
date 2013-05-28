@@ -111,6 +111,10 @@ USER_AGENT = "pyrax/%s" % version.version
 # Do we output HTTP traffic for debugging?
 _http_debug = False
 
+# Regions available from the service catalog
+regions = tuple()
+
+
 
 class Settings(object):
     """

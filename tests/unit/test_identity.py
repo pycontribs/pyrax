@@ -175,6 +175,15 @@ class IdentityTest(unittest.TestCase):
             ident.token = test_token
             self.assertEqual(ident.auth_token, test_token)
 
+    def test_regions(self):
+        ident = self.base_identity_class()
+        fake_resp = fakes.FakeIdentityResponse()
+        ident._parse_response(fake_resp.json())
+        expected = ("DFW", "ORD", "FAKE")
+        self.assertEqual(len(pyrax.regions), len(expected))
+        for rgn in expected:
+            self.assert_(rgn in pyrax.regions)
+
     def test_http_methods(self):
         ident = self.base_identity_class()
         ident._call = Mock()
@@ -258,6 +267,16 @@ class IdentityTest(unittest.TestCase):
         fake_id = utils.random_name()
         ret = ident.find_user_by_id(fake_id)
         ident._find_user.assert_called_with("users/%s" % fake_id)
+
+    def test_find_user_fail(self):
+        ident = self.rax_identity_class()
+        resp = fakes.FakeIdentityResponse()
+        resp.response_type = "users"
+        resp.status_code = 404
+        ident.method_get = Mock(return_value=resp)
+        fake_uri = utils.random_name()
+        ret = ident._find_user(fake_uri)
+        self.assertIsNone(ret)
 
     def test_create_user(self):
         for cls in self.id_classes.values():
