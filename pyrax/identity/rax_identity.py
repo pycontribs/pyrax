@@ -26,6 +26,7 @@ class RaxIdentity(BaseAuth):
         self.token = token
         self._creds_file = credential_file
         self._region = region
+        self._regions = []
 
 
     def _get_auth_endpoint(self):
@@ -61,6 +62,11 @@ class RaxIdentity(BaseAuth):
         self.tenant_name = token["tenant"]["name"]
         user = resp["access"]["user"]
         self.user["default_region"] = user["RAX-AUTH:defaultRegion"]
+        for service in resp["access"]["serviceCatalog"]:
+            for endpoint in service["endpoints"]:
+                region = endpoint.get('region')
+                if region and region not in self._regions:
+                    self._regions.append(region)
 
 
     def find_user_by_name(self, name):

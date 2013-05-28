@@ -168,6 +168,10 @@ class IdentityTest(unittest.TestCase):
         ident = self.base_identity_class()
         self.assertRaises(NotImplementedError, ident._get_auth_endpoint)
 
+    def test_get_regions(self):
+        ident = self.base_identity_class()
+        self.assertIsInstance(ident.get_regions, tuple)
+
     def test_auth_token(self):
         for cls in self.id_classes.values():
             ident = cls()
