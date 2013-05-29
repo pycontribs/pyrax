@@ -84,6 +84,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <div class="textblock">This inheritance list is sorted roughly, but not completely, alphabetically:</div><ul>
 <li><a class="el" href="classpyrax_1_1utils_1_1__WaitThread.html">_WaitThread</a></li>
+<li><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html">BaseAuth</a><ul>
+<li><a class="el" href="classpyrax_1_1identity_1_1keystone__identity_1_1KeystoneIdentity.html">KeystoneIdentity</a></li>
+<li><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html">RaxIdentity</a></li>
+</ul>
+</li>
 <li><a class="el" href="classpyrax_1_1client_1_1BaseClient.html">BaseClient</a><ul>
 <li><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html">CloudBlockStorageClient</a></li>
 <li><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html">CloudDatabaseClient</a></li>
@@ -93,12 +98,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html">BaseManager</a><ul>
+<li><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html">CloudDatabaseManager</a></li>
 <li><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSManager.html">CloudDNSManager</a></li>
 <li><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerManager.html">CloudLoadBalancerManager</a></li>
 <li><a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkManager.html">CloudNetworkManager</a></li>
 </ul>
 </li>
 <li><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html">BaseResource</a><ul>
+<li><a class="el" href="classpyrax_1_1base__identity_1_1Tenant.html">Tenant</a></li>
+<li><a class="el" href="classpyrax_1_1base__identity_1_1User.html">User</a></li>
 <li><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageSnapshot.html">CloudBlockStorageSnapshot</a></li>
 <li><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html">CloudBlockStorageVolume</a></li>
 <li><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolumeType.html">CloudBlockStorageVolumeType</a></li>
@@ -119,7 +127,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html">Container</a></li>
 <li><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Fault.html">Fault</a></li>
 <li><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html">FolderUploader</a></li>
-<li><a class="el" href="classpyrax_1_1rax__identity_1_1Identity.html">Identity</a></li>
 <li><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1Node.html">Node</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1PyraxException.html">PyraxException</a><ul>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1AccessListIDNotFound.html">AccessListIDNotFound</a></li>
@@ -147,7 +154,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a class="el" href="classpyrax_1_1exceptions_1_1DomainRecordNotUnique.html">DomainRecordNotUnique</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1DomainRecordUpdateFailed.html">DomainRecordUpdateFailed</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1DomainUpdateFailed.html">DomainUpdateFailed</a></li>
+<li><a class="el" href="classpyrax_1_1exceptions_1_1DuplicateUser.html">DuplicateUser</a></li>
+<li><a class="el" href="classpyrax_1_1exceptions_1_1EndpointNotDefined.html">EndpointNotDefined</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1EndpointNotFound.html">EndpointNotFound</a></li>
+<li><a class="el" href="classpyrax_1_1exceptions_1_1EnvironmentNotFound.html">EnvironmentNotFound</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1FileNotFound.html">FileNotFound</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1FlavorNotFound.html">FlavorNotFound</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1FolderNotFound.html">FolderNotFound</a></li>
@@ -160,6 +170,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a class="el" href="classpyrax_1_1exceptions_1_1InvalidNodeParameters.html">InvalidNodeParameters</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1InvalidPTRRecord.html">InvalidPTRRecord</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1InvalidSessionPersistenceType.html">InvalidSessionPersistenceType</a></li>
+<li><a class="el" href="classpyrax_1_1exceptions_1_1InvalidSetting.html">InvalidSetting</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1InvalidSize.html">InvalidSize</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1InvalidTemporaryURLMethod.html">InvalidTemporaryURLMethod</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1InvalidUploadID.html">InvalidUploadID</a></li>
@@ -169,6 +180,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a class="el" href="classpyrax_1_1exceptions_1_1KeyringModuleNotInstalled.html">KeyringModuleNotInstalled</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1KeyringPasswordNotFound.html">KeyringPasswordNotFound</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1KeyringUsernameMissing.html">KeyringUsernameMissing</a></li>
+<li><a class="el" href="classpyrax_1_1exceptions_1_1MissingAuthSettings.html">MissingAuthSettings</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1MissingDNSSettings.html">MissingDNSSettings</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1MissingHealthMonitorSettings.html">MissingHealthMonitorSettings</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1MissingLoadBalancerParameters.html">MissingLoadBalancerParameters</a></li>
@@ -194,12 +206,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a class="el" href="classpyrax_1_1exceptions_1_1PTRRecordCreationFailed.html">PTRRecordCreationFailed</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1PTRRecordDeletionFailed.html">PTRRecordDeletionFailed</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1PTRRecordUpdateFailed.html">PTRRecordUpdateFailed</a></li>
+<li><a class="el" href="classpyrax_1_1exceptions_1_1ServiceNotAvailable.html">ServiceNotAvailable</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1SnapshotNotAvailable.html">SnapshotNotAvailable</a></li>
+<li><a class="el" href="classpyrax_1_1exceptions_1_1TenantNotFound.html">TenantNotFound</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1UnattachedNode.html">UnattachedNode</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1UnattachedVirtualIP.html">UnattachedVirtualIP</a></li>
-<li><a class="el" href="classpyrax_1_1exceptions_1_1Unauthorized.html">Unauthorized</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1UnicodePathError.html">UnicodePathError</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1UploadFailed.html">UploadFailed</a></li>
+<li><a class="el" href="classpyrax_1_1exceptions_1_1UserNotFound.html">UserNotFound</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1VolumeAttachmentFailed.html">VolumeAttachmentFailed</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1VolumeDetachmentFailed.html">VolumeDetachmentFailed</a></li>
 <li><a class="el" href="classpyrax_1_1exceptions_1_1VolumeNotAvailable.html">VolumeNotAvailable</a></li>
@@ -214,6 +228,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a class="el" href="classpyrax_1_1utils_1_1SelfDeletingTempDirectory.html">SelfDeletingTempDirectory</a></li>
 <li><a class="el" href="classpyrax_1_1utils_1_1SelfDeletingTempfile.html">SelfDeletingTempfile</a></li>
 <li><a class="el" href="classpyrax_1_1service__catalog_1_1ServiceCatalog.html">ServiceCatalog</a></li>
+<li><a class="el" href="classpyrax_1_1Settings.html">Settings</a></li>
 <li><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html">StorageObject</a></li>
 <li><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1VirtualIP.html">VirtualIP</a></li>
 </ul>
@@ -235,7 +250,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 26 2013 10:27:14 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 29 2013 11:39:25 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
