@@ -20,7 +20,7 @@ from pyrax import client
 from tests.unit import fakes
 
 DUMMY_URL = "http://example.com"
-
+ID_CLS = pyrax.settings.get("identity_class") or pyrax.rax_identity.RaxIdentity
 
 
 class ClientTest(unittest.TestCase):
@@ -33,8 +33,7 @@ class ClientTest(unittest.TestCase):
         self.client = client.BaseClient()
         client.BaseClient._configure_manager = save_conf
         self.client._manager = fakes.FakeManager()
-        identity_cls = pyrax.settings.get("identity_class")
-        self.id_svc = pyrax.identity = identity_cls()
+        self.id_svc = pyrax.identity = ID_CLS()
 
     def tearDown(self):
         self.client = None
