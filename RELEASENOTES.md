@@ -1,9 +1,26 @@
 # Release Notes for pyrax
 
 ###2013.05.29 - Version 1.4.0
-- Added support for **all** OpenStack clouds.
-- Configuration files now support multiple cloud environments.
-- Configuration settings can now be stored in environment variables. These all begin with `CLOUD_`; a full list can be found in the [main pyrax documentation](https://github.com/rackspace/pyrax/tree/master/docs/pyrax_doc.md).
+- Added support for **all** OpenStack clouds. Previous versions only supported
+    Rackspace authentication methods.
+- Configuration files now support multiple cloud environments in the same file.
+    You can switch between environments by calling `pyrax.set_environment("env")`,
+    where `env` is the name of the desired environment.
+- Configuration settings can now be stored in environment variables. These all
+    begin with `CLOUD_`; a full list can be found in the [main pyrax
+    documentation](https://github.com/rackspace/pyrax/tree/master/docs/pyrax_doc.md).
+- Available regions are now available in the `pyrax.regions` attribute after
+    authentication.
+- Services that are available for the current cloud provider are now available
+    in the `pyrax.services` attribute.
+- Fixed an issue in Cloud Databases in which the `volume` attribute was
+    sometimes a dict and sometimes an instance of `CloudDatabaseVolume`. Now it
+    will always be an instance.
+- Added a smoke test script to the integrated tests. It currently covers the
+    compute, networking, database, and object_store services.
+- Removed unnecessary hack for compute URIs.
+- Cleaned up some naming and formatting inconsistencies.
+
 
 ###2013.05.10 - Version 1.3.9
 - This fixes two issues: #63 and #67. The first fixes an incorrect path in the
