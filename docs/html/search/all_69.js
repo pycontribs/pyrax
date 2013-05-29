@@ -1,9 +1,7 @@
 var searchData=
 [
   ['id',['id',['../classpyrax_1_1clouddns_1_1CloudDNSPTRRecord.html#acf2488b95c97e0378c9bf49de3b50f28',1,'pyrax::clouddns::CloudDNSPTRRecord.id()'],['../classpyrax_1_1cloudloadbalancers_1_1Node.html#acf2488b95c97e0378c9bf49de3b50f28',1,'pyrax::cloudloadbalancers::Node.id()'],['../classpyrax_1_1cloudloadbalancers_1_1VirtualIP.html#acf2488b95c97e0378c9bf49de3b50f28',1,'pyrax::cloudloadbalancers::VirtualIP.id()'],['../classpyrax_1_1cloudnetworks_1_1CloudNetwork.html#acf2488b95c97e0378c9bf49de3b50f28',1,'pyrax::cloudnetworks::CloudNetwork::id()'],['../classpyrax_1_1resource_1_1BaseResource.html#acf2488b95c97e0378c9bf49de3b50f28',1,'pyrax::resource::BaseResource::id()']]],
-  ['identity',['Identity',['../classpyrax_1_1rax__identity_1_1Identity.html',1,'pyrax::rax_identity']]],
   ['identity',['identity',['../namespacepyrax.html#ab7fc5a23efc53b58e213cd4cdf931c9f',1,'pyrax']]],
-  ['identity_5fclass',['identity_class',['../namespacepyrax.html#aca80ca2a7aef1dee590ef38b26ac5e9b',1,'pyrax']]],
   ['ignore',['ignore',['../classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html#a0e575fb50e8e0cc27c24104a3ced5a5c',1,'pyrax::cf_wrapper::client::FolderUploader']]],
   ['import_5fclass',['import_class',['../namespacepyrax_1_1utils.html#a7d8b82b8246b4f514abfb4b6cd19aeb1',1,'pyrax::utils']]],
   ['import_5fdomain',['import_domain',['../classpyrax_1_1clouddns_1_1CloudDNSManager.html#a836e9097c126d4a1f02466e69a008071',1,'pyrax::clouddns::CloudDNSManager.import_domain()'],['../classpyrax_1_1clouddns_1_1CloudDNSClient.html#a836e9097c126d4a1f02466e69a008071',1,'pyrax::clouddns::CloudDNSClient.import_domain()']]],
@@ -20,6 +18,7 @@ var searchData=
   ['invalidnodeparameters',['InvalidNodeParameters',['../classpyrax_1_1exceptions_1_1InvalidNodeParameters.html',1,'pyrax::exceptions']]],
   ['invalidptrrecord',['InvalidPTRRecord',['../classpyrax_1_1exceptions_1_1InvalidPTRRecord.html',1,'pyrax::exceptions']]],
   ['invalidsessionpersistencetype',['InvalidSessionPersistenceType',['../classpyrax_1_1exceptions_1_1InvalidSessionPersistenceType.html',1,'pyrax::exceptions']]],
+  ['invalidsetting',['InvalidSetting',['../classpyrax_1_1exceptions_1_1InvalidSetting.html',1,'pyrax::exceptions']]],
   ['invalidsize',['InvalidSize',['../classpyrax_1_1exceptions_1_1InvalidSize.html',1,'pyrax::exceptions']]],
   ['invalidtemporaryurlmethod',['InvalidTemporaryURLMethod',['../classpyrax_1_1exceptions_1_1InvalidTemporaryURLMethod.html',1,'pyrax::exceptions']]],
   ['invaliduploadid',['InvalidUploadID',['../classpyrax_1_1exceptions_1_1InvalidUploadID.html',1,'pyrax::exceptions']]],

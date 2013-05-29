@@ -103,13 +103,21 @@ class CloudNetwork(BaseResource):
 
 
 class CloudNetworkManager(BaseManager):
+    """
+    Does nothing special, but is used in testing.
+    """
     pass
 
 
 
 class CloudNetworkClient(BaseClient):
+    """
+    This is the base client for creating and managing Cloud Networks.
+    """
+
     def __init__(self, *args, **kwargs):
         super(CloudNetworkClient, self).__init__(*args, **kwargs)
+        self.name = "Cloud Networks"
         # Constants to represent the 'special' network IDs.
         self.PUBLIC_NET_ID = PUBLIC_NET_ID
         self.SERVICE_NET_ID = SERVICE_NET_ID

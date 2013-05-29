@@ -11,6 +11,7 @@ var searchData=
   ['clouddatabasedatabase',['CloudDatabaseDatabase',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseDatabase.html',1,'pyrax::clouddatabases']]],
   ['clouddatabaseflavor',['CloudDatabaseFlavor',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseFlavor.html',1,'pyrax::clouddatabases']]],
   ['clouddatabaseinstance',['CloudDatabaseInstance',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html',1,'pyrax::clouddatabases']]],
+  ['clouddatabasemanager',['CloudDatabaseManager',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html',1,'pyrax::clouddatabases']]],
   ['clouddatabaseuser',['CloudDatabaseUser',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html',1,'pyrax::clouddatabases']]],
   ['clouddatabasevolume',['CloudDatabaseVolume',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html',1,'pyrax::clouddatabases']]],
   ['clouddnsclient',['CloudDNSClient',['../classpyrax_1_1clouddns_1_1CloudDNSClient.html',1,'pyrax::clouddns']]],

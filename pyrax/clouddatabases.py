@@ -56,6 +56,22 @@ class CloudDatabaseVolume(object):
 
 
 
+class CloudDatabaseManager(BaseManager):
+    """
+    Manages communication with Cloud Database resources.
+    """
+    def get(self, item):
+        """
+        This additional code is necessary to properly return the 'volume'
+        attribute of the instance as a CloudDatabaseVolume object instead of
+        a raw dict.
+        """
+        resource = super(CloudDatabaseManager, self).get(item)
+        resource.volume = CloudDatabaseVolume(resource, resource.volume)
+        return resource
+
+
+
 class CloudDatabaseInstance(BaseResource):
     """
     This class represents a MySQL instance in the cloud.
@@ -71,8 +87,16 @@ class CloudDatabaseInstance(BaseResource):
         # Remove the lazy load
         if not self.loaded:
             self.get()
-            # Make the volume into an accessible object instead of a dict
-            self.volume = CloudDatabaseVolume(self, self.volume)
+
+
+    def get(self):
+        """
+        Need to override the default get() behavior by making the 'volume'
+        attribute into a CloudDatabaseVolume object instead of the raw dict.
+        """
+        super(CloudDatabaseInstance, self).get()
+        # Make the volume into an accessible object instead of a dict
+        self.volume = CloudDatabaseVolume(self, self.volume)
 
 
     def list_databases(self):
@@ -168,8 +192,8 @@ class CloudDatabaseInstance(BaseResource):
         try:
             return name_or_obj.name
         except AttributeError:
-            msg = "The object '%s' does not have a 'name' attribute." % name_or_obj
-            raise exc.MissingName(msg)
+            msg = "The object '%s' does not have a 'name' attribute."
+            raise exc.MissingName(msg % name_or_obj)
 
 
     def delete_database(self, name_or_obj):
@@ -294,13 +318,16 @@ class CloudDatabaseClient(BaseClient):
     """
     This is the primary class for interacting with Cloud Databases.
     """
+    name = "Cloud Databases"
+
     def _configure_manager(self):
         """
         Creates a manager to handle the instances, and another
         to handle flavors.
         """
-        self._manager = BaseManager(self, resource_class=CloudDatabaseInstance,
-                response_key="instance", uri_base="instances")
+        self._manager = CloudDatabaseManager(self,
+                resource_class=CloudDatabaseInstance, response_key="instance",
+                uri_base="instances")
         self._flavor_manager = BaseManager(self,
                 resource_class=CloudDatabaseFlavor, response_key="flavor",
                 uri_base="flavors")

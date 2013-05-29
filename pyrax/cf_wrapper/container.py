@@ -104,7 +104,7 @@ class Container(object):
         specified name.
         """
         if isinstance(name, str):
-            name = name.decode(pyrax.encoding)
+            name = name.decode(pyrax.get_encoding())
         ret = self._object_cache.get(name)
         if not ret:
             cont_objs = self.client.get_container_objects(self.name,

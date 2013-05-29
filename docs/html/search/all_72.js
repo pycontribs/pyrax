@@ -2,8 +2,11 @@ var searchData=
 [
   ['random_5fname',['random_name',['../namespacepyrax_1_1utils.html#a15ae8eb19e0cbaf0281e950aebca0962',1,'pyrax::utils']]],
   ['rax_5fidentity_2epy',['rax_identity.py',['../rax__identity_8py.html',1,'']]],
+  ['raxidentity',['RaxIdentity',['../classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html',1,'pyrax::identity::rax_identity']]],
+  ['read_5fconfig',['read_config',['../classpyrax_1_1Settings.html#a53943930dc298ed49aa0950b4898bb65',1,'pyrax::Settings']]],
   ['recordresultsiterator',['RecordResultsIterator',['../classpyrax_1_1clouddns_1_1RecordResultsIterator.html',1,'pyrax::clouddns']]],
   ['region_5fname',['region_name',['../classpyrax_1_1client_1_1BaseClient.html#a326b5b91b887c67a677e2eb509b569b6',1,'pyrax::client::BaseClient']]],
+  ['regions',['regions',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a4c4786354df7358bf12c3c65069dd8b7',1,'pyrax::base_identity::BaseAuth.regions()'],['../namespacepyrax.html#a2b45bebec67926b49ea55f14eb0b8f8e',1,'pyrax.regions()']]],
   ['reload',['reload',['../classpyrax_1_1resource_1_1BaseResource.html#aaef8955b9d3e2f5ddb4a016b60f14d7f',1,'pyrax::resource::BaseResource']]],
   ['remove_5fcontainer_5fmetadata_5fkey',['remove_container_metadata_key',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a91fcdf99119a696e0b626957628605bb',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['remove_5ffrom_5fcache',['remove_from_cache',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#adf3d192d83c2f53a96b0bd594c15b84d',1,'pyrax::cf_wrapper::container::Container']]],

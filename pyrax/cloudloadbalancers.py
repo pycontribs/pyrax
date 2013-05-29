@@ -1106,6 +1106,8 @@ class CloudLoadBalancerClient(BaseClient):
     """
     This is the primary class for interacting with Cloud Load Balancers.
     """
+    name = "Cloud Load Balancers"
+
     def __init__(self, *args, **kwargs):
         # Bring these two classes into the Client namespace
         self.Node = Node

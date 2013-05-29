@@ -3,7 +3,7 @@ var searchData=
   ['callback',['callback',['../classpyrax_1_1utils_1_1__WaitThread.html#adf568d8baca0701772280d0011e68a72',1,'pyrax::utils::_WaitThread']]],
   ['callstack',['callstack',['../namespacepyrax.html#ae78f359d64f9eeed6dc0df4a1102dca8',1,'pyrax']]],
   ['catalog',['catalog',['../classpyrax_1_1service__catalog_1_1ServiceCatalog.html#a6be3d84fa45e3612e5d22f1015b288af',1,'pyrax::service_catalog::ServiceCatalog']]],
-  ['cdn_5fconnection',['cdn_connection',['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html#a9ebd30d3926b0fe246ca66e564caf148',1,'pyrax::cf_wrapper::client::Connection']]],
+  ['cdn_5fconnection',['cdn_connection',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a9ebd30d3926b0fe246ca66e564caf148',1,'pyrax::cf_wrapper::client::CFClient.cdn_connection()'],['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html#a9ebd30d3926b0fe246ca66e564caf148',1,'pyrax::cf_wrapper::client::Connection.cdn_connection()']]],
   ['cdn_5fenabled',['cdn_enabled',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a15b27a248ed9133d6a84543a420fe2f9',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['cdn_5fmeta_5fprefix',['cdn_meta_prefix',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a2952143e08d5da585f27b1b2271c03be',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['cdn_5furl',['cdn_url',['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html#af8614020022a9bd864339bd42b8fceb4',1,'pyrax::cf_wrapper::client::Connection']]],

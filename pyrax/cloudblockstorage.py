@@ -271,6 +271,8 @@ class CloudBlockStorageClient(BaseClient):
     """
     This is the primary class for interacting with Cloud Block Storage.
     """
+    name = "Cloud Block Storage"
+
     def _configure_manager(self):
         """
         Create the manager to handle the instances, and also another

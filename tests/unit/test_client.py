@@ -19,6 +19,9 @@ from pyrax import client
 
 from tests.unit import fakes
 
+DUMMY_URL = "http://example.com"
+ID_CLS = pyrax.settings.get("identity_class") or pyrax.rax_identity.RaxIdentity
+
 
 class ClientTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -30,7 +33,7 @@ class ClientTest(unittest.TestCase):
         self.client = client.BaseClient()
         client.BaseClient._configure_manager = save_conf
         self.client._manager = fakes.FakeManager()
-        self.id_svc = pyrax.identity
+        self.id_svc = pyrax.identity = ID_CLS()
 
     def tearDown(self):
         self.client = None
@@ -230,7 +233,7 @@ class ClientTest(unittest.TestCase):
         clt = self.client
         sav = clt.request
         clt.request = Mock()
-        url = "http://example.com"
+        url = DUMMY_URL
         method = "PUT"
         clt.request(url, method)
         clt.request.assert_called_once_with(url, method)
@@ -243,10 +246,11 @@ class ClientTest(unittest.TestCase):
         id_svc.authenticate = Mock()
         sav_req = clt.request
         clt.request = Mock(return_value=(1, 1))
-        url = "http://example.com"
+        url = DUMMY_URL
         method = "PUT"
         clt.unauthenticate()
-        clt.management_url = ""
+        clt.management_url = url
+        id_svc.token = ""
         clt._api_request(url, method)
         id_svc.authenticate.assert_called_once_with()
         clt.request = sav_req
@@ -259,7 +263,7 @@ class ClientTest(unittest.TestCase):
         id_svc.authenticate = Mock()
         sav_req = clt.request
         clt.request = Mock(return_value=(1, 1))
-        url = "http://example.com"
+        url = DUMMY_URL
         method = "PUT"
         clt.request = Mock(side_effect=exc.Unauthorized(""))
         clt.management_url = clt.auth_token = "test"
@@ -267,11 +271,27 @@ class ClientTest(unittest.TestCase):
         clt.request = sav_req
         clt.authenticate = sav_auth
 
+    def test_api_request_service_unavailable(self):
+        clt = self.client
+        id_svc = self.id_svc
+        sav_auth = id_svc.authenticate
+        id_svc.authenticate = Mock()
+        sav_req = clt.request
+        clt.request = Mock(return_value=(1, 1))
+        url = DUMMY_URL
+        method = "GET"
+        clt.request = Mock(side_effect=exc.Unauthorized(""))
+        clt.management_url = ""
+        self.assertRaises(exc.ServiceNotAvailable, clt._api_request, url,
+                method)
+        clt.request = sav_req
+        clt.authenticate = sav_auth
+
     def test_method_get(self):
         clt = self.client
         sav = clt._api_request
         clt._api_request = Mock()
-        url = "http://example.com"
+        url = DUMMY_URL
         clt.method_get(url)
         clt._api_request.assert_called_once_with(url, "GET")
         clt._api_request = sav
@@ -280,7 +300,7 @@ class ClientTest(unittest.TestCase):
         clt = self.client
         sav = clt._api_request
         clt._api_request = Mock()
-        url = "http://example.com"
+        url = DUMMY_URL
         clt.method_post(url)
         clt._api_request.assert_called_once_with(url, "POST")
         clt._api_request = sav
@@ -289,7 +309,7 @@ class ClientTest(unittest.TestCase):
         clt = self.client
         sav = clt._api_request
         clt._api_request = Mock()
-        url = "http://example.com"
+        url = DUMMY_URL
         clt.method_put(url)
         clt._api_request.assert_called_once_with(url, "PUT")
         clt._api_request = sav
@@ -298,7 +318,7 @@ class ClientTest(unittest.TestCase):
         clt = self.client
         sav = clt._api_request
         clt._api_request = Mock()
-        url = "http://example.com"
+        url = DUMMY_URL
         clt.method_delete(url)
         clt._api_request.assert_called_once_with(url, "DELETE")
         clt._api_request = sav

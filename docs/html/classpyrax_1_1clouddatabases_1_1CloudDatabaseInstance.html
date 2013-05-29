@@ -125,6 +125,8 @@ Inheritance diagram for CloudDatabaseInstance:</div>
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Need to override the default <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a444a1328efb32d5d9d2dcb2efe855d3b" title="Need to override the default get() behavior by making the &#39;volume&#39; attribute into a CloudDatabaseVolu...">get()</a> behavior by making the 'volume' attribute into a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html">CloudDatabaseVolume</a> object instead of the raw dict.  <a href="#a444a1328efb32d5d9d2dcb2efe855d3b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#ae180be633edf68a4a6599e8c64310c5f">list_databases</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of the names of all databases for this instance.  <a href="#ae180be633edf68a4a6599e8c64310c5f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a574e940a3d762174b715704b2267f38a">list_users</a></td></tr>
@@ -355,6 +357,27 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Enables login from any host for the root user and provides the user with a generated root password. </p>
+
+</div>
+</div>
+<a class="anchor" id="a444a1328efb32d5d9d2dcb2efe855d3b"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::get" ref="a444a1328efb32d5d9d2dcb2efe855d3b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Need to override the default <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a444a1328efb32d5d9d2dcb2efe855d3b" title="Need to override the default get() behavior by making the &#39;volume&#39; attribute into a CloudDatabaseVolu...">get()</a> behavior by making the 'volume' attribute into a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html">CloudDatabaseVolume</a> object instead of the raw dict. </p>
+
+<p>Reimplemented from <a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#a444a1328efb32d5d9d2dcb2efe855d3b">BaseResource</a>.</p>
 
 </div>
 </div>
@@ -601,7 +624,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 6 2013 09:10:15 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 29 2013 11:39:22 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

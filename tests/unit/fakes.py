@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 import json
 import uuid
 
@@ -29,7 +28,8 @@ from pyrax.cloudnetworks import CloudNetwork
 from pyrax.cloudnetworks import CloudNetworkClient
 
 import pyrax.exceptions as exc
-from pyrax.rax_identity import Identity
+from pyrax.identity.rax_identity import RaxIdentity
+from pyrax.identity.keystone_identity import KeystoneIdentity
 import pyrax.utils as utils
 
 
@@ -377,34 +377,28 @@ class FakeCloudNetwork(CloudNetwork):
         self.id = uuid.uuid4()
 
 
-class FakeIdentity(Identity):
+class FakeIdentity(RaxIdentity):
     """Class that returns canned authentication responses."""
     def __init__(self, *args, **kwargs):
         super(FakeIdentity, self).__init__(*args, **kwargs)
         self._good_username = "fakeuser"
-        self._good_api_key = "fakeapikey"
+        self._good_password = "fakeapikey"
 
     def authenticate(self):
         if ((self.username == self._good_username) and
-                (self.api_key == self._good_api_key)):
+                (self.password == self._good_password)):
             self._parse_response(self.fake_response())
             self.authenticated = True
         else:
             self.authenticated = False
-            raise exc.AuthenticationFailed(
-                    "No match for '%s'/'%s' username/api_key" %
-                    (self.username, self.api_key))
+            raise exc.AuthenticationFailed("No match for '%s'/'%s' "
+                    "username/password" % (self.username, self.password))
 
     def get_token(self, force=False):
         return self.token
 
     def fake_response(self):
         return fake_identity_response
-
-
-class FakeIdentityResponse(FakeResponse):
-    def read(self):
-        return json.dumps(fake_identity_response)
 
 
 fake_config_file = """[settings]
@@ -414,6 +408,62 @@ region = FAKE
 custom_user_agent = FAKE
 debug =
 """
+
+# This will handle both singular and plural responses.
+fake_identity_user_response = {
+        "users": [{"name": "fake", "id": "fake"},
+            {"name": "faker", "id": "faker"}],
+        "user": {"name": "fake", "id": "fake"}}
+
+fake_identity_tenant_response = {"name": "fake", "id": "fake",
+        "description": "fake", "enabled": True}
+
+fake_identity_tenants_response = {
+        "tenants": [
+                {"name": "fake", "id": "fake", "description": "fake",
+                        "enabled": True},
+                {"name": "faker", "id": "faker", "description": "faker",
+                        "enabled": True},
+                ]}
+
+fake_identity_tokens_response = {"access": {
+        u'metadata': {u'is_admin': 0,
+          u'roles': [u'asdfgh',
+           u'sdfghj',
+           u'dfghjk']},
+          u'serviceCatalog': [{u'endpoints': [{u'adminURL': u'http://10.0.0.0:8774/v2/qweqweqwe',
+             u'id': u'dddddddddd',
+             u'publicURL': u'http://10.0.0.0:8774/v2/qweqweqwe',
+             u'internalURL': u'http://10.0.0.0:8774/v2/qweqweqwe',
+             u'region': u'some_region'}],
+           u'endpoints_links': [],
+           u'name': u'nova',
+           u'type': u'compute'},
+          {u'endpoints': [{u'adminURL': u'http://10.0.0.0:35357/v2.0',
+             u'id': u'qweqweqwe',
+             u'internalURL': u'http://10.0.0.0:5000/v2.0',
+             u'publicURL': u'http://10.0.0.0:5000/v2.0',
+             u'region': u'some_region'}],
+           u'endpoints_links': [],
+           u'name': u'keystone',
+           u'type': u'identity'}],
+        u'token': {u'expires': u'1999-05-04T16:45:05Z',
+          u'id': u'qweqweqwe',
+          u'tenant': {u'description': u'admin Tenant',
+           u'enabled': True,
+           u'id': u'qweqweqwe',
+           u'name': u'admin'}},
+        u'user': {u'id': u'qweqweqwe',
+          u'name': u'admin',
+          u'roles': [{u'id': u'qweqweqwe', u'name': u'admin'},
+           {u'id': u'qweqweqwe', u'name': u'KeystoneAdmin'},
+           {u'id': u'qweqweqwe',
+            u'name': u'KeystoneServiceAdmin'}],
+          u'roles_links': [],
+          u'username': u'admin'}}}
+
+fake_identity_endpoints_response = {"access": {
+        "endpoints": ["fake", "faker", "fakest"]}}
 
 fake_identity_response = {u'access':
         {u'serviceCatalog': [
@@ -425,7 +475,11 @@ fake_identity_response = {u'access':
                              u'tenantId': u'000000'}],
              u'name': u'cloudLoadBalancers',
              u'type': u'rax:load-balancer'},
-            {u'endpoints': [{u'internalURL': u'https://snet-storage101.dfw1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
+            {u'endpoints': [{u'internalURL': u'https://snet-storage101.fake1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
+                             u'publicURL': u'https://storage101.fake1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
+                             u'region': u'FAKE',
+                             u'tenantId': u'MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff'},
+                            {u'internalURL': u'https://snet-storage101.dfw1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
                              u'publicURL': u'https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff',
                              u'region': u'DFW',
                              u'tenantId': u'MossoCloudFS_ffffffff-ffff-ffff-ffff-ffffffffffff'},
@@ -489,3 +543,21 @@ u'user': {u'RAX-AUTH:defaultRegion': u'',
    u'roles': [{u'description': u'User Admin Role.',
                u'id': u'3',
                u'name': u'identity:user-admin'}]}}}
+
+
+class FakeIdentityResponse(FakeResponse):
+    status_code = 200
+    response_type = "auth"
+    responses = {"auth": fake_identity_response,
+            "users": fake_identity_user_response,
+            "tenant": fake_identity_tenant_response,
+            "tenants": fake_identity_tenants_response,
+            "tokens": fake_identity_tokens_response,
+            "endpoints": fake_identity_endpoints_response,
+            }
+
+    def json(self):
+        return self.responses.get(self.response_type)
+
+    def read(self):
+        return json.dumps(fake_identity_response)

@@ -1,9 +1,10 @@
 var searchData=
 [
   ['data',['data',['../classpyrax_1_1clouddns_1_1CloudDNSRecord.html#a511ae0b1c13f95e5f08f1a0dd3da3d93',1,'pyrax::clouddns::CloudDNSRecord.data()'],['../classpyrax_1_1clouddns_1_1CloudDNSPTRRecord.html#a511ae0b1c13f95e5f08f1a0dd3da3d93',1,'pyrax::clouddns::CloudDNSPTRRecord.data()']]],
-  ['date_5fformat',['DATE_FORMAT',['../namespacepyrax_1_1rax__identity.html#a71e8d76a94f92b1959b2ea603c78df9e',1,'pyrax::rax_identity']]],
+  ['date_5fformat',['DATE_FORMAT',['../namespacepyrax_1_1base__identity.html#a71e8d76a94f92b1959b2ea603c78df9e',1,'pyrax::base_identity']]],
   ['default_5fcdn_5fttl',['default_cdn_ttl',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a15a3ad1a3abde8c5a3fede95c2b24c19',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['default_5fdelay',['DEFAULT_DELAY',['../namespacepyrax_1_1clouddns.html#a0695d4ce7bb0b1de03ba3068cde8d89a',1,'pyrax::clouddns']]],
+  ['default_5fencoding',['default_encoding',['../namespacepyrax.html#ab8005f4babffb239fd05dbb8c38551b7',1,'pyrax']]],
   ['default_5fidentity_5ftype',['default_identity_type',['../namespacepyrax.html#a6968c64ea7e430cf6fe3f4c96ab2c5d7',1,'pyrax']]],
   ['default_5fregion',['default_region',['../namespacepyrax.html#abd0e51df0335ddf4a0ebf84b4e511b16',1,'pyrax']]],
   ['default_5ftimeout',['DEFAULT_TIMEOUT',['../namespacepyrax_1_1clouddns.html#aa66130c897c01393a63de104588aceb7',1,'pyrax::clouddns']]],
@@ -25,7 +26,8 @@ var searchData=
   ['delete_5fsession_5fpersistence',['delete_session_persistence',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerManager.html#af0e0d210eb8e8bf69ff5563e18a519ff',1,'pyrax::cloudloadbalancers::CloudLoadBalancerManager']]],
   ['delete_5fsnapshot',['delete_snapshot',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#ad17401ada26477d78dc6b08c99627544',1,'pyrax::cloudblockstorage::CloudBlockStorageClient']]],
   ['delete_5fssl_5ftermination',['delete_ssl_termination',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a122b3212f2bcd13226d89dcb2e888b34',1,'pyrax::cloudloadbalancers::CloudLoadBalancer.delete_ssl_termination()'],['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerManager.html#a122b3212f2bcd13226d89dcb2e888b34',1,'pyrax::cloudloadbalancers::CloudLoadBalancerManager.delete_ssl_termination()'],['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a122b3212f2bcd13226d89dcb2e888b34',1,'pyrax::cloudloadbalancers::CloudLoadBalancerClient.delete_ssl_termination()']]],
-  ['delete_5fuser',['delete_user',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a254d42e584df57805c2a190b073d28a4',1,'pyrax::clouddatabases::CloudDatabaseInstance.delete_user()'],['../classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a254d42e584df57805c2a190b073d28a4',1,'pyrax::clouddatabases::CloudDatabaseClient.delete_user()']]],
+  ['delete_5ftenant',['delete_tenant',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a8ee048770360eebc35e35105ca6968f7',1,'pyrax::base_identity::BaseAuth']]],
+  ['delete_5fuser',['delete_user',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a254d42e584df57805c2a190b073d28a4',1,'pyrax::base_identity::BaseAuth.delete_user()'],['../classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a254d42e584df57805c2a190b073d28a4',1,'pyrax::clouddatabases::CloudDatabaseInstance.delete_user()'],['../classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a254d42e584df57805c2a190b073d28a4',1,'pyrax::clouddatabases::CloudDatabaseClient.delete_user()']]],
   ['delete_5fvirtualip',['delete_virtualip',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#af5d840b35f43bbc8669b94337555bb81',1,'pyrax::cloudloadbalancers::CloudLoadBalancer.delete_virtualip()'],['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerManager.html#af5d840b35f43bbc8669b94337555bb81',1,'pyrax::cloudloadbalancers::CloudLoadBalancerManager.delete_virtualip()'],['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#af5d840b35f43bbc8669b94337555bb81',1,'pyrax::cloudloadbalancers::CloudLoadBalancerClient.delete_virtualip()']]],
   ['delete_5fvolume',['delete_volume',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#ab4d507038522284eb9943c4c3a9b64c6',1,'pyrax::cloudblockstorage::CloudBlockStorageClient']]],
   ['description',['description',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageSnapshot.html#a2661f439a4a94ffdcd5e47ae1da0bb1d',1,'pyrax::cloudblockstorage::CloudBlockStorageSnapshot.description()'],['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#a2661f439a4a94ffdcd5e47ae1da0bb1d',1,'pyrax::cloudblockstorage::CloudBlockStorageVolume.description()'],['../namespacesetup.html#a23af17c78302b71c14ef38ea40b8d1d7',1,'setup.description()']]],
@@ -46,5 +48,6 @@ var searchData=
   ['domainrecordnotunique',['DomainRecordNotUnique',['../classpyrax_1_1exceptions_1_1DomainRecordNotUnique.html',1,'pyrax::exceptions']]],
   ['domainrecordupdatefailed',['DomainRecordUpdateFailed',['../classpyrax_1_1exceptions_1_1DomainRecordUpdateFailed.html',1,'pyrax::exceptions']]],
   ['domainresultsiterator',['DomainResultsIterator',['../classpyrax_1_1clouddns_1_1DomainResultsIterator.html',1,'pyrax::clouddns']]],
-  ['domainupdatefailed',['DomainUpdateFailed',['../classpyrax_1_1exceptions_1_1DomainUpdateFailed.html',1,'pyrax::exceptions']]]
+  ['domainupdatefailed',['DomainUpdateFailed',['../classpyrax_1_1exceptions_1_1DomainUpdateFailed.html',1,'pyrax::exceptions']]],
+  ['duplicateuser',['DuplicateUser',['../classpyrax_1_1exceptions_1_1DuplicateUser.html',1,'pyrax::exceptions']]]
 ];

@@ -37,8 +37,8 @@ class CF_ClientTest(unittest.TestCase):
         pyrax.connect_to_cloud_databases = Mock()
         pyrax.connect_to_cloud_blockstorage = Mock()
         pyrax.identity = FakeIdentity()
-        pyrax.set_credentials("fakeuser", "fakeapikey")
-        pyrax.connect_to_cloudfiles()
+        pyrax.set_credentials("fakeuser", "fakeapikey", region="FAKE")
+        pyrax.connect_to_cloudfiles(region="FAKE")
         self.client = pyrax.cloudfiles
         self.client._container_cache = {}
         self.cont_name = utils.random_name()
@@ -839,14 +839,15 @@ class CF_ClientTest(unittest.TestCase):
     def test_cdn_request(self):
         client = self.client
         conn = client.connection
-        conn.cdn_connection.request = Mock()
-        conn.cdn_connection.getresponse = Mock()
-        conn.cdn_request("GET", path=["A", "B"])
-        call_args = conn.cdn_connection.request.call_args_list[0][0]
-        self.assertEqual(call_args[0], "GET")
-        self.assert_(call_args[1].endswith("A/B"))
-        hdrs = call_args[-1]
-        self.assert_("pyrax" in hdrs["User-Agent"])
+        if conn.cdn_connection is not None:
+            conn.cdn_connection.request = Mock()
+            conn.cdn_connection.getresponse = Mock()
+            conn.cdn_request("GET", path=["A", "B"])
+            call_args = conn.cdn_connection.request.call_args_list[0][0]
+            self.assertEqual(call_args[0], "GET")
+            self.assert_(call_args[1].endswith("A/B"))
+            hdrs = call_args[-1]
+            self.assert_("pyrax" in hdrs["User-Agent"])
 
     def test_handle_swiftclient_exception_container(self):
         client = self.client
