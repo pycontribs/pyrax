@@ -318,6 +318,8 @@ class CloudDatabaseClient(BaseClient):
     """
     This is the primary class for interacting with Cloud Databases.
     """
+    name = "Cloud Databases"
+
     def _configure_manager(self):
         """
         Creates a manager to handle the instances, and another

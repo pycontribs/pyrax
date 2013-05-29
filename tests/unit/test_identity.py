@@ -235,15 +235,14 @@ class IdentityTest(unittest.TestCase):
         requests.post = sav_post
 
     def test_list_users(self):
-        for cls in self.id_classes.values():
-            ident = cls()
-            resp = fakes.FakeIdentityResponse()
-            resp.response_type = "users"
-            ident.method_get = Mock(return_value=resp)
-            ret = ident.list_users()
-            self.assert_(isinstance(ret, list))
-            are_users = [isinstance(itm, base_identity.User) for itm in ret]
-            self.assert_(all(are_users))
+        ident = self.rax_identity_class()
+        resp = fakes.FakeIdentityResponse()
+        resp.response_type = "users"
+        ident.method_get = Mock(return_value=resp)
+        ret = ident.list_users()
+        self.assert_(isinstance(ret, list))
+        are_users = [isinstance(itm, pyrax.rax_identity.User) for itm in ret]
+        self.assert_(all(are_users))
 
     def test_find_user(self):
         ident = self.rax_identity_class()
@@ -252,7 +251,60 @@ class IdentityTest(unittest.TestCase):
         ident.method_get = Mock(return_value=resp)
         fake_uri = utils.random_name()
         ret = ident._find_user(fake_uri)
-        self.assert_(isinstance(ret, base_identity.User))
+        self.assert_(isinstance(ret, pyrax.rax_identity.User))
+
+    def test_find_user_by_name(self):
+        ident = self.rax_identity_class()
+        ident._find_user = Mock()
+        fake_name = utils.random_name()
+        ret = ident.find_user_by_name(fake_name)
+        ident._find_user.assert_called_with("users?name=%s" % fake_name)
+
+    def test_find_user_by_id(self):
+        ident = self.rax_identity_class()
+        ident._find_user = Mock()
+        fake_id = utils.random_name()
+        ret = ident.find_user_by_id(fake_id)
+        ident._find_user.assert_called_with("users/%s" % fake_id)
+
+    def test_create_user(self):
+        ident = self.rax_identity_class()
+        resp = fakes.FakeIdentityResponse()
+        resp.response_type = "users"
+        ident.method_post = Mock(return_value=resp)
+        fake_name = utils.random_name()
+        fake_email = utils.random_name()
+        fake_password = utils.random_name()
+        ident.create_user(fake_name, fake_email, fake_password)
+        cargs = ident.method_post.call_args
+        self.assertEqual(len(cargs), 2)
+        self.assertEqual(cargs[0], ("users", ))
+        data = cargs[1]["data"]["user"]
+        self.assertEqual(data["username"], fake_name)
+        self.assert_(fake_password in data.values())
+
+    def test_update_user(self):
+        ident = self.rax_identity_class()
+        resp = fakes.FakeIdentityResponse()
+        resp.response_type = "users"
+        ident.method_put = Mock(return_value=resp)
+        fake_name = utils.random_name()
+        fake_email = utils.random_name()
+        fake_username = utils.random_name()
+        fake_uid = utils.random_name()
+        fake_region = utils.random_name()
+        fake_enabled = random.choice((True, False))
+        ident.update_user(fake_name, email=fake_email, username=fake_username,
+                uid=fake_uid, defaultRegion=fake_region, enabled=fake_enabled)
+        cargs = ident.method_put.call_args
+        self.assertEqual(len(cargs), 2)
+        self.assertEqual(cargs[0], ("users/%s" % fake_name, ))
+        data = cargs[1]["data"]["user"]
+        self.assertEqual(data["enabled"], fake_enabled)
+        self.assertEqual(data["username"], fake_username)
+        self.assert_(fake_email in data.values())
+        self.assert_(fake_region in data.values())
+
 
     def test_find_user_by_name(self):
         ident = self.rax_identity_class()

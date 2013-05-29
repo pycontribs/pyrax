@@ -111,8 +111,9 @@ USER_AGENT = "pyrax/%s" % version.version
 # Do we output HTTP traffic for debugging?
 _http_debug = False
 
-# Regions available from the service catalog
+# Regions and services available from the service catalog
 regions = tuple()
+services = tuple()
 
 
 
@@ -135,7 +136,23 @@ class Settings(object):
         try:
             return self._settings[env][key]
         except KeyError:
-            return None
+            # See if it's set in the environment
+            env_dct = {
+                    "identity_type": "CLOUD_ID_TYPE",
+                    "auth_endpoint": "CLOUD_AUTH_ENDPOINT",
+                    "keyring_username": "CLOUD_KEYRING_USER",
+                    "region": "CLOUD_REGION",
+                    "tenant_id": "CLOUD_TENANT_ID",
+                    "tenant_name": "CLOUD_TENANT_NAME",
+                    "encoding": "CLOUD_ENCODING",
+                    "custom_user_agent": "CLOUD_USER_AGENT",
+                    "debug": "CLOUD_DEBUG",
+                    }
+            env_var = env_dct.get(key)
+            try:
+                return os.environ[env_var]
+            except KeyError:
+                return None
 
 
     def set(self, key, val, env=None):
@@ -166,15 +183,17 @@ class Settings(object):
                     "defined." % val)
         if val != self.environment:
             self._environment = val
-            if identity:
-                authenticate(connect=True)
+            clear_credentials()
+            _create_identity()
 
     environment = property(_getEnvironment, _setEnvironment, None,
             """Users can define several environments for use with pyrax. This
             holds the name of the current environment they are working in.
-            Changing this value will result in authenticating against the new
-            endpoint with the new creds, and will re-define the internal
-            services for pyrax, such as pyrax.cloudservers, etc.""")
+            Changing this value will discard any existing authentication
+            credentials, and will set all the individual clients for cloud
+            services, such as `pyrax.cloudservers`, to None. You must
+            authenticate against the new environment with the credentials
+            appropriate for that cloud provider.""")
 
 
     @property
@@ -285,13 +304,24 @@ def set_default_region(region):
     default_region = region
 
 
+def _create_identity():
+    """
+    Creates an instance of the current identity_class and assigns it to the
+    module-level name 'identity'.
+    """
+    global identity
+    cls = settings.get("identity_class")
+    if not cls:
+        raise exc.IdentityClassNotDefined("No identity class has "
+                "been defined for the current environment.")
+    identity = cls()
+
+
 def _assure_identity(fnc):
     """Ensures that the 'identity' attribute is not None."""
     def _wrapped(*args, **kwargs):
-        global identity
         if identity is None:
-            cls = settings.get("identity_class")
-            identity = cls()
+            _create_identity()
         return fnc(*args, **kwargs)
     return _wrapped
 
@@ -423,9 +453,12 @@ def authenticate(connect=True):
 
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
-    global identity, cloudservers, cloudfiles, cloud_loadbalancers
-    global cloud_databases, cloud_blockstorage, cloud_dns, cloud_networks
+    global identity, regions, services, cloudservers, cloudfiles
+    global cloud_loadbalancers, cloud_databases, cloud_blockstorage, cloud_dns
+    global cloud_networks
     identity = None
+    regions = tuple()
+    services = tuple()
     cloudservers = None
     cloudfiles = None
     cloud_loadbalancers = None

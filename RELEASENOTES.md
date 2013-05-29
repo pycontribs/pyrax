@@ -1,5 +1,10 @@
 # Release Notes for pyrax
 
+###2013.05.29 - Version 1.4.0
+- Added support for **all** OpenStack clouds.
+- Configuration files now support multiple cloud environments.
+- Configuration settings can now be stored in environment variables. These all begin with `CLOUD_`; a full list can be found in the [main pyrax documentation](https://github.com/rackspace/pyrax/tree/master/docs/pyrax_doc.md).
+
 ###2013.05.10 - Version 1.3.9
 - This fixes two issues: #63 and #67. The first fixes an incorrect path in the
     cloudfiles get_temp_url() function; the second adds the ability to specify

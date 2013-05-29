@@ -19,10 +19,10 @@ import pyrax.exceptions as exc
 
 
 class SmokeTester(object):
-    def __init__(self, dc):
+    def __init__(self, region):
         self.failures = []
         self.cleanup_items = []
-        self.auth(dc)
+        self.auth(region)
         self.cs = pyrax.cloudservers
         self.cf = pyrax.cloudfiles
         self.cbs = pyrax.cloud_blockstorage
@@ -39,11 +39,11 @@ class SmokeTester(object):
                 {"service": self.cnw, "name": "Cloud Networks"},
                 )
 
-    def auth(self, dc):
+    def auth(self, region):
         # Make sure that keyring has been set up with the account credentials.
-        print "Authenticating for region '%s'..." % dc
+        print "Authenticating for region '%s'..." % region
         try:
-            pyrax.keyring_auth(region=dc)
+            pyrax.keyring_auth(region=region)
             print "Success!"
         except Exception as e:
             print "FAIL!", e
@@ -59,6 +59,37 @@ class SmokeTester(object):
                 print "FAIL!"
                 self.failures.append("Service=%s" % service["name"])
         print
+
+    def run_tests(self):
+        services = pyrax.services
+        if "compute" in services:
+            print "Running 'compute' tests..."
+            self.cs_list_flavors()
+            self.cs_list_images()
+            self.cs_create_server()
+            self.cs_reboot_server()
+            self.cs_list_servers()
+            try:
+                self.cnw_create_network()
+                self.cnw_list_networks()
+            except exc.NotFound:
+                # Networking not supported
+                print " - Networking not supported"
+
+        if "database" in services:
+            print "Running 'database' tests..."
+            self.cdb_list_flavors()
+            self.cdb_create_instance()
+            self.cdb_create_db()
+            self.cdb_create_user()
+
+        if "object_store" in services:
+            print "Running 'object_store' tests..."
+            self.cf_create_container()
+            self.cf_list_containers()
+            self.cf_make_container_public()
+            self.cf_make_container_private()
+            self.cf_upload_file()
 
     def cs_list_flavors(self):
         print "Listing Flavors:",
@@ -121,7 +152,7 @@ class SmokeTester(object):
                 img.id, flavor.id)
         self.cleanup_items.append(self.smoke_server)
         self.smoke_server = pyrax.utils.wait_until(self.smoke_server, "status",
-                ["ACTIVE", "ERROR"], interval=15, attempts=0, verbose=True,
+                ["ACTIVE", "ERROR"], interval=15, verbose=True,
                 verbose_atts="progress")
         if self.smoke_server.status == "ERROR":
             print "Server creation failed!"
@@ -134,7 +165,7 @@ class SmokeTester(object):
         print "Rebooting server..."
         self.smoke_server.reboot()
         self.smoke_server = pyrax.utils.wait_until(self.smoke_server, "status",
-                ["ACTIVE", "ERROR"], interval=15, attempts=0, verbose=True,
+                ["ACTIVE", "ERROR"], interval=15, verbose=True,
                 verbose_atts="progress")
         if self.smoke_server.status == "ERROR":
             print "Server reboot failed!"
@@ -172,8 +203,8 @@ class SmokeTester(object):
                 flavor=self.cdb_flavors[0], volume=1)
         self.cleanup_items.append(self.smoke_instance)
         self.smoke_instance = pyrax.utils.wait_until(self.smoke_instance,
-                "status", ["ACTIVE", "ERROR"], interval=15, attempts=0,
-                verbose=True, verbose_atts="progress")
+                "status", ["ACTIVE", "ERROR"], interval=15, verbose=True,
+                verbose_atts="progress")
         if self.smoke_instance.status == "ACTIVE":
             print "Success!"
         else:
@@ -284,48 +315,29 @@ class SmokeTester(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the smoke tests!")
-    parser.add_argument("--dcs", "-d", action="append",
-                        help="DC to run tests against. Can be specified "
-                        "multiple times. If not specified, the default "
-                        "of ('DFW', 'ORD') will be used.")
+    parser.add_argument("--regions", "-r", action="append",
+            help="""Regions to run tests against. Can be specified multiple
+            times. If not specified, the default of pyrax.regions will be
+            used.""")
+    parser.add_argument("--env", "-e", help="""Configuration environment to
+            use for the test. If not specified, the `default` environment is
+            used.""")
     args = parser.parse_args()
-    DCs = args.dcs or ("DFW", "ORD")
+    regions = args.regions
+    env = args.env
+    if env:
+        pyrax.set_environment(env)
+
     start = time.time()
-    for dc in DCs:
+    pyrax.keyring_auth()
+    for region in pyrax.regions:
         print
         print "=" * 77
-        print "Starting test for region: %s" % dc
+        print "Starting test for region: %s" % region
         print "=" * 77
-        smoke_tester = SmokeTester(dc)
+        smoke_tester = SmokeTester(region)
         try:
-            smoke_tester.cs_list_flavors()
-            smoke_tester.cs_list_images()
-            smoke_tester.cs_create_server()
-            smoke_tester.cs_reboot_server()
-            smoke_tester.cs_list_servers()
-            try:
-                smoke_tester.cnw_create_network()
-                smoke_tester.cnw_list_networks()
-            except exc.NotFound:
-                # Networking not supported
-                print "Networking not supported"
-            # see if CDB is available
-            if smoke_tester.cdb.management_url:
-                smoke_tester.cdb_list_flavors()
-                smoke_tester.cdb_create_instance()
-                smoke_tester.cdb_create_db()
-                smoke_tester.cdb_create_user()
-            else:
-                print "Databases not supported"
-            if smoke_tester.cf.connection.uri:
-                # Will be None if no swift available.
-                smoke_tester.cf_create_container()
-                smoke_tester.cf_list_containers()
-                smoke_tester.cf_make_container_public()
-                smoke_tester.cf_make_container_private()
-                smoke_tester.cf_upload_file()
-            else:
-                print "Swift storage not supported"
+            smoke_tester.run_tests()
 
         finally:
             smoke_tester.cleanup()

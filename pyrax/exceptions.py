@@ -224,6 +224,9 @@ class PTRRecordDeletionFailed(PyraxException):
 class PTRRecordUpdateFailed(PyraxException):
     pass
 
+class ServiceNotAvailable(PyraxException):
+    pass
+
 class SnapshotNotAvailable(PyraxException):
     pass
 

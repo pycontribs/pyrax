@@ -975,6 +975,8 @@ class CloudDNSClient(BaseClient):
     """
     This is the primary class for interacting with Cloud DNS.
     """
+    name = "Cloud DNS"
+
     def _configure_manager(self):
         """
         Creates a manager to handle the instances, and another

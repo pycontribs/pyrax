@@ -54,10 +54,8 @@ class BaseAuth(object):
     tenant_id = ""
     tenant_name = ""
     authenticated = False
-    services = {}
-    http_log_debug = False
-    regions = set()
     user_agent = "pyrax"
+    http_log_debug = False
 
 
     def __init__(self, username=None, password=None, token=None,
@@ -67,6 +65,9 @@ class BaseAuth(object):
         self.token = token
         self._creds_file = credential_file
         self._region = region
+        self._timeout = timeout
+        self.services = {}
+        self.regions = set()
 
 
     @property
@@ -259,6 +260,7 @@ class BaseAuth(object):
                     pass
         self.regions.discard("ALL")
         pyrax.regions = tuple(self.regions)
+        pyrax.services = tuple(self.services.keys())
         user = access["user"]
         self.user = {}
         self.user["id"] = user["id"]

@@ -227,9 +227,11 @@ class PyraxInitTest(unittest.TestCase):
     @patch('pyrax._cs_client.Client', new=fakes.FakeCSClient)
     def test_connect_to_cloudservers(self):
         pyrax.cloudservers = None
+        sav = pyrax.connect_to_cloudservers
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
         pyrax.cloudservers = pyrax.connect_to_cloudservers()
         self.assertIsNotNone(pyrax.cloudservers)
+        pyrax.connect_to_cloudservers = sav
 
     @patch('pyrax._cf.CFClient', new=fakes.FakeService)
     def test_connect_to_cloudfiles(self):
@@ -254,11 +256,16 @@ class PyraxInitTest(unittest.TestCase):
         self.assertIsNotNone(pyrax.cloud_databases)
 
     def test_set_http_debug(self):
+        pyrax.cloudservers = None
+        sav = pyrax.connect_to_cloudservers
+        pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
+        pyrax.cloudservers = pyrax.connect_to_cloudservers()
         pyrax.cloudservers.http_log_debug = False
         pyrax.set_http_debug(True)
         self.assertTrue(pyrax.cloudservers.http_log_debug)
         pyrax.set_http_debug(False)
         self.assertFalse(pyrax.cloudservers.http_log_debug)
+        pyrax.connect_to_cloudservers = sav
 
     def test_get_encoding(self):
         sav = pyrax.get_setting

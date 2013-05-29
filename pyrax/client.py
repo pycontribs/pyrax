@@ -59,6 +59,8 @@ class BaseClient(httplib2.Http):
     """
     # This will get set by pyrax when the service is started.
     user_agent = None
+    # Each client subclass should set their own name.
+    name = "base"
 
     def __init__(self, region_name=None, endpoint_type="publicURL",
             management_url=None, service_type=None, service_name=None,
@@ -231,6 +233,11 @@ class BaseClient(httplib2.Http):
         if not all((self.management_url, id_svc.token, id_svc.tenant_id)):
             id_svc.authenticate()
 
+        if not self.management_url:
+            # We've authenticated but no management_url has been set. This
+            # indicates that the service is not available.
+            raise exc.ServiceNotAvailable("The '%s' service is not available."
+                    % self)
         # Perform the request once. If we get a 401 back then it
         # might be because the auth token expired, so try to
         # re-authenticate and try again. If it still fails, bail.
