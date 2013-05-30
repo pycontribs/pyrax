@@ -12,6 +12,7 @@ from pyrax import CloudDatabaseFlavor
 from pyrax import CloudDatabaseInstance
 from pyrax import CloudDatabaseUser
 from pyrax.clouddatabases import assure_instance
+from pyrax.clouddatabases import CloudDatabaseUserManager
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
@@ -107,6 +108,7 @@ class CloudDatabasesTest(unittest.TestCase):
         inst = self.instance
         sav = inst._user_manager.create
         inst._user_manager.create = Mock()
+        inst._user_manager.find = Mock()
         inst.create_user(name="test", password="testpw",
                 database_names="testdb")
         inst._user_manager.create.assert_called_once_with(name="test",
@@ -308,15 +310,105 @@ class CloudDatabasesTest(unittest.TestCase):
         inst.root_user_status.assert_called_once_with()
         inst.root_user_status = sav
 
+    @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
+    def test_get_user_by_client(self):
+        clt = self.client
+        inst = self.instance
+        sav = inst.get_user
+        inst.get_user = Mock()
+        fakeuser = utils.random_name()
+        clt.get_user(inst, fakeuser)
+        inst.get_user.assert_called_once_with(fakeuser)
+        inst.get_user = sav
+
     def test_get_user(self):
         inst = self.instance
         good_name = utils.random_name()
-        bad_name = utils.random_name()
         user = fakes.FakeDatabaseUser(manager=None, info={"name": good_name})
-        inst.list_users = Mock(return_value=[user])
+        inst._user_manager.get = Mock(return_value=user)
         returned = inst.get_user(good_name)
         self.assertEqual(returned, user)
+
+    def test_get_user_fail(self):
+        inst = self.instance
+        bad_name = utils.random_name()
+        inst._user_manager.get = Mock(side_effect=exc.NoSuchDatabaseUser())
         self.assertRaises(exc.NoSuchDatabaseUser, inst.get_user, bad_name)
+
+    def test_get_db_names(self):
+        inst = self.instance
+        mgr = inst._user_manager
+        mgr.instance = inst
+        dbname1 = utils.random_name(ascii_only=True)
+        dbname2 = utils.random_name(ascii_only=True)
+        sav = inst.list_databases
+        inst.list_databases = Mock(return_value=((dbname1, dbname2)))
+        resp = mgr._get_db_names(dbname1)
+        self.assertEqual(resp, [dbname1])
+        inst.list_databases = sav
+
+    def test_get_db_names_not_strict(self):
+        inst = self.instance
+        mgr = inst._user_manager
+        mgr.instance = inst
+        dbname1 = utils.random_name(ascii_only=True)
+        dbname2 = utils.random_name(ascii_only=True)
+        sav = inst.list_databases
+        inst.list_databases = Mock(return_value=((dbname1, dbname2)))
+        resp = mgr._get_db_names("BAD", strict=False)
+        self.assertEqual(resp, ["BAD"])
+        inst.list_databases = sav
+
+    def test_get_db_names_fail(self):
+        inst = self.instance
+        mgr = inst._user_manager
+        mgr.instance = inst
+        dbname1 = utils.random_name(ascii_only=True)
+        dbname2 = utils.random_name(ascii_only=True)
+        sav = inst.list_databases
+        inst.list_databases = Mock(return_value=((dbname1, dbname2)))
+        self.assertRaises(exc.NoSuchDatabase, mgr._get_db_names, "BAD")
+        inst.list_databases = sav
+
+    def test_change_user_password(self):
+        inst = self.instance
+        fakeuser = utils.random_name()
+        newpass = utils.random_name()
+        resp = fakes.FakeResponse()
+        resp.status = 202
+        inst._user_manager.api.method_put = Mock(return_value=(resp, {}))
+        inst.change_user_password(fakeuser, newpass)
+        inst._user_manager.api.method_put.assert_called_once_with("/None",
+                body={"users": [{"password": newpass, "name": fakeuser}]})
+
+    def test_list_user_access(self):
+        inst = self.instance
+        dbname1 = utils.random_name(ascii_only=True)
+        dbname2 = utils.random_name(ascii_only=True)
+        acc = {"databases": [{"name": dbname1}, {"name": dbname2}]}
+        inst._user_manager.api.method_get = Mock(return_value=(None, acc))
+        db_list = inst.list_user_access("fakeuser")
+        self.assertEqual(len(db_list), 2)
+        self.assertTrue(db_list[0].name in (dbname1, dbname2))
+
+    def test_grant_user_access(self):
+        inst = self.instance
+        fakeuser = utils.random_name(ascii_only=True)
+        dbname1 = utils.random_name(ascii_only=True)
+        inst._user_manager.api.method_put = Mock(return_value=(None, None))
+        inst.grant_user_access(fakeuser, dbname1, strict=False)
+        inst._user_manager.api.method_put.assert_called_once_with(
+                "/None/%s/databases" % fakeuser, body={"databases": [{"name":
+                dbname1}]})
+
+    def test_revoke_user_access(self):
+        inst = self.instance
+        fakeuser = utils.random_name(ascii_only=True)
+        dbname1 = utils.random_name(ascii_only=True)
+        inst._user_manager.api.method_delete = Mock(return_value=(None, None))
+        inst.revoke_user_access(fakeuser, dbname1, strict=False)
+        inst._user_manager.api.method_delete.assert_called_once_with(
+                "/None/%s/databases/%s" % (fakeuser, dbname1))
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_resize_for_instance(self):

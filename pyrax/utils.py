@@ -381,6 +381,20 @@ def get_id(id_or_obj):
         return id_or_obj
 
 
+def get_name(name_or_obj):
+    """
+    Returns the 'name' attribute of 'name_or_obj' if present; if not,
+    returns 'name_or_obj'.
+    """
+    if isinstance(name_or_obj, basestring):
+        # It's a name
+        return name_or_obj
+    try:
+        return name_or_obj.name
+    except AttributeError:
+        raise exc.MissingName(name_or_obj)
+
+
 def match_pattern(nm, patterns):
     """
     Compares `nm` with the supplied patterns, and returns True if it matches

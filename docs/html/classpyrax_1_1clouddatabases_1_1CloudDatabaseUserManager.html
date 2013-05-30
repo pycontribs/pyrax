@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>pyrax: CloudDatabaseUser Class Reference</title>
+<title>pyrax: CloudDatabaseUserManager Class Reference</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -94,62 +94,61 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul>
       <li class="navelem"><a class="el" href="namespacepyrax.html">pyrax</a>      </li>
       <li class="navelem"><a class="el" href="namespacepyrax_1_1clouddatabases.html">clouddatabases</a>      </li>
-      <li class="navelem"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html">CloudDatabaseUser</a>      </li>
+      <li class="navelem"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html">CloudDatabaseUserManager</a>      </li>
     </ul>
   </div>
 </div>
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a>  </div>
+<a href="#pub-methods">Public Member Functions</a>  </div>
   <div class="headertitle">
-<div class="title">CloudDatabaseUser Class Reference</div>  </div>
+<div class="title">CloudDatabaseUserManager Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<!-- doxytag: class="pyrax::clouddatabases::CloudDatabaseUser" --><!-- doxytag: inherits="pyrax::resource::BaseResource" -->
-<p>This class represents a user on a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html" title="This class represents a MySQL instance in the cloud.">CloudDatabaseInstance</a>.  
- <a href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#details">More...</a></p>
+<!-- doxytag: class="pyrax::clouddatabases::CloudDatabaseUserManager" --><!-- doxytag: inherits="pyrax::manager::BaseManager" -->
+<p>This class handles operations on the users in a Cloud Database.  
+ <a href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html#details">More...</a></p>
 <div class="dynheader">
-Inheritance diagram for CloudDatabaseUser:</div>
+Inheritance diagram for CloudDatabaseUserManager:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.png" usemap="#CloudDatabaseUser_map" alt=""/>
-  <map id="CloudDatabaseUser_map" name="CloudDatabaseUser_map">
-<area href="classpyrax_1_1resource_1_1BaseResource.html" title="A resource represents a particular instance of an object (server, flavor, etc)." alt="BaseResource" shape="rect" coords="0,0,124,24"/>
+  <img src="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.png" usemap="#CloudDatabaseUserManager_map" alt=""/>
+  <map id="CloudDatabaseUserManager_map" name="CloudDatabaseUserManager_map">
+<area href="classpyrax_1_1manager_1_1BaseManager.html" title="Managers interact with a particular type of API (servers, databases, dns, etc.) and provide CRUD oper..." alt="BaseManager" shape="rect" coords="0,0,175,24"/>
 </map>
  </div></div>
 
-<p><a href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser-members.html">List of all members.</a></p>
+<p><a href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#ab48bde70a0927a83d62464cb0627c34b">delete</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This class doesn't have an 'id', so pass the name.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#ae31deef7bd7c6a09c61bf83c66f5a16a">change_password</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the password for this user to the supplied value.  <a href="#ae31deef7bd7c6a09c61bf83c66f5a16a"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#a2fb19d440ebd8bffa91bb9245530953f">list_user_access</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html#a3d7d0bcb779f81d9803cb5afffed69a3">change_user_password</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the password for the user to the supplied value.  <a href="#a3d7d0bcb779f81d9803cb5afffed69a3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html#a2fb19d440ebd8bffa91bb9245530953f">list_user_access</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all database names for which the specified user has access rights.  <a href="#a2fb19d440ebd8bffa91bb9245530953f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#a5f0d96262a0ff5432f3f9f0552a1e13f">grant_user_access</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html#a5f0d96262a0ff5432f3f9f0552a1e13f">grant_user_access</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives access to the databases listed in `db_names` to the user.  <a href="#a5f0d96262a0ff5432f3f9f0552a1e13f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#a37c095a57f86b13406baed47d9cc1dd2">revoke_user_access</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html#a37c095a57f86b13406baed47d9cc1dd2">revoke_user_access</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Revokes access to the databases listed in `db_names` for the user.  <a href="#a37c095a57f86b13406baed47d9cc1dd2"></a><br/></td></tr>
-<tr><td colspan="2"><h2><a name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#ab6f7bc0828ee3d547e244dd336572d76">get_details</a> = False</td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>This class represents a user on a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html" title="This class represents a MySQL instance in the cloud.">CloudDatabaseInstance</a>. </p>
-<p>It is not a true cloud entity, but a convenience object for dealing with users for instances. </p>
+<div class="textblock"><p>This class handles operations on the users in a Cloud Database. </p>
 </div><hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="ae31deef7bd7c6a09c61bf83c66f5a16a"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseUser::change_password" ref="ae31deef7bd7c6a09c61bf83c66f5a16a" args="" -->
+<a class="anchor" id="a3d7d0bcb779f81d9803cb5afffed69a3"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseUserManager::change_user_password" ref="a3d7d0bcb779f81d9803cb5afffed69a3" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#ae31deef7bd7c6a09c61bf83c66f5a16a">change_password</a> </td>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html#a3d7d0bcb779f81d9803cb5afffed69a3">change_user_password</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>user</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -166,41 +165,26 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Changes the password for this user to the supplied value. </p>
+<p>Changes the password for the user to the supplied value. </p>
 <p>Returns None upon success; raises PasswordChangeFailed if the call does not complete successfully. </p>
 
 </div>
 </div>
-<a class="anchor" id="ab48bde70a0927a83d62464cb0627c34b"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseUser::delete" ref="ab48bde70a0927a83d62464cb0627c34b" args="" -->
+<a class="anchor" id="a5f0d96262a0ff5432f3f9f0552a1e13f"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseUserManager::grant_user_access" ref="a5f0d96262a0ff5432f3f9f0552a1e13f" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#ab48bde70a0927a83d62464cb0627c34b">delete</a> </td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>This class doesn't have an 'id', so pass the name. </p>
-
-<p>Reimplemented from <a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#ab48bde70a0927a83d62464cb0627c34b">BaseResource</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a5f0d96262a0ff5432f3f9f0552a1e13f"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseUser::grant_user_access" ref="a5f0d96262a0ff5432f3f9f0552a1e13f" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#a5f0d96262a0ff5432f3f9f0552a1e13f">grant_user_access</a> </td>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html#a5f0d96262a0ff5432f3f9f0552a1e13f">grant_user_access</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>user</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -224,19 +208,31 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Gives access to the databases listed in `db_names` to the user. </p>
+<p>You may pass in either a single db or a list of dbs.</p>
+<p>If any of the databases do not exist, a NoSuchDatabase exception will be raised, unless you specify `strict=False` in the call. </p>
 
 </div>
 </div>
-<a class="anchor" id="a2fb19d440ebd8bffa91bb9245530953f"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseUser::list_user_access" ref="a2fb19d440ebd8bffa91bb9245530953f" args="" -->
+<a class="anchor" id="a2fb19d440ebd8bffa91bb9245530953f"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseUserManager::list_user_access" ref="a2fb19d440ebd8bffa91bb9245530953f" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#a2fb19d440ebd8bffa91bb9245530953f">list_user_access</a> </td>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html#a2fb19d440ebd8bffa91bb9245530953f">list_user_access</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>user</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
@@ -246,15 +242,21 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a37c095a57f86b13406baed47d9cc1dd2"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseUser::revoke_user_access" ref="a37c095a57f86b13406baed47d9cc1dd2" args="" -->
+<a class="anchor" id="a37c095a57f86b13406baed47d9cc1dd2"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseUserManager::revoke_user_access" ref="a37c095a57f86b13406baed47d9cc1dd2" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#a37c095a57f86b13406baed47d9cc1dd2">revoke_user_access</a> </td>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html#a37c095a57f86b13406baed47d9cc1dd2">revoke_user_access</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>user</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -278,22 +280,7 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Revokes access to the databases listed in `db_names` for the user. </p>
-
-</div>
-</div>
-<hr/><h2>Member Data Documentation</h2>
-<a class="anchor" id="ab6f7bc0828ee3d547e244dd336572d76"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseUser::get_details" ref="ab6f7bc0828ee3d547e244dd336572d76" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html#ab6f7bc0828ee3d547e244dd336572d76">get_details</a> = False<code> [static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#ab6f7bc0828ee3d547e244dd336572d76">BaseResource</a>.</p>
+<p>If any of the databases do not exist, a NoSuchDatabase exception will be raised, unless you specify `strict=False` in the call. </p>
 
 </div>
 </div>

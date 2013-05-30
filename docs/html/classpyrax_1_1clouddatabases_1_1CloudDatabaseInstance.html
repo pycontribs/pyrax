@@ -131,16 +131,24 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of the names of all databases for this instance.  <a href="#ae180be633edf68a4a6599e8c64310c5f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a574e940a3d762174b715704b2267f38a">list_users</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of the names of all users for this instance.  <a href="#a574e940a3d762174b715704b2267f38a"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a88023cfc83e7c3c6343e1b37f1fb7f4f">get_database</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the database in this instance with the specified name, and returns a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseDatabase.html" title="This class represents a database on a CloudDatabaseInstance.">CloudDatabaseDatabase</a> object.  <a href="#a88023cfc83e7c3c6343e1b37f1fb7f4f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a1090fc6dec8ecff76b4f98b2d028401e">get_user</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the user in this instance with the specified name, and returns a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html" title="This class represents a user on a CloudDatabaseInstance.">CloudDatabaseUser</a> object.  <a href="#a1090fc6dec8ecff76b4f98b2d028401e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a88023cfc83e7c3c6343e1b37f1fb7f4f">get_database</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the database in this instance with the specified name, and returns a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseDatabase.html" title="This class represents a database on a CloudDatabaseInstance.">CloudDatabaseDatabase</a> object.  <a href="#a88023cfc83e7c3c6343e1b37f1fb7f4f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a287e0595d14610db48012f18e10d60d5">create_database</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a database with the specified name.  <a href="#a287e0595d14610db48012f18e10d60d5"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#af18e8e2e2ba1d65bb30314133332044d">create_user</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a user with the specified name and password, and gives that user access to the specified database(s).  <a href="#af18e8e2e2ba1d65bb30314133332044d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a55a252283f51314fe80a1f74f4ebf46f">delete_database</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the specified database.  <a href="#a55a252283f51314fe80a1f74f4ebf46f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a3d7d0bcb779f81d9803cb5afffed69a3">change_user_password</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the password for the user to the supplied value.  <a href="#a3d7d0bcb779f81d9803cb5afffed69a3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a2fb19d440ebd8bffa91bb9245530953f">list_user_access</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all database names for which the specified user has access rights.  <a href="#a2fb19d440ebd8bffa91bb9245530953f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a5f0d96262a0ff5432f3f9f0552a1e13f">grant_user_access</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives access to the databases listed in `db_names` to the user.  <a href="#a5f0d96262a0ff5432f3f9f0552a1e13f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a37c095a57f86b13406baed47d9cc1dd2">revoke_user_access</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Revokes access to the databases listed in `db_names` for the user.  <a href="#a37c095a57f86b13406baed47d9cc1dd2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a254d42e584df57805c2a190b073d28a4">delete_user</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the specified user.  <a href="#a254d42e584df57805c2a190b073d28a4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a9c5207c3983e465d9880d89e890d8bfc">enable_root_user</a></td></tr>
@@ -197,6 +205,42 @@ Properties</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a3d7d0bcb779f81d9803cb5afffed69a3"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::change_user_password" ref="a3d7d0bcb779f81d9803cb5afffed69a3" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a3d7d0bcb779f81d9803cb5afffed69a3">change_user_password</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>user</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_pass</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Changes the password for the user to the supplied value. </p>
+<p>Returns None upon success; raises PasswordChangeFailed if the call does not complete successfully. </p>
+
+</div>
+</div>
 <a class="anchor" id="a287e0595d14610db48012f18e10d60d5"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::create_database" ref="a287e0595d14610db48012f18e10d60d5" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -325,7 +369,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>name_or_obj</em>&#160;</td>
+          <td class="paramname"><em>user</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -441,6 +485,47 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a5f0d96262a0ff5432f3f9f0552a1e13f"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::grant_user_access" ref="a5f0d96262a0ff5432f3f9f0552a1e13f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a5f0d96262a0ff5432f3f9f0552a1e13f">grant_user_access</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>user</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>db_names</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>strict</em> = <code>True</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Gives access to the databases listed in `db_names` to the user. </p>
+
+</div>
+</div>
 <a class="anchor" id="ae180be633edf68a4a6599e8c64310c5f"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::list_databases" ref="ae180be633edf68a4a6599e8c64310c5f" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -457,6 +542,35 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Returns a list of the names of all databases for this instance. </p>
+
+</div>
+</div>
+<a class="anchor" id="a2fb19d440ebd8bffa91bb9245530953f"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::list_user_access" ref="a2fb19d440ebd8bffa91bb9245530953f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a2fb19d440ebd8bffa91bb9245530953f">list_user_access</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>user</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a list of all database names for which the specified user has access rights. </p>
 
 </div>
 </div>
@@ -556,6 +670,47 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a37c095a57f86b13406baed47d9cc1dd2"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::revoke_user_access" ref="a37c095a57f86b13406baed47d9cc1dd2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a37c095a57f86b13406baed47d9cc1dd2">revoke_user_access</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>user</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>db_names</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>strict</em> = <code>True</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Revokes access to the databases listed in `db_names` for the user. </p>
+
+</div>
+</div>
 <a class="anchor" id="a269cc22e852b374875720085d24b9922"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::root_user_status" ref="a269cc22e852b374875720085d24b9922" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -624,7 +779,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 29 2013 11:39:22 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu May 30 2013 14:51:54 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
