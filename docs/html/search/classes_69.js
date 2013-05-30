@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['identityclassnotdefined',['IdentityClassNotDefined',['../classpyrax_1_1exceptions_1_1IdentityClassNotDefined.html',1,'pyrax::exceptions']]],
   ['invalidcdnmetadata',['InvalidCDNMetadata',['../classpyrax_1_1exceptions_1_1InvalidCDNMetadata.html',1,'pyrax::exceptions']]],
   ['invalidconfigurationfile',['InvalidConfigurationFile',['../classpyrax_1_1exceptions_1_1InvalidConfigurationFile.html',1,'pyrax::exceptions']]],
   ['invalidcredentialfile',['InvalidCredentialFile',['../classpyrax_1_1exceptions_1_1InvalidCredentialFile.html',1,'pyrax::exceptions']]],
