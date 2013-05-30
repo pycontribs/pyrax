@@ -99,17 +99,17 @@ You don't have to authenticate to each service separately; pyrax handles that fo
 You can control how pyrax behaves through the configuration file. It should be named `~/.pyrax.cfg`. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Alternatively, you may set these values using environment variables in the OS. Note that the configuration file values take precendence over any environment variables. Environment variables also do not support multiple configurations.
 
 ### Configuration Environments
-Pyrax supports multiple configurations, which are referred to as ***envrironments***. An envrironment is a separate OpenStack deployment with which you want to interact. A common situation is when you have a private cloud for some of your work, but also have a public cloud account for the rest. Each of these clouds require different authentication endpoints, and may require different settings for other things such as region, identity type, etc.
+Pyrax supports multiple configurations, which are referred to as ***environments***. An environment is a separate OpenStack deployment with which you want to interact. A common situation is when you have a private cloud for some of your work, but also have a public cloud account for the rest. Each of these clouds require different authentication endpoints, and may require different settings for other things such as region, identity type, etc.
 
-Each envrironment is a separate section in the configuration file, and the section name is used as the name of the envrironment. You can name your environments whatever makes sense to you, but there are two special names: '**default**' and '**settings**'. If a section is named 'default', it is used by pyrax unless you explicitly set a different environment. Also, for backwards compatibility with versions of pyrax before 1.4, a section named 'settings' is interpreted as the default. Those versions only supported a single environment in the configuration file, and used 'settings' as the section name. **NOTE**: if you do not have a section named either 'default' or 'settings', then the first section listed is used as the default environment.
+Each environment is a separate section in the configuration file, and the section name is used as the name of the environment. You can name your environments whatever makes sense to you, but there are two special names: '**default**' and '**settings**'. If a section is named 'default', it is used by pyrax unless you explicitly set a different environment. Also, for backwards compatibility with versions of pyrax before 1.4, a section named 'settings' is interpreted as the default. Those versions only supported a single environment in the configuration file, and used 'settings' as the section name. **NOTE**: if you do not have a section named either 'default' or 'settings', then the first section listed is used as the default environment.
 
 ### Changing Environments
-If you have multiple environments, you need to set the desired envrironment before you authenticate and connect to the services. If you want the `default` environment, you don't need to do anything. But if you want to connect to a different provider, you should run the following:
+If you have multiple environments, you need to set the desired environment before you authenticate and connect to the services. If you want the `default` environment, you don't need to do anything. But if you want to connect to a different provider, you should run the following:
 
     import pyrax
     pyrax.set_environment("desired_environment")
 
-Note that changing the environment requires that you authenticate against the new envrironment, and create new connections to the various services. In other words, if you had already authenticated so that a service such as `pyrax.cloudservers` referenced the compute service on that cloud, changing the environment to point to a different cloud discards the previous identity and service connections, so that now `pyrax.cloudservers` is `None`. Once you authenticate in the new environment, `pyrax.cloudservers` references the compute service on the cloud for the new environment.
+Note that changing the environment requires that you authenticate against the new environment, and create new connections to the various services. In other words, if you had already authenticated so that a service such as `pyrax.cloudservers` referenced the compute service on that cloud, changing the environment to point to a different cloud discards the previous identity and service connections, so that now `pyrax.cloudservers` is `None`. Once you authenticate in the new environment, `pyrax.cloudservers` references the compute service on the cloud for the new environment.
 
 
 ### Available Configuration Settings
@@ -146,13 +146,13 @@ Here is a sample:
 
 The above configuration file defines two environments: **private** and **public**. Since there is no 'default' or 'settings' section, the 'private' environment is the default, since it is listed first.
 
-When using the 'private' envrironment, pyrax uses Keystone authentication with the tenant name of 'demo', the tenant ID of 'abc123456', and the password stored in the keyring for user 'demo'. It also emits debugging messages for all HTTP requests and responses, and each request contains the standard `User-agent` header of 'pyrax/1.4.x'.
+When using the 'private' environment, pyrax uses Keystone authentication with the tenant name of 'demo', the tenant ID of 'abc123456', and the password stored in the keyring for user 'demo'. It also emits debugging messages for all HTTP requests and responses, and each request contains the standard `User-agent` header of 'pyrax/1.4.x'.
 
 If the environment is then changed to 'public', pyrax switches to Rackspace authentication against the ORD region, using the username 'joeracker'. It no longer emits debug messages, and all requests have the custom `User-agent` header of 'CrazyApp/2.0 pyrax/1.4.x'.
 
 
 ### Accessing Environment Information
-Pyrax offers several methods for querying and modifying envrionments and their settings. To start, you can determine the current environment by calling `pyrax.get_environment()`. You can also get a list of all defined envrionments by calling `pyrax.list_environments()`. And as mentioned above, you can switch the current envrionment by calling `pyrax.set_environment(new_env_name)`.
+Pyrax offers several methods for querying and modifying environments and their settings. To start, you can determine the current environment by calling `pyrax.get_environment()`. You can also get a list of all defined environments by calling `pyrax.list_environments()`. And as mentioned above, you can switch the current environment by calling `pyrax.set_environment(new_env_name)`.
 
 To get the value of a setting, call `pyrax.get_setting(key)`. Normally you will not need to change settings in the middle of a session, but just in case you do, you can use the `pyrax.set_setting(key, val)` method. Both of these methods work on the current environment by default. You can get/set settings in other environments with those calls by passing in the envrionment name as the optional `env` parameter to those methods.
 
