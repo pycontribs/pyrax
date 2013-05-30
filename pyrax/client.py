@@ -23,6 +23,7 @@ OpenStack Client interface. Handles the REST calls and responses.
 import logging
 import os
 import time
+from urllib import quote
 import urlparse
 
 import httplib2
@@ -245,9 +246,8 @@ class BaseClient(httplib2.Http):
             kwargs.setdefault("headers", {})["X-Auth-Token"] = id_svc.token
             if id_svc.tenant_id:
                 kwargs["headers"]["X-Auth-Project-Id"] = id_svc.tenant_id
-
-            resp, body = self._time_request(self.management_url + uri, method,
-                    **kwargs)
+            resp, body = self._time_request(self.management_url +
+                    quote(uri), method, **kwargs)
             return resp, body
         except exc.Unauthorized as ex:
             try:

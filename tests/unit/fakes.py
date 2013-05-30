@@ -10,6 +10,7 @@ from pyrax.client import BaseClient
 from pyrax.clouddatabases import CloudDatabaseClient
 from pyrax.clouddatabases import CloudDatabaseInstance
 from pyrax.clouddatabases import CloudDatabaseUser
+from pyrax.clouddatabases import CloudDatabaseUserManager
 from pyrax.clouddatabases import CloudDatabaseVolume
 from pyrax.cloudblockstorage import CloudBlockStorageClient
 from pyrax.cloudblockstorage import CloudBlockStorageVolume
@@ -232,7 +233,7 @@ class FakeDatabaseInstance(CloudDatabaseInstance):
         self.manager = FakeManager()
         self.manager.api = FakeDatabaseClient()
         self._database_manager = FakeManager()
-        self._user_manager = FakeManager()
+        self._user_manager = CloudDatabaseUserManager(FakeDatabaseClient())
         self.volume = FakeDatabaseVolume(self)
 
 
