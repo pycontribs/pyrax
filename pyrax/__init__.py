@@ -295,7 +295,7 @@ def set_setting(key, val, env=None):
     Changes the value of the specified key in the current environment, or in
     another environment if specified.
     """
-    return settings.get(key, val, env=env)
+    return settings.set(key, val, env=env)
 
 
 def set_default_region(region):
