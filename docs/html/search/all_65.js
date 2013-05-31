@@ -7,6 +7,7 @@ var searchData=
   ['endpointnotfound',['EndpointNotFound',['../classpyrax_1_1exceptions_1_1EndpointNotFound.html',1,'pyrax::exceptions']]],
   ['endpoints',['endpoints',['../classpyrax_1_1exceptions_1_1AmbiguousEndpoints.html#a00b95759168f601d56d8cdc26a894d46',1,'pyrax::exceptions::AmbiguousEndpoints']]],
   ['env',['env',['../namespacepyrax_1_1utils.html#a9790d3a239a8e290bffbeef17c48f017',1,'pyrax::utils']]],
+  ['env_5fdct',['env_dct',['../classpyrax_1_1Settings.html#af10cee202a039548ef1872a4ebfcbaa4',1,'pyrax::Settings']]],
   ['environment',['environment',['../classpyrax_1_1Settings.html#a33eefe2a73aa14ff1eaa54c293ab382d',1,'pyrax::Settings']]],
   ['environmentnotfound',['EnvironmentNotFound',['../classpyrax_1_1exceptions_1_1EnvironmentNotFound.html',1,'pyrax::exceptions']]],
   ['environments',['environments',['../classpyrax_1_1Settings.html#a989dd2f2e43c5e8b53cfd5933054c2ea',1,'pyrax::Settings']]],

@@ -1,5 +1,8 @@
 # Release Notes for pyrax
 
+###2013.05.30 - Version 1.4.2
+- Fixed several bugs related to the identity and config file changes.
+
 ###2013.05.30 - Version 1.4.1
 - Added support for new Cloud Database user APIs.
 - Fixed a bug in which an exception class was not defined (#77)
