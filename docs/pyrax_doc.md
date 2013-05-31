@@ -98,18 +98,27 @@ You don't have to authenticate to each service separately; pyrax handles that fo
 ## Pyrax Configuration
 You can control how pyrax behaves through the configuration file. It should be named `~/.pyrax.cfg`. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Alternatively, you may set these values using environment variables in the OS. Note that the configuration file values take precendence over any environment variables. Environment variables also do not support multiple configurations.
 
-### Configuration Environments
-Pyrax supports multiple configurations, which are referred to as ***envrironments***. An envrironment is a separate OpenStack deployment with which you want to interact. A common situation is when you have a private cloud for some of your work, but also have a public cloud account for the rest. Each of these clouds require different authentication endpoints, and may require different settings for other things such as region, identity type, etc.
+**NOTE**: At the very least, you *must* set the `identity_type` setting so that can use the correct identity class. Prior versions only worked with Rackspace identity, but that is no longer the case. If you don't want to use a configuration file or an environment variable, you can do this in code:
 
-Each envrironment is a separate section in the configuration file, and the section name is used as the name of the envrironment. You can name your environments whatever makes sense to you, but there are two special names: '**default**' and '**settings**'. If a section is named 'default', it is used by pyrax unless you explicitly set a different environment. Also, for backwards compatibility with versions of pyrax before 1.4, a section named 'settings' is interpreted as the default. Those versions only supported a single environment in the configuration file, and used 'settings' as the section name. **NOTE**: if you do not have a section named either 'default' or 'settings', then the first section listed is used as the default environment.
+    pyrax.set_setting("identity_type", "keystone")
+
+or
+
+    pyrax.set_setting("identity_type", "rackspace")
+
+
+### Configuration Environments
+Pyrax supports multiple configurations, which are referred to as ***environments***. An environment is a separate OpenStack deployment with which you want to interact. A common situation is when you have a private cloud for some of your work, but also have a public cloud account for the rest. Each of these clouds require different authentication endpoints, and may require different settings for other things such as region, identity type, etc.
+
+Each environment is a separate section in the configuration file, and the section name is used as the name of the environment. You can name your environments whatever makes sense to you, but there are two special names: '**default**' and '**settings**'. If a section is named 'default', it is used by pyrax unless you explicitly set a different environment. Also, for backwards compatibility with versions of pyrax before 1.4, a section named 'settings' is interpreted as the default. Those versions only supported a single environment in the configuration file, and used 'settings' as the section name. **NOTE**: if you do not have a section named either 'default' or 'settings', then the first section listed is used as the default environment.
 
 ### Changing Environments
-If you have multiple environments, you need to set the desired envrironment before you authenticate and connect to the services. If you want the `default` environment, you don't need to do anything. But if you want to connect to a different provider, you should run the following:
+If you have multiple environments, you need to set the desired environment before you authenticate and connect to the services. If you want the `default` environment, you don't need to do anything. But if you want to connect to a different provider, you should run the following:
 
     import pyrax
     pyrax.set_environment("desired_environment")
 
-Note that changing the environment requires that you authenticate against the new envrironment, and create new connections to the various services. In other words, if you had already authenticated so that a service such as `pyrax.cloudservers` referenced the compute service on that cloud, changing the environment to point to a different cloud discards the previous identity and service connections, so that now `pyrax.cloudservers` is `None`. Once you authenticate in the new environment, `pyrax.cloudservers` references the compute service on the cloud for the new environment.
+Note that changing the environment requires that you authenticate against the new environment, and create new connections to the various services. In other words, if you had already authenticated so that a service such as `pyrax.cloudservers` referenced the compute service on that cloud, changing the environment to point to a different cloud discards the previous identity and service connections, so that now `pyrax.cloudservers` is `None`. Once you authenticate in the new environment, `pyrax.cloudservers` references the compute service on the cloud for the new environment.
 
 
 ### Available Configuration Settings
@@ -146,7 +155,7 @@ Here is a sample:
 
 The above configuration file defines two environments: **private** and **public**. Since there is no 'default' or 'settings' section, the 'private' environment is the default, since it is listed first.
 
-When using the 'private' envrironment, pyrax uses Keystone authentication with the tenant name of 'demo', the tenant ID of 'abc123456', and the password stored in the keyring for user 'demo'. It also emits debugging messages for all HTTP requests and responses, and each request contains the standard `User-agent` header of 'pyrax/1.4.x'.
+When using the 'private' environment, pyrax uses Keystone authentication with the tenant name of 'demo', the tenant ID of 'abc123456', and the password stored in the keyring for user 'demo'. It also emits debugging messages for all HTTP requests and responses, and each request contains the standard `User-agent` header of 'pyrax/1.4.x'.
 
 If the environment is then changed to 'public', pyrax switches to Rackspace authentication against the ORD region, using the username 'joeracker'. It no longer emits debug messages, and all requests have the custom `User-agent` header of 'CrazyApp/2.0 pyrax/1.4.x'.
 

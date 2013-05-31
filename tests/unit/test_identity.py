@@ -77,6 +77,15 @@ class IdentityTest(unittest.TestCase):
             ident.set_credential_file(tmpname)
         self.assertEqual(ident.username, user)
         self.assertEqual(ident.password, key)
+        # Using 'password' instead of 'api_key'
+        with utils.SelfDeletingTempfile() as tmpname:
+            with open(tmpname, "wb") as ff:
+                ff.write("[rackspace_cloud]\n")
+                ff.write("username = %s\n" % user)
+                ff.write("password = %s\n" % key)
+            ident.set_credential_file(tmpname)
+        self.assertEqual(ident.username, user)
+        self.assertEqual(ident.password, key)
         # File doesn't exist
         self.assertRaises(exc.FileNotFound, ident.set_credential_file,
                 "doesn't exist")

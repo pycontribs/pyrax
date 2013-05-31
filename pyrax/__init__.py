@@ -116,13 +116,29 @@ regions = tuple()
 services = tuple()
 
 
+def _import_identity(import_str):
+    full_str = "pyrax.identity.%s" % import_str
+    return utils.import_class(full_str)
+
+
 
 class Settings(object):
     """
     Holds and manages the settings for pyrax.
     """
     _environment = None
-    _settings = {}
+    env_dct = {
+            "identity_type": "CLOUD_ID_TYPE",
+            "auth_endpoint": "CLOUD_AUTH_ENDPOINT",
+            "keyring_username": "CLOUD_KEYRING_USER",
+            "region": "CLOUD_REGION",
+            "tenant_id": "CLOUD_TENANT_ID",
+            "tenant_name": "CLOUD_TENANT_NAME",
+            "encoding": "CLOUD_ENCODING",
+            "custom_user_agent": "CLOUD_USER_AGENT",
+            "debug": "CLOUD_DEBUG",
+            }
+    _settings = {"default": dict.fromkeys(env_dct.keys())}
 
 
     def get(self, key, env=None):
@@ -137,18 +153,7 @@ class Settings(object):
             return self._settings[env][key]
         except KeyError:
             # See if it's set in the environment
-            env_dct = {
-                    "identity_type": "CLOUD_ID_TYPE",
-                    "auth_endpoint": "CLOUD_AUTH_ENDPOINT",
-                    "keyring_username": "CLOUD_KEYRING_USER",
-                    "region": "CLOUD_REGION",
-                    "tenant_id": "CLOUD_TENANT_ID",
-                    "tenant_name": "CLOUD_TENANT_NAME",
-                    "encoding": "CLOUD_ENCODING",
-                    "custom_user_agent": "CLOUD_USER_AGENT",
-                    "debug": "CLOUD_DEBUG",
-                    }
-            env_var = env_dct.get(key)
+            env_var = self.env_dct.get(key)
             try:
                 return os.environ[env_var]
             except KeyError:
@@ -166,12 +171,19 @@ class Settings(object):
             env = self.environment
         else:
             if env not in self._settings:
-                raise EnvironmentNotFound("There is no environment named '%s'."
-                        % env)
+                raise exc.EnvironmentNotFound("There is no environment named "
+                "'%s'." % env)
         dct = self._settings[env]
         if key not in dct:
             raise exc.InvalidSetting("The setting '%s' is not defined." % key)
         dct[key] = val
+        # If setting the identity_type, also change the identity_class.
+        if key == "identity_type":
+            if val.lower() == "rackspace":
+                val = "rax_identity.RaxIdentity"
+            elif val.lower() == "keystone":
+                val = "keystone_identity.KeystoneIdentity"
+            dct["identity_class"] = _import_identity(val)
 
 
     def _getEnvironment(self):
@@ -219,10 +231,6 @@ class Settings(object):
             except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
                 return default
 
-        def import_identity(import_str):
-            full_str = "pyrax.identity.%s" % import_str
-            return utils.import_class(full_str)
-
         for section in cfg.sections():
             if section == "settings":
                 section_name = "default"
@@ -237,7 +245,7 @@ class Settings(object):
             elif ityp.lower() == "keystone":
                 ityp = "keystone_identity.KeystoneIdentity"
             dct["identity_type"] = ityp
-            dct["identity_class"] = import_identity(ityp)
+            dct["identity_class"] = _import_identity(ityp)
             # Handle both the old and new names for this setting.
             debug = safe_get(section, "debug")
             if debug is None:
@@ -295,7 +303,7 @@ def set_setting(key, val, env=None):
     Changes the value of the specified key in the current environment, or in
     another environment if specified.
     """
-    return settings.get(key, val, env=env)
+    return settings.set(key, val, env=env)
 
 
 def set_default_region(region):
