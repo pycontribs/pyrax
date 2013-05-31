@@ -656,10 +656,10 @@ class CFClient(object):
 
 
     def _upload_folder_in_background(self, folder_path, container, ignore,
-            upload_key, ttl):
+            upload_key, ttl=None):
         """Runs the folder upload in the background."""
         uploader = FolderUploader(folder_path, container, ignore, upload_key,
-                ttl, self)
+                self, ttl=ttl)
         uploader.start()
 
 
@@ -1154,7 +1154,8 @@ class FolderUploader(threading.Thread):
     """
     Threading class to allow for uploading multiple files in the background.
     """
-    def __init__(self, root_folder, container, ignore, upload_key, ttl, client):
+    def __init__(self, root_folder, container, ignore, upload_key, client,
+            ttl=None):
         self.root_folder = root_folder.rstrip("/")
         if container:
             self.container = client.create_container(container)
@@ -1185,7 +1186,7 @@ class FolderUploader(threading.Thread):
             obj_name = os.path.relpath(full_path, self.base_path)
             obj_size = os.stat(full_path).st_size
             self.client.upload_file(self.container, full_path,
-                    obj_name=obj_name, return_none=True, ttl=ttl)
+                    obj_name=obj_name, return_none=True)
             self.client._update_progress(self.upload_key, obj_size)
 
     def run(self):

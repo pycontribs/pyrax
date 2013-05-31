@@ -388,11 +388,11 @@ class CF_ClientTest(unittest.TestCase):
         upload_key, total_bytes = client.upload_folder(test_folder,
                 ignore=pat1)
         client._upload_folder_in_background.assert_called_with(test_folder,
-                None, [pat1], upload_key)
+                None, [pat1], upload_key, None)
         upload_key, total_bytes = client.upload_folder(test_folder,
                 ignore=[pat1, pat2])
         client._upload_folder_in_background.assert_called_with(test_folder,
-                None, [pat1, pat2], upload_key)
+                None, [pat1, pat2], upload_key, None)
         client._upload_folder_in_background = bg
         os.path.isdir = opi
 
