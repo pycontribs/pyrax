@@ -226,6 +226,16 @@ class CFClient(object):
         return temp_url
 
 
+    def delete_object_in_seconds(self, obj, seconds):
+        """
+        Sets the object to be deleted after the specified number of seconds.
+        """
+        cname = self._resolve_name(obj.container)
+        oname = self._resolve_name(obj)
+        headers = {"X-Delete-After": seconds}
+        self.connection.post_object(cname, oname, headers=headers)
+
+
     @handle_swiftclient_exception
     def get_container_metadata(self, container):
         """Returns a dictionary containing the metadata for the container."""
@@ -424,7 +434,7 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
-            etag=None, content_encoding=None):
+            etag=None, content_encoding=None, ttl=None):
         """
         Creates a new object in the specified container, and populates it with
         the given data.
@@ -433,6 +443,8 @@ class CFClient(object):
         headers = {}
         if content_encoding is not None:
             headers["Content-Encoding"] = content_encoding
+        if ttl is not None:
+            headers["X-Delete-After"] = ttl
         with utils.SelfDeletingTempfile() as tmp:
             with open(tmp, "wb") as tmpfile:
                 try:
@@ -501,12 +513,20 @@ class CFClient(object):
     @handle_swiftclient_exception
     def upload_file(self, container, file_or_path, obj_name=None,
             content_type=None, etag=None, return_none=False,
-            content_encoding=None):
+            content_encoding=None, ttl=None):
         """
         Uploads the specified file to the container. If no name is supplied,
         the file's name will be used. Either a file path or an open file-like
         object may be supplied. A StorageObject reference to the uploaded file
         will be returned, unless 'return_none' is set to True.
+
+        You may optionally set the `content_type` and `content_encoding`
+        parameters; pyrax will create the appropriate headers when the object
+        is stored.
+
+        If you wish for the object to be temporary, specify the time it should
+        be stored in seconds in the `ttl` parameter. If this is specified, the
+        object will be deleted after that number of seconds.
         """
         cont = self.get_container(container)
 
@@ -567,6 +587,8 @@ class CFClient(object):
         headers = {}
         if content_encoding is not None:
             headers["Content-Encoding"] = content_encoding
+        if ttl is not None:
+            headers["X-Delete-After"] = ttl
 
         if ispath and os.path.isfile(file_or_path):
             # Need to wrap the call in a context manager
@@ -580,7 +602,7 @@ class CFClient(object):
             return self.get_object(container, obj_name)
 
 
-    def upload_folder(self, folder_path, container=None, ignore=None):
+    def upload_folder(self, folder_path, container=None, ignore=None, ttl=None):
         """
         Convenience method for uploading an entire folder, including any
         sub-folders, to Cloud Files.
@@ -614,6 +636,9 @@ class CFClient(object):
         cancel_folder_upload(uuid), passing the uuid returned by the initial
         call.  It will then be up to you to either keep or delete the
         partially-uploaded content.
+
+        If you specify a `ttl` parameter, the uploaded files will be deleted
+        after that number of seconds.
         """
         if not os.path.isdir(folder_path):
             raise exc.FolderNotFound("No such folder: '%s'" % folder_path)
@@ -626,15 +651,15 @@ class CFClient(object):
                 "uploaded": 0,
                 }
         self._upload_folder_in_background(folder_path, container, ignore,
-                upload_key)
+                upload_key, ttl)
         return (upload_key, total_bytes)
 
 
     def _upload_folder_in_background(self, folder_path, container, ignore,
-            upload_key):
+            upload_key, ttl):
         """Runs the folder upload in the background."""
         uploader = FolderUploader(folder_path, container, ignore, upload_key,
-                self)
+                ttl, self)
         uploader.start()
 
 
@@ -1129,7 +1154,7 @@ class FolderUploader(threading.Thread):
     """
     Threading class to allow for uploading multiple files in the background.
     """
-    def __init__(self, root_folder, container, ignore, upload_key, client):
+    def __init__(self, root_folder, container, ignore, upload_key, ttl, client):
         self.root_folder = root_folder.rstrip("/")
         if container:
             self.container = client.create_container(container)
@@ -1137,6 +1162,7 @@ class FolderUploader(threading.Thread):
             self.container = None
         self.ignore = utils.coerce_string_to_list(ignore)
         self.upload_key = upload_key
+        self.ttl = ttl
         self.client = client
         threading.Thread.__init__(self)
 
@@ -1159,7 +1185,7 @@ class FolderUploader(threading.Thread):
             obj_name = os.path.relpath(full_path, self.base_path)
             obj_size = os.stat(full_path).st_size
             self.client.upload_file(self.container, full_path,
-                    obj_name=obj_name, return_none=True)
+                    obj_name=obj_name, return_none=True, ttl=ttl)
             self.client._update_progress(self.upload_key, obj_size)
 
     def run(self):
