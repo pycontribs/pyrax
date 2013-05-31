@@ -19,6 +19,10 @@ To get a list of available images, run:
 
     print cs.images.list()
 
+or the equivalent:
+
+    print cs.list_images()
+
 This returns a list of available images:
 
     [<Image: Windows Server 2012 (with updates) + SQL Server 2012 Web>, <Image: Windows Server 2012 (with updates) + SQL Server 2012 Standard>, <Image: Windows Server 2012 + SQL Server 2012 Web>, <Image: Windows Server 2012 + SQL Server 2012 Standard>, <Image: Windows Server 2012 (with updates)>, <Image: CentOS 5.8>, <Image: Arch 2012.08>, <Image: Gentoo 12.3>, <Image: Windows Server 2008 R2 SP1 + SharePoint Foundation 2010 SP1 & SQL Server 2008 R2 SP1 Std>, <Image: Windows Server 2008 R2 SP1 + SharePoint Foundation 2010 SP1 & SQL Server 2008 R2 SP1 Express>, <Image: Windows Server 2012>, <Image: Ubuntu 10.04 LTS (Lucid Lynx)>, <Image: Windows Server 2008 R2 SP1 + SQL Server 2008 R2 Standard>, <Image: Windows Server 2008 R2 SP1 (with updates) + SQL Server 2008 R2 SP1 Web>, <Image: Windows Server 2008 R2 SP1 (with updates) + SQL Server 2008 R2 SP1 Standard>, <Image: Windows Server 2008 R2 SP1 (with updates) + SQL Server 2012 Web>, <Image: Windows Server 2008 R2 SP1 + SQL Server 2008 R2 Web>, <Image: Windows Server 2008 R2 SP1 + SQL Server 2012 Web>, <Image: Windows Server 2008 R2 SP1 (with updates) + SQL Server 2012 Standard>, <Image: Windows Server 2008 R2 SP1 + SQL Server 2012 Standard>, <Image: Windows Server 2008 R2 SP1 (with updates)>, <Image: Windows Server 2008 R2 SP1>, <Image: CentOS 6.3>, <Image: FreeBSD 9>, <Image: Red Hat Enterprise Linux 6.1>, <Image: Ubuntu 11.10 (Oneiric Oncelot)>, <Image: Ubuntu 12.04 LTS (Precise Pangolin)>, <Image: Fedora 17 (Beefy Miracle)>, <Image: CentOS 6.2>, <Image: CentOS 6.0>, <Image: CentOS 5.6>, <Image: Ubuntu 11.04 (Natty Narwhal)>, <Image: Red Hat Enterprise Linux 5.5>, <Image: openSUSE 12.1>, <Image: Fedora 16 (Verne)>, <Image: Debian 6 (Squeeze)>]
@@ -67,6 +71,13 @@ This is the output:
     openSUSE 12.1   -- ID: 096c55e5-39f3-48cf-a413-68d9377a3ab6
     Fedora 16 (Verne)   -- ID: bca91446-e60e-42e7-9e39-0582e7e20fb9
     Debian 6 (Squeeze)   -- ID: a10eacf7-ac15-4225-b533-5744f1fe47c1
+
+### Different Image Types
+There are two types of images: the base images supplied by your cloud provider, and the images created from your cloud servers (commonly referred to as _snapshots_). You can get a list containing just a single type using one of the following calls:
+
+    cs.list_base_images()
+    cs.list_snapshots()
+
 
 ## Listing Flavors
 Let's do the same for flavors:
@@ -260,3 +271,9 @@ and the old instance will be deleted, and the new server's status will be set to
     server.revert_resize()
 
 to restore the original server, and delete the resized version.
+
+## Resetting a Server's State
+Occasionally a server gets "stuck" in a particular state when a process fails or otherwise gets interrupted. For example, if you called `server.create_image("image_name")`, but something went wrong during the process, you can delete the bad image, but the server's state will still be stuck in `task_state image_snapshot`, and you will not be able to perform actions with that server, such as creating another image. If you ever find one of your servers in this state, you can use the following command to reset its state back to "ACTIVE":
+
+    cs.servers.reset_state("ACTIVE")
+
