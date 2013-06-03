@@ -20,31 +20,14 @@
 OpenStack Client interface. Handles the REST calls and responses.
 """
 
+import httplib2
+import json
 import logging
 import os
+import pkg_resources
 import time
 from urllib import quote
 import urlparse
-
-import httplib2
-import pkg_resources
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
-
-try:
-    import keyring
-    has_keyring = True
-except ImportError:
-    keyring = None
-    has_keyring = False
-
-# Python 2.5 compat fix
-if not hasattr(urlparse, "parse_qsl"):
-    import cgi
-    urlparse.parse_qsl = cgi.parse_qsl
 
 from manager import BaseManager
 from resource import BaseResource

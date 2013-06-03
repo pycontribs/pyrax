@@ -16,7 +16,6 @@ import threading
 import time
 import types
 
-import prettytable
 try:
     import pudb
 except ImportError:
