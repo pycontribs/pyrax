@@ -153,6 +153,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies object to itself, but applies a new content-type.  <a href="#a7e76f3530378ae1328a083c7766c2ada"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a26cd51b10d04d2f632fc6f12fa2e3b43">get_temp_url</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a URL that can be used to access the specified object in this container.  <a href="#a26cd51b10d04d2f632fc6f12fa2e3b43"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a157faa240c2d81626b226019fd4e7482">delete_object_in_seconds</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the object to be deleted after the specified number of seconds.  <a href="#a157faa240c2d81626b226019fd4e7482"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#ad8b9328939df072e4740cd9a63189744">__repr__</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a2335e6e10f37188b2c023f9c5575c299">cdn_enabled</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">BEGIN - CDN property definitions ##.  <a href="#a2335e6e10f37188b2c023f9c5575c299"></a><br/></td></tr>
@@ -373,6 +375,41 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Deletes the specified object from this container. </p>
+
+</div>
+</div>
+<a class="anchor" id="a157faa240c2d81626b226019fd4e7482"></a><!-- doxytag: member="pyrax::cf_wrapper::container::Container::delete_object_in_seconds" ref="a157faa240c2d81626b226019fd4e7482" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a157faa240c2d81626b226019fd4e7482">delete_object_in_seconds</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>seconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Sets the object to be deleted after the specified number of seconds. </p>
 
 </div>
 </div>
@@ -856,7 +893,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>content_encoding</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>content_encoding</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>ttl</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -915,7 +958,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>content_encoding</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>content_encoding</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>ttl</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1084,7 +1133,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri May 10 2013 08:46:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 3 2013 10:15:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
