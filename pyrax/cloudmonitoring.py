@@ -26,6 +26,9 @@ import pyrax.utils as utils
 
 
 
+class CloudMonitorEntity(BaseResource):
+    pass
+
 
 class CloudMonitoringClient(BaseClient):
     """
@@ -41,8 +44,44 @@ class CloudMonitoringClient(BaseClient):
         """
         Creates the Manager instance to handle networks.
         """
-        self._manager = BaseManager(self, resource_class=CloudMonitorEntity,
-                response_key="entity")
+        self._entity_manager = BaseManager(self, uri_base="entities",
+                resource_class=CloudMonitorEntity, response_key="entity",
+                plural_response_key="values")
+
+
+    def list_entities(self):
+        return self._entity_manager.list()
+
+
+    #################################################################
+    # The following methods are defined in the generic client class,
+    # but don't have meaning in monitoring, as there is not a single
+    # resource that defines this module.
+    #################################################################
+    def list(self, limit=None, marker=None):
+        """Not applicable in Cloud Monitoring."""
+        raise NotImplementedError
+
+    def get(self, item):
+        """Not applicable in Cloud Monitoring."""
+        raise NotImplementedError
+
+    def create(self, *args, **kwargs):
+        """Not applicable in Cloud Monitoring."""
+        raise NotImplementedError
+
+    def delete(self, item):
+        """Not applicable in Cloud Monitoring."""
+        raise NotImplementedError
+
+    def find(self, **kwargs):
+        """Not applicable in Cloud Monitoring."""
+        raise NotImplementedError
+
+    def findall(self, **kwargs):
+        """Not applicable in Cloud Monitoring."""
+        raise NotImplementedError
+    #################################################################
 
 
     def _create_body(self, name, label=None, cidr=None):
@@ -56,69 +95,3 @@ class CloudMonitoringClient(BaseClient):
                 "cidr": cidr,
                 }}
         return body
-
-
-    def create(self, label=None, name=None, cidr=None):
-        """
-        Wraps the basic create() call to handle specific failures.
-        """
-        try:
-            return super(CloudNetworkClient, self).create(label=label,
-                    name=name, cidr=cidr)
-        except exc.BadRequest as e:
-            msg = e.message
-            if "too many networks" in msg:
-                raise exc.NetworkCountExceeded("Cannot create network; the "
-                        "maximum number of isolated networks already exist.")
-            elif "does not contain enough" in msg:
-                raise exc.NetworkCIDRInvalid("Networks must contain two or "
-                        "more hosts; the CIDR '%s' is too restrictive." % cidr)
-            elif "CIDR is malformed" in msg:
-                raise exc.NetworkCIDRMalformed("The CIDR '%s' is not valid." % cidr)
-            else:
-                # Something unexpected
-                raise
-
-
-    def delete(self, network):
-        """
-        Wraps the standard delete() method to catch expected exceptions and
-        raise the appropriate pyrax exceptions.
-        """
-        try:
-            return super(CloudNetworkClient, self).delete(network)
-        except exc.Forbidden as e:
-            # Network is in use
-            raise exc.NetworkInUse("Cannot delete a network in use by a server.")
-
-
-    def find_network_by_label(self, label):
-        """
-        This is inefficient; it gets all the networks and then filters on
-        the client side to find the matching name.
-        """
-        networks = self.list()
-        match = [network for network in networks
-                if network.label == label]
-        if not match:
-            raise exc.NetworkNotFound("No network with the label '%s' exists" %
-                    label)
-        elif len(match) > 1:
-            raise exc.NetworkLabelNotUnique("There were %s matches for the label "
-                    "'%s'." % (len(match), label))
-        return match[0]
-    # Create an alias using 'name'
-    find_network_by_name = find_network_by_label
-
-
-    def get_server_networks(self, network, public=False, private=False):
-        """
-        Creates the dict of network UUIDs required by Cloud Servers when
-        creating a new server with isolated networks.
-
-        By default only the specified network is included. If you wish to
-        create a server that has either the public (internet) or private
-        (ServiceNet) networks, you have to pass those parameters in with
-        values of True.
-        """
-        return _get_server_networks(network, public=public, private=private)
