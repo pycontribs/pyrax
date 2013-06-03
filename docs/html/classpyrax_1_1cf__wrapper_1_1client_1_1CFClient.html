@@ -127,6 +127,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the key for the Temporary URL for the account.  <a href="#a3815e3caab49229722d4761c169fc358"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a26cd51b10d04d2f632fc6f12fa2e3b43">get_temp_url</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a storage object in a container, returns a URL that can be used to access that object.  <a href="#a26cd51b10d04d2f632fc6f12fa2e3b43"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a157faa240c2d81626b226019fd4e7482">delete_object_in_seconds</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the object in the specified container to be deleted after the specified number of seconds.  <a href="#a157faa240c2d81626b226019fd4e7482"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#af3f2bf8377401391d0fed1403d7ce1e1">get_container_metadata</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a dictionary containing the metadata for the container.  <a href="#af3f2bf8377401391d0fed1403d7ce1e1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a4bb2698330c6d409640337b1a80e16bf">set_container_metadata</a></td></tr>
@@ -527,6 +529,47 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Deletes the specified object from the container. </p>
+
+</div>
+</div>
+<a class="anchor" id="a157faa240c2d81626b226019fd4e7482"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::delete_object_in_seconds" ref="a157faa240c2d81626b226019fd4e7482" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a157faa240c2d81626b226019fd4e7482">delete_object_in_seconds</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>cont</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>seconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Sets the object in the specified container to be deleted after the specified number of seconds. </p>
 
 </div>
 </div>
@@ -1761,7 +1804,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>content_encoding</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>content_encoding</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>ttl</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1888,7 +1937,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>content_encoding</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>content_encoding</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>ttl</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1900,7 +1955,9 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Uploads the specified file to the container. </p>
-<p>If no name is supplied, the file's name will be used. Either a file path or an open file-like object may be supplied. A StorageObject reference to the uploaded file will be returned, unless 'return_none' is set to True. Returns the size of a file-like object. </p>
+<p>If no name is supplied, the file's name will be used. Either a file path or an open file-like object may be supplied. A StorageObject reference to the uploaded file will be returned, unless 'return_none' is set to True.</p>
+<p>You may optionally set the `content_type` and `content_encoding` parameters; pyrax will create the appropriate headers when the object is stored.</p>
+<p>If you wish for the object to be temporary, specify the time it should be stored in seconds in the `ttl` parameter. If this is specified, the object will be deleted after that number of seconds. Returns the size of a file-like object. </p>
 
 </div>
 </div>
@@ -1930,7 +1987,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>ignore</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>ignore</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>ttl</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1946,7 +2009,8 @@ Properties</h2></td></tr>
 <p>If 'container' is specified, the folder's contents will be uploaded to that container. If it is not specified, a new container with the same name as the specified folder will be created, and the files uploaded to this new container.</p>
 <p>You can selectively ignore files by passing either a single pattern or a list of patterns; these will be applied to the individual folder and file names, and any names that match any of the 'ignore' patterns will not be uploaded. The patterns should be standard *nix-style shell patterns; e.g., '*pyc' will ignore all files ending in 'pyc', such as 'program.pyc' and 'abcpyc'.</p>
 <p>The upload will happen asynchronously; in other words, the call to <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1d81cba43ddabd40e412c5d709192958" title="Convenience method for uploading an entire folder, including any sub-folders, to Cloud Files...">upload_folder()</a> will generate a UUID and return a 2-tuple of (UUID, total_bytes) immediately. Uploading will happen in the background; your app can call get_uploaded(uuid) to get the current status of the upload. When the upload is complete, the value returned by get_uploaded(uuid) will match the total_bytes for the upload.</p>
-<p>If you start an upload and need to cancel it, call cancel_folder_upload(uuid), passing the uuid returned by the initial call. It will then be up to you to either keep or delete the partially-uploaded content. </p>
+<p>If you start an upload and need to cancel it, call cancel_folder_upload(uuid), passing the uuid returned by the initial call. It will then be up to you to either keep or delete the partially-uploaded content.</p>
+<p>If you specify a `ttl` parameter, the uploaded files will be deleted after that number of seconds. </p>
 
 </div>
 </div>
@@ -2132,7 +2196,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 29 2013 11:39:22 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 3 2013 10:15:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -163,6 +163,14 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj.client.get_temp_url.assert_called_with(obj.container, obj,
                 seconds=secs, method="GET")
 
+    def test_delete_in_seconds(self):
+        obj = self.storage_object
+        obj.client.connection.post_object = Mock()
+        secs = random.randint(1, 1000)
+        obj.delete_in_seconds(seconds=secs)
+        obj.client.connection.post_object.assert_called_with(obj.container.name,
+                obj.name, headers={'X-Delete-After': secs})
+
     def test_repr(self):
         obj = self.storage_object
         rep = obj.__repr__()

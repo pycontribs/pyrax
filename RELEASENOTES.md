@@ -1,5 +1,9 @@
 # Release Notes for pyrax
 
+###2013.06.03 - Version 1.4.3
+- Added support for having objects automatically deleted from Cloud Files after
+    a period of time.
+
 ###2013.05.30 - Version 1.4.2
 - Fixed several bugs related to the identity and config file changes.
 

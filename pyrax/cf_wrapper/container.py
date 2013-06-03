@@ -132,18 +132,18 @@ class Container(object):
 
 
     def store_object(self, obj_name, data, content_type=None, etag=None,
-            content_encoding=None):
+            content_encoding=None, ttl=None):
         """
         Creates a new object in this container, and populates it with
         the given data.
         """
         return self.client.store_object(self, obj_name, data,
                 content_type=content_type, etag=etag,
-                content_encoding=content_encoding)
+                content_encoding=content_encoding, ttl=ttl)
 
 
     def upload_file(self, file_or_path, obj_name=None, content_type=None,
-            etag=None, return_none=False, content_encoding=None):
+            etag=None, return_none=False, content_encoding=None, ttl=None):
         """
         Uploads the specified file to this container. If no name is supplied,
         the file's name will be used. Either a file path or an open file-like
@@ -152,7 +152,7 @@ class Container(object):
         """
         return self.client.upload_file(self, file_or_path, obj_name=obj_name,
                 content_type=content_type, etag=etag, return_none=return_none,
-                content_encoding=content_encoding)
+                content_encoding=content_encoding, ttl=None)
 
 
     def delete_object(self, obj):
@@ -274,6 +274,13 @@ class Container(object):
         """
         return self.client.get_temp_url(self, obj, seconds=seconds,
                 method=method)
+
+
+    def delete_object_in_seconds(self, obj, seconds):
+        """
+        Sets the object to be deleted after the specified number of seconds.
+        """
+        self.client.delete_object_in_seconds(self, obj, seconds)
 
 
     def __repr__(self):

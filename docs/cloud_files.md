@@ -86,14 +86,18 @@ This should print:
 Note that if there is no existing container with the name you specify, a `NoSuchContainer` exception is raised. A more robust option is the `create_container()` method, which will act like `get_container()` if the specified container exists, and if not, will create it first and return a matching `Container` object.
 
 
-## Storing Objects in Cloud Files
+## [Storing Objects in Cloud Files](id:uploadfiles)
 There are two primary options for getting your objects into Cloud Files: passing the content directly, or passing in a file-like object reference. In the latter case, pyrax will read the content to be stored from the object. The two methods for this are `store_object()` and `upload_file()`, respectively.
 
 You also have two options for specifying the container in which the object should be stored. If you already have the `Container` object, you can call either of those methods directly on the `Container`, and the object will be stored in the corresponding container. You can also pass the name of the container to pyrax.cloudfiles, and the container with that name will be chosen to store the object. If there is no container by that name, a `NoSuchContainer` exception is raised.
 
-Both methods take an optional `content_type` parameter, which allow you to identify what sort of file the object represents. Examples of `content_type` would be `text/html`, or `audio/mpeg`. If you don't specify `content_type`, Cloud Files will try to determine it for you.
+Both methods take several optional parameters:
 
-Start with the simplest example: storing some text as an object. The example below assumes that the 'example' container we created earlier still exists; if not, make sure you create it before running this code.
+* **`content_type`**: Include this to identify what sort of file the object represents. Examples of `content_type` would be `text/html`, or `audio/mpeg`. If you don't specify `content_type`, Cloud Files tries to determine it for you.
+* **`content_encoding`**: If you have a compressed file, setting this value allows you to upload the file in compressed format without losing the identity of the underlying media type of the file.
+*  **`ttl`**: If you need to store an object for a limited amount of time, set the `ttl` parameter to the number of seconds that you want the object to exist. After that number of seconds, it is deleted from Cloud Files.
+
+As an example, start with the simplest scenario: storing some text as an object. The example below assumes that the 'example' container we created earlier still exists; if not, make sure you create it before running this code.
 
 The example creates some simple content: a single text sentence stored in the variable name `content`. It then tells `pyrax.cloudfiles` to store that content into the container named `example`, and give that stored object the name `new_object.txt`.
 
@@ -181,10 +185,12 @@ Here is some sample code that creates a stored object containing some unicode te
 Try running this code; you should find that the retrieved text is identical using both chunked and non-chunked methods. The metadata for the object should look something like:
 
     Metadata: {'content-length': '62', 'accept-ranges': 'bytes',
-    'last-modified': 'Wed, 10 Oct 2012 16:06:25 GMT',
-    'etag': '3b3e32a6cd87076997dad4552972194b', 'x-timestamp': '1349885185.68412',
-    'x-trans-id': 'txb57464c49e0345f496a7acf451be77d8',
-    'date': 'Wed, 10 Oct 2012 16:06:25 GMT', 'content-type': 'text/plain'}
+        'last-modified': 'Wed, 10 Oct 2012 16:06:25 GMT',
+        'etag': '3b3e32a6cd87076997dad4552972194b',
+        'x-timestamp': '1349885185.68412',
+        'x-trans-id': 'txb57464c49e0345f496a7acf451be77d8',
+        'date': 'Wed, 10 Oct 2012 16:06:25 GMT',
+        'content-type': 'text/plain'}
 
 
 ## Uploading an Entire Folder to Cloud Files
@@ -192,7 +198,7 @@ A very common use case is needing to upload an entire folder, including subfolde
 
 You can also specify one or more file name patterns to ignore, and pyrax will skip any of the files that match any of the patterns. This is useful if there are files that you don't wish to retain, such as .pyc and .pyo files in a Python project. You can pass either a single string pattern, or a list of strings to use.
 
-`upload_folder()` returns a 2-tuple: the key for the upload process, and the total bytes to be uploaded. You can use the key to query `pyrax.cloudfiles` for the status of the upload, or to cancel it if necessary.
+`upload_folder()` accepts the same optional parameters as `upload_file()`: `content_type`, `content_encoding`, and `ttl`. See the section on [Storing Objects in Cloud Files](#uploadfiles) for an explanation of these parameters. Calling `upload_folder()` returns a 2-tuple: the key for the upload process, and the total bytes to be uploaded. You can use the key to query `pyrax.cloudfiles` for the status of the upload, or to cancel it if necessary.
 
 Here are some examples, using the local folder **"/home/me/projects/cool_project/"**:
 
@@ -356,6 +362,12 @@ The following example illustrates object deletion:
             obj = None
             print "Object '%s' has been deleted" % fname
             print "It took %4.2f seconds to appear as deleted." % (time.time() - start)
+
+
+### Setting an Object's Expiration
+You can mark a storage object for deletion in the future by calling its `delete_in_seconds()` method. This method accepts an integer number of seconds after which you wish the object to be deleted from Cloud Files.
+
+Containers and the main client both have the related `delete_object_in_seconds(container, object, seconds)` method that will accomplish the same thing.
 
 
 ## Copying / Moving Objects

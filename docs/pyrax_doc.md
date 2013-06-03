@@ -32,6 +32,13 @@ To upgrade your installation in the future, re-run the same command, but this ti
 ## Set up Authentication
 You need to submit your username and password in order to authenticate. If you are using the Rackspace Public Cloud, that would be your account username and API key. If you are using another OpenStack cloud, you also need to include your tenant ID, which you should be able to get from your provider.
 
+Please note that all versions of pyrax beginning with 1.4.0 require that you define what type of authentication system you are working with. Previous versions only worked with Rackspace authentication, so this was not an issue. To do this, you have three options, listed below. In all cases the examples use `keystone` as the identity_type, but if you're using the Rackspace Cloud, change this to `rackspace`. 
+
+1. **Configuration File**: make sure that the line `identity_type = keystone` is in your [configuration file](#configfile).
+1. **Environment Variable** - If you don't have a configuration file, pyrax will check for the environment variable `CLOUD_ID_TYPE`. Set this by executing `export CLOUD_ID_TYPE=keystone` in a bash shell, or by setting it in the System section of the Control Panel in Windows.
+1. **Set in Code** - if you can't do either of the above, change the import statement to add `pyrax.set_setting("identity_type", "keystone")` immediately after the `import pyrax` statement.
+
+## Authenticating
 You can authenticate in any one of three ways:
 
 * explicitly pass your credentials to pyrax
@@ -41,20 +48,20 @@ You can authenticate in any one of three ways:
 The credential file is a standard configuration file, with the following format:
 
     [keystone]
-    username = myusername
+    username = my_username
     password = top_secret
     tenant_id = 01234567890abcdef
 
 For the Rackspace Public Cloud, the credential file should look like this:
 
     [rackspace_cloud]
-    username = myusername
+    username = my_username
     api_key = 01234567890abcdef
 
 To use the keychain method, you need to add your password or API key to your operating system's keychain in the `pyrax` namespace. Doing a `pip install pyrax` installs the Python module [`keyring`](http://pypi.python.org/pypi/keyring), which provides ready access to this feature. To configure your keychain credentials, run the following in Python:
 
     import keyring
-    keyring.set_password("pyrax", "myusername",
+    keyring.set_password("pyrax", "my_username",
             "my_password")
 
 To authenticate, run the following code using one of these authentication methods; which method you choose depends on your preference for passing credentials.
@@ -62,13 +69,13 @@ To authenticate, run the following code using one of these authentication method
     import pyrax
 
     # Using direct method
-    pyrax.set_credentials("myusername", "01234567890abcdef")
+    pyrax.set_credentials("my_username", "01234567890abcdef")
 
     # Using credentials file
     pyrax.set_credential_file("/path/to/credential/file")
     
     # Using keychain
-    pyrax.keyring_auth("myusername")
+    pyrax.keyring_auth("my_username")
     # Using keychain with username set in configuration file
     pyrax.keyring_auth()
 
@@ -95,7 +102,7 @@ You don't have to authenticate to each service separately; pyrax handles that fo
     cnw = pyrax.cloud_networks
 
 
-## Pyrax Configuration
+## [Pyrax Configuration](id:configfile)
 You can control how pyrax behaves through the configuration file. It should be named `~/.pyrax.cfg`. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Alternatively, you may set these values using environment variables in the OS. Note that the configuration file values take precendence over any environment variables. Environment variables also do not support multiple configurations.
 
 **NOTE**: At the very least, you *must* set the `identity_type` setting so that can use the correct identity class. Prior versions only worked with Rackspace identity, but that is no longer the case. If you don't want to use a configuration file or an environment variable, you can do this in code:

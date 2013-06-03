@@ -162,7 +162,7 @@ class ClientTest(unittest.TestCase):
         clt.http_log_resp(resp, body)
         self.assertTrue(clt._logger.debug.called)
         clt._logger.debug.assert_called_once_with(
-                "RESP:%s %s\n", "resp", "body")
+                "RESP: %s %s\n", "resp", "body")
         clt._logger.debug = sav
 
     def test_request_ok(self):
