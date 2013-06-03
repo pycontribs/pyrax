@@ -276,6 +276,13 @@ class Container(object):
                 method=method)
 
 
+    def delete_object_in_seconds(self, obj, seconds):
+        """
+        Sets the object to be deleted after the specified number of seconds.
+        """
+        self.client.delete_object_in_seconds(self, obj, seconds)
+
+
     def __repr__(self):
         return "<Container '%s'>" % self.name
 

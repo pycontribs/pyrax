@@ -226,11 +226,12 @@ class CFClient(object):
         return temp_url
 
 
-    def delete_object_in_seconds(self, obj, seconds):
+    def delete_object_in_seconds(self, cont, obj, seconds):
         """
-        Sets the object to be deleted after the specified number of seconds.
+        Sets the object in the specified container to be deleted after the
+        specified number of seconds.
         """
-        cname = self._resolve_name(obj.container)
+        cname = self._resolve_name(cont)
         oname = self._resolve_name(obj)
         headers = {"X-Delete-After": seconds}
         self.connection.post_object(cname, oname, headers=headers)
@@ -1186,7 +1187,7 @@ class FolderUploader(threading.Thread):
             obj_name = os.path.relpath(full_path, self.base_path)
             obj_size = os.stat(full_path).st_size
             self.client.upload_file(self.container, full_path,
-                    obj_name=obj_name, return_none=True)
+                    obj_name=obj_name, return_none=True, ttl=self.ttl)
             self.client._update_progress(self.upload_key, obj_size)
 
     def run(self):

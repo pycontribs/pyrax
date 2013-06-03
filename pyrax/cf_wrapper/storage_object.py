@@ -139,7 +139,7 @@ class StorageObject(object):
         """
         Sets the object to be deleted after the specified number of seconds.
         """
-        self.client.delete_object_in_seconds(self, seconds)
+        self.client.delete_object_in_seconds(self.container, self, seconds)
 
 
     def __repr__(self):

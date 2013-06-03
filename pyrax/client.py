@@ -185,7 +185,7 @@ class BaseClient(httplib2.Http):
         """
         if not self.http_log_debug:
             return
-        self._logger.debug("RESP:%s %s\n", resp, body)
+        self._logger.debug("RESP: %s %s\n", resp, body)
 
 
     def request(self, *args, **kwargs):

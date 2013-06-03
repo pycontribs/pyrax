@@ -271,6 +271,25 @@ class CF_ContainerTest(unittest.TestCase):
                 method="GET")
         cont.name = sav
 
+    def test_delete_object_in_seconds(self):
+        cont = self.container
+        cont.client.connection.post_object = Mock()
+        secs = random.randint(1, 1000)
+        obj_name = utils.random_name()
+        cont.delete_object_in_seconds(obj_name, seconds=secs)
+        cont.client.connection.post_object.assert_called_with(cont.name,
+                obj_name, headers={'X-Delete-After': secs})
+
+        nm = utils.random_name(ascii_only=True)
+        sav = cont.name
+        cont.name = utils.random_name(ascii_only=True)
+        cont.client.get_temp_url = Mock()
+        secs = random.randint(1, 1000)
+        cont.get_temp_url(nm, seconds=secs)
+        cont.client.get_temp_url.assert_called_with(cont, nm, seconds=secs,
+                method="GET")
+        cont.name = sav
+
     def test_cdn_enabled(self):
         cont = self.container
         cont.cdn_uri = None
