@@ -45,12 +45,33 @@ class CloudMonitoringClient(BaseClient):
         Creates the Manager instance to handle networks.
         """
         self._entity_manager = BaseManager(self, uri_base="entities",
-                resource_class=CloudMonitorEntity, response_key="entity",
-                plural_response_key="values")
+                resource_class=CloudMonitorEntity, response_key=None,
+                plural_response_key=None)
 
 
     def list_entities(self):
         return self._entity_manager.list()
+
+
+    def get_entity(self, entity):
+        return self._entity_manager.get(entity)
+
+
+    def create_entity(self, name=None, label=None, agent=None,
+            ip_addresses=None, metadata=None):
+        # NOTE: passing a non-None value for ip_addresses is required so that
+        # the _create_body() method can distinguish this as a request for a
+        # body dict for entities.
+        ip_addresses = ip_addresses or {}
+        resp = self._entity_manager.create(name=name, label=label, agent=agent,
+                ip_addresses=ip_addresses, metadata=metadata,
+                return_response=True)
+        status = resp["status"]
+        if status == "201":
+            ent_id = resp["x-object-id"]
+            return self.get_entity(ent_id)
+
+
 
 
     #################################################################
@@ -84,14 +105,20 @@ class CloudMonitoringClient(BaseClient):
     #################################################################
 
 
-    def _create_body(self, name, label=None, cidr=None):
+    def _create_body(self, name, label=None, agent=None, ip_addresses=None,
+            metadata=None):
         """
-        Used to create the dict required to create a network. Accepts either
-        'label' or 'name' as the keyword parameter for the label attribute.
+        Used to create the dict required to create various resources. Accepts
+        either 'label' or 'name' as the keyword parameter for the label
+        attribute for entities.
         """
         label = label or name
-        body = {"network": {
-                "label": label,
-                "cidr": cidr,
-                }}
+        if ip_addresses is not None:
+            body = {"label": label}
+            if ip_addresses:
+                body["ip_addresses"] = ip_addresses
+            if agent:
+                body["agent_id"] = utils.get_id(agent)
+            if metadata:
+                body["metadata"] = metadata
         return body
