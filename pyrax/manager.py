@@ -55,9 +55,8 @@ class BaseManager(object):
         self.api = api
         self.resource_class = resource_class
         self.response_key = response_key
-        if plural_response_key:
-            self.plural_response_key = plural_response_key
-        else:
+        self.plural_response_key = plural_response_key
+        if plural_response_key is None and response_key is not None:
             # Default to adding 's'
             self.plural_response_key = "%ss" % response_key
         self.uri_base = uri_base
@@ -83,15 +82,17 @@ class BaseManager(object):
         return self._get(uri)
 
 
-    def create(self, name, return_none=False, return_raw=False, *args, **kwargs):
+    def create(self, name, return_none=False, return_raw=False,
+            return_response=False, *args, **kwargs):
         """
         Subclasses need to implement the _create_body() method
         to return a dict that will be used for the API request
         body.
         """
         body = self.api._create_body(name, *args, **kwargs)
-        return self._create("/%s" % self.uri_base, body, return_none=return_none,
-                return_raw=return_raw)
+        return self._create("/%s" % self.uri_base, body,
+                return_none=return_none, return_raw=return_raw,
+                return_response=return_response)
 
 
     def delete(self, item):
@@ -106,14 +107,14 @@ class BaseManager(object):
         a full listing of the resources managed by this class.
         """
         if body:
-            _resp, body = self.api.method_post(uri, body=body)
+            resp, resp_body = self.api.method_post(uri, body=body)
         else:
-            _resp, body = self.api.method_get(uri)
+            resp, resp_body = self.api.method_get(uri)
 
         if obj_class is None:
             obj_class = self.resource_class
 
-        data = body[self.plural_response_key]
+        data = resp_body.get(self.plural_response_key, resp_body)
         # NOTE(ja): keystone returns values as list as {"values": [ ... ]}
         #           unlike other services which just return the list...
         if isinstance(data, dict):
@@ -130,23 +131,30 @@ class BaseManager(object):
         Handles the communication with the API when getting
         a specific resource managed by this class.
         """
-        _resp, body = self.api.method_get(uri)
-        return self.resource_class(self, body[self.response_key], loaded=True)
+        resp, resp_body = self.api.method_get(uri)
+        return self.resource_class(self, resp_body, self.response_key,
+                loaded=True)
 
 
-    def _create(self, uri, body, return_none=False, return_raw=False, **kwargs):
+    def _create(self, uri, body, return_none=False, return_raw=False,
+            return_response=None, **kwargs):
         """
         Handles the communication with the API when creating a new
         resource managed by this class.
         """
         self.run_hooks("modify_body_for_create", body, **kwargs)
-        _resp, body = self.api.method_post(uri, body=body)
+        resp, resp_body = self.api.method_post(uri, body=body)
         if return_none:
             # No response body
             return
-        if return_raw:
-            return body[self.response_key]
-        return self.resource_class(self, body[self.response_key])
+        elif return_response:
+            return resp
+        elif return_raw:
+            if self.response_key:
+                return resp_body[self.response_key]
+            else:
+                return resp_body
+        return self.resource_class(self, resp_body, self.response_key)
 
 
     def _delete(self, uri):
@@ -163,8 +171,8 @@ class BaseManager(object):
         a specific resource managed by this class.
         """
         self.run_hooks("modify_body_for_update", body, **kwargs)
-        _resp, body = self.api.method_put(uri, body=body)
-        return body
+        resp, resp_body = self.api.method_put(uri, body=body)
+        return resp_body
 
 
     def action(self, item, action_type, body={}):
