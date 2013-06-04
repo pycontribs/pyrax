@@ -77,7 +77,7 @@ class ManagerTest(unittest.TestCase):
         nm = utils.random_name()
         mgr.create(nm)
         mgr._create.assert_called_once_with("/test", "body", return_none=False,
-                return_raw=False)
+                return_raw=False, return_response=False)
         mgr._create = sav
 
     def test_delete(self):
