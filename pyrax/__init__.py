@@ -118,7 +118,17 @@ regions = tuple()
 services = tuple()
 
 
+def _id_type(ityp):
+    """Allow for shorthand names for the most common types."""
+    if ityp.lower() == "rackspace":
+        ityp = "rax_identity.RaxIdentity"
+    elif ityp.lower() == "keystone":
+        ityp = "keystone_identity.KeystoneIdentity"
+    return ityp
+
+
 def _import_identity(import_str):
+    import_str = _id_type(import_str)
     full_str = "pyrax.identity.%s" % import_str
     return utils.import_class(full_str)
 
@@ -155,7 +165,14 @@ class Settings(object):
             return self._settings[env][key]
         except KeyError:
             # See if it's set in the environment
-            env_var = self.env_dct.get(key)
+            if key == "identity_class":
+                # This is defined via the identity_type
+                env_var = self.env_dct.get("identity_type")
+                ityp = os.environ.get(env_var)
+                if ityp:
+                    return _import_identity(ityp)
+            else:
+                env_var = self.env_dct.get(key)
             try:
                 return os.environ[env_var]
             except KeyError:
@@ -181,10 +198,6 @@ class Settings(object):
         dct[key] = val
         # If setting the identity_type, also change the identity_class.
         if key == "identity_type":
-            if val.lower() == "rackspace":
-                val = "rax_identity.RaxIdentity"
-            elif val.lower() == "keystone":
-                val = "keystone_identity.KeystoneIdentity"
             dct["identity_class"] = _import_identity(val)
 
 
@@ -241,12 +254,7 @@ class Settings(object):
             dct = self._settings[section_name] = {}
             dct["default_region"] = safe_get(section, "region", default_region)
             ityp = safe_get(section, "identity_type", default_identity_type)
-            # Allow for shorthand names for the most common types.
-            if ityp.lower() == "rackspace":
-                ityp = "rax_identity.RaxIdentity"
-            elif ityp.lower() == "keystone":
-                ityp = "keystone_identity.KeystoneIdentity"
-            dct["identity_type"] = ityp
+            dct["identity_type"] = _id_type(ityp)
             dct["identity_class"] = _import_identity(ityp)
             # Handle both the old and new names for this setting.
             debug = safe_get(section, "debug")

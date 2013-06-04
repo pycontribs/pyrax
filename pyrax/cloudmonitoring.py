@@ -34,6 +34,13 @@ class CloudMonitorEntity(BaseResource):
         self.manager.update_entity(self, agent=agent, metadata=metadata)
 
 
+    def list_checks(self):
+        """
+        Returns a list of all CloudMonitorChecks defined for this entity.
+        """
+        return self.manager.list_checks(self)
+
+
     @property
     def name(self):
         return self.label
@@ -58,6 +65,42 @@ class CloudMonitorEntityManager(BaseManager):
             resp, body = self.api.method_put(uri, body=body)
 
 
+    def list_checks(self, entity):
+        """
+        Returns a list of all CloudMonitorChecks defined for this entity.
+        """
+        uri = "/%s/%s/checks" % (self.uri_base, utils.get_id(entity))
+        resp, resp_body = self.api.method_get(uri)
+        print "RESP", resp
+        print
+        print "BODY", resp_body
+
+
+    def create_check(self, entity, label=None, name=None, check_type=None,
+            disabled=False, metadata=None, details=None,
+            monitoring_zones_poll=None, timeout=None, period=None,
+            target_alias=None, target_hostname=None, target_receiver=None):
+        """
+        Creates a check on the entity with the specified attributes.
+        """
+        pass
+
+
+class CloudMonitorCheck(BaseResource):
+    """
+    Represents a check defined for an entity.
+    """
+
+
+    @property
+    def name(self):
+        return self.label
+
+
+class CloudMonitorCheckType(BaseResource):
+    pass
+
+
 
 class CloudMonitoringClient(BaseClient):
     """
@@ -75,6 +118,9 @@ class CloudMonitoringClient(BaseClient):
         """
         self._entity_manager = CloudMonitorEntityManager(self,
                 uri_base="entities", resource_class=CloudMonitorEntity,
+                response_key=None, plural_response_key=None)
+        self._check_type_manager = BaseManager(self,
+                uri_base="check_types", resource_class=CloudMonitorCheckType,
                 response_key=None, plural_response_key=None)
 
 
@@ -112,6 +158,35 @@ class CloudMonitoringClient(BaseClient):
     def delete_entity(self, entity):
         """Deletes the specified entity."""
         self._entity_manager.delete(entity)
+
+
+    def list_check_types(self):
+        return self._check_type_manager.list()
+
+
+    def get_check_type(self, check_type):
+        return self._check_type_manager.get(check_type)
+
+
+    def list_checks(self, entity):
+        return self._entity_manager.list_checks(entity)
+
+
+    def create_check(self, entity, label=None, name=None, check_type=None,
+            disabled=False, metadata=None, details=None,
+            monitoring_zones_poll=None, timeout=None, period=None,
+            target_alias=None, target_hostname=None, target_receiver=None):
+        """
+        Creates a check on the entity with the specified attributes.
+        """
+        return self._entity_manager.create_check(entity, label=label,
+                name=name, check_type=check_type, disabled=False,
+                metadata=metadata, details=details,
+                monitoring_zones_poll=monitoring_zones_poll, timeout=timeout,
+                period=period, target_alias=target_alias,
+                target_hostname=target_hostname,
+                target_receiver=target_receiver)
+
 
 
     #################################################################
