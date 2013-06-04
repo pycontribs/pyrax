@@ -55,9 +55,8 @@ class BaseManager(object):
         self.api = api
         self.resource_class = resource_class
         self.response_key = response_key
-        if plural_response_key:
-            self.plural_response_key = plural_response_key
-        else:
+        self.plural_response_key = plural_response_key
+        if plural_response_key is None and response_key is not None:
             # Default to adding 's'
             self.plural_response_key = "%ss" % response_key
         self.uri_base = uri_base
@@ -113,7 +112,7 @@ class BaseManager(object):
         if obj_class is None:
             obj_class = self.resource_class
 
-        data = body[self.plural_response_key]
+        data = body.get(self.plural_response_key, body)
         # NOTE(ja): keystone returns values as list as {"values": [ ... ]}
         #           unlike other services which just return the list...
         if isinstance(data, dict):
