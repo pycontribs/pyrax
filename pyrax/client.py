@@ -147,7 +147,7 @@ class BaseClient(httplib2.Http):
 
         string_parts = ["curl -i"]
         for element in args:
-            if element in ("GET", "POST"):
+            if element in ("GET", "POST", "PUT", "DELETE", "HEAD"):
                 string_parts.append(" -X %s" % element)
             else:
                 string_parts.append(" %s" % element)
