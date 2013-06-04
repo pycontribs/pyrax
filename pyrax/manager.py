@@ -83,7 +83,7 @@ class BaseManager(object):
 
 
     def create(self, name, return_none=False, return_raw=False,
-            *args, **kwargs):
+            return_response=False, *args, **kwargs):
         """
         Subclasses need to implement the _create_body() method
         to return a dict that will be used for the API request
@@ -91,7 +91,8 @@ class BaseManager(object):
         """
         body = self.api._create_body(name, *args, **kwargs)
         return self._create("/%s" % self.uri_base, body,
-                return_none=return_none, return_raw=return_raw)
+                return_none=return_none, return_raw=return_raw,
+                return_response=return_response)
 
 
     def delete(self, item):
