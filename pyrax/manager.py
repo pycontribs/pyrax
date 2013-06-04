@@ -131,7 +131,7 @@ class BaseManager(object):
         a specific resource managed by this class.
         """
         _resp, body = self.api.method_get(uri)
-        return self.resource_class(self, body[self.response_key], loaded=True)
+        return self.resource_class(self, body, self.response_key, loaded=True)
 
 
     def _create(self, uri, body, return_none=False, return_raw=False, **kwargs):
@@ -145,8 +145,11 @@ class BaseManager(object):
             # No response body
             return
         if return_raw:
-            return body[self.response_key]
-        return self.resource_class(self, body[self.response_key])
+            if self.response_key:
+                return body[self.response_key]
+            else:
+                return body
+        return self.resource_class(self, body, self.response_key)
 
 
     def _delete(self, uri):

@@ -39,9 +39,11 @@ class BaseResource(object):
     _non_display = []
 
 
-    def __init__(self, manager, info, loaded=False):
+    def __init__(self, manager, info, key=None, loaded=False):
         self._loaded = loaded
         self.manager = manager
+        if key:
+            info = info[key]
         self._info = info
         self._add_details(info)
 
