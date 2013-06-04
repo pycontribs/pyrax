@@ -27,7 +27,36 @@ import pyrax.utils as utils
 
 
 class CloudMonitorEntity(BaseResource):
-    pass
+    def update(self, agent=None, metadata=None):
+        """
+        Only the agent_id and metadata are able to be updated via the API.
+        """
+        self.manager.update_entity(self, agent=agent, metadata=metadata)
+
+
+    @property
+    def name(self):
+        return self.label
+
+
+
+class CloudMonitorEntityManager(BaseManager):
+    """
+    Handles all of the entity-specific requests.
+    """
+    def update_entity(self, entity, agent=None, metadata=None):
+        """
+        Updates the specified entity's values with the supplied parameters.
+        """
+        body = {}
+        if agent:
+            body["agent_id"] = utils.get_id(agent)
+        if metadata:
+            body["metadata"] = metadata
+        if body:
+            uri = "/%s/%s" % (self.uri_base, utils.get_id(entity))
+            resp, body = self.api.method_put(uri, body=body)
+
 
 
 class CloudMonitoringClient(BaseClient):
@@ -44,9 +73,9 @@ class CloudMonitoringClient(BaseClient):
         """
         Creates the Manager instance to handle networks.
         """
-        self._entity_manager = BaseManager(self, uri_base="entities",
-                resource_class=CloudMonitorEntity, response_key=None,
-                plural_response_key=None)
+        self._entity_manager = CloudMonitorEntityManager(self,
+                uri_base="entities", resource_class=CloudMonitorEntity,
+                response_key=None, plural_response_key=None)
 
 
     def list_entities(self):
@@ -72,6 +101,17 @@ class CloudMonitoringClient(BaseClient):
             return self.get_entity(ent_id)
 
 
+    def update_entity(self, entity, agent=None, metadata=None):
+        """
+        Only the agent_id and metadata are able to be updated via the API.
+        """
+        self._entity_manager.update_entity(entity, agent=agent,
+                metadata=metadata)
+
+
+    def delete_entity(self, entity):
+        """Deletes the specified entity."""
+        self._entity_manager.delete(entity)
 
 
     #################################################################
