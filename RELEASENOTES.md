@@ -1,5 +1,8 @@
 # Release Notes for pyrax
 
+###2013.06.04 - Version 1.4.4
+- Fixed a bug when using environment variables to set the identity_type. Issue #82.
+
 ###2013.06.03 - Version 1.4.3
 - Added support for having objects automatically deleted from Cloud Files after
     a period of time.
