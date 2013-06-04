@@ -20,31 +20,14 @@
 OpenStack Client interface. Handles the REST calls and responses.
 """
 
+import httplib2
+import json
 import logging
 import os
+import pkg_resources
 import time
 from urllib import quote
 import urlparse
-
-import httplib2
-import pkg_resources
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
-
-try:
-    import keyring
-    has_keyring = True
-except ImportError:
-    keyring = None
-    has_keyring = False
-
-# Python 2.5 compat fix
-if not hasattr(urlparse, "parse_qsl"):
-    import cgi
-    urlparse.parse_qsl = cgi.parse_qsl
 
 from manager import BaseManager
 from resource import BaseResource
@@ -164,7 +147,7 @@ class BaseClient(httplib2.Http):
 
         string_parts = ["curl -i"]
         for element in args:
-            if element in ("GET", "POST"):
+            if element in ("GET", "POST", "PUT", "DELETE", "HEAD"):
                 string_parts.append(" -X %s" % element)
             else:
                 string_parts.append(" %s" % element)
