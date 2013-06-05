@@ -98,7 +98,25 @@ class CloudMonitorCheck(BaseResource):
 
 
 class CloudMonitorCheckType(BaseResource):
-    pass
+    """
+    Represents the type of monitor check to be run. Each check type 
+    """
+    @property
+    def field_names(self):
+        """
+        Returns a list of all field names for this check type.
+        """
+        return [field["name"] for field in self.fields]
+
+
+    @property
+    def required_field_names(self):
+        """
+        Returns a list of the names of all required fields for this check type.
+        """
+        return [field["name"] for field in self.fields
+                if not field["optional"]]
+
 
 
 
