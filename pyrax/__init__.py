@@ -196,9 +196,18 @@ class Settings(object):
         if key not in dct:
             raise exc.InvalidSetting("The setting '%s' is not defined." % key)
         dct[key] = val
-        # If setting the identity_type, also change the identity_class.
         if key == "identity_type":
+            # If setting the identity_type, also change the identity_class.
             dct["identity_class"] = _import_identity(val)
+        elif key == "region":
+            if not identity:
+                return
+            current = identity.region
+            if current == val:
+                return
+            if "LON" in (current, val):
+                # This is an outlier, as it has a separate auth
+                identity.region = val
 
 
     def _getEnvironment(self):
@@ -252,7 +261,7 @@ class Settings(object):
             else:
                 section_name = section
             dct = self._settings[section_name] = {}
-            dct["default_region"] = safe_get(section, "region", default_region)
+            dct["region"] = safe_get(section, "region", default_region)
             ityp = safe_get(section, "identity_type", default_identity_type)
             dct["identity_type"] = _id_type(ityp)
             dct["identity_class"] = _import_identity(ityp)
@@ -359,7 +368,7 @@ def _require_auth(fnc):
 @_assure_identity
 def _safe_region(region=None):
     """Value to use when no region is specified."""
-    return region or settings.get("default_region") or default_region
+    return region or settings.get("region") or default_region
 
 
 @_assure_identity
@@ -372,6 +381,7 @@ def set_credentials(username, api_key=None, password=None, region=None,
     for that region, and set the default region for connections.
     """
     pw_key = password or api_key
+    region = _safe_region(region)
     identity.set_credentials(username=username, password=pw_key,
             tenant_id=settings.get("tenant_id"), region=region)
     if authenticate:
@@ -399,6 +409,7 @@ def set_credential_file(cred_file, region=None, authenticate=True):
     If the region is passed, it will authenticate against the proper endpoint
     for that region, and set the default region for connections.
     """
+    region = _safe_region(region)
     identity.set_credential_file(cred_file, region=region)
     if authenticate:
         _auth_and_connect(region=region)

@@ -33,7 +33,7 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.settings._settings = {
                 "default": {
                     "auth_endpoint": None,
-                    "default_region": "DFW",
+                    "region": "DFW",
                     "encoding": "utf-8",
                     "http_debug": False,
                     "identity_class": pyrax.rax_identity.RaxIdentity,
@@ -45,7 +45,7 @@ class PyraxInitTest(unittest.TestCase):
                 },
                 "alternate": {
                     "auth_endpoint": None,
-                    "default_region": "NOWHERE",
+                    "region": "NOWHERE",
                     "encoding": "utf-8",
                     "http_debug": False,
                     "identity_class": pyrax.keystone_identity.KeystoneIdentity,
@@ -90,7 +90,7 @@ class PyraxInitTest(unittest.TestCase):
         with utils.SelfDeletingTempfile() as cfgfile:
             open(cfgfile, "w").write(dummy_cfg)
             pyrax.settings.read_config(cfgfile)
-        self.assertEqual(pyrax.get_setting("default_region"), "FAKE")
+        self.assertEqual(pyrax.get_setting("region"), "FAKE")
         self.assertTrue(pyrax.get_setting("user_agent").startswith("FAKE "))
         pyrax.default_region = sav_region
         pyrax.USER_AGENT = sav_USER_AGENT
@@ -209,6 +209,24 @@ class PyraxInitTest(unittest.TestCase):
         new_region = "test"
         pyrax.set_default_region(new_region)
         self.assertEqual(pyrax.default_region, new_region)
+
+    def test_set_identity_type_setting(self):
+        savtyp = pyrax.get_setting("identity_type")
+        savcls = pyrax.get_setting("identity_class")
+        pyrax.set_setting("identity_class", None)
+        pyrax.set_setting("identity_type", "keystone")
+        cls = pyrax.get_setting("identity_class")
+        self.assertEqual(cls, pyrax.keystone_identity.KeystoneIdentity)
+        pyrax.set_setting("identity_type", savtyp)
+        pyrax.set_setting("identity_class", savcls)
+
+    def test_set_region_setting(self):
+        ident = pyrax.identity
+        ident.region = "DFW"
+        pyrax.set_setting("region", "ORD")
+        self.assertEqual(ident.region, "DFW")
+        pyrax.set_setting("region", "LON")
+        self.assertEqual(ident.region, "LON")
 
     def test_make_agent_name(self):
         test_agent = "TEST"
