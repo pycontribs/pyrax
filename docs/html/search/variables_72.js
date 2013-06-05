@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['region',['region',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a1b9edddb3735d131c67e9e824f07c402',1,'pyrax::base_identity::BaseAuth']]],
   ['region_5fname',['region_name',['../classpyrax_1_1client_1_1BaseClient.html#a326b5b91b887c67a677e2eb509b569b6',1,'pyrax::client::BaseClient']]],
   ['regions',['regions',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a4c4786354df7358bf12c3c65069dd8b7',1,'pyrax::base_identity::BaseAuth.regions()'],['../namespacepyrax.html#a2b45bebec67926b49ea55f14eb0b8f8e',1,'pyrax.regions()']]],
   ['request_5fid',['request_id',['../classpyrax_1_1exceptions_1_1ClientException.html#a24b613add05b03f7af1be9c4dab66d59',1,'pyrax::exceptions::ClientException']]],

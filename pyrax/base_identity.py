@@ -63,8 +63,8 @@ class BaseAuth(object):
         self.username = username
         self.password = password
         self.token = token
+        self.region = region
         self._creds_file = credential_file
-        self._region = region
         self._timeout = timeout
         self.services = {}
         self.regions = set()
@@ -95,7 +95,7 @@ class BaseAuth(object):
         self.password = password
         self.tenant_id = tenant_id
         if region:
-            self._region = region
+            self.region = region
         if authenticate:
             self.authenticate()
 
@@ -128,7 +128,7 @@ class BaseAuth(object):
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as e:
             raise exc.InvalidCredentialFile(e)
         if region:
-            self._region = region
+            self.region = region
         if authenticate:
             self.authenticate()
 

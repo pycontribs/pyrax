@@ -1,5 +1,8 @@
 # Release Notes for pyrax
 
+###2013.06.05 - Version 1.4.5
+- Fixed a bug that prevented region from being properly set. Issue #86.
+
 ###2013.06.04 - Version 1.4.4
 - Fixed a bug when using environment variables to set the identity_type. Issue #82.
 

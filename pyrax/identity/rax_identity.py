@@ -19,7 +19,7 @@ class RaxIdentity(BaseAuth):
 
 
     def _get_auth_endpoint(self):
-        if self._region and self._region.upper() in ("LON", ):
+        if self.region and self.region.upper() in ("LON", ):
             return self.uk_auth_endpoint
         return self.us_auth_endpoint
 
