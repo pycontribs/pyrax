@@ -18,11 +18,16 @@
 #    under the License.
 
 from functools import wraps
+import re
+
 from pyrax.client import BaseClient
 import pyrax.exceptions as exc
 from pyrax.manager import BaseManager
 from pyrax.resource import BaseResource
 import pyrax.utils as utils
+
+
+_invalid_key_pat = re.compile(r"Validation error for key '([^']+)'")
 
 
 
@@ -77,13 +82,77 @@ class CloudMonitorEntityManager(BaseManager):
 
 
     def create_check(self, entity, label=None, name=None, check_type=None,
-            disabled=False, metadata=None, details=None,
-            monitoring_zones_poll=None, timeout=None, period=None,
-            target_alias=None, target_hostname=None, target_receiver=None):
+        details=None, disabled=False, metadata=None,
+        monitoring_zones_poll=None, timeout=None, period=None,
+        target_alias=None, target_hostname=None, target_receiver=None):
         """
-        Creates a check on the entity with the specified attributes.
+        Creates a check on the entity with the specified attributes. The
+        'details' parameter should be a dict with the keys as the option name,
+        and the value as the desired setting.
         """
-        pass
+        if details is None:
+            raise exc.MissingMonitoringCheckDetails("The required 'details' "
+                    "parameter was not passed to the create_check() method.")
+        if not target_alias or target_hostname:
+            raise exc.MonitoringCheckTargetNotSpecified("You must specify "
+                    "either the 'target_alias' or 'target_hostname' when "
+                    "creating a check.")
+        if isinstance(check_type, CloudMonitorCheckType):
+            ctype = check_type.id
+        else:
+            ctype = check_type
+        is_remote = ctype.startswith("remote")
+        monitoring_zones_poll = utils.coerce_string_to_list(
+                monitoring_zones_poll)
+        monitoring_zones_poll = [utils.get_id(mzp)
+                for mzp in monitoring_zones_poll]
+        if is_remote and not monitoring_zones_poll:
+            raise MonitoringZonesPollMissing("You must specify the "
+                    "'monitoring_zones_poll' parameter for remote checks.")
+        body = {"label": label or name,
+                "details": details,
+                "disabled": disabled,
+                }
+        if isinstance(check_type, CloudMonitorCheckType):
+            body["type"] = check_type.id
+        else:
+            body["type"] = check_type
+        local_dict = locals()
+        for param in ("metadata", "monitoring_zones_poll", "timeout", "period",
+                "target_alias", "target_hostname", "target_receiver"):
+            val = local_dict.get(param)
+            if val is None:
+                continue
+            body[param] = val
+        uri = "/%s/%s/checks" % (self.uri_base, entity.id)
+        try:
+            resp, resp_body = self.api.method_post(uri, body=body)
+        except exc.BadRequest as e:
+            msg = e.message
+            dtls = e.details
+            match = _invalid_key_pat.match(msg)
+            if match:
+                missing = match.groups()[0].replace("details.", "")
+                if missing in details:
+                    errcls = exc.InvalidMonitoringCheckDetails
+                    errmsg = "".join(["The value passed for '%s' in the ",
+                            "details parameter is not valid."]) % missing
+                else:
+                    errcls = exc.MissingMonitoringCheckDetails
+                    errmsg = "".join(["The required value for the '%s' ",
+                            "setting is missing from the 'details' ",
+                            "parameter."]) % missing
+                raise errcls(errmsg)
+            else:
+                if msg == "Validation error":
+                    # Info is in the 'details'
+                    raise exc.InvalidMonitoringCheckDetails("Validation "
+                            "failed. Error: '%s'." % dtls)
+        print "RESP"
+        print resp
+        print "BODY"
+        print resp_body
+
 
 
 class CloudMonitorCheck(BaseResource):
@@ -117,6 +186,25 @@ class CloudMonitorCheckType(BaseResource):
                 if not field["optional"]]
 
 
+    @property
+    def optional_field_names(self):
+        """
+        Returns a list of the names of all optional fields for this check type.
+        """
+        return [field["name"] for field in self.fields
+                if field["optional"]]
+
+
+
+
+class CloudMonitoringZone(BaseResource):
+    """
+    Represents a location from which Cloud Monitoring collects data.
+    """
+    @property
+    def name(self):
+        return self.label
+
 
 
 class CloudMonitoringClient(BaseClient):
@@ -138,6 +226,9 @@ class CloudMonitoringClient(BaseClient):
                 response_key=None, plural_response_key=None)
         self._check_type_manager = BaseManager(self,
                 uri_base="check_types", resource_class=CloudMonitorCheckType,
+                response_key=None, plural_response_key=None)
+        self._monitoring_zone_manager = BaseManager(self,
+                uri_base="monitoring_zones", resource_class=CloudMonitoringZone,
                 response_key=None, plural_response_key=None)
 
 
@@ -194,7 +285,9 @@ class CloudMonitoringClient(BaseClient):
             monitoring_zones_poll=None, timeout=None, period=None,
             target_alias=None, target_hostname=None, target_receiver=None):
         """
-        Creates a check on the entity with the specified attributes.
+        Creates a check on the entity with the specified attributes. The
+        'details' parameter should be a dict with the keys as the option name,
+        and the value as the desired setting.
         """
         return self._entity_manager.create_check(entity, label=label,
                 name=name, check_type=check_type, disabled=False,
@@ -205,6 +298,18 @@ class CloudMonitoringClient(BaseClient):
                 target_receiver=target_receiver)
 
 
+    def list_monitoring_zones(self):
+        """
+        Returns a list of all available monitoring zones.
+        """
+        return self._monitoring_zone_manager.list()
+
+
+    def get_monitoring_zone(self, mz_id):
+        """
+        Returns the monitoring zone for the given ID.
+        """
+        return self._monitoring_zone_manager.get(mz_id)
 
     #################################################################
     # The following methods are defined in the generic client class,

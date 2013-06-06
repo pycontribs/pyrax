@@ -116,6 +116,9 @@ class InvalidDateTimeString(PyraxException):
 class InvalidDeviceType(PyraxException):
     pass
 
+class InvalidMonitoringCheckDetails(PyraxException):
+    pass
+
 class InvalidNodeCondition(PyraxException):
     pass
 
@@ -161,10 +164,16 @@ class MissingHealthMonitorSettings(PyraxException):
 class MissingLoadBalancerParameters(PyraxException):
     pass
 
+class MissingMonitoringCheckDetails(PyraxException):
+    pass
+
 class MissingName(PyraxException):
     pass
 
 class MissingTemporaryURLKey(PyraxException):
+    pass
+
+class MonitoringCheckTargetNotSpecified(PyraxException):
     pass
 
 class NetworkCIDRInvalid(PyraxException):
@@ -375,14 +384,17 @@ def from_response(response, body):
     if body:
         message = "n/a"
         details = "n/a"
-        if hasattr(body, "keys"):
-            error = body[body.keys()[0]]
-            if isinstance(error, dict):
-                message = error.get("message", None)
-                details = error.get("details", None)
-            else:
-                message = error
-                details = None
+        if isinstance(body, dict):
+            message = body.get("message")
+            details = body.get("details")
+            if message is details is None:
+                error = body[body.keys()[0]]
+                if isinstance(error, dict):
+                    message = error.get("message", None)
+                    details = error.get("details", None)
+                else:
+                    message = error
+                    details = None
         return cls(code=response.status, message=message, details=details,
                    request_id=request_id)
     else:
