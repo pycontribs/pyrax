@@ -428,6 +428,10 @@ def keyring_auth(username=None, region=None, authenticate=True):
     If the region is passed, it will authenticate against the proper endpoint
     for that region, and set the default region for connections.
     """
+
+    utils.trace()
+
+
     if not keyring:
         # Module not installed
         raise exc.KeyringModuleNotInstalled("The 'keyring' Python module is "

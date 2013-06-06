@@ -90,11 +90,10 @@ class CloudMonitorCheck(BaseResource):
     """
     Represents a check defined for an entity.
     """
-
-
     @property
     def name(self):
         return self.label
+
 
 
 class CloudMonitorCheckType(BaseResource):
