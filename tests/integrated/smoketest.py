@@ -93,7 +93,7 @@ class SmokeTester(object):
 
     def cs_list_flavors(self):
         print "Listing Flavors:",
-        self.cs_flavors = self.cs.flavors.list()
+        self.cs_flavors = self.cs.list_flavors()
         if self.cs_flavors:
             print
             for flavor in self.cs_flavors:
@@ -105,7 +105,7 @@ class SmokeTester(object):
 
     def cs_list_images(self):
         print "Listing Images:",
-        self.cs_images = self.cs.images.list()
+        self.cs_images = self.cs.list_base_images()
         if self.cs_images:
             print
             for image in self.cs_images:
@@ -146,7 +146,8 @@ class SmokeTester(object):
 
     def cs_create_server(self):
         print "Creating server..."
-        img = self.cs_images[0]
+        img = [img for img in self.cs_images
+                if "12.04" in img.name][0]
         flavor = self.cs_flavors[0]
         self.smoke_server = self.cs.servers.create("SMOKETEST_SERVER",
                 img.id, flavor.id)
@@ -323,14 +324,14 @@ if __name__ == "__main__":
             use for the test. If not specified, the `default` environment is
             used.""")
     args = parser.parse_args()
-    regions = args.regions
+    regions = args.regions or pyrax.regions
     env = args.env
     if env:
         pyrax.set_environment(env)
 
     start = time.time()
     pyrax.keyring_auth()
-    for region in pyrax.regions:
+    for region in regions:
         print
         print "=" * 77
         print "Starting test for region: %s" % region
