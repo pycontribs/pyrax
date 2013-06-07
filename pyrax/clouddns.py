@@ -524,6 +524,9 @@ class CloudDNSManager(BaseManager):
         API provides a more efficient search option when filtering on name.
         So if the filter is on name, use that; otherwise, use the default.
         """
+
+        utils.trace()
+
         if (len(kwargs) == 1) and ("name" in kwargs):
             # Filtering on name; use the more efficient method.
             nm = kwargs["name"]
