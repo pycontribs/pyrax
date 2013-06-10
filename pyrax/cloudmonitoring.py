@@ -46,6 +46,13 @@ class CloudMonitorEntity(BaseResource):
         return self.manager.list_checks(self)
 
 
+    def delete_check(self, check):
+        """
+        Deletes the specified check from this entity.
+        """
+        return self.manager.delete_check(self, check)
+
+
     @property
     def name(self):
         return self.label
@@ -76,19 +83,28 @@ class CloudMonitorEntityManager(BaseManager):
         """
         uri = "/%s/%s/checks" % (self.uri_base, utils.get_id(entity))
         resp, resp_body = self.api.method_get(uri)
-        print "RESP", resp
-        print
-        print "BODY", resp_body
+        checks = [CloudMonitorCheck(self, val) for val in resp_body["values"]]
+        for check in checks:
+            check.entity = entity
+        return checks
 
 
     def create_check(self, entity, label=None, name=None, check_type=None,
-        details=None, disabled=False, metadata=None,
-        monitoring_zones_poll=None, timeout=None, period=None,
-        target_alias=None, target_hostname=None, target_receiver=None):
+            details=None, disabled=False, metadata=None,
+            monitoring_zones_poll=None, timeout=None, period=None,
+            target_alias=None, target_hostname=None, target_receiver=None,
+            test_only=False, include_debug=False):
         """
         Creates a check on the entity with the specified attributes. The
         'details' parameter should be a dict with the keys as the option name,
         and the value as the desired setting.
+
+        If the 'test_only' parameter is True, then the check is not created;
+        instead, the check is run and the results of the test run returned. If
+        'include_debug' is True, additional debug information is returned.
+        According to the current Cloud Monitoring docs:
+            "Currently debug information is only available for the
+            remote.http check and includes the response body."
         """
         if details is None:
             raise exc.MissingMonitoringCheckDetails("The required 'details' "
@@ -124,7 +140,12 @@ class CloudMonitorEntityManager(BaseManager):
             if val is None:
                 continue
             body[param] = val
-        uri = "/%s/%s/checks" % (self.uri_base, entity.id)
+        if test_only:
+            uri = "/%s/%s/test-check" % (self.uri_base, entity.id)
+            if include_debug:
+                uri = "%s?debug=true" % uri
+        else:
+            uri = "/%s/%s/checks" % (self.uri_base, entity.id)
         try:
             resp, resp_body = self.api.method_post(uri, body=body)
         except exc.BadRequest as e:
@@ -148,10 +169,85 @@ class CloudMonitorEntityManager(BaseManager):
                     # Info is in the 'details'
                     raise exc.InvalidMonitoringCheckDetails("Validation "
                             "failed. Error: '%s'." % dtls)
-        print "RESP"
-        print resp
-        print "BODY"
-        print resp_body
+        if test_only:
+            return resp_body
+
+
+    def find_all_checks(self, entity, **kwargs):
+        """
+        Finds all checks with attributes matching ``**kwargs``.
+
+        This isn't very efficient: it loads the entire list then filters on
+        the Python side.
+        """
+        found = []
+        searches = kwargs.items()
+        for obj in self.list_checks(entity):
+            try:
+                if all(getattr(obj, attr) == value
+                        for (attr, value) in searches):
+                    found.append(obj)
+                    print "FOUND", obj.id
+            except AttributeError:
+                continue
+        return found
+        
+        
+    def update_check(self, check, label=None, name=None, disabled=None,
+            metadata=None, monitoring_zones_poll=None, timeout=None,
+            period=None, target_alias=None, target_hostname=None,
+            target_receiver=None):
+        if monitoring_zones_poll:
+            monitoring_zones_poll = utils.coerce_string_to_list(
+                    monitoring_zones_poll)
+            monitoring_zones_poll = [utils.get_id(mzp)
+                    for mzp in monitoring_zones_poll]
+        body = {}
+        local_dict = locals()
+        label = label or name
+        for param in ("label", "disabled", "metadata", "monitoring_zones_poll",
+                "timeout", "period", "target_alias", "target_hostname",
+                "target_receiver"):
+            val = local_dict.get(param)
+            if val is None:
+                continue
+            body[param] = val
+        entity = check.entity
+        uri = "/%s/%s/checks/%s" % (self.uri_base, utils.get_id(entity),
+                utils.get_id(check))
+        try:
+            resp, resp_body = self.api.method_put(uri, body=body)
+        except exc.BadRequest as e:
+            msg = e.message
+            dtls = e.details
+            if msg.startswith("Validation error"):
+                raise exc.InvalidMonitoringCheckUpdate("The update failed "
+                        "validation: %s: %s" % (msg, dtls))
+            else:
+                # Some other issue.
+                raise
+        return resp_body
+
+
+    def get_check(self, entity, check):
+        """
+        Returns the current version of the check for the entity.
+        """
+        uri = "/%s/%s/checks/%s" % (self.uri_base, utils.get_id(entity),
+                utils.get_id(check))
+        resp, resp_body = self.api.method_get(uri)
+        check = CloudMonitorCheck(self, resp_body)
+        check.entity = entity
+        return check
+
+
+    def delete_check(self, entity, check):
+        """
+        Deletes the specified check from the entity.
+        """
+        uri = "/%s/%s/checks/%s" % (self.uri_base, utils.get_id(entity),
+                utils.get_id(check))
+        resp, resp_body = self.api.method_delete(uri)
 
 
 
@@ -162,6 +258,35 @@ class CloudMonitorCheck(BaseResource):
     @property
     def name(self):
         return self.label
+
+
+    def get(self):
+        """Reloads the check with its current values."""
+        new = self.manager.get_check(self.entity, self)
+        if new:
+            self._add_details(new._info)
+
+    reload = get
+
+
+    def delete(self):
+        """Removes this check from its entity."""
+        self.manager.delete_check(self)
+
+
+    def update(self, label=None, name=None, 
+            disabled=None, metadata=None,
+            monitoring_zones_poll=None, timeout=None, period=None,
+            target_alias=None, target_hostname=None, target_receiver=None):
+        """
+        Updates an existing check
+        """
+        self.manager.update_check(self, label=label, name=name,
+                disabled=disabled, metadata=metadata,
+                monitoring_zones_poll=monitoring_zones_poll, timeout=timeout,
+                period=period, target_alias=target_alias,
+                target_hostname=target_hostname,
+                target_receiver=target_receiver)
 
 
 
@@ -283,7 +408,8 @@ class CloudMonitoringClient(BaseClient):
     def create_check(self, entity, label=None, name=None, check_type=None,
             disabled=False, metadata=None, details=None,
             monitoring_zones_poll=None, timeout=None, period=None,
-            target_alias=None, target_hostname=None, target_receiver=None):
+            target_alias=None, target_hostname=None, target_receiver=None,
+            test_only=False, include_debug=False):
         """
         Creates a check on the entity with the specified attributes. The
         'details' parameter should be a dict with the keys as the option name,
@@ -295,7 +421,33 @@ class CloudMonitoringClient(BaseClient):
                 monitoring_zones_poll=monitoring_zones_poll, timeout=timeout,
                 period=period, target_alias=target_alias,
                 target_hostname=target_hostname,
+                target_receiver=target_receiver, test_only=test_only,
+                include_debug=include_debug)
+
+
+    def get_check(self, entity, check):
+        """Returns the current check for the given entity."""
+        return self.manager.get_check(entity, check)
+
+
+    def update_check(self, entity, check, label=None, name=None, disabled=None,
+            metadata=None, monitoring_zones_poll=None, timeout=None,
+            period=None, target_alias=None, target_hostname=None,
+            target_receiver=None):
+        """Updates an existing check."""
+        self._entity_manager.update_check(self, label=label, name=name,
+                disabled=disabled, metadata=metadata,
+                monitoring_zones_poll=monitoring_zones_poll, timeout=timeout,
+                period=period, target_alias=target_alias,
+                target_hostname=target_hostname,
                 target_receiver=target_receiver)
+
+
+    def delete_check(self, entity, check):
+        """
+        Deletes the specified check from the entity.
+        """
+        return self._entity_manager.delete_check(entity, check)
 
 
     def list_monitoring_zones(self):

@@ -119,6 +119,9 @@ class InvalidDeviceType(PyraxException):
 class InvalidMonitoringCheckDetails(PyraxException):
     pass
 
+class InvalidMonitoringCheckUpdate(PyraxException):
+    pass
+
 class InvalidNodeCondition(PyraxException):
     pass
 
