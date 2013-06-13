@@ -133,6 +133,42 @@ class BaseAuth(object):
             self.authenticate()
 
 
+    def auth_with_token(self, token, tenant_id=None, tenant_name=None):
+        """
+        If a valid token is already known, this call will use it to generate
+        the service catalog.
+        """
+        if not any((tenant_id, tenant_name)):
+            raise exc.MissingAuthSettings("You must supply either the tenant "
+                    "name or tenant ID")
+        if tenant_id:
+            key = "tenantId"
+            val = tenant_id
+        else:
+            key = "tenantName"
+            val = tenant_name
+        body = {"auth": {
+                key: val,
+                "token": {"id": token},
+                }}
+        headers = {"Content-Type": "application/json",
+                "Accept": "application/json",
+                }
+        resp = self.method_post("tokens", data=body, headers=headers,
+                std_headers=False)
+        if resp.status_code == 401:
+            # Invalid authorization
+            raise exc.AuthenticationFailed("Incorrect/unauthorized "
+                    "credentials received")
+        elif resp.status_code > 299:
+            msg_dict = resp.json()
+            msg = msg_dict[msg_dict.keys()[0]]["message"]
+            raise exc.AuthenticationFailed("%s - %s." % (resp.reason, msg))
+        resp_body = resp.json()
+        self._parse_response(resp_body)
+        self.authenticated = True
+
+
     def _read_credential_file(self, cfg):
         """
         Implements the default (keystone) behavior.
@@ -264,7 +300,7 @@ class BaseAuth(object):
         user = access["user"]
         self.user = {}
         self.user["id"] = user["id"]
-        self.user["name"] = user["name"]
+        self.username = self.user["name"] = user["name"]
         self.user["roles"] = user["roles"]
 
 

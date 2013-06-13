@@ -149,6 +149,7 @@ class Settings(object):
             "debug": "CLOUD_DEBUG",
             }
     _settings = {"default": dict.fromkeys(env_dct.keys())}
+    _default_set = False
 
 
     def get(self, key, env=None):
@@ -256,6 +257,7 @@ class Settings(object):
         for section in cfg.sections():
             if section == "settings":
                 section_name = "default"
+                self._default_set = True
             else:
                 section_name = section
             dct = self._settings[section_name] = {}
@@ -281,8 +283,9 @@ class Settings(object):
                 dct["user_agent"] = USER_AGENT
 
             # If this is the first section, make it the default
-            if not "default" in self._settings:
+            if not self._default_set:
                 self._settings["default"] = self._settings[section]
+                self._default_set = True
 
 
 def get_environment():
@@ -367,6 +370,17 @@ def _require_auth(fnc):
 def _safe_region(region=None):
     """Value to use when no region is specified."""
     return region or settings.get("region") or default_region
+
+
+@_assure_identity
+def auth_with_token(token, tenant_id=None, tenant_name=None, region=None):
+    """
+    If you already have a valid token and either a tenant ID or name, you can
+    call this to configure the identity and available services.
+    """
+    identity.auth_with_token(token, tenant_id=tenant_id,
+            tenant_name=tenant_name)
+    connect_to_services(region=region)
 
 
 @_assure_identity
