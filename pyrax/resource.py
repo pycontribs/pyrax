@@ -39,9 +39,11 @@ class BaseResource(object):
     _non_display = []
 
 
-    def __init__(self, manager, info, loaded=False):
+    def __init__(self, manager, info, key=None, loaded=False):
         self._loaded = loaded
         self.manager = manager
+        if key:
+            info = info[key]
         self._info = info
         self._add_details(info)
 
@@ -105,6 +107,8 @@ class BaseResource(object):
         new = self.manager.get(self)
         if new:
             self._add_details(new._info)
+    # This alias is used to make its purpose clearer.
+    reload = get
 
 
     def delete(self):
@@ -127,18 +131,6 @@ class BaseResource(object):
         if hasattr(self, "id") and hasattr(other, "id"):
             return self.id == other.id
         return self._info == other._info
-
-
-    def reload(self):
-        """
-        Since resource objects are essentially snapshots of the entity they
-        represent at the time they are created, they do not update as the
-        entity updates. For example, the 'status' attribute can change, but
-        the instance's value for 'status' will not. This method will refresh
-        the instance with the current state of the underlying entity.
-        """
-        new_obj = self.manager.get(self.id)
-        self._add_details(new_obj._info)
 
 
     def _get_loaded(self):

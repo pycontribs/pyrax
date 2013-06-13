@@ -37,7 +37,7 @@ import pyrax.utils as utils
 example_uri = "http://example.com"
 
 
-class FakeResponse(dict):
+class FakeResponse(object):
     headers = {}
     body = ""
     status = 200
@@ -540,7 +540,7 @@ u'token': {u'expires': u'2222-02-22T22:22:22.000-02:00',
     u'tenant': {u'id': u'000000', u'name': u'000000'}},
 u'user': {u'RAX-AUTH:defaultRegion': u'',
    u'id': u'123456',
-   u'name': u'someuser',
+   u'name': u'fakeuser',
    u'roles': [{u'description': u'User Admin Role.',
                u'id': u'3',
                u'name': u'identity:user-admin'}]}}}
@@ -557,8 +557,12 @@ class FakeIdentityResponse(FakeResponse):
             "endpoints": fake_identity_endpoints_response,
             }
 
-    def json(self):
+    @property
+    def content(self):
         return self.responses.get(self.response_type)
 
+    def json(self):
+        return self.content
+
     def read(self):
-        return json.dumps(fake_identity_response)
+        return json.dumps(self.content)

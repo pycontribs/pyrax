@@ -56,6 +56,24 @@ class IdentityTest(unittest.TestCase):
             self.assertIsNone(ident.token)
             self.assertIsNone(ident._creds_file)
 
+    def test_auth_with_token(self):
+        for cls in self.id_classes.values():
+            ident = cls()
+            tok = utils.random_name()
+            nm = utils.random_name()
+            resp = fakes.FakeIdentityResponse()
+            # Need to stuff this into the standard response
+            sav = resp.content["access"]["user"]["name"]
+            resp.content["access"]["user"]["name"] = nm
+            ident.method_post = Mock(return_value=resp)
+            ident.auth_with_token(tok, tenant_name=nm)
+            ident.method_post.assert_called_once_with("tokens",
+                    headers={'Content-Type': 'application/json', 'Accept':
+                    'application/json'}, std_headers=False, data={'auth':
+                    {'token': {'id': tok}, 'tenantName': nm}})
+            self.assertEqual(ident.username, nm)
+            resp.content["access"]["user"]["name"] = sav
+
     def test_set_credentials(self):
         for cls in self.id_classes.values():
             ident = cls()

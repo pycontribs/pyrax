@@ -370,20 +370,27 @@ def from_response(response, body):
         if resp.status != 200:
             raise exception_from_response(resp, body)
     """
-    cls = _code_map.get(response.status, ClientException)
+    if isinstance(response, dict):
+        status = response.get("status")
+    else:
+        status = response.status
+    cls = _code_map.get(status, ClientException)
     request_id = response.get("x-compute-request-id")
     if body:
         message = "n/a"
         details = "n/a"
-        if hasattr(body, "keys"):
-            error = body[body.keys()[0]]
-            if isinstance(error, dict):
-                message = error.get("message", None)
-                details = error.get("details", None)
-            else:
-                message = error
-                details = None
-        return cls(code=response.status, message=message, details=details,
+        if isinstance(body, dict):
+            message = body.get("message")
+            details = body.get("details")
+            if message is details is None:
+                error = body[body.keys()[0]]
+                if isinstance(error, dict):
+                    message = error.get("message", None)
+                    details = error.get("details", None)
+                else:
+                    message = error
+                    details = None
+        return cls(code=status, message=message, details=details,
                    request_id=request_id)
     else:
-        return cls(code=response.status, request_id=request_id)
+        return cls(code=status, request_id=request_id)

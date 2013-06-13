@@ -7,7 +7,7 @@ import json
 import os
 import pkg_resources
 import unittest
-import urllib2
+from urllib import quote
 
 from mock import patch
 from mock import MagicMock as Mock
@@ -285,7 +285,43 @@ class ClientTest(unittest.TestCase):
         self.assertRaises(exc.ServiceNotAvailable, clt._api_request, url,
                 method)
         clt.request = sav_req
-        clt.authenticate = sav_auth
+        id_svc.authenticate = sav_auth
+
+    def test_api_request_url_quoting(self):
+        clt = self.client
+        id_svc = self.id_svc
+        sav_mgt = clt.management_url
+        clt.management_url = "/FAKE"
+        sav_auth = id_svc.authenticate
+        id_svc.authenticate = Mock()
+        sav_req = clt._time_request
+        clt._time_request = Mock(return_value=((None, None)))
+        uri = "/abc/def?fake@fake.com"
+        expected = "%s%s" % (clt.management_url, quote(uri, safe="/.?="))
+        clt._api_request(uri, "GET")
+        clt._time_request.assert_called_once_with(expected, 'GET',
+                headers={'X-Auth-Token': None})
+        id_svc.authenticate = sav_auth
+        clt._time_request = sav_req
+        clt.management_url = sav_mgt
+
+    def test_api_request_url_safe_quoting(self):
+        clt = self.client
+        id_svc = self.id_svc
+        sav_mgt = clt.management_url
+        clt.management_url = "/FAKE"
+        sav_auth = id_svc.authenticate
+        id_svc.authenticate = Mock()
+        sav_req = clt._time_request
+        clt._time_request = Mock(return_value=((None, None)))
+        uri = "/abc/def"
+        expected = "%s%s" % (clt.management_url, quote(uri, safe="/.?="))
+        clt._api_request(uri, "GET")
+        clt._time_request.assert_called_once_with(expected, 'GET',
+                headers={'X-Auth-Token': None})
+        id_svc.authenticate = sav_auth
+        clt._time_request = sav_req
+        clt.management_url = sav_mgt
 
     def test_method_get(self):
         clt = self.client

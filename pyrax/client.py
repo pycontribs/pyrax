@@ -230,7 +230,7 @@ class BaseClient(httplib2.Http):
             if id_svc.tenant_id:
                 kwargs["headers"]["X-Auth-Project-Id"] = id_svc.tenant_id
             resp, body = self._time_request(self.management_url +
-                    quote(uri), method, **kwargs)
+                    quote(uri, safe="/.?&="), method, **kwargs)
             return resp, body
         except exc.Unauthorized as ex:
             try:

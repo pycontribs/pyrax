@@ -8,7 +8,7 @@ var searchData=
   ['region',['region',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a1b9edddb3735d131c67e9e824f07c402',1,'pyrax::base_identity::BaseAuth']]],
   ['region_5fname',['region_name',['../classpyrax_1_1client_1_1BaseClient.html#a326b5b91b887c67a677e2eb509b569b6',1,'pyrax::client::BaseClient']]],
   ['regions',['regions',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a4c4786354df7358bf12c3c65069dd8b7',1,'pyrax::base_identity::BaseAuth.regions()'],['../namespacepyrax.html#a2b45bebec67926b49ea55f14eb0b8f8e',1,'pyrax.regions()']]],
-  ['reload',['reload',['../classpyrax_1_1resource_1_1BaseResource.html#aaef8955b9d3e2f5ddb4a016b60f14d7f',1,'pyrax::resource::BaseResource']]],
+  ['reload',['reload',['../classpyrax_1_1resource_1_1BaseResource.html#ac5c05266f4f3b5937cefb6a818fc6675',1,'pyrax::resource::BaseResource']]],
   ['remove_5fcontainer_5fmetadata_5fkey',['remove_container_metadata_key',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a91fcdf99119a696e0b626957628605bb',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['remove_5ffrom_5fcache',['remove_from_cache',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#adf3d192d83c2f53a96b0bd594c15b84d',1,'pyrax::cf_wrapper::container::Container']]],
   ['remove_5fmetadata_5fkey',['remove_metadata_key',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a01a67fdfd99526a56bef1e3c0a01a68d',1,'pyrax::cf_wrapper::container::Container.remove_metadata_key()'],['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a01a67fdfd99526a56bef1e3c0a01a68d',1,'pyrax::cf_wrapper::storage_object::StorageObject.remove_metadata_key()']]],

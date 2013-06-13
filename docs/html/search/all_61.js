@@ -32,6 +32,7 @@ var searchData=
   ['attempts',['attempts',['../classpyrax_1_1utils_1_1__WaitThread.html#abb0145d5080497f5f4212ca51fbc6316',1,'pyrax::utils::_WaitThread']]],
   ['auth_5fendpoint',['auth_endpoint',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a146f36df43eb5ac08c7c7b09bf50d6ed',1,'pyrax::base_identity::BaseAuth']]],
   ['auth_5ftoken',['auth_token',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a1fbf2af4f60163ea873bf30e0980839e',1,'pyrax::base_identity::BaseAuth']]],
+  ['auth_5fwith_5ftoken',['auth_with_token',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a2323e991798b13063610509c2bb4aaf4',1,'pyrax::base_identity::BaseAuth.auth_with_token()'],['../namespacepyrax.html#a49217af72f2f282731a94b6a6f42823c',1,'pyrax.auth_with_token()']]],
   ['authenticate',['authenticate',['../classpyrax_1_1base__identity_1_1BaseAuth.html#ac0665028c611e61881f7e9fd0e752b99',1,'pyrax::base_identity::BaseAuth.authenticate()'],['../classpyrax_1_1client_1_1BaseClient.html#ac0665028c611e61881f7e9fd0e752b99',1,'pyrax::client::BaseClient.authenticate()'],['../namespacepyrax.html#a14a943d0bb5ce4bcec385d1b733c6544',1,'pyrax.authenticate()']]],
   ['authenticated',['authenticated',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a48f0dc4cf47cd14cdfda7e8495b0a76b',1,'pyrax::base_identity::BaseAuth']]],
   ['authenticationfailed',['AuthenticationFailed',['../classpyrax_1_1exceptions_1_1AuthenticationFailed.html',1,'pyrax::exceptions']]],

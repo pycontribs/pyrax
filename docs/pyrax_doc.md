@@ -32,10 +32,10 @@ To upgrade your installation in the future, re-run the same command, but this ti
 ## Set up Authentication
 You need to submit your username and password in order to authenticate. If you are using the Rackspace Public Cloud, that would be your account username and API key. If you are using another OpenStack cloud, you also need to include your tenant ID, which you should be able to get from your provider.
 
-Please note that all versions of pyrax beginning with 1.4.0 require that you define what type of authentication system you are working with. Previous versions only worked with Rackspace authentication, so this was not an issue. To do this, you have three options, listed below. In all cases the examples use `keystone` as the identity_type, but if you're using the Rackspace Cloud, change this to `rackspace`. 
+Please note that **all versions of pyrax beginning with 1.4.0 require that you define what type of authentication system you are working with**. Previous versions only worked with Rackspace authentication, so this was not an issue. To do this, you have three options, listed below. In all cases the examples use `keystone` as the identity_type, but if you're using the Rackspace Cloud, change this to `rackspace`. 
 
 1. **Configuration File**: make sure that the line `identity_type = keystone` is in your [configuration file](#configfile).
-1. **Environment Variable** - If you don't have a configuration file, pyrax will check for the environment variable `CLOUD_ID_TYPE`. Set this by executing `export CLOUD_ID_TYPE=keystone` in a bash shell, or by setting it in the System section of the Control Panel in Windows.
+1. **Environment Variable** - If you don't have a configuration file, pyrax checks for the environment variable `CLOUD_ID_TYPE`. Set this by executing `export CLOUD_ID_TYPE=keystone` in a bash shell, or by setting it in the System section of the Control Panel in Windows.
 1. **Set in Code** - if you can't do either of the above, change the import statement to add `pyrax.set_setting("identity_type", "keystone")` immediately after the `import pyrax` statement.
 
 ## Authenticating
@@ -81,6 +81,13 @@ To authenticate, run the following code using one of these authentication method
 
 Note that the `keyring_auth()` command allows you to specify a particular username. This is especially useful if you need to connect to multiple cloud accounts in a particular environment. If you only have a single account, you can specify the username for your account in the config file (explained below), and pyrax uses that by default.
 
+If you are using pyrax in conjunction with other software, you may already have authenticated using that other program. In that case, you can call the `auth_with_token()`, supplying the token along with either your tenant name or tenant ID. For Rackspace authentication, both of these values are your account number.
+
+    # Using an existing token
+    pyrax.auth_with_token(my_token, tenant_name="0728829")
+
+If you use this method to authenticate in pyrax, be aware that you are responsible for ensuring that the token is valid. That means that if the token expires while your application is running, you need to catch that error, re-authenticate, and then call `auth_with_token()` again with the new token.
+
 Once you have authenticated, you now have access to Cloud Servers, Cloud Files, Cloud Block Storage, Cloud Databases, Cloud Load Balancers, Cloud DNS, and Cloud Networks using the following references:
 
     pyrax.cloudservers
@@ -100,6 +107,16 @@ You don't have to authenticate to each service separately; pyrax handles that fo
     clb = pyrax.cloud_loadbalancers
     dns = pyrax.cloud_dns
     cnw = pyrax.cloud_networks
+
+These abbreviated aliases are used throughout much of the documentation and sample code for pyrax.
+
+
+## Auth Token Expiration
+When you authenticate the cloud identity service returns a _token_, which is simply a random set of characters that identifies you as an authenticated user. This token is valid for a set period of time; the exact length of the valid period varies across cloud providers.
+
+Every request needs to have the authentication information included in the headers of the API calls; pyrax handles this automatically for you. In addition, pyrax catches the error when a token is no longer valid, and attempts to re-authenticate in the background. As long as your original credentials are still valid, this happens transparently to your application. This enables you to write a long-running application without worrying about handling token expiration in your own code.
+
+Please note that if you used `auth_with_token()` to authenticate originally, pyrax does not have your credentials, and so cannot automatically re-authenticate you. In this case, your code must handle the authentication failure when the token expires, and re-authenticate using whatever process you used to get your initial token. Once you've done that, you need to call `auth_with_token()` again to add the new token to pyrax.
 
 
 ## [Pyrax Configuration](id:configfile)
@@ -170,7 +187,7 @@ If the environment is then changed to 'public', pyrax switches to Rackspace auth
 ### Accessing Environment Information
 Pyrax offers several methods for querying and modifying envrionments and their settings. To start, you can determine the current environment by calling `pyrax.get_environment()`. You can also get a list of all defined envrionments by calling `pyrax.list_environments()`. And as mentioned above, you can switch the current envrionment by calling `pyrax.set_environment(new_env_name)`.
 
-To get the value of a setting, call `pyrax.get_setting(key)`. Normally you will not need to change settings in the middle of a session, but just in case you do, you can use the `pyrax.set_setting(key, val)` method. Both of these methods work on the current environment by default. You can get/set settings in other environments with those calls by passing in the envrionment name as the optional `env` parameter to those methods.
+To get the value of a setting, call `pyrax.get_setting(key)`. Normally you do not need to change settings in the middle of a session, but just in case you do, you can use the `pyrax.set_setting(key, val)` method. Both of these methods work on the current environment by default. You can get/set settings in other environments with those calls by passing in the envrionment name as the optional `env` parameter to those methods.
 
 
 ## Debugging HTTP requests

@@ -1,5 +1,15 @@
 # Release Notes for pyrax
 
+###2013.06.13 - Version 1.4.6
+- Added the ability to authenticate with an existing token.
+- Fixed an issue where the default environment was not properly set. Issue #87.
+- Modified tests so that they work with PyPy.
+- Added better explanation of pyrax's ability to automatically re-authenticate
+    when a token expires. Issue #93.
+- Fixed a bug resulting from overly-aggressive URL quoting.
+- Removed the 'default_identity_type' definition in pyrax/__init__.py, as it
+    is no longer needed. Issue #95.
+
 ###2013.06.05 - Version 1.4.5
 - Fixed a bug that prevented region from being properly set. Issue #86.
 
