@@ -560,7 +560,7 @@ class FakeIdentityResponse(FakeResponse):
     @property
     def content(self):
         return self.responses.get(self.response_type)
-        
+
     def json(self):
         return self.content
 
