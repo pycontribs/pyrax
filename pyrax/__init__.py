@@ -93,8 +93,6 @@ cloud_databases = None
 cloud_blockstorage = None
 cloud_dns = None
 cloud_networks = None
-# Default identity type.
-default_identity_type = "rackspace"
 # Default region for all services. Can be individually overridden if needed
 default_region = "DFW"
 # Encoding to use when working with non-ASCII names
@@ -262,7 +260,7 @@ class Settings(object):
                 section_name = section
             dct = self._settings[section_name] = {}
             dct["region"] = safe_get(section, "region", default_region)
-            ityp = safe_get(section, "identity_type", default_identity_type)
+            ityp = safe_get(section, "identity_type")
             dct["identity_type"] = _id_type(ityp)
             dct["identity_class"] = _import_identity(ityp)
             # Handle both the old and new names for this setting.
@@ -370,6 +368,17 @@ def _require_auth(fnc):
 def _safe_region(region=None):
     """Value to use when no region is specified."""
     return region or settings.get("region") or default_region
+
+
+@_assure_identity
+def auth_with_token(token, tenant_id=None, tenant_name=None, region=None):
+    """
+    If you already have a valid token and either a tenant ID or name, you can
+    call this to configure the identity and available services.
+    """
+    identity.auth_with_token(token, tenant_id=tenant_id,
+            tenant_name=tenant_name)
+    connect_to_services(region=region)
 
 
 @_assure_identity
@@ -541,8 +550,9 @@ def _get_service_endpoint(svc, region=None, public=True):
 def connect_to_cloudservers(region=None):
     """Creates a client for working with cloud servers."""
     _cs_auth_plugin.discover_auth_systems()
-    if default_identity_type and default_identity_type != "keystone":
-        auth_plugin = _cs_auth_plugin.load_plugin(default_identity_type)
+    id_type = get_setting("identity_type")
+    if id_type != "keystone":
+        auth_plugin = _cs_auth_plugin.load_plugin(id_type)
     else:
         auth_plugin = None
     region = _safe_region(region)
