@@ -134,6 +134,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the username and password directly.  <a href="#a29ca4bc84123f642dc6cf191e2d61543"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a31357d099c87594b661d674bb12a56c0">set_credential_file</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads in the credentials from the supplied file.  <a href="#a31357d099c87594b661d674bb12a56c0"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a2323e991798b13063610509c2bb4aaf4">auth_with_token</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">If a valid token is already known, this call will use it to generate the service catalog.  <a href="#a2323e991798b13063610509c2bb4aaf4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#ac1f6b6211af6452ff038fbb8a25f4822">method_get</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a2b66a305940ec13628995f2a93c55b89">method_head</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a248efd43b254ea67d11575531bad3247">method_post</a></td></tr>
@@ -293,6 +295,47 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Simple alias to self.token. </p>
+
+</div>
+</div>
+<a class="anchor" id="a2323e991798b13063610509c2bb4aaf4"></a><!-- doxytag: member="pyrax::base_identity::BaseAuth::auth_with_token" ref="a2323e991798b13063610509c2bb4aaf4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a2323e991798b13063610509c2bb4aaf4">auth_with_token</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>token</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>tenant_id</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>tenant_name</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>If a valid token is already known, this call will use it to generate the service catalog. </p>
 
 </div>
 </div>
@@ -1438,7 +1481,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jun 5 2013 13:58:06 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 13 2013 15:52:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

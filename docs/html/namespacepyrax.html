@@ -121,6 +121,8 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the value of the specified key in the current environment, or in another environment if specified.  <a href="#a8a337253c5949ea5d35aefa452c7540c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a5fb3ef963e598bfc25617161b2f2e4df">set_default_region</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the default_region setting.  <a href="#a5fb3ef963e598bfc25617161b2f2e4df"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a49217af72f2f282731a94b6a6f42823c">auth_with_token</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">If you already have a valid token and either a tenant ID or name, you can call this to configure the identity and available services.  <a href="#a49217af72f2f282731a94b6a6f42823c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a171229a7210ff6cb20c8162b859cb5df">set_credentials</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the credentials directly, and then try to authenticate.  <a href="#a171229a7210ff6cb20c8162b859cb5df"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a7375be0702b4c4322b674eaf94795c19">set_credential_file</a></td></tr>
@@ -163,7 +165,6 @@ Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a7f4dc3b1da79f21103723f78b910c8a5">cloud_blockstorage</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#acb0f91693d36d52270ed91fd2e919fcc">cloud_dns</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#af25ef81616c79ed5da4655185879259f">cloud_networks</a> = None</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a6968c64ea7e430cf6fe3f4c96ab2c5d7">default_identity_type</a> = &quot;rackspace&quot;</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#abd0e51df0335ddf4a0ebf84b4e511b16">default_region</a> = &quot;DFW&quot;</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ab8005f4babffb239fd05dbb8c38551b7">default_encoding</a> = &quot;utf-8&quot;</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dictionary&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a9f379c663a918bd5beb1ed160f2b0c4d">settings</a> = {}</td></tr>
@@ -176,6 +177,47 @@ Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ae6512f1802b7f1f9cc6f196a0938db60">config_file</a> = os.path.expanduser(&quot;~/.pyrax.cfg&quot;)</td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
+<a class="anchor" id="a49217af72f2f282731a94b6a6f42823c"></a><!-- doxytag: member="pyrax::auth_with_token" ref="a49217af72f2f282731a94b6a6f42823c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax.html#a49217af72f2f282731a94b6a6f42823c">pyrax.auth_with_token</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>token</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>tenant_id</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>tenant_name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>region</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>If you already have a valid token and either a tenant ID or name, you can call this to configure the identity and available services. </p>
+
+</div>
+</div>
 <a class="anchor" id="a14a943d0bb5ce4bcec385d1b733c6544"></a><!-- doxytag: member="pyrax::authenticate" ref="a14a943d0bb5ce4bcec385d1b733c6544" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -859,19 +901,6 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a6968c64ea7e430cf6fe3f4c96ab2c5d7"></a><!-- doxytag: member="pyrax::default_identity_type" ref="a6968c64ea7e430cf6fe3f4c96ab2c5d7" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">string <a class="el" href="namespacepyrax.html#a6968c64ea7e430cf6fe3f4c96ab2c5d7">default_identity_type</a> = &quot;rackspace&quot;</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
 <a class="anchor" id="abd0e51df0335ddf4a0ebf84b4e511b16"></a><!-- doxytag: member="pyrax::default_region" ref="abd0e51df0335ddf4a0ebf84b4e511b16" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -994,7 +1023,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 29 2013 11:39:22 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 13 2013 15:52:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

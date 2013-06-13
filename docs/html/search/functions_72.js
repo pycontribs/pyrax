@@ -2,7 +2,6 @@ var searchData=
 [
   ['random_5fname',['random_name',['../namespacepyrax_1_1utils.html#a15ae8eb19e0cbaf0281e950aebca0962',1,'pyrax::utils']]],
   ['read_5fconfig',['read_config',['../classpyrax_1_1Settings.html#a53943930dc298ed49aa0950b4898bb65',1,'pyrax::Settings']]],
-  ['reload',['reload',['../classpyrax_1_1resource_1_1BaseResource.html#aaef8955b9d3e2f5ddb4a016b60f14d7f',1,'pyrax::resource::BaseResource']]],
   ['remove_5fcontainer_5fmetadata_5fkey',['remove_container_metadata_key',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a91fcdf99119a696e0b626957628605bb',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['remove_5ffrom_5fcache',['remove_from_cache',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#adf3d192d83c2f53a96b0bd594c15b84d',1,'pyrax::cf_wrapper::container::Container']]],
   ['remove_5fmetadata_5fkey',['remove_metadata_key',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a01a67fdfd99526a56bef1e3c0a01a68d',1,'pyrax::cf_wrapper::container::Container.remove_metadata_key()'],['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a01a67fdfd99526a56bef1e3c0a01a68d',1,'pyrax::cf_wrapper::storage_object::StorageObject.remove_metadata_key()']]],

@@ -149,8 +149,6 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the object.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#a449f8fd74d358c0ad641b6c6d6917ba0">__eq__</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Two resource objects that represent the same entity in the cloud should be considered equal if they have the same ID.  <a href="#a449f8fd74d358c0ad641b6c6d6917ba0"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#aaef8955b9d3e2f5ddb4a016b60f14d7f">reload</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Since resource objects are essentially snapshots of the entity they represent at the time they are created, they do not update as the entity updates.  <a href="#aaef8955b9d3e2f5ddb4a016b60f14d7f"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#a23416379944e641a8ad6bdbc95ef1859">manager</a></td></tr>
@@ -160,6 +158,7 @@ Static Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#a494d50825f5dfc848a56d8a568c16172">HUMAN_ID</a> = False</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#a74fac10a98253f8b0308159a33113ab9">NAME_ATTR</a> = &quot;name&quot;</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#ab6f7bc0828ee3d547e244dd336572d76">get_details</a> = True</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#ac5c05266f4f3b5937cefb6a818fc6675">reload</a> = <a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
 <tr><td colspan="2"><h2><a name="properties"></a>
 Properties</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#ae046be312a3b87c23b3729393f1ab194">loaded</a> = property(_get_loaded, _set_loaded)</td></tr>
@@ -189,6 +188,12 @@ Properties</h2></td></tr>
           <td></td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>info</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>key</em> = <code>None</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -346,26 +351,6 @@ Properties</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aaef8955b9d3e2f5ddb4a016b60f14d7f"></a><!-- doxytag: member="pyrax::resource::BaseResource::reload" ref="aaef8955b9d3e2f5ddb4a016b60f14d7f" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#aaef8955b9d3e2f5ddb4a016b60f14d7f">reload</a> </td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Since resource objects are essentially snapshots of the entity they represent at the time they are created, they do not update as the entity updates. </p>
-<p>For example, the 'status' attribute can change, but the instance's value for 'status' will not. This method will refresh the instance with the current state of the underlying entity. </p>
-
-</div>
-</div>
 <hr/><h2>Member Data Documentation</h2>
 <a class="anchor" id="ab6f7bc0828ee3d547e244dd336572d76"></a><!-- doxytag: member="pyrax::resource::BaseResource::get_details" ref="ab6f7bc0828ee3d547e244dd336572d76" args="" -->
 <div class="memitem">
@@ -436,6 +421,19 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ac5c05266f4f3b5937cefb6a818fc6675"></a><!-- doxytag: member="pyrax::resource::BaseResource::reload" ref="ac5c05266f4f3b5937cefb6a818fc6675" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#ac5c05266f4f3b5937cefb6a818fc6675">reload</a> = <a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a><code> [static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <hr/><h2>Property Documentation</h2>
 <a class="anchor" id="ae046be312a3b87c23b3729393f1ab194"></a><!-- doxytag: member="pyrax::resource::BaseResource::loaded" ref="ae046be312a3b87c23b3729393f1ab194" args="" -->
 <div class="memitem">
@@ -471,7 +469,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 29 2013 11:39:25 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 13 2013 15:52:04 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
