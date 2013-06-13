@@ -88,7 +88,8 @@ class PyraxInitTest(unittest.TestCase):
         sav_region = pyrax.default_region
         sav_USER_AGENT = pyrax.USER_AGENT
         with utils.SelfDeletingTempfile() as cfgfile:
-            open(cfgfile, "w").write(dummy_cfg)
+            with open(cfgfile, "w") as cfg:
+                cfg.write(dummy_cfg)
             pyrax.settings.read_config(cfgfile)
         self.assertEqual(pyrax.get_setting("region"), "FAKE")
         self.assertTrue(pyrax.get_setting("user_agent").startswith("FAKE "))
@@ -102,12 +103,14 @@ class PyraxInitTest(unittest.TestCase):
         dummy_cfg = dummy_cfg.replace("custom_user_agent", "fake")
         sav_USER_AGENT = pyrax.USER_AGENT
         with utils.SelfDeletingTempfile() as cfgfile:
-            open(cfgfile, "w").write(dummy_cfg)
+            with open(cfgfile, "w") as cfg:
+                cfg.write(dummy_cfg)
             pyrax.settings.read_config(cfgfile)
         self.assertEqual(pyrax.USER_AGENT, sav_USER_AGENT)
         # Test bad file
         with utils.SelfDeletingTempfile() as cfgfile:
-            open(cfgfile, "w").write("FAKE")
+            with open(cfgfile, "w") as cfg:
+                cfg.write("FAKE")
             self.assertRaises(exc.InvalidConfigurationFile,
                     pyrax.settings.read_config, cfgfile)
         pyrax.default_region = sav_region
