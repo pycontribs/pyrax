@@ -91,6 +91,12 @@ class SmokeTester(object):
             self.cf_make_container_private()
             self.cf_upload_file()
 
+        if "load_balancer" in services:
+            print "Running 'load_balancer' tests..."
+            self.lb_list()
+            self.lb_create()
+
+
     def cs_list_flavors(self):
         print "Listing Flavors:",
         self.cs_flavors = self.cs.list_flavors()
@@ -153,7 +159,7 @@ class SmokeTester(object):
                 img.id, flavor.id)
         self.cleanup_items.append(self.smoke_server)
         self.smoke_server = pyrax.utils.wait_until(self.smoke_server, "status",
-                ["ACTIVE", "ERROR"], interval=15, verbose=True,
+                ["ACTIVE", "ERROR"], interval=10, verbose=True,
                 verbose_atts="progress")
         if self.smoke_server.status == "ERROR":
             print "Server creation failed!"
@@ -166,7 +172,7 @@ class SmokeTester(object):
         print "Rebooting server..."
         self.smoke_server.reboot()
         self.smoke_server = pyrax.utils.wait_until(self.smoke_server, "status",
-                ["ACTIVE", "ERROR"], interval=15, verbose=True,
+                ["ACTIVE", "ERROR"], interval=10, verbose=True,
                 verbose_atts="progress")
         if self.smoke_server.status == "ERROR":
             print "Server reboot failed!"
@@ -204,7 +210,7 @@ class SmokeTester(object):
                 flavor=self.cdb_flavors[0], volume=1)
         self.cleanup_items.append(self.smoke_instance)
         self.smoke_instance = pyrax.utils.wait_until(self.smoke_instance,
-                "status", ["ACTIVE", "ERROR"], interval=15, verbose=True,
+                "status", ["ACTIVE", "ERROR"], interval=10, verbose=True,
                 verbose_atts="progress")
         if self.smoke_instance.status == "ACTIVE":
             print "Success!"
@@ -296,6 +302,30 @@ class SmokeTester(object):
             print "FAIL!"
             self.failures.append("UPLOAD FILE")
         print
+
+    def lb_list(self):
+        print "Listing Load Balancers..."
+        lbs = self.clb.list()
+        if not lbs:
+            print " - No load balancers to list!"
+        else:
+            for lb in lbs:
+                print " -", lb.name
+
+    def lb_create(self):
+        print "Creating a Load Balancer..."
+        node = self.clb.Node(address="10.177.1.1", port=80, condition="ENABLED")
+        vip = self.clb.VirtualIP(type="PUBLIC")
+        lb = self.clb.create("SMOKETEST_LB", port=80, protocol="HTTP",
+                nodes=[node], virtual_ips=[vip])
+        self.cleanup_items.append(lb)
+        pyrax.utils.wait_until(lb, "status", ["ACTIVE", "ERROR"], interval=10,
+                verbose=True)
+        if lb:
+            print "Success!"
+        else:
+            print "FAIL!"
+            self.failures.append("LOAD_BALANCERS")
 
 
     def cleanup(self):
