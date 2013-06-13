@@ -37,7 +37,7 @@ import pyrax.utils as utils
 example_uri = "http://example.com"
 
 
-class FakeResponse(dict):
+class FakeResponse(object):
     headers = {}
     body = ""
     status = 200
