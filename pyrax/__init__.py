@@ -82,7 +82,7 @@ except ImportError:
         if stack[1].endswith("/setup.py"):
             in_setup = True
     if not in_setup:
-         # This isn't a normal import problem during setup; re-raise
+        # This isn't a normal import problem during setup; re-raise
         raise
 
 # Initiate the services to None until we are authenticated.
@@ -383,7 +383,7 @@ def auth_with_token(token, tenant_id=None, tenant_name=None, region=None):
 
 @_assure_identity
 def set_credentials(username, api_key=None, password=None, region=None,
-        tenant_id=None, authenticate=True):
+                    tenant_id=None, authenticate=True):
     """
     Set the credentials directly, and then try to authenticate.
 
@@ -392,8 +392,11 @@ def set_credentials(username, api_key=None, password=None, region=None,
     """
     pw_key = password or api_key
     region = _safe_region(region)
+    if tenant_id:
+        set_setting('tenant_id', tenant_id)
     identity.set_credentials(username=username, password=pw_key,
-            tenant_id=settings.get("tenant_id"), region=region)
+                             tenant_id=settings.get("tenant_id"),
+                             region=region)
     if authenticate:
         _auth_and_connect(region=region)
 
