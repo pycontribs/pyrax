@@ -113,6 +113,14 @@ _http_debug = False
 regions = tuple()
 services = tuple()
 
+_client_classes = {
+        "database": CloudDatabaseClient,
+        "load_balancer": CloudLoadBalancerClient,
+        "volume": CloudBlockStorageClient,
+        "dns": CloudDNSClient,
+        "compute:network": CloudNetworkClient,
+        }
+
 
 def _id_type(ityp):
     """Allow for shorthand names for the most common types."""
@@ -557,6 +565,10 @@ def connect_to_cloudservers(region=None):
         auth_plugin = None
     region = _safe_region(region)
     mgt_url = _get_service_endpoint("compute", region)
+    cloudservers = None
+    if not mgt_url:
+        # Service is not available
+        return
     cloudservers = _cs_client.Client(identity.username, identity.password,
             project_id=identity.tenant_id, auth_url=identity.auth_endpoint,
             auth_system="rackspace", region_name=region, service_type="compute",
@@ -602,6 +614,10 @@ def connect_to_cloudfiles(region=None, public=True):
     """
     region = _safe_region(region)
     cf_url = _get_service_endpoint("object_store", region, public=public)
+    cloudfiles = None
+    if not cf_url:
+        # Service is not available
+        return
     cdn_url = _get_service_endpoint("object_cdn", region)
     ep_type = {True: "publicURL", False: "internalURL"}[public]
     opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token,
@@ -617,66 +633,46 @@ def connect_to_cloudfiles(region=None, public=True):
 
 
 @_require_auth
+def _create_client(ep_name, service_type, region):
+    region = _safe_region(region)
+    ep = _get_service_endpoint(ep_name.split(":")[0], region)
+    if not ep:
+        return
+    cls = _client_classes[ep_name]
+    client = cls(region_name=region, management_url=ep,
+            http_log_debug=_http_debug, service_type=service_type)
+    client.user_agent = _make_agent_name(client.user_agent)
+    return client
+
+
 def connect_to_cloud_databases(region=None):
     """Creates a client for working with cloud databases."""
-    region = _safe_region(region)
-    ep = _get_service_endpoint("database", region)
-    cloud_databases = CloudDatabaseClient(region_name=region,
-            management_url=ep, http_log_debug=_http_debug,
-            service_type="rax:database")
-    cloud_databases.user_agent = _make_agent_name(cloud_databases.user_agent)
-    return cloud_databases
+    return _create_client(ep_name="database", service_type="rax:database",
+            region=region)
 
 
-@_require_auth
 def connect_to_cloud_loadbalancers(region=None):
     """Creates a client for working with cloud loadbalancers."""
-    region = _safe_region(region)
-    ep = _get_service_endpoint("load_balancer", region)
-    cloud_loadbalancers = CloudLoadBalancerClient(region_name=region,
-            management_url=ep, http_log_debug=_http_debug,
-            service_type="rax:load-balancer")
-    agt = cloud_loadbalancers.user_agent
-    cloud_loadbalancers.user_agent = _make_agent_name(agt)
-    return cloud_loadbalancers
+    return _create_client(ep_name="load_balancer",
+            service_type="rax:load-balancer", region=region)
 
 
-@_require_auth
 def connect_to_cloud_blockstorage(region=None):
     """Creates a client for working with cloud blockstorage."""
-    region = _safe_region(region)
-    ep = _get_service_endpoint("volume", region)
-    cloud_blockstorage = CloudBlockStorageClient(region_name=region,
-            management_url=ep, http_log_debug=_http_debug,
-            service_type="volume")
-    agt = cloud_blockstorage.user_agent
-    cloud_blockstorage.user_agent = _make_agent_name(agt)
-    return cloud_blockstorage
+    return _create_client(ep_name="volume",
+            service_type="volume", region=region)
 
 
-@_require_auth
 def connect_to_cloud_dns(region=None):
     """Creates a client for working with cloud dns."""
-    region = _safe_region(region)
-    ep = _get_service_endpoint("dns", region)
-    cloud_dns = CloudDNSClient(region_name=region,
-            management_url=ep, http_log_debug=_http_debug,
-            service_type="rax:dns")
-    cloud_dns.user_agent = _make_agent_name(cloud_dns.user_agent)
-    return cloud_dns
+    return _create_client(ep_name="dns",
+            service_type="rax:dns", region=region)
 
 
-@_require_auth
 def connect_to_cloud_networks(region=None):
     """Creates a client for working with cloud networks."""
-    region = _safe_region(region)
-    # Networks uses the same endpoint as compute
-    ep = _get_service_endpoint("compute", region)
-    cloud_networks = CloudNetworkClient(region_name=region,
-            management_url=ep, http_log_debug=_http_debug,
-            service_type="compute")
-    cloud_networks.user_agent = _make_agent_name(cloud_networks.user_agent)
-    return cloud_networks
+    return _create_client(ep_name="compute:network",
+            service_type="compute", region=region)
 
 
 def get_http_debug():
