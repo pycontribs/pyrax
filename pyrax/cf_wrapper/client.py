@@ -435,10 +435,11 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
-            etag=None, content_encoding=None, ttl=None):
+            etag=None, content_encoding=None, ttl=None, return_none=False):
         """
         Creates a new object in the specified container, and populates it with
-        the given data.
+        the given data. A StorageObject reference to the uploaded file
+        will be returned, unless 'return_none' is set to True.
         """
         cont = self.get_container(container)
         headers = {}
@@ -457,7 +458,10 @@ class CFClient(object):
                 self.connection.put_object(cont.name, obj_name,
                         contents=tmpfile, content_type=content_type, etag=etag,
                         headers=headers)
-        return self.get_object(container, obj_name)
+        if return_none:
+            return None
+        else:
+            return self.get_object(container, obj_name)
 
 
     @handle_swiftclient_exception
