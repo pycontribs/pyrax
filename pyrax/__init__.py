@@ -400,8 +400,9 @@ def set_credentials(username, api_key=None, password=None, region=None,
     """
     pw_key = password or api_key
     region = _safe_region(region)
+    tenant_id = tenant_id or settings.get("tenant_id")
     identity.set_credentials(username=username, password=pw_key,
-            tenant_id=settings.get("tenant_id"), region=region)
+            tenant_id=tenant_id, region=region)
     if authenticate:
         _auth_and_connect(region=region)
 
