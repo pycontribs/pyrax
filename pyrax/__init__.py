@@ -153,6 +153,7 @@ class Settings(object):
             "encoding": "CLOUD_ENCODING",
             "custom_user_agent": "CLOUD_USER_AGENT",
             "debug": "CLOUD_DEBUG",
+            "insecure": "CLOUD_INSECURE",
             }
     _settings = {"default": dict.fromkeys(env_dct.keys())}
     _default_set = False
@@ -213,6 +214,10 @@ class Settings(object):
             if "LON" in (current, val):
                 # This is an outlier, as it has a separate auth
                 identity.region = val
+        elif key == "insecure":
+            if not identity:
+                return
+            identity.insecure = val
 
 
     def _getEnvironment(self):
@@ -276,6 +281,7 @@ class Settings(object):
             if debug is None:
                 debug = safe_get(section, "http_debug", False)
             dct["http_debug"] = debug == "True"
+            dct["insecure"] = safe_get(section, "insecure", False)
             dct["keyring_username"] = safe_get(section, "keyring_username")
             dct["encoding"] = safe_get(section, "encoding", default_encoding)
             dct["auth_endpoint"] = safe_get(section, "auth_endpoint")
@@ -348,7 +354,7 @@ def _create_identity():
     if not cls:
         raise exc.IdentityClassNotDefined("No identity class has "
                 "been defined for the current environment.")
-    identity = cls()
+    identity = cls(insecure=get_setting("insecure"))
 
 
 def _assure_identity(fnc):
@@ -560,6 +566,7 @@ def connect_to_cloudservers(region=None):
     """Creates a client for working with cloud servers."""
     _cs_auth_plugin.discover_auth_systems()
     id_type = get_setting("identity_type")
+    insecure = get_setting("insecure")
     if id_type != "keystone":
         auth_plugin = _cs_auth_plugin.load_plugin(id_type)
     else:
@@ -573,7 +580,7 @@ def connect_to_cloudservers(region=None):
     cloudservers = _cs_client.Client(identity.username, identity.password,
             project_id=identity.tenant_id, auth_url=identity.auth_endpoint,
             auth_system="rackspace", region_name=region, service_type="compute",
-            auth_plugin=auth_plugin,
+            auth_plugin=auth_plugin, insecure=insecure,
             http_log_debug=_http_debug)
     agt = cloudservers.client.USER_AGENT
     cloudservers.client.USER_AGENT = _make_agent_name(agt)
@@ -625,10 +632,11 @@ def connect_to_cloudfiles(region=None, public=True):
             "endpoint_type": ep_type, "tenant_name": identity.tenant_name,
             "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
+    insecure = get_setting("insecure")
     cloudfiles = _cf.CFClient(identity.auth_endpoint, identity.username,
             identity.password, tenant_name=identity.tenant_name,
             preauthurl=cf_url, preauthtoken=identity.token, auth_version="2",
-            os_options=opts, http_log_debug=_http_debug)
+            os_options=opts, http_log_debug=_http_debug, insecure=insecure)
     cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)
     return cloudfiles
 
@@ -639,9 +647,11 @@ def _create_client(ep_name, service_type, region):
     ep = _get_service_endpoint(ep_name.split(":")[0], region)
     if not ep:
         return
+    insecure = get_setting("insecure")
     cls = _client_classes[ep_name]
     client = cls(region_name=region, management_url=ep,
-            http_log_debug=_http_debug, service_type=service_type)
+            http_log_debug=_http_debug, service_type=service_type,
+            insecure=insecure)
     client.user_agent = _make_agent_name(client.user_agent)
     return client
 

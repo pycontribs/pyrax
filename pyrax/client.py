@@ -48,7 +48,7 @@ class BaseClient(httplib2.Http):
 
     def __init__(self, region_name=None, endpoint_type="publicURL",
             management_url=None, service_type=None, service_name=None,
-            timings=False, http_log_debug=False, timeout=None):
+            timings=False, http_log_debug=False, timeout=None, insecure=False):
         super(BaseClient, self).__init__(timeout=timeout)
         self.version = "v1.1"
         self.region_name = region_name
@@ -62,6 +62,7 @@ class BaseClient(httplib2.Http):
 
         # httplib2 overrides
         self.force_exception_to_status_code = True
+        self.disable_ssl_certificate_validation = insecure
 
         self._logger = logging.getLogger(self.__class__.__name__)
         ch = logging.StreamHandler()
