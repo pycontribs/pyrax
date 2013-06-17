@@ -262,7 +262,7 @@ Resizing is a multi-step process. First, determine the desired `Flavor` to which
     server = cs.servers.get(id_of_server)
     server.resize(new_flavor_ID)
 
-On the host, a new server instance with the new flavor size will be created based on your existing server. When it is ready, the ID, name, networking, and so forth for the current server instance will be transferred to the new instance. At that point, `get(ID)` will return the new instance, and it will have a status of "CONFIRM_RESIZE". Now you will need to determine if the resize was successful, and that the server is functioning properly. If all is well, call:
+On the host, a new server instance with the new flavor size will be created based on your existing server. When it is ready, the ID, name, networking, and so forth for the current server instance will be transferred to the new instance. At that point, `get(ID)` will return the new instance, and it will have a status of "VERIFY_RESIZE". Now you will need to determine if the resize was successful, and that the server is functioning properly. If all is well, call:
 
     server.confirm_resize()
 
