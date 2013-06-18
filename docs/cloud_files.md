@@ -143,7 +143,7 @@ Note that (currently) both `store_object()` and `upload_file()` run synchronousl
 
 
 ## Retrieving (Downloading) Stored Objects
-As with most operations on objects, there are 3 ways to do this. If you have a `StorageObject` reference for the object you want to download, just call its `get()` method. If you have the `Container` object that holds the stored object, call its `fetch_object()` method, passing in the name of the object to fetch. Finally, you can call the `pyrax.cloudfiles.fetch_object()` method, passing in the container and object names.
+As with most operations on objects, there are 3 ways to do this. If you have a `StorageObject` reference for the object you want to download, just call its `fetch()` method. If you have the `Container` object that holds the stored object, call its `fetch_object()` method, passing in the name of the object to fetch. Finally, you can call the `pyrax.cloudfiles.fetch_object()` method, passing in the container and object names.
 
 All 3 take the same optional parameters:
 
@@ -156,8 +156,8 @@ Here is some sample code that creates a stored object containing some unicode te
     obj = cf.store_object("example", "new_object.txt", text)
 
     # Make sure that the content stored is identical
-    print "Using obj.get()"
-    stored_text = obj.get()
+    print "Using obj.fetch()"
+    stored_text = obj.fetch()
     if stored_text == text:
         print "Stored text is identical"
     else:
@@ -166,14 +166,14 @@ Here is some sample code that creates a stored object containing some unicode te
         print "Stored:", stored_text
 
     # Let's look at the metadata for the stored object
-    meta, stored_text = obj.get(include_meta=True)
+    meta, stored_text = obj.fetch(include_meta=True)
     print
     print "Metadata:", meta
 
     # Demonstrate chunked retrieval
     print
     print "Using chunked retrieval"
-    obj_generator = obj.get(chunk_size=12)
+    obj_generator = obj.fetch(chunk_size=12)
     joined_text = "".join(obj_generator)
     if joined_text == text:
         print "Joined text is identical"
@@ -191,6 +191,21 @@ Try running this code; you should find that the retrieved text is identical usin
         'x-trans-id': 'txb57464c49e0345f496a7acf451be77d8',
         'date': 'Wed, 10 Oct 2012 16:06:25 GMT',
         'content-type': 'text/plain'}
+
+
+## Handling Objects in Nested Folders
+Since Cloud Files does not have a hierachical folder structure, you can simulate it be including the full folder path in the object name. E.g., if your folder structure looks like:
+
+* base
+    * one
+        * two
+            * three.txt
+
+…you would typically create a container named 'base', and when uploading the file 'three.txt', you would give it the name 'one/two/three.txt'. There really isn't any such structure inside that container, but it helps you to track the relation of files to their original directory structure.
+
+When you retieve the file from Cloud Files, it's helpful to retain that structure on your disk. Like the other methods, there are three ways to do this. If you have a `StorageObject` reference for the object you want to download, just call its `download()` method. If you have the `Container` object that holds the stored object, call its `downlod_object()` method, passing in the name of the object to fetch. Finally, you can call the `pyrax.cloudfiles.download_object()` method, passing in the container and object names. On all three, you also need to pass in the full path to the local directory in which the file is written. That directory must exist on your disk before you attempt to download files to it.
+
+These commands take an optional parameter named `structure`. When `True` (the default if omitted), the folder structure of your object name is recreated on your disk. If for any reason you don't want this done, simply set this to `False`, and the objects are all stored in the same base directory without any regard to any paths in their names.
 
 
 ## Uploading an Entire Folder to Cloud Files

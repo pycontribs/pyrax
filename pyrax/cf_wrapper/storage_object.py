@@ -74,6 +74,22 @@ class StorageObject(object):
         return self.client.fetch_object(container=self.container.name,
                 obj_name=self.name, include_meta=include_meta,
                 chunk_size=chunk_size)
+    # Changing the name of this method to 'fetch', as 'get' is overloaded.
+    fetch = get
+
+
+    def download(self, directory, structure=True):
+        """
+        Fetches the object from storage, and writes it to the specified
+        directory. The directory must exist before calling this method.
+
+        If the object name represents a nested folder structure, such as
+        "foo/bar/baz.txt", that folder structure will be created in the target
+        directory by default. If you do not want the nested folders to be
+        created, pass `structure=False` in the parameters.
+        """
+        return self.client.download_object(self.container, self, directory,
+                structure=structure)
 
 
     def delete(self):
