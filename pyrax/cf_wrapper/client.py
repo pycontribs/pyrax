@@ -435,10 +435,11 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
-            etag=None, content_encoding=None, ttl=None):
+            etag=None, content_encoding=None, ttl=None, return_none=False):
         """
         Creates a new object in the specified container, and populates it with
-        the given data.
+        the given data. A StorageObject reference to the uploaded file
+        will be returned, unless 'return_none' is set to True.
         """
         cont = self.get_container(container)
         headers = {}
@@ -457,7 +458,10 @@ class CFClient(object):
                 self.connection.put_object(cont.name, obj_name,
                         contents=tmpfile, content_type=content_type, etag=etag,
                         headers=headers)
-        return self.get_object(container, obj_name)
+        if return_none:
+            return None
+        else:
+            return self.get_object(container, obj_name)
 
 
     @handle_swiftclient_exception
@@ -799,6 +803,7 @@ class CFClient(object):
         return not self.folder_upload_status[upload_key]["continue"]
 
 
+    @handle_swiftclient_exception
     def fetch_object(self, container, obj_name, include_meta=False,
             chunk_size=None):
         """
@@ -823,6 +828,31 @@ class CFClient(object):
             return (meta, data)
         else:
             return data
+
+
+    @handle_swiftclient_exception
+    def download_object(self, container, obj_name, directory, structure=True):
+        """
+        Fetches the object from storage, and writes it to the specified
+        directory. The directory must exist before calling this method.
+
+        If the object name represents a nested folder structure, such as
+        "foo/bar/baz.txt", that folder structure will be created in the target
+        directory by default. If you do not want the nested folders to be
+        created, pass `structure=False` in the parameters.
+        """
+        if not os.path.isdir(directory):
+            raise exc.FolderNotFound("The directory '%s' does not exist." %
+                    directory)
+        path, fname = os.path.split(obj_name)
+        if structure:
+            fullpath = os.path.join(directory, path)
+            os.makedirs(fullpath)
+            target = os.path.join(fullpath, fname)
+        else:
+            target = os.path.join(directory, fname)
+        with open(target, "wb") as dl:
+            dl.write(self.fetch_object(container, obj_name))
 
 
     @handle_swiftclient_exception

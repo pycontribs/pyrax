@@ -636,6 +636,26 @@ class CF_ClientTest(unittest.TestCase):
         self.assertEqual(resp[1], text)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_download_object(self):
+        client = self.client
+        sav_fetch = client.fetch_object
+        client.fetch_object = Mock(return_value=utils.random_name(
+                ascii_only=True))
+        sav_isdir = os.path.isdir
+        os.path.isdir = Mock(return_value=True)
+        nm = "one/two/three/four.txt"
+        with utils.SelfDeletingTempDirectory() as tmpdir:
+            fullpath = os.path.join(tmpdir, nm)
+            client.download_object("fake", nm, tmpdir, structure=True)
+            self.assertTrue(os.path.exists(fullpath))
+        with utils.SelfDeletingTempDirectory() as tmpdir:
+            fullpath = os.path.join(tmpdir, os.path.basename(nm))
+            client.download_object("fake", nm, tmpdir, structure=False)
+            self.assertTrue(os.path.exists(fullpath))
+        client.fetch_object = sav_fetch
+        os.path.isdir = sav_isdir
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_all_containers(self):
         client = self.client
         client.connection.head_container = Mock()

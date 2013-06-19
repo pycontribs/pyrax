@@ -11,6 +11,7 @@ from mock import MagicMock as Mock
 import pyrax
 from pyrax.cf_wrapper.storage_object import StorageObject
 import pyrax.exceptions as exc
+import pyrax.utils as utils
 from tests.unit.fakes import FakeContainer
 from tests.unit.fakes import FakeIdentity
 from tests.unit.fakes import FakeResponse
@@ -71,6 +72,30 @@ class CF_StorageObjectTest(unittest.TestCase):
         octcbs = self.orig_connect_to_cloud_blockstorage
         pyrax.connect_to_cloud_blockstorage = octcbs
 
+    def test_init(self):
+        cname = utils.random_name()
+        oname = utils.random_name()
+        ctype = utils.random_name()
+        etag = utils.random_name()
+        tbytes = random.randint(0, 1000)
+        lmod = random.randint(0, 1000)
+        cont = FakeContainer(self.client, cname, 0, 0)
+        # Using container
+        obj = StorageObject(self.client, cont, name=oname, total_bytes=tbytes,
+                content_type=ctype, last_modified=lmod, etag=etag)
+        self.assertEqual(obj.name, oname)
+        self.assertEqual(obj.container, cont)
+        self.assertEqual(obj.container.name, cname)
+        self.assertEqual(obj.total_bytes, tbytes)
+        self.assertEqual(obj.content_type, ctype)
+        self.assertEqual(obj.last_modified, lmod)
+        self.assertEqual(obj.etag, etag)
+        # Using container name
+        obj = StorageObject(self.client, cname, name=oname, total_bytes=tbytes,
+                content_type=ctype, last_modified=lmod, etag=etag)
+        # This will default to using the container defined in setUp().
+        self.assertEqual(obj.container.name, self.container.name)
+
     def test_read_attdict(self):
         tname = "something"
         ttype = "foo/bar"
@@ -100,10 +125,19 @@ class CF_StorageObjectTest(unittest.TestCase):
         meta = {"a": "b"}
         data = "This is the contents of the file"
         obj.client.connection.get_object.return_value = (meta, data)
-        ret = obj.get()
+        ret = obj.fetch()
         self.assertEqual(ret, data)
-        ret = obj.get(include_meta=True)
+        ret = obj.fetch(include_meta=True)
         self.assertEqual(ret, (meta, data))
+
+    def test_download(self):
+        obj = self.storage_object
+        obj.client.download_object = Mock()
+        dname = utils.random_name()
+        stru = random.choice((True, False))
+        obj.download(dname, structure=stru)
+        obj.client.download_object.assert_called_once_with(obj.container, obj,
+                dname, structure=stru)
 
     def test_delete(self):
         obj = self.storage_object

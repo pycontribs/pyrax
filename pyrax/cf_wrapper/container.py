@@ -201,6 +201,20 @@ class Container(object):
                 include_meta=include_meta, chunk_size=chunk_size)
 
 
+    def download_object(self, obj_name, directory, structure=True):
+        """
+        Fetches the object from storage, and writes it to the specified
+        directory. The directory must exist before calling this method.
+
+        If the object name represents a nested folder structure, such as
+        "foo/bar/baz.txt", that folder structure will be created in the target
+        directory by default. If you do not want the nested folders to be
+        created, pass `structure=False` in the parameters.
+        """
+        return self.client.download_object(self, obj_name, directory,
+                structure=structure)
+
+
     def get_metadata(self):
         return self.client.get_container_metadata(self)
 
