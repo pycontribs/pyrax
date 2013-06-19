@@ -10,8 +10,9 @@ install:
 
 script:
   - "pep8 -r --show-source --max-line-length=84 --ignore=E123,E124,E126,E127,E128,E303,E302 pyrax/"
-  - nosetests -v tests/unit
-
+  - nosetests -v tests/unit --with-cover --cover-package=pyrax
+after_success:
+    coveralls
 
 notifications:
   email:
