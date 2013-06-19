@@ -5,3 +5,4 @@
 *.pyo
 *.egg*
 .tox
+.coveralls.yml
