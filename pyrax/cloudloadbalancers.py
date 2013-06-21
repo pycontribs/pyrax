@@ -51,7 +51,6 @@ def assure_loadbalancer(fnc):
     return _wrapped
 
 
-
 class CloudLoadBalancer(BaseResource):
     """Represents a Cloud Load Balancer instance."""
     def __init__(self, *args, **kwargs):
@@ -60,16 +59,17 @@ class CloudLoadBalancer(BaseResource):
         self._session_persistence = None
         super(CloudLoadBalancer, self).__init__(*args, **kwargs)
 
+    def set_timeout(self, timeout):
+        """Sets the LoadBalancer Timeout value."""
+        return self.manager.set_timeout(self, timeout)
 
     def add_nodes(self, nodes):
         """Adds the nodes to this load balancer."""
         return self.manager.add_nodes(self, nodes)
 
-
     def add_virtualip(self, vip):
         """Adds the virtual IP to this load balancer."""
         return self.manager.add_virtualip(self, vip)
-
 
     def get_usage(self, start=None, end=None):
         """
@@ -406,6 +406,13 @@ class CloudLoadBalancer(BaseResource):
 
 
 class CloudLoadBalancerManager(BaseManager):
+    def set_timeout(self, lb, timeout):
+        if not (10 <= timeout <= 120):
+            timeout=60
+        resp, body = self.api.method_put("/loadbalancers/%s" % (lb.id),
+                body={'loadBalancer': {'timeout': timeout}})
+        return resp, body
+
     def add_nodes(self, lb, nodes):
         """Adds the list of nodes to the specified load balancer."""
         if not isinstance(nodes, (list, tuple)):
