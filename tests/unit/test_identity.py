@@ -258,7 +258,7 @@ class IdentityTest(unittest.TestCase):
             ident.method_post(uri, data=data, headers=headers,
                     std_headers=std_headers)
             requests.post.assert_called_with(uri, data=jdata,
-                    headers=expected_headers)
+                    headers=expected_headers, verify=True)
         requests.post = sav_post
 
     def test_list_users(self):

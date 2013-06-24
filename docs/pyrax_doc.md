@@ -157,6 +157,7 @@ Setting | Affects | Default | Notes | Env. Variable
 **encoding** | The encoding to use when working with non-ASCII values. Unless you have a specific need, the default should work fine. | utf-8 | | CLOUD_ENCODING
 **custom_user_agent** | Customizes the User-agent string sent to the server. | -none- | | CLOUD_USER_AGENT
 **debug** | When True, causes all HTTP requests and responses to be output to the console to aid in debugging. | False | Previous versions called this setting 'http_debug'. | CLOUD_DEBUG
+**insecure** | When True, causes all HTTP requests to not perform SSL certificate verification. | False | | CLOUD_INSECURE
 
 Here is a sample:
 
@@ -169,6 +170,7 @@ Here is a sample:
     tenant_name = demo
     tenant_id = abc123456
     keyring_username = demo
+    insecure = True
 
     [public]
     identity_type = rackspace

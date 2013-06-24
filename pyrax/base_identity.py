@@ -59,7 +59,7 @@ class BaseAuth(object):
 
 
     def __init__(self, username=None, password=None, token=None,
-            credential_file=None, region=None, timeout=None):
+            credential_file=None, region=None, timeout=None, insecure=False):
         self.username = username
         self.password = password
         self.token = token
@@ -68,6 +68,7 @@ class BaseAuth(object):
         self._timeout = timeout
         self.services = {}
         self.regions = set()
+        self.insecure = insecure
 
 
     @property
@@ -238,7 +239,11 @@ class BaseAuth(object):
             if data:
                 print "DATA", jdata
             print
-        return mthd(uri, data=jdata, headers=hdrs)
+        if self.insecure:
+            verify = False
+        else:
+            verify = True
+        return mthd(uri, data=jdata, headers=hdrs, verify=verify)
 
 
     def authenticate(self):
