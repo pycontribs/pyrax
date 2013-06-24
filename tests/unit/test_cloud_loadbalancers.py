@@ -478,6 +478,18 @@ class CloudLoadBalancerTest(unittest.TestCase):
         mgr.update_node(nd)
         mgr.api.method_put.assert_called_once_with(uri, body={"node": {}})
 
+    def test_node_equality(self):
+        node1 = Node(address="192.168.1.1", port=80)
+        node2 = Node(address="192.168.1.2", port=80)
+        node3 = Node(address="192.168.1.1", port=80)
+
+        self.assertFalse(node1 == node2)
+        self.assertTrue(node1 != node2)
+        self.assertTrue(node1 == node3)
+        self.assertTrue(node3 == node1)
+        self.assertTrue(node2 != node1)
+        self.assertFalse(node2 == node1)
+
     def test_mgr_update_unattached_node(self):
         lb = self.loadbalancer
         mgr = lb.manager
