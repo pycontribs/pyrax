@@ -86,7 +86,8 @@ class CFClient(object):
 
     def __init__(self, auth_endpoint, username, api_key=None, password=None,
             tenant_name=None, preauthurl=None, preauthtoken=None,
-            auth_version="2", os_options=None, http_log_debug=False):
+            auth_version="2", os_options=None, verify_ssl=True,
+            http_log_debug=False):
         self.connection = None
         self.cdn_connection = None
         self.http_log_debug = http_log_debug
@@ -95,18 +96,21 @@ class CFClient(object):
         self._make_connections(auth_endpoint, username, api_key, password,
                 tenant_name=tenant_name, preauthurl=preauthurl,
                 preauthtoken=preauthtoken, auth_version=auth_version,
-                os_options=os_options, http_log_debug=http_log_debug)
+                os_options=os_options, verify_ssl=verify_ssl,
+                http_log_debug=http_log_debug)
 
 
     def _make_connections(self, auth_endpoint, username, api_key, password,
             tenant_name=None, preauthurl=None, preauthtoken=None,
-            auth_version="2", os_options=None, http_log_debug=None):
+            auth_version="2", os_options=None, verify_ssl=True,
+            http_log_debug=None):
         cdn_url = os_options.pop("object_cdn_url", None)
         pw_key = api_key or password
+        insecure = not verify_ssl
         self.connection = Connection(auth_endpoint, username, pw_key,
                 tenant_name, preauthurl=preauthurl, preauthtoken=preauthtoken,
                 auth_version=auth_version, os_options=os_options,
-                http_log_debug=http_log_debug)
+                insecure=insecure, http_log_debug=http_log_debug)
         if cdn_url:
             self.connection._make_cdn_connection(cdn_url)
 

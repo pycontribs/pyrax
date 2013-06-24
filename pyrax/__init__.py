@@ -153,6 +153,7 @@ class Settings(object):
             "encoding": "CLOUD_ENCODING",
             "custom_user_agent": "CLOUD_USER_AGENT",
             "debug": "CLOUD_DEBUG",
+            "verify_ssl": "CLOUD_VERIFY_SSL",
             }
     _settings = {"default": dict.fromkeys(env_dct.keys())}
     _default_set = False
@@ -274,8 +275,10 @@ class Settings(object):
             # Handle both the old and new names for this setting.
             debug = safe_get(section, "debug")
             if debug is None:
-                debug = safe_get(section, "http_debug", False)
+                debug = safe_get(section, "http_debug", "False")
             dct["http_debug"] = debug == "True"
+            verify_ssl = safe_get(section, "verify_ssl", "True")
+            dct["verify_ssl"] = verify_ssl == "True"
             dct["keyring_username"] = safe_get(section, "keyring_username")
             dct["encoding"] = safe_get(section, "encoding", default_encoding)
             dct["auth_endpoint"] = safe_get(section, "auth_endpoint")
@@ -570,10 +573,13 @@ def connect_to_cloudservers(region=None):
     if not mgt_url:
         # Service is not available
         return
+    insecure = not get_setting("verify_ssl")
+    print "INSECURE", insecure
+    print "VERIFY", get_setting("verify_ssl")
     cloudservers = _cs_client.Client(identity.username, identity.password,
             project_id=identity.tenant_id, auth_url=identity.auth_endpoint,
             auth_system="rackspace", region_name=region, service_type="compute",
-            auth_plugin=auth_plugin,
+            auth_plugin=auth_plugin, insecure=insecure,
             http_log_debug=_http_debug)
     agt = cloudservers.client.USER_AGENT
     cloudservers.client.USER_AGENT = _make_agent_name(agt)
@@ -625,10 +631,11 @@ def connect_to_cloudfiles(region=None, public=True):
             "endpoint_type": ep_type, "tenant_name": identity.tenant_name,
             "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
+    verify_ssl = get_setting("verify_ssl")
     cloudfiles = _cf.CFClient(identity.auth_endpoint, identity.username,
             identity.password, tenant_name=identity.tenant_name,
             preauthurl=cf_url, preauthtoken=identity.token, auth_version="2",
-            os_options=opts, http_log_debug=_http_debug)
+            os_options=opts, verify_ssl=verify_ssl, http_log_debug=_http_debug)
     cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)
     return cloudfiles
 
@@ -639,8 +646,9 @@ def _create_client(ep_name, service_type, region):
     ep = _get_service_endpoint(ep_name.split(":")[0], region)
     if not ep:
         return
+    verify_ssl = get_setting("verify_ssl")
     cls = _client_classes[ep_name]
-    client = cls(region_name=region, management_url=ep,
+    client = cls(region_name=region, management_url=ep, verify_ssl=verify_ssl,
             http_log_debug=_http_debug, service_type=service_type)
     client.user_agent = _make_agent_name(client.user_agent)
     return client
@@ -708,3 +716,5 @@ settings = Settings()
 config_file = os.path.expanduser("~/.pyrax.cfg")
 if os.path.exists(config_file):
     settings.read_config(config_file)
+    debug = get_setting("http_debug") or False
+    set_http_debug(debug)

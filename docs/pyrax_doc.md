@@ -157,6 +157,7 @@ Setting | Affects | Default | Notes | Env. Variable
 **encoding** | The encoding to use when working with non-ASCII values. Unless you have a specific need, the default should work fine. | utf-8 | | CLOUD_ENCODING
 **custom_user_agent** | Customizes the User-agent string sent to the server. | -none- | | CLOUD_USER_AGENT
 **debug** | When True, causes all HTTP requests and responses to be output to the console to aid in debugging. | False | Previous versions called this setting 'http_debug'. | CLOUD_DEBUG
+**verify_ssl** | Set this to False to bypass SSL certificate verification. | True |  | CLOUD_VERIFY_SSL
 
 Here is a sample:
 
@@ -176,12 +177,13 @@ Here is a sample:
     region = ORD
     custom_user_agent = CrazyApp/2.0
     debug = False
+    verify_ssl = False
 
 The above configuration file defines two environments: **private** and **public**. Since there is no 'default' or 'settings' section, the 'private' environment is the default, since it is listed first.
 
 When using the 'private' environment, pyrax uses Keystone authentication with the tenant name of 'demo', the tenant ID of 'abc123456', and the password stored in the keyring for user 'demo'. It also emits debugging messages for all HTTP requests and responses, and each request contains the standard `User-agent` header of 'pyrax/1.4.x'.
 
-If the environment is then changed to 'public', pyrax switches to Rackspace authentication against the ORD region, using the username 'joeracker'. It no longer emits debug messages, and all requests have the custom `User-agent` header of 'CrazyApp/2.0 pyrax/1.4.x'.
+If the environment is then changed to 'public', pyrax switches to Rackspace authentication against the ORD region, using the username 'joeracker'. It no longer emits debug messages, will not perform SSL certificate verification, and all requests have the custom `User-agent` header of 'CrazyApp/2.0 pyrax/1.4.x'.
 
 
 ### Accessing Environment Information
