@@ -38,13 +38,14 @@ Then from the command line:
 
 
 ## Testing the Installed Module
-If all goes well, pyrax and all its dependencies should be installed and ready to use. To test, open the interpreter and try it out:
+If all goes well, pyrax and all its dependencies should be installed and ready to use. To test, open the interpreter and try it out (assuming that you have a Rackspace account):
 
     [ed@MGM6AEDV7M ~/projects]$ python
     Python 2.7.2 (default, Jun 20 2012, 16:23:33) 
     [GCC 4.2.1 Compatible Apple Clang 4.0 (tags/Apple/clang-418.0.60)] on darwin
     Type "help", "copyright", "credits" or "license" for more information.
     >>> import pyrax
+    >>> pyrax.set_setting("identity_type", "rackspace")
     >>> pyrax.set_credentials("my_username", "my_API_key")
     >>> pyrax.cloudfiles.list_containers()
     ['photos', 'music', 'documents']
@@ -54,8 +55,3 @@ If all goes well, pyrax and all its dependencies should be installed and ready t
 `pip` makes it simple to update pyrax to the latest released version. All you need to do is add `--upgrade` to the command you used to install pyrax, and pip will install the latest version of pyrax along with the latest version of any dependencies.
 
 For a source install, you will have to download the latest source, and then manually check each of the dependencies for updated releases, and if found, install them according to their directions.
-
-
-
-
-
