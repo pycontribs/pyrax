@@ -572,7 +572,7 @@ def connect_to_cloudservers(region=None):
         return
     cloudservers = _cs_client.Client(identity.username, identity.password,
             project_id=identity.tenant_id, auth_url=identity.auth_endpoint,
-            auth_system="rackspace", region_name=region, service_type="compute",
+            auth_system=id_type, region_name=region, service_type="compute",
             auth_plugin=auth_plugin,
             http_log_debug=_http_debug)
     agt = cloudservers.client.USER_AGENT
