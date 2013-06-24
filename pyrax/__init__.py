@@ -574,8 +574,6 @@ def connect_to_cloudservers(region=None):
         # Service is not available
         return
     insecure = not get_setting("verify_ssl")
-    print "INSECURE", insecure
-    print "VERIFY", get_setting("verify_ssl")
     cloudservers = _cs_client.Client(identity.username, identity.password,
             project_id=identity.tenant_id, auth_url=identity.auth_endpoint,
             auth_system="rackspace", region_name=region, service_type="compute",
