@@ -73,6 +73,20 @@ class CloudLoadBalancerTest(unittest.TestCase):
         clt.add_nodes(lb, nd)
         lb.manager.add_nodes.assert_called_once_with(lb, nd)
 
+    def test_node_equality(self):
+        node1 = Node(address="192.168.1.1", port=80)
+        node2 = Node(address="192.168.1.2", port=80)
+        node3 = Node(address="192.168.1.1", port=80)
+
+        self.assertFalse(node1 == node2)
+        self.assertFalse(node2 == node1)
+        self.assertTrue(node1 != node2)
+        self.assertTrue(node2 != node1)
+        self.assertTrue(node2 != node3)
+        self.assertTrue(node3 != node2)
+        self.assertTrue(node1 == node3)
+        self.assertTrue(node3 == node1)
+
     def test_add_virtualip_client(self):
         clt = self.client
         lb = self.loadbalancer
