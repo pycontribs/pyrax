@@ -155,7 +155,7 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj.client.connection.cdn_request = Mock()
         obj.purge()
         obj.client.connection.cdn_request.assert_called_with("DELETE",
-                cont.name, obj.name, hdrs={})
+                [cont.name, obj.name], hdrs={})
 
     def test_get_metadata(self):
         obj = self.storage_object
