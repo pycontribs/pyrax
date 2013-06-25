@@ -299,7 +299,7 @@ class CF_ClientTest(unittest.TestCase):
         emls = ["foo@example.com", "bar@example.com"]
         client.purge_cdn_object(self.cont_name, self.obj_name, emls)
         client.connection.cdn_request.assert_called_with("DELETE",
-                self.cont_name, self.obj_name,
+                [self.cont_name, self.obj_name],
                 hdrs={"X-Purge-Email": "foo@example.com, bar@example.com"})
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)

@@ -1065,7 +1065,7 @@ class CFClient(object):
                 email_addresses = [email_addresses]
             emls = ", ".join(email_addresses)
             hdrs = {"X-Purge-Email": emls}
-        response = self.connection.cdn_request("DELETE", ct.name, oname,
+        response = self.connection.cdn_request("DELETE", [ct.name, oname],
                 hdrs=hdrs)
         # Read the response to force it to close for the next request.
         response.read()
