@@ -432,9 +432,17 @@ class CFClient(object):
 
     def get_object(self, container, obj_name):
         """Returns a StorageObject instance for the object in the container."""
-        cont = self.get_container(container)
-        obj = cont.get_object(self._resolve_name(obj_name))
-        return obj
+        # NOTE: This is a hack to get around a bug in the current version of
+        # the swiftclient library.
+        for attempts in range(2):
+            try:
+                cont = self.get_container(container)
+                obj = cont.get_object(self._resolve_name(obj_name))
+                return obj
+            except (exc.NoSuchContainer, exc.NoSuchObject) as e:
+                continue
+        # If we made it to here, it is an actual exception
+        raise
 
 
     @handle_swiftclient_exception

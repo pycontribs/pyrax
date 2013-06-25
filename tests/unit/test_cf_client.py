@@ -84,6 +84,16 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.post_account.assert_called_with(
                 {"x-account-meta-foo": "", "x-account-meta-newkey": "newval"})
 
+    def test_set_temp_url_key(self):
+        client = self.client
+        sav = client.set_account_metadata
+        client.set_account_metadata = Mock()
+        key = utils.random_name()
+        exp = {"Temp-Url-Key": key}
+        client.set_temp_url_key(key)
+        client.set_account_metadata.assert_called_once_with(exp)
+        client.set_account_metadata = sav
+
     def test_get_temp_url_key(self):
         client = self.client
         client.connection.head_account = Mock()
@@ -859,6 +869,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_cdn_request(self):
         client = self.client
         conn = client.connection
+        conn._make_cdn_connection(cdn_url="http://example.com")
         if conn.cdn_connection is not None:
             conn.cdn_connection.request = Mock()
             conn.cdn_connection.getresponse = Mock()

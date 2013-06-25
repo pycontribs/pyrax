@@ -4,6 +4,7 @@
 import datetime
 import hashlib
 import os
+import random
 import StringIO
 import sys
 import unittest
@@ -184,9 +185,15 @@ class UtilsTest(unittest.TestCase):
         status_obj.manager = fakes.FakeManager()
         status_obj.manager.get = Mock(return_value=status_obj)
         status_obj.get = status_obj.manager.get
-        ret = utils.wait_until(status_obj, "status", "ready", interval=0.1)
+        sav_out = sys.stdout
+        out = StringIO.StringIO()
+        sys.stdout = out
+        ret = utils.wait_until(status_obj, "status", "ready", interval=0.1,
+                verbose=True, verbose_atts="progress")
         self.assertTrue(isinstance(ret, fakes.FakeStatusChanger))
         self.assertEqual(ret.status, "ready")
+        self.assertTrue(len(out.getvalue()) > 0)
+        sys.stdout = sav_out
 
     def test_wait_until_fail(self):
         status_obj = fakes.FakeStatusChanger()
@@ -277,6 +284,21 @@ class UtilsTest(unittest.TestCase):
         ret = utils.import_class(cls_string)
         self.assertTrue(ret is fakes.FakeManager)
 
+    def test_update_exc(self):
+        msg1 = utils.random_name()
+        msg2 = utils.random_name()
+        err = exc.PyraxException(400)
+        err.message = msg1
+        sep = random.choice(("!", "@", "#", "$"))
+        exp = "%s%s%s" % (msg2, sep, msg1)
+        ret = utils.update_exc(err, msg2, before=True, separator=sep)
+        self.assertEqual(ret.message, exp)
+        err = exc.PyraxException(400)
+        err.message = msg1
+        sep = random.choice(("!", "@", "#", "$"))
+        exp = "%s%s%s" % (msg1, sep, msg2)
+        ret = utils.update_exc(err, msg2, before=False, separator=sep)
+        self.assertEqual(ret.message, exp)
 
 
 if __name__ == "__main__":
