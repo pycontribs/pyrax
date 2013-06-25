@@ -47,9 +47,6 @@ class RaxIdentity(BaseAuth):
     def _parse_response(self, resp):
         """Gets the authentication information from the returned JSON."""
         super(RaxIdentity, self)._parse_response(resp)
-        token = resp["access"].get("token")
-        self.tenant_id = token["tenant"]["id"]
-        self.tenant_name = token["tenant"]["name"]
         user = resp["access"]["user"]
         self.user["default_region"] = user["RAX-AUTH:defaultRegion"]
 
