@@ -324,6 +324,17 @@ class CF_ClientTest(unittest.TestCase):
         self.assertEqual(obj.name, "o1")
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_get_object_hack(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        cont = client.get_container(self.cont_name)
+        effects = (exc.NoSuchObject(""), FakeStorageObject(self.client,
+                self.cont_name, self.obj_name))
+        cont.get_object = Mock(side_effect=effects)
+        obj = client.get_object(self.cont_name, "o1")
+        self.assertEqual(obj.name, self.obj_name)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_store_object(self):
         client = self.client
         client.connection.head_container = Mock()
