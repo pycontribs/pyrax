@@ -102,7 +102,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a>  </div>
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a>  </div>
   <div class="headertitle">
 <div class="title">StorageObject Class Reference</div>  </div>
 </div><!--header-->
@@ -119,6 +120,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The object can either be initialized with individual params, or by passing the dict that is returned by swiftclient.  <a href="#ac775ee34451fdfa742b318538164070e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the object from storage.  <a href="#a444a1328efb32d5d9d2dcb2efe855d3b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a87785e5d44757bc4bd91c6694e751daa">download</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the object from storage, and writes it to the specified directory.  <a href="#a87785e5d44757bc4bd91c6694e751daa"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#ab48bde70a0927a83d62464cb0627c34b">delete</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the object from storage.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a24447386d5cd26a6a61fd75fd19842c7">purge</a></td></tr>
@@ -145,6 +148,9 @@ Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a221623422ea72de630e7e446a84e9f1f">content_type</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#aacadc30373e677c508e7b598fe832e32">last_modified</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a1ee78e6280ae4527b4257099cfb8c330">etag</a></td></tr>
+<tr><td colspan="2"><h2><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a271dcd2cab08dc966228cd3d12e7cfb7">fetch</a> = <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Represents a CloudFiles storage object. </p>
@@ -319,6 +325,43 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Sets the object to be deleted after the specified number of seconds. </p>
+
+</div>
+</div>
+<a class="anchor" id="a87785e5d44757bc4bd91c6694e751daa"></a><!-- doxytag: member="pyrax::cf_wrapper::storage_object::StorageObject::download" ref="a87785e5d44757bc4bd91c6694e751daa" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a87785e5d44757bc4bd91c6694e751daa">download</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>directory</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>structure</em> = <code>True</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Fetches the object from storage, and writes it to the specified directory. </p>
+<p>The directory must exist before calling this method.</p>
+<p>If the object name represents a nested folder structure, such as "foo/bar/baz.txt", that folder structure will be created in the target directory by default. If you do not want the nested folders to be created, pass `structure=False` in the parameters. </p>
 
 </div>
 </div>
@@ -563,6 +606,19 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a271dcd2cab08dc966228cd3d12e7cfb7"></a><!-- doxytag: member="pyrax::cf_wrapper::storage_object::StorageObject::fetch" ref="a271dcd2cab08dc966228cd3d12e7cfb7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a271dcd2cab08dc966228cd3d12e7cfb7">fetch</a> = <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a><code> [static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="aacadc30373e677c508e7b598fe832e32"></a><!-- doxytag: member="pyrax::cf_wrapper::storage_object::StorageObject::last_modified" ref="aacadc30373e677c508e7b598fe832e32" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -623,7 +679,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jun 3 2013 10:15:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 27 2013 23:24:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -174,7 +174,9 @@ Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a6e3493c19e86089da9cd511800adbde3">_http_debug</a> = False</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a2b45bebec67926b49ea55f14eb0b8f8e">regions</a> = tuple()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#af615dc60ad41afcddd9dfa11de351b5c">services</a> = tuple()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">dictionary&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a4eef1d8d29581de251687dd30b035f3a">_client_classes</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ae6512f1802b7f1f9cc6f196a0938db60">config_file</a> = os.path.expanduser(&quot;~/.pyrax.cfg&quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a4c919e19877c5868fcd9f7662c236649">debug</a> = <a class="el" href="namespacepyrax.html#a5dbd20ff4ad6c1590c1c4723852763da">get_setting</a>(&quot;http_debug&quot;)</td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="a49217af72f2f282731a94b6a6f42823c"></a><!-- doxytag: member="pyrax::auth_with_token" ref="a49217af72f2f282731a94b6a6f42823c" args="" -->
@@ -745,6 +747,26 @@ Variables</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Variable Documentation</h2>
+<a class="anchor" id="a4eef1d8d29581de251687dd30b035f3a"></a><!-- doxytag: member="pyrax::_client_classes" ref="a4eef1d8d29581de251687dd30b035f3a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">dictionary <a class="el" href="namespacepyrax.html#a4eef1d8d29581de251687dd30b035f3a">_client_classes</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<b>Initial value:</b><div class="fragment"><pre class="fragment"><a name="l00001"></a><a class="code" href="namespacepyrax.html">00001</a> {
+<a name="l00002"></a>00002         <span class="stringliteral">&quot;database&quot;</span>: CloudDatabaseClient,
+<a name="l00003"></a>00003         <span class="stringliteral">&quot;load_balancer&quot;</span>: CloudLoadBalancerClient,
+<a name="l00004"></a>00004         <span class="stringliteral">&quot;volume&quot;</span>: CloudBlockStorageClient,
+<a name="l00005"></a>00005         <span class="stringliteral">&quot;dns&quot;</span>: CloudDNSClient,
+<a name="l00006"></a>00006         <span class="stringliteral">&quot;compute:network&quot;</span>: CloudNetworkClient,
+<a name="l00007"></a>00007         }
+</pre></div>
+</div>
+</div>
 <a class="anchor" id="a9fecb0e59b3675027f29fc6870cf0d03"></a><!-- doxytag: member="pyrax::_environment" ref="a9fecb0e59b3675027f29fc6870cf0d03" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -888,6 +910,19 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a4c919e19877c5868fcd9f7662c236649"></a><!-- doxytag: member="pyrax::debug" ref="a4c919e19877c5868fcd9f7662c236649" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">tuple <a class="el" href="namespacepyrax.html#a4c919e19877c5868fcd9f7662c236649">debug</a> = <a class="el" href="namespacepyrax.html#a5dbd20ff4ad6c1590c1c4723852763da">get_setting</a>(&quot;http_debug&quot;)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="ab8005f4babffb239fd05dbb8c38551b7"></a><!-- doxytag: member="pyrax::default_encoding" ref="ab8005f4babffb239fd05dbb8c38551b7" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1023,7 +1058,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 13 2013 15:52:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 27 2013 23:24:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
