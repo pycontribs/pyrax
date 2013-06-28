@@ -58,6 +58,7 @@ class CloudLoadBalancer(BaseResource):
         self._connection_logging = None
         self._content_caching = None
         self._session_persistence = None
+        self._non_display = ["nodes", "virtual_ips"]
         super(CloudLoadBalancer, self).__init__(*args, **kwargs)
 
 
@@ -75,10 +76,10 @@ class CloudLoadBalancer(BaseResource):
         """
         Return the usage records for this load balancer. You may optionally
         include a start datetime or an end datetime, or both, which will limit
-        the records to those on or after the start time, and those before or on the
-        end time. These times should be Python datetime.datetime objects, Python
-        datetime.date objects, or strings in the format: "YYYY-MM-DD HH:MM:SS" or
-        "YYYY-MM-DD".
+        the records to those on or after the start time, and those before or on
+        the end time. These times should be Python datetime.datetime objects,
+        Python datetime.date objects, or strings in the format:
+        "YYYY-MM-DD HH:MM:SS" or "YYYY-MM-DD".
         """
         return self.manager.get_usage(self, start=start, end=end)
 
@@ -96,6 +97,22 @@ class CloudLoadBalancer(BaseResource):
                 key = "virtual_ips"
                 val = [VirtualIP(parent=self, **vip) for vip in val]
             setattr(self, key, val)
+
+
+    def update(self, name=None, algorithm=None, protocol=None, halfClosed=None,
+            port=None, timeout=None):
+        """
+        Provides a way to modify the following attributes of a load balancer:
+            - name
+            - algorithm
+            - protocol
+            - halfClosed
+            - port
+            - timeout
+        """
+        return self.manager.update(self, name=name, algorithm=algorithm,
+                protocol=protocol, halfClosed=halfClosed, port=port,
+                timeout=timeout)
 
 
     def delete_node(self, node):
@@ -406,6 +423,47 @@ class CloudLoadBalancer(BaseResource):
 
 
 class CloudLoadBalancerManager(BaseManager):
+    def update(self, lb, name=None, algorithm=None, protocol=None,
+            halfClosed=None, port=None, timeout=None):
+        """
+        Provides a way to modify the following attributes of a load balancer:
+            - name
+            - algorithm
+            - protocol
+            - halfClosed
+            - port
+            - timeout
+        """
+        body = {}
+        if name is not None:
+            body["name"] = name
+        if algorithm is not None:
+            body["algorithm"] = algorithm
+        if protocol is not None:
+            body["protocol"] = protocol
+        if halfClosed is not None:
+            body["halfClosed"] = halfClosed
+        if port is not None:
+            body["port"] = port
+        if timeout is not None:
+            body["timeout"] = timeout
+        if not body:
+            # Nothing passed
+            return
+        body = {"loadBalancer": body}
+        uri = "/loadbalancers/%s" % utils.get_id(lb)
+        try:
+            resp, resp_body = self.api.method_put(uri, body=body)
+        except exc.ClientException as e:
+            message = e.message
+            details = e.details
+            if message and details:
+                errmsg = "%s - %s" % (message, details)
+            else:
+                errmsg = message
+            raise exc.InvalidLoadBalancerParameters(errmsg)
+        return resp, resp_body
+
     def add_nodes(self, lb, nodes):
         """Adds the list of nodes to the specified load balancer."""
         if not isinstance(nodes, (list, tuple)):
@@ -1231,6 +1289,23 @@ class CloudLoadBalancerClient(BaseClient):
             resp, body = self.method_get(uri)
             self._protocols = [proto["name"] for proto in body["protocols"]]
         return self._protocols
+
+
+    @assure_loadbalancer
+    def update(self, loadbalancer, name=None, algorithm=None, protocol=None,
+            halfClosed=None, port=None, timeout=None):
+        """
+        Provides a way to modify the following attributes of a load balancer:
+            - name
+            - algorithm
+            - protocol
+            - halfClosed
+            - port
+            - timeout
+        """
+        return self._manager.update(loadbalancer, name=name,
+                algorithm=algorithm, protocol=protocol, halfClosed=halfClosed,
+                port=port, timeout=timeout)
 
 
     @assure_loadbalancer

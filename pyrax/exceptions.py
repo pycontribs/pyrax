@@ -116,6 +116,9 @@ class InvalidDateTimeString(PyraxException):
 class InvalidDeviceType(PyraxException):
     pass
 
+class InvalidLoadBalancerParameters(PyraxException):
+    pass
+
 class InvalidNodeCondition(PyraxException):
     pass
 

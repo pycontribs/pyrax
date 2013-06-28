@@ -129,6 +129,42 @@ class CloudLoadBalancerTest(unittest.TestCase):
         lb = fakes.FakeLoadBalancer(name="fake", info=info)
         self.assertEqual(lb.cluster, info["cluster"]["name"])
 
+    def test_client_update_lb(self):
+        clt = self.client
+        lb = self.loadbalancer
+        mgr = clt._manager
+        mgr.update = Mock()
+        name = utils.random_name()
+        algorithm = utils.random_name()
+        timeout = utils.random_name()
+        clt.update(lb, name=name, algorithm=algorithm, timeout=timeout)
+        mgr.update.assert_called_once_with(lb, name=name, algorithm=algorithm,
+                protocol=None, halfClosed=None, port=None, timeout=timeout)
+
+    def test_lb_update_lb(self):
+        lb = self.loadbalancer
+        mgr = lb.manager
+        mgr.update = Mock()
+        name = utils.random_name()
+        algorithm = utils.random_name()
+        timeout = utils.random_name()
+        lb.update(name=name, algorithm=algorithm, timeout=timeout)
+        mgr.update.assert_called_once_with(lb, name=name, algorithm=algorithm,
+                protocol=None, halfClosed=None, port=None, timeout=timeout)
+
+    def test_mgr_update_lb(self):
+        lb = self.loadbalancer
+        mgr = lb.manager
+        mgr.api.method_put = Mock(return_value=(None, None))
+        name = utils.random_name()
+        algorithm = utils.random_name()
+        timeout = utils.random_name()
+        mgr.update(lb, name=name, algorithm=algorithm, timeout=timeout)
+        exp_uri = "/loadbalancers/%s" % lb.id
+        exp_body = {"loadBalancer": {"name": name, "algorithm": algorithm,
+                "timeout": timeout}}
+        mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
+
     def test_client_delete_node(self):
         clt = self.client
         lb = self.loadbalancer
