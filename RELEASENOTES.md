@@ -1,5 +1,19 @@
 # Release Notes for pyrax
 
+###2013.06.28 - Version 1.4.7
+- Added the `update()` method to modify existing load balancers.
+- The `fetch_object()` method was not raising the correct exception when the
+    requested object/container combination does not exist.
+- Added support for downloading objects in nested folders. GitHub #104.
+- Fixed an issue (#110) that was causing the purge from CDN command to fail.
+- Added support for bypassing SSL certificate verification with cloud servers,
+    based on PR #96.
+- Improved unit test coverage for several modules.
+- Add `eq` and `ne` to the `Node` class in cloud load balancers.
+- Updated the installation guide with identity_type setting. Issue #105.
+- Fixed bug where `tenant_id` was ignored if passed to `set_credentials()`.
+- Added `return_none` option to cloud files `store_object()` method.
+
 ###2013.06.13 - Version 1.4.6
 - Added the ability to authenticate with an existing token.
 - Fixed an issue where the default environment was not properly set. Issue #87.

@@ -272,6 +272,8 @@ class BaseAuth(object):
         access = resp["access"]
         token = access.get("token")
         self.token = token["id"]
+        self.tenant_id = token["tenant"]["id"]
+        self.tenant_name = token["tenant"]["name"]
         self.expires = self._parse_api_time(token["expires"])
         svc_cat = access.get("serviceCatalog")
         self.services = {}

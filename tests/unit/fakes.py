@@ -414,7 +414,11 @@ debug =
 fake_identity_user_response = {
         "users": [{"name": "fake", "id": "fake"},
             {"name": "faker", "id": "faker"}],
-        "user": {"name": "fake", "id": "fake"}}
+        "user": {"name": "fake", "id": "fake"},
+        "roles": [{u'description': u'User Admin Role.',
+                u'id': u'3',
+                u'name': u'identity:user-admin'}],
+        }
 
 fake_identity_tenant_response = {"name": "fake", "id": "fake",
         "description": "fake", "enabled": True}

@@ -130,6 +130,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the virtual IP to this load balancer.  <a href="#ab264d37d545101c96e50d1e2924724cc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a7a26606bf20204d1650ddad60fb25a3b">get_usage</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the usage records for this load balancer.  <a href="#a7a26606bf20204d1650ddad60fb25a3b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#abe52b977c101e59f342489ed18140819">update</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides a way to modify the following attributes of a load balancer:  <a href="#abe52b977c101e59f342489ed18140819"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a616947868beb4492f797b21aeb320d90">delete_node</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the node from the load balancer.  <a href="#a616947868beb4492f797b21aeb320d90"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a4712372bbfec39b9fdb36157aac37257">update_node</a></td></tr>
@@ -1027,6 +1029,73 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="abe52b977c101e59f342489ed18140819"></a><!-- doxytag: member="pyrax::cloudloadbalancers::CloudLoadBalancer::update" ref="abe52b977c101e59f342489ed18140819" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#abe52b977c101e59f342489ed18140819">update</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>algorithm</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>protocol</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>halfClosed</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>port</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Provides a way to modify the following attributes of a load balancer: </p>
+<ul>
+<li>name</li>
+<li>algorithm</li>
+<li>protocol</li>
+<li>halfClosed</li>
+<li>port</li>
+<li>timeout </li>
+</ul>
+
+</div>
+</div>
 <a class="anchor" id="a9d058767846954b6ab457ffa13ab66a1"></a><!-- doxytag: member="pyrax::cloudloadbalancers::CloudLoadBalancer::update_metadata" ref="a9d058767846954b6ab457ffa13ab66a1" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1238,7 +1307,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 26 2013 10:27:12 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 27 2013 23:24:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

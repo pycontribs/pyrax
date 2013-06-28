@@ -7,11 +7,15 @@ Load balancers allow you to distribute workloads among several cloud devices, re
 ## Load Balancers in pyrax
 Once you have authenticated and connected to the load balancer service, you can reference the load balancer module via `pyrax.cloud_loadbalancers`. This provides general load balancer information for the account, as well as methods for interacting with load balancer instances.
 
+For the sake of brevity and convenience, it is common to define abbreviated aliases for the modules. All the code in the document assumes that at the top of your script, you have added the following lines:
+
+    clb = pyrax.cloudloadbalancers
+    cs = pyrax.cloudservers
+
 
 ## Listing Existing Load Balancers
 To get a list of all the load balancers in your cloud, run:
 
-    clb = pyrax.cloud_loadbalancers
     clb.list()
 
 This returns a list of `LoadBalancer` objects. You can then interact with the individual `LoadBalancer` objects. Assuming that you are just starting out and do not have any load balancers configured yet, you get back an empty list. A good first step, then, would be to create a typical setup: two servers behind a load balancer that distributes web traffic to these two servers.
@@ -20,8 +24,6 @@ This returns a list of `LoadBalancer` objects. You can then interact with the in
 ### Create the Servers
 [Working with Cloud Servers](cloud_servers.md) explains how to get the image and flavor IDs necessary to create a server, but for the sake of brevity the code below uses the IDs previously obtained. *Note*: these ID values are not constants, so make sure you get the actual IDs for when your system is running.
 
-    cs = pyrax.cloudservers
-    clb = pyrax.cloud_loadbalancers
     img_id = "5cebb13a-f783-4f8c-8058-c4182c724ccd"
     flavor_id = 2
 
@@ -113,7 +115,7 @@ For the `LoadBalancer` just created, the output of the above is:
 ## Load Balancer Algorithms
 The load balancer's 'algorithm' refers to the logic that determines how connections are spread across the nodes. You can get the available algorithms by running:
 
-    print pyrax.cloud_loadbalancers.algorithms
+    print clb.algorithms
 
 This prints:
 
@@ -212,13 +214,29 @@ This results in:
     After delete_metadata: {}
 
 
+## Updating the Load Balancer
+A Load Balancer has several attributes that can be updated while the load balancer is running:
+
+    *  name
+    *  algorithm
+    *  protocol
+    *  halfClosed
+    *  port
+    *  timeout
+
+To update any of these, call the `update()` method of the load balancer, and pass in the new values as keyword arguments. For example, to change the timeout to 60 seconds and the algorithm to 'RANDOM' for a given `CloudLoadBalancer` object named `lb`, you would call:
+
+    lb.update(timeout=60, algorithm="RANDOM")
+
+You can also call the module itself, passing in the load balancer reference, which can be either a `CloudLoadBalancer` object, or the ID of the load balancer:
+
+    clb.update(lb, timeout=60, algorithm="RANDOM")
+
 
 ## Managing Nodes
 
 ### Adding and Removing Nodes for a Load Balancer
-`LoadBalancer` instances have a method `add_nodes()` that accepts either a single `Node` or a list of `Node` objects and adds them to the `LoadBalancer`. To remove a `Node`, though, you must get a reference to that node and then call its `delete()` method.
-
-    clb = pyrax.cloud_loadbalancers
+`CloudLoadBalancer` instances have a method `add_nodes()` that accepts either a single `Node` or a list of `Node` objects and adds them to the `LoadBalancer`. To remove a `Node`, though, you must get a reference to that node and then call its `delete()` method.
 
     lb = clb.list()[0]
     print
@@ -264,7 +282,6 @@ Running the above code results in:
 ### Changing a Node's Condition
 `Nodes` can be in one of 3 "conditions": ENABLED, DISABLED, and DRAINING. To change the condition of a `Node`, you change its `condition` attribute, and then call its `update()` method.
 
-    clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     # Initial state
     print "Initial:", [(node.id, node.condition) for node in lb.nodes]
@@ -288,7 +305,7 @@ Each node can have metadata associated with it, just as load balancers can. The 
 
 
 ## Usage Data
-You can get load balancer usage data for your entire account by calling `pyrax.cloud_loadbalancers.get_usage()`. Individual instances of the `CloudLoadBalancer` class also have a `get_usage()` method that returns the usage for just that load balancer. Please note that usage statistics are very fine-grained, with a record for every hour that the load balancer is active. Each record is a dict with the following format:
+You can get load balancer usage data for your entire account by calling `clb.get_usage()`. Individual instances of the `CloudLoadBalancer` class also have a `get_usage()` method that returns the usage for just that load balancer. Please note that usage statistics are very fine-grained, with a record for every hour that the load balancer is active. Each record is a dict with the following format:
 
     {'averageNumConnections': 0.0,
       'averageNumConnectionsSsl': 0.0,
@@ -332,7 +349,6 @@ A health monitor is a configurable feature of each load balancer. It is used to 
 
 To get the current Health Monitor for a load balancer, run the following code:
 
-    clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     hm = lb.get_health_monitor()
 
@@ -350,7 +366,6 @@ Health Monitors have an `attemptsBeforeDeactivation` setting that specifies how 
 ### Adding a TCP Connection Health Monitor
 This type of monitor simply checks if the load balancer's nodes are available for TCP connections.
 
-    clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     lb.add_health_monitor(type="CONNECT", delay=10, timeout=10,
             attemptsBeforeDeactivation=3)
@@ -368,7 +383,6 @@ type | Type of the health monitor. Must be specified as "CONNECT" to monitor con
 ### Adding a Health Monitor for HTTP(S)
 These types of monitors check whether the load balancer's nodes can be reached via standard HTTP or HTTPS ports. Note that the type must match the load balancer protocol: if the load balancer is 'HTTP', you cannot create an 'HTTPS' health monitor. These types of monitors also require several more parameters to be defined for the monitor:
 
-    clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     lb.add_health_monitor(type="HTTP", delay=10, timeout=10,
             attemptsBeforeDeactivation=3, path="/",
@@ -395,7 +409,6 @@ type | Type of the health monitor. Must be specified as "HTTP" to monitor an HTT
 ### Deleting a Health Monitor
 To remove a health monitor from a load balancer, run the following:
 
-    clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     lb.delete_health_monitor()
 
@@ -412,14 +425,12 @@ Session persistence is a feature of the load balancing service that forces multi
 
 To get the session persistence setting for a load balancer, you would run:
 
-    clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     sp_mgr = lb.session_persistence()
     print sp_mgr.get()
 
 By default, load balancers are not configured for session persistence. You would run the following code to add persistence to your load balancer:
 
-    clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     sp_mgr = lb.session_persistence()
     sp = sp_mgr.resource(persistenceType="HTTP_COOKIE")
@@ -427,7 +438,6 @@ By default, load balancers are not configured for session persistence. You would
 
 Similarly, to remove session persistence from your load balancer, you would run:
 
-    clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     sp_mgr = lb.session_persistence()
     sp_mgr.delete()
@@ -438,7 +448,6 @@ The connection logging feature allows logs to be delivered to a Cloud Files acco
 
 You can retrieve the current state of connection logging for a given load balancer, and also enable/disable connection logging.
 
-    clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     cl_mgr = lb.connection_logging()
     # Get the current state
@@ -462,7 +471,6 @@ The access list management feature allows fine-grained network access controls t
 
 To see the access lists for a load balancer, call the load balancer's `get_access_list()` method:
 
-    clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     print "Starting:", lb.get_access_list()
 
@@ -504,7 +512,6 @@ To delete the entire access list, call the `delete_access_list()` method:
 ## Error Pages
 An error page is the HTML file that is shown to the end user when there is an attempt to access a node that is offline. All load balancers are given a default error page, but you also have the ability to add a custom error page per load balancer. Here are some examples of working with error pages:
 
-    clb = pyrax.cloud_loadbalancers
     lb = clb.list()[0]
     print lb.get_error_page()
 

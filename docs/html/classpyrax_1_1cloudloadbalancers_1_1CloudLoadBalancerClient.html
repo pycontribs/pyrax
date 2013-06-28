@@ -133,6 +133,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of available load balancing algorithms.  <a href="#aed666a925114f957f496874543d3f2a7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a7ffc66e16cbb4a549e7874dce9d61e6e">protocols</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of available load balancing protocols.  <a href="#a7ffc66e16cbb4a549e7874dce9d61e6e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#abe52b977c101e59f342489ed18140819">update</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides a way to modify the following attributes of a load balancer:  <a href="#abe52b977c101e59f342489ed18140819"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#aaaa90c99f97822834b7407096d0b1dce">add_nodes</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the nodes to this load balancer.  <a href="#aaaa90c99f97822834b7407096d0b1dce"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#ab264d37d545101c96e50d1e2924724cc">add_virtualip</a></td></tr>
@@ -1492,6 +1494,79 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="abe52b977c101e59f342489ed18140819"></a><!-- doxytag: member="pyrax::cloudloadbalancers::CloudLoadBalancerClient::update" ref="abe52b977c101e59f342489ed18140819" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#abe52b977c101e59f342489ed18140819">update</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>loadbalancer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>algorithm</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>protocol</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>halfClosed</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>port</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Provides a way to modify the following attributes of a load balancer: </p>
+<ul>
+<li>name</li>
+<li>algorithm</li>
+<li>protocol</li>
+<li>halfClosed</li>
+<li>port</li>
+<li>timeout </li>
+</ul>
+
+</div>
+</div>
 <a class="anchor" id="a9d058767846954b6ab457ffa13ab66a1"></a><!-- doxytag: member="pyrax::cloudloadbalancers::CloudLoadBalancerClient::update_metadata" ref="a9d058767846954b6ab457ffa13ab66a1" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1707,7 +1782,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 29 2013 11:39:23 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 27 2013 23:24:38 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

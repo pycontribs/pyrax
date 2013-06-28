@@ -73,6 +73,20 @@ class CloudLoadBalancerTest(unittest.TestCase):
         clt.add_nodes(lb, nd)
         lb.manager.add_nodes.assert_called_once_with(lb, nd)
 
+    def test_node_equality(self):
+        node1 = Node(address="192.168.1.1", port=80)
+        node2 = Node(address="192.168.1.2", port=80)
+        node3 = Node(address="192.168.1.1", port=80)
+
+        self.assertFalse(node1 == node2)
+        self.assertFalse(node2 == node1)
+        self.assertTrue(node1 != node2)
+        self.assertTrue(node2 != node1)
+        self.assertTrue(node2 != node3)
+        self.assertTrue(node3 != node2)
+        self.assertTrue(node1 == node3)
+        self.assertTrue(node3 == node1)
+
     def test_add_virtualip_client(self):
         clt = self.client
         lb = self.loadbalancer
@@ -114,6 +128,42 @@ class CloudLoadBalancerTest(unittest.TestCase):
         info = {"cluster": {"name": "fake"}}
         lb = fakes.FakeLoadBalancer(name="fake", info=info)
         self.assertEqual(lb.cluster, info["cluster"]["name"])
+
+    def test_client_update_lb(self):
+        clt = self.client
+        lb = self.loadbalancer
+        mgr = clt._manager
+        mgr.update = Mock()
+        name = utils.random_name()
+        algorithm = utils.random_name()
+        timeout = utils.random_name()
+        clt.update(lb, name=name, algorithm=algorithm, timeout=timeout)
+        mgr.update.assert_called_once_with(lb, name=name, algorithm=algorithm,
+                protocol=None, halfClosed=None, port=None, timeout=timeout)
+
+    def test_lb_update_lb(self):
+        lb = self.loadbalancer
+        mgr = lb.manager
+        mgr.update = Mock()
+        name = utils.random_name()
+        algorithm = utils.random_name()
+        timeout = utils.random_name()
+        lb.update(name=name, algorithm=algorithm, timeout=timeout)
+        mgr.update.assert_called_once_with(lb, name=name, algorithm=algorithm,
+                protocol=None, halfClosed=None, port=None, timeout=timeout)
+
+    def test_mgr_update_lb(self):
+        lb = self.loadbalancer
+        mgr = lb.manager
+        mgr.api.method_put = Mock(return_value=(None, None))
+        name = utils.random_name()
+        algorithm = utils.random_name()
+        timeout = utils.random_name()
+        mgr.update(lb, name=name, algorithm=algorithm, timeout=timeout)
+        exp_uri = "/loadbalancers/%s" % lb.id
+        exp_body = {"loadBalancer": {"name": name, "algorithm": algorithm,
+                "timeout": timeout}}
+        mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_client_delete_node(self):
         clt = self.client

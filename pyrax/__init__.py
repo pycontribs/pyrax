@@ -113,6 +113,14 @@ _http_debug = False
 regions = tuple()
 services = tuple()
 
+_client_classes = {
+        "database": CloudDatabaseClient,
+        "load_balancer": CloudLoadBalancerClient,
+        "volume": CloudBlockStorageClient,
+        "dns": CloudDNSClient,
+        "compute:network": CloudNetworkClient,
+        }
+
 
 def _id_type(ityp):
     """Allow for shorthand names for the most common types."""
@@ -145,6 +153,7 @@ class Settings(object):
             "encoding": "CLOUD_ENCODING",
             "custom_user_agent": "CLOUD_USER_AGENT",
             "debug": "CLOUD_DEBUG",
+            "verify_ssl": "CLOUD_VERIFY_SSL",
             }
     _settings = {"default": dict.fromkeys(env_dct.keys())}
     _default_set = False
@@ -266,8 +275,10 @@ class Settings(object):
             # Handle both the old and new names for this setting.
             debug = safe_get(section, "debug")
             if debug is None:
-                debug = safe_get(section, "http_debug", False)
+                debug = safe_get(section, "http_debug", "False")
             dct["http_debug"] = debug == "True"
+            verify_ssl = safe_get(section, "verify_ssl", "True")
+            dct["verify_ssl"] = verify_ssl == "True"
             dct["keyring_username"] = safe_get(section, "keyring_username")
             dct["encoding"] = safe_get(section, "encoding", default_encoding)
             dct["auth_endpoint"] = safe_get(section, "auth_endpoint")
@@ -392,8 +403,9 @@ def set_credentials(username, api_key=None, password=None, region=None,
     """
     pw_key = password or api_key
     region = _safe_region(region)
+    tenant_id = tenant_id or settings.get("tenant_id")
     identity.set_credentials(username=username, password=pw_key,
-            tenant_id=settings.get("tenant_id"), region=region)
+            tenant_id=tenant_id, region=region)
     if authenticate:
         _auth_and_connect(region=region)
 
@@ -557,10 +569,15 @@ def connect_to_cloudservers(region=None):
         auth_plugin = None
     region = _safe_region(region)
     mgt_url = _get_service_endpoint("compute", region)
+    cloudservers = None
+    if not mgt_url:
+        # Service is not available
+        return
+    insecure = not get_setting("verify_ssl")
     cloudservers = _cs_client.Client(identity.username, identity.password,
             project_id=identity.tenant_id, auth_url=identity.auth_endpoint,
-            auth_system="rackspace", region_name=region, service_type="compute",
-            auth_plugin=auth_plugin,
+            auth_system=id_type, region_name=region, service_type="compute",
+            auth_plugin=auth_plugin, insecure=insecure,
             http_log_debug=_http_debug)
     agt = cloudservers.client.USER_AGENT
     cloudservers.client.USER_AGENT = _make_agent_name(agt)
@@ -602,81 +619,67 @@ def connect_to_cloudfiles(region=None, public=True):
     """
     region = _safe_region(region)
     cf_url = _get_service_endpoint("object_store", region, public=public)
+    cloudfiles = None
+    if not cf_url:
+        # Service is not available
+        return
     cdn_url = _get_service_endpoint("object_cdn", region)
     ep_type = {True: "publicURL", False: "internalURL"}[public]
     opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token,
             "endpoint_type": ep_type, "tenant_name": identity.tenant_name,
             "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
+    verify_ssl = get_setting("verify_ssl")
     cloudfiles = _cf.CFClient(identity.auth_endpoint, identity.username,
             identity.password, tenant_name=identity.tenant_name,
             preauthurl=cf_url, preauthtoken=identity.token, auth_version="2",
-            os_options=opts, http_log_debug=_http_debug)
+            os_options=opts, verify_ssl=verify_ssl, http_log_debug=_http_debug)
     cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)
     return cloudfiles
 
 
 @_require_auth
+def _create_client(ep_name, service_type, region):
+    region = _safe_region(region)
+    ep = _get_service_endpoint(ep_name.split(":")[0], region)
+    if not ep:
+        return
+    verify_ssl = get_setting("verify_ssl")
+    cls = _client_classes[ep_name]
+    client = cls(region_name=region, management_url=ep, verify_ssl=verify_ssl,
+            http_log_debug=_http_debug, service_type=service_type)
+    client.user_agent = _make_agent_name(client.user_agent)
+    return client
+
+
 def connect_to_cloud_databases(region=None):
     """Creates a client for working with cloud databases."""
-    region = _safe_region(region)
-    ep = _get_service_endpoint("database", region)
-    cloud_databases = CloudDatabaseClient(region_name=region,
-            management_url=ep, http_log_debug=_http_debug,
-            service_type="rax:database")
-    cloud_databases.user_agent = _make_agent_name(cloud_databases.user_agent)
-    return cloud_databases
+    return _create_client(ep_name="database", service_type="rax:database",
+            region=region)
 
 
-@_require_auth
 def connect_to_cloud_loadbalancers(region=None):
     """Creates a client for working with cloud loadbalancers."""
-    region = _safe_region(region)
-    ep = _get_service_endpoint("load_balancer", region)
-    cloud_loadbalancers = CloudLoadBalancerClient(region_name=region,
-            management_url=ep, http_log_debug=_http_debug,
-            service_type="rax:load-balancer")
-    agt = cloud_loadbalancers.user_agent
-    cloud_loadbalancers.user_agent = _make_agent_name(agt)
-    return cloud_loadbalancers
+    return _create_client(ep_name="load_balancer",
+            service_type="rax:load-balancer", region=region)
 
 
-@_require_auth
 def connect_to_cloud_blockstorage(region=None):
     """Creates a client for working with cloud blockstorage."""
-    region = _safe_region(region)
-    ep = _get_service_endpoint("volume", region)
-    cloud_blockstorage = CloudBlockStorageClient(region_name=region,
-            management_url=ep, http_log_debug=_http_debug,
-            service_type="volume")
-    agt = cloud_blockstorage.user_agent
-    cloud_blockstorage.user_agent = _make_agent_name(agt)
-    return cloud_blockstorage
+    return _create_client(ep_name="volume",
+            service_type="volume", region=region)
 
 
-@_require_auth
 def connect_to_cloud_dns(region=None):
     """Creates a client for working with cloud dns."""
-    region = _safe_region(region)
-    ep = _get_service_endpoint("dns", region)
-    cloud_dns = CloudDNSClient(region_name=region,
-            management_url=ep, http_log_debug=_http_debug,
-            service_type="rax:dns")
-    cloud_dns.user_agent = _make_agent_name(cloud_dns.user_agent)
-    return cloud_dns
+    return _create_client(ep_name="dns",
+            service_type="rax:dns", region=region)
 
 
-@_require_auth
 def connect_to_cloud_networks(region=None):
     """Creates a client for working with cloud networks."""
-    region = _safe_region(region)
-    # Networks uses the same endpoint as compute
-    ep = _get_service_endpoint("compute", region)
-    cloud_networks = CloudNetworkClient(region_name=region,
-            management_url=ep, http_log_debug=_http_debug,
-            service_type="compute")
-    cloud_networks.user_agent = _make_agent_name(cloud_networks.user_agent)
-    return cloud_networks
+    return _create_client(ep_name="compute:network",
+            service_type="compute", region=region)
 
 
 def get_http_debug():
@@ -711,3 +714,5 @@ settings = Settings()
 config_file = os.path.expanduser("~/.pyrax.cfg")
 if os.path.exists(config_file):
     settings.read_config(config_file)
+    debug = get_setting("http_debug") or False
+    set_http_debug(debug)

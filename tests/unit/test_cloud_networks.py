@@ -11,6 +11,7 @@ import pyrax.cloudnetworks
 from pyrax.cloudnetworks import CloudNetwork
 from pyrax.cloudnetworks import CloudNetworkManager
 from pyrax.cloudnetworks import CloudNetworkClient
+from pyrax.cloudnetworks import _get_server_networks
 
 import pyrax.exceptions as exc
 import pyrax.utils as utils
@@ -42,6 +43,15 @@ class CloudNetworksTest(unittest.TestCase):
         svc_network.get()
         pyrax.resource.BaseResource.get.assert_called_once_with()
         pyrax.resource.BaseResource.get = sav_get
+
+    def test_get_server_networks(self):
+        clt = self.client
+        iso_network = fakes.FakeCloudNetwork()
+        iso_id = iso_network.id
+        exp = [{"net-id": iso_id}, {"net-id": clt.PUBLIC_NET_ID},
+                {"net-id": clt.SERVICE_NET_ID}]
+        ret = _get_server_networks(iso_network, public=True, private=True)
+        self.assertEqual(ret, exp)
 
     def test_get_server_networks_by_client(self):
         clt = self.client
@@ -143,6 +153,49 @@ class CloudNetworksTest(unittest.TestCase):
         clt.list = Mock(return_value=[net1, net2, net3])
         self.assertRaises(exc.NetworkLabelNotUnique, clt.find_network_by_label,
                 "Third")
+
+    def test_network_name(self):
+        clt = self.client
+        nm = "fake"
+        net = fakes.FakeCloudNetwork(name=nm)
+        self.assertEqual(net.label, nm)
+        self.assertEqual(net.name, nm)
+        net.name = "faker"
+        self.assertEqual(net.name, net.label)
+
+    def test_delete_network(self):
+        clt = self.client
+        nm = "fake"
+        net = fakes.FakeCloudNetwork(name=nm)
+        net.manager = fakes.FakeManager()
+        net.manager.delete = Mock()
+        net.delete()
+        net.manager.delete.assert_called_once_with(net)
+
+    def test_delete_network_by_client(self):
+        clt = self.client
+        nm = "fake"
+        net = fakes.FakeCloudNetwork(name=nm)
+        clt.method_delete = Mock(return_value=(None, None))
+        clt.delete(net)
+        clt.method_delete.assert_called_once_with("/os-networksv2/%s" % net.id)
+
+    def test_delete_network_fail(self):
+        clt = self.client
+        nm = "fake"
+        net = fakes.FakeCloudNetwork(name=nm)
+        net.manager = fakes.FakeManager()
+        err = exc.Forbidden(403)
+        net.manager.delete = Mock(side_effect=err)
+        self.assertRaises(exc.NetworkInUse, net.delete)
+
+    def test_delete_network_by_client_fail(self):
+        clt = self.client
+        nm = "fake"
+        net = fakes.FakeCloudNetwork(name=nm)
+        err = exc.Forbidden(403)
+        clt.method_delete = Mock(side_effect=err)
+        self.assertRaises(exc.NetworkInUse, clt.delete, net)
 
 
 if __name__ == "__main__":

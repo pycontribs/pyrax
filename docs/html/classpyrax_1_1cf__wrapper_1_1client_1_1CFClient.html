@@ -173,6 +173,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels any folder upload happening in the background.  <a href="#a621a0e61fdb17290b5e9f5dec5eb12fc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1c274968ef395c2b88a4d67c24f30f8e">fetch_object</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the object from storage.  <a href="#a1c274968ef395c2b88a4d67c24f30f8e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a4d536318080f1745a14922224b2a28b5">download_object</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the object from storage, and writes it to the specified directory.  <a href="#a4d536318080f1745a14922224b2a28b5"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ae413c04282e2a1f584d7b99bbea09b54">get_all_containers</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ade2af720b771c722f092076b29a0ef64">get_container</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aaf73308b26a79abf34f31686698ce8fc">get_container_objects</a></td></tr>
@@ -287,6 +289,12 @@ Properties</h2></td></tr>
           <td></td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>os_options</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>verify_ssl</em> = <code>True</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -570,6 +578,55 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Sets the object in the specified container to be deleted after the specified number of seconds. </p>
+
+</div>
+</div>
+<a class="anchor" id="a4d536318080f1745a14922224b2a28b5"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::download_object" ref="a4d536318080f1745a14922224b2a28b5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a4d536318080f1745a14922224b2a28b5">download_object</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>directory</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>structure</em> = <code>True</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Fetches the object from storage, and writes it to the specified directory. </p>
+<p>The directory must exist before calling this method.</p>
+<p>If the object name represents a nested folder structure, such as "foo/bar/baz.txt", that folder structure will be created in the target directory by default. If you do not want the nested folders to be created, pass `structure=False` in the parameters. </p>
 
 </div>
 </div>
@@ -1810,7 +1867,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>ttl</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>ttl</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>return_none</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1822,6 +1885,7 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Creates a new object in the specified container, and populates it with the given data. </p>
+<p>A StorageObject reference to the uploaded file will be returned, unless 'return_none' is set to True. </p>
 
 </div>
 </div>
@@ -2196,7 +2260,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jun 3 2013 10:15:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 27 2013 23:24:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

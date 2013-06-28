@@ -84,6 +84,16 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.post_account.assert_called_with(
                 {"x-account-meta-foo": "", "x-account-meta-newkey": "newval"})
 
+    def test_set_temp_url_key(self):
+        client = self.client
+        sav = client.set_account_metadata
+        client.set_account_metadata = Mock()
+        key = utils.random_name()
+        exp = {"Temp-Url-Key": key}
+        client.set_temp_url_key(key)
+        client.set_account_metadata.assert_called_once_with(exp)
+        client.set_account_metadata = sav
+
     def test_get_temp_url_key(self):
         client = self.client
         client.connection.head_account = Mock()
@@ -299,7 +309,7 @@ class CF_ClientTest(unittest.TestCase):
         emls = ["foo@example.com", "bar@example.com"]
         client.purge_cdn_object(self.cont_name, self.obj_name, emls)
         client.connection.cdn_request.assert_called_with("DELETE",
-                self.cont_name, self.obj_name,
+                [self.cont_name, self.obj_name],
                 hdrs={"X-Purge-Email": "foo@example.com, bar@example.com"})
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
@@ -312,6 +322,17 @@ class CF_ClientTest(unittest.TestCase):
                 [{"name": "o1"}, {"name": "o2"}])
         obj = client.get_object(self.cont_name, "o1")
         self.assertEqual(obj.name, "o1")
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_get_object_hack(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        cont = client.get_container(self.cont_name)
+        effects = (exc.NoSuchObject(""), FakeStorageObject(self.client,
+                self.cont_name, self.obj_name))
+        cont.get_object = Mock(side_effect=effects)
+        obj = client.get_object(self.cont_name, "o1")
+        self.assertEqual(obj.name, self.obj_name)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_store_object(self):
@@ -636,6 +657,26 @@ class CF_ClientTest(unittest.TestCase):
         self.assertEqual(resp[1], text)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_download_object(self):
+        client = self.client
+        sav_fetch = client.fetch_object
+        client.fetch_object = Mock(return_value=utils.random_name(
+                ascii_only=True))
+        sav_isdir = os.path.isdir
+        os.path.isdir = Mock(return_value=True)
+        nm = "one/two/three/four.txt"
+        with utils.SelfDeletingTempDirectory() as tmpdir:
+            fullpath = os.path.join(tmpdir, nm)
+            client.download_object("fake", nm, tmpdir, structure=True)
+            self.assertTrue(os.path.exists(fullpath))
+        with utils.SelfDeletingTempDirectory() as tmpdir:
+            fullpath = os.path.join(tmpdir, os.path.basename(nm))
+            client.download_object("fake", nm, tmpdir, structure=False)
+            self.assertTrue(os.path.exists(fullpath))
+        client.fetch_object = sav_fetch
+        os.path.isdir = sav_isdir
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_all_containers(self):
         client = self.client
         client.connection.head_container = Mock()
@@ -839,6 +880,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_cdn_request(self):
         client = self.client
         conn = client.connection
+        conn._make_cdn_connection(cdn_url="http://example.com")
         if conn.cdn_connection is not None:
             conn.cdn_connection.request = Mock()
             conn.cdn_connection.getresponse = Mock()

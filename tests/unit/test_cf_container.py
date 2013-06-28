@@ -10,6 +10,7 @@ from mock import MagicMock as Mock
 
 import pyrax
 from pyrax.cf_wrapper.container import Container
+from pyrax.cf_wrapper.container import Fault
 import pyrax.utils as utils
 import pyrax.exceptions as exc
 from tests.unit.fakes import FakeContainer
@@ -62,6 +63,10 @@ class CF_ContainerTest(unittest.TestCase):
         pyrax.connect_to_cloud_loadbalancers = octclb
         octcbs = self.orig_connect_to_cloud_blockstorage
         pyrax.connect_to_cloud_blockstorage = octcbs
+
+    def test_fault(self):
+        fault = Fault()
+        self.assertFalse(fault)
 
     def test_fetch_cdn(self):
         self.client.connection.cdn_request = Mock()
@@ -194,6 +199,26 @@ class CF_ContainerTest(unittest.TestCase):
         cont.delete()
         cont.client.connection.delete_container.assert_called_with(
                 self.cont_name)
+
+    def test_fetch_object(self):
+        cont = self.container
+        cont.client.fetch_object = Mock()
+        oname = utils.random_name(ascii_only=True)
+        incmeta = random.choice((True, False))
+        csize = random.randint(0, 1000)
+        cont.fetch_object(oname, include_meta=incmeta, chunk_size=csize)
+        cont.client.fetch_object.assert_called_once_with(cont, oname,
+                include_meta=incmeta, chunk_size=csize)
+
+    def test_download_object(self):
+        cont = self.container
+        cont.client.download_object = Mock()
+        oname = utils.random_name(ascii_only=True)
+        dname = utils.random_name(ascii_only=True)
+        stru = random.choice((True, False))
+        cont.download_object(oname, dname, structure=stru)
+        cont.client.download_object.assert_called_once_with(cont, oname,
+                dname, structure=stru)
 
     def test_get_metadata(self):
         cont = self.container

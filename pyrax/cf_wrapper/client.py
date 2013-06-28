@@ -53,6 +53,9 @@ def handle_swiftclient_exception(fnc):
                 cont, fname = failed_upload.groups()
                 raise exc.UploadFailed("Upload of file '%(fname)s' to "
                         "container '%(cont)s' failed." % locals())
+            if e.http_status == 404:
+                raise exc.NoSuchObject("The requested object/container does "
+                        "not exist.")
             # Not handled; re-raise
             raise
     return _wrapped
@@ -86,7 +89,8 @@ class CFClient(object):
 
     def __init__(self, auth_endpoint, username, api_key=None, password=None,
             tenant_name=None, preauthurl=None, preauthtoken=None,
-            auth_version="2", os_options=None, http_log_debug=False):
+            auth_version="2", os_options=None, verify_ssl=True,
+            http_log_debug=False):
         self.connection = None
         self.cdn_connection = None
         self.http_log_debug = http_log_debug
@@ -95,18 +99,21 @@ class CFClient(object):
         self._make_connections(auth_endpoint, username, api_key, password,
                 tenant_name=tenant_name, preauthurl=preauthurl,
                 preauthtoken=preauthtoken, auth_version=auth_version,
-                os_options=os_options, http_log_debug=http_log_debug)
+                os_options=os_options, verify_ssl=verify_ssl,
+                http_log_debug=http_log_debug)
 
 
     def _make_connections(self, auth_endpoint, username, api_key, password,
             tenant_name=None, preauthurl=None, preauthtoken=None,
-            auth_version="2", os_options=None, http_log_debug=None):
+            auth_version="2", os_options=None, verify_ssl=True,
+            http_log_debug=None):
         cdn_url = os_options.pop("object_cdn_url", None)
         pw_key = api_key or password
+        insecure = not verify_ssl
         self.connection = Connection(auth_endpoint, username, pw_key,
                 tenant_name, preauthurl=preauthurl, preauthtoken=preauthtoken,
                 auth_version=auth_version, os_options=os_options,
-                http_log_debug=http_log_debug)
+                insecure=insecure, http_log_debug=http_log_debug)
         if cdn_url:
             self.connection._make_cdn_connection(cdn_url)
 
@@ -428,17 +435,26 @@ class CFClient(object):
 
     def get_object(self, container, obj_name):
         """Returns a StorageObject instance for the object in the container."""
-        cont = self.get_container(container)
-        obj = cont.get_object(self._resolve_name(obj_name))
-        return obj
+        # NOTE: This is a hack to get around a bug in the current version of
+        # the swiftclient library.
+        for attempts in range(2):
+            try:
+                cont = self.get_container(container)
+                obj = cont.get_object(self._resolve_name(obj_name))
+                return obj
+            except (exc.NoSuchContainer, exc.NoSuchObject) as e:
+                continue
+        # If we made it to here, it is an actual exception
+        raise
 
 
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
-            etag=None, content_encoding=None, ttl=None):
+            etag=None, content_encoding=None, ttl=None, return_none=False):
         """
         Creates a new object in the specified container, and populates it with
-        the given data.
+        the given data. A StorageObject reference to the uploaded file
+        will be returned, unless 'return_none' is set to True.
         """
         cont = self.get_container(container)
         headers = {}
@@ -457,7 +473,10 @@ class CFClient(object):
                 self.connection.put_object(cont.name, obj_name,
                         contents=tmpfile, content_type=content_type, etag=etag,
                         headers=headers)
-        return self.get_object(container, obj_name)
+        if return_none:
+            return None
+        else:
+            return self.get_object(container, obj_name)
 
 
     @handle_swiftclient_exception
@@ -799,6 +818,7 @@ class CFClient(object):
         return not self.folder_upload_status[upload_key]["continue"]
 
 
+    @handle_swiftclient_exception
     def fetch_object(self, container, obj_name, include_meta=False,
             chunk_size=None):
         """
@@ -823,6 +843,31 @@ class CFClient(object):
             return (meta, data)
         else:
             return data
+
+
+    @handle_swiftclient_exception
+    def download_object(self, container, obj_name, directory, structure=True):
+        """
+        Fetches the object from storage, and writes it to the specified
+        directory. The directory must exist before calling this method.
+
+        If the object name represents a nested folder structure, such as
+        "foo/bar/baz.txt", that folder structure will be created in the target
+        directory by default. If you do not want the nested folders to be
+        created, pass `structure=False` in the parameters.
+        """
+        if not os.path.isdir(directory):
+            raise exc.FolderNotFound("The directory '%s' does not exist." %
+                    directory)
+        path, fname = os.path.split(obj_name)
+        if structure:
+            fullpath = os.path.join(directory, path)
+            os.makedirs(fullpath)
+            target = os.path.join(fullpath, fname)
+        else:
+            target = os.path.join(directory, fname)
+        with open(target, "wb") as dl:
+            dl.write(self.fetch_object(container, obj_name))
 
 
     @handle_swiftclient_exception
@@ -1031,7 +1076,7 @@ class CFClient(object):
                 email_addresses = [email_addresses]
             emls = ", ".join(email_addresses)
             hdrs = {"X-Purge-Email": emls}
-        response = self.connection.cdn_request("DELETE", ct.name, oname,
+        response = self.connection.cdn_request("DELETE", [ct.name, oname],
                 hdrs=hdrs)
         # Read the response to force it to close for the next request.
         response.read()

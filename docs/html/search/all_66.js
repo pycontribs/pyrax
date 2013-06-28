@@ -2,6 +2,7 @@ var searchData=
 [
   ['fault',['Fault',['../classpyrax_1_1cf__wrapper_1_1container_1_1Fault.html',1,'pyrax::cf_wrapper::container']]],
   ['fault',['FAULT',['../namespacepyrax_1_1cf__wrapper_1_1container.html#a892f51831156b6ea326c363e4b10631a',1,'pyrax::cf_wrapper::container']]],
+  ['fetch',['fetch',['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a271dcd2cab08dc966228cd3d12e7cfb7',1,'pyrax::cf_wrapper::storage_object::StorageObject']]],
   ['fetch_5fobject',['fetch_object',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1c274968ef395c2b88a4d67c24f30f8e',1,'pyrax::cf_wrapper::client::CFClient.fetch_object()'],['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a1c274968ef395c2b88a4d67c24f30f8e',1,'pyrax::cf_wrapper::container::Container.fetch_object()']]],
   ['filenotfound',['FileNotFound',['../classpyrax_1_1exceptions_1_1FileNotFound.html',1,'pyrax::exceptions']]],
   ['find',['find',['../classpyrax_1_1client_1_1BaseClient.html#a01f90f57b7acd55e177611f5d0f7df23',1,'pyrax::client::BaseClient.find()'],['../classpyrax_1_1manager_1_1BaseManager.html#a01f90f57b7acd55e177611f5d0f7df23',1,'pyrax::manager::BaseManager.find()']]],
