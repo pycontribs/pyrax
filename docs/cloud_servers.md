@@ -259,7 +259,7 @@ The created image will also appear in the list of images with the name you gave 
 You will need to wait for the imaging to finish before you are able to clone it.
 
     image_id = server.create_image("base_image")
-    # Unlike the create_server call, create_image() returns the id rather than an Image object
+    # Unlike the create_server() call, create_image() returns the id rather than an Image object
     image = cs.images.get(im)
     image = pyrax.wait_until(image, "status", ["ACTIVE", "ERROR"], attempts=0)
     cs.servers.create(name="clone", image=image.id, flavor=my_flavor)
