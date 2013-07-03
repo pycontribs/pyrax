@@ -181,7 +181,7 @@ This should return something like:
 Since you can't do anything with your new server until it finishes building, it would be helpful to have a way of determining when the build is complete. So `pyrax` includes the `wait_until()` method in its `utils` module. Here is a typical usage:
 
     srv = cs.servers.create(…)
-    new_srv = pyrax.utils.wait_until(srv, "status", 
+    new_srv = pyrax.utils.wait_until(srv, "status",
             ["ACTIVE", "ERROR"], attempts=0)
 
 When you run the above code, execution will block until the server's status reaches one of the two values in the list. Note that we just don't want to check for "ACTIVE" status, since server creation can fail, and the `wait_until()` call will wait forever.
@@ -250,8 +250,21 @@ If you have a `Server` object and want to create an image of that server, you ca
 Another option is to use call `pyrax.servers.create_image()`, passing in either the name or the ID of the server from which you want to create the image, along with the image name and optional metadata.
 
     cs = pyrax.cloudservers
-    cs.servers.create_image("my_awesome_server", "my_image_name")
+    image_id = cs.servers.create_image("my_awesome_server", "my_image_name")
+    # Unlike the create_server call, `create_image()` returns the id rather than an `Image` object
+    image = cs.images.get(image_id)
 
+The created image will also appear in the list of images with the name you gave it.
+
+    cs.images.list()
+
+You will need to wait for the imaging to finish before you are able to clone it.
+
+    image_id = server.create_image("base_image")
+    image = cs.images.get(im)
+    # Note that you need to wait for the image to be finished before cloning
+    image = pyrax.wait_until(image, "status", ["ACTIVE", "ERROR"], attempts=0)
+    cs.servers.create(name="clone", image=image.id)
 
 ## Resizing a Server
 Resizing a server is the process of changing the amount of resources allocated to the server. In Cloud Servers terms, it means changing the Flavor of the server: that is, changing the RAM and disk space allocated to that server.
