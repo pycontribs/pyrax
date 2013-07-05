@@ -441,8 +441,8 @@ class CloudDatabasesTest(unittest.TestCase):
                 "name": "test_flavor",
                 "ram": 42,
                 "links": [{
-                "href": example_uri,
-                "rel": "self"}]}
+                    "href": example_uri,
+                    "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
         ret = clt._get_flavor_ref(flavor_obj)
         self.assertEqual(ret, example_uri)
@@ -454,8 +454,8 @@ class CloudDatabasesTest(unittest.TestCase):
                 "name": "test_flavor",
                 "ram": 42,
                 "links": [{
-                "href": example_uri,
-                "rel": "self"}]}
+                    "href": example_uri,
+                    "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
         sav = clt.get_flavor
         clt.get_flavor = Mock(return_value=flavor_obj)
@@ -470,8 +470,8 @@ class CloudDatabasesTest(unittest.TestCase):
                 "name": "test_flavor",
                 "ram": 42,
                 "links": [{
-                "href": example_uri,
-                "rel": "self"}]}
+                    "href": example_uri,
+                    "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
         sav_get = clt.get_flavor
         sav_list = clt.list_flavors
@@ -489,8 +489,8 @@ class CloudDatabasesTest(unittest.TestCase):
                 "name": "test_flavor",
                 "ram": 42,
                 "links": [{
-                "href": example_uri,
-                "rel": "self"}]}
+                    "href": example_uri,
+                    "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
         sav_get = clt.get_flavor
         sav_list = clt.list_flavors
@@ -508,8 +508,8 @@ class CloudDatabasesTest(unittest.TestCase):
                 "name": "test_flavor",
                 "ram": 42,
                 "links": [{
-                "href": example_uri,
-                "rel": "self"}]}
+                    "href": example_uri,
+                    "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
         sav_get = clt.get_flavor
         sav_list = clt.list_flavors
