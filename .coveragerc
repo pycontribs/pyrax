@@ -1,0 +1,7 @@
+[run]
+omit =
+    */python?.?/*
+    */lib-python/?.?/*.py
+    */lib_pypy/_*.py
+    */site-packages/*
+    */unittest2/*
