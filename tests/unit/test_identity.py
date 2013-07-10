@@ -260,7 +260,7 @@ class IdentityTest(unittest.TestCase):
         ident = self.base_identity_class()
         fake_resp = fakes.FakeIdentityResponse()
         ident._parse_response(fake_resp.json())
-        expected = ("DFW", "ORD", "FAKE")
+        expected = ("DFW", "ORD", "SYD", "FAKE")
         self.assertEqual(len(pyrax.regions), len(expected))
         for rgn in expected:
             self.assert_(rgn in pyrax.regions)

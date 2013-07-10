@@ -142,6 +142,14 @@ class UtilsTest(unittest.TestCase):
         self.assertTrue(hasattr(obj, "fake_name"))
         self.assertTrue(callable(obj.fake_name))
 
+    def test_add_method_no_name(self):
+        def fake_method(self):
+            pass
+        obj = fakes.FakeEntity()
+        utils.add_method(obj, fake_method)
+        self.assertTrue(hasattr(obj, "fake_method"))
+        self.assertTrue(callable(obj.fake_method))
+
     def test_env(self):
         args = ("foo", "bar")
         ret = utils.env(*args)
