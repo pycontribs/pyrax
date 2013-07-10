@@ -329,6 +329,23 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
     return obj
 
 
+def wait_for_build(obj, att=None, desired=None, callback=None, interval=None,
+        attempts=None, verbose=None, verbose_atts=None):
+    """
+    Designed to handle the most common use case for wait_unti: an object whose
+    'status' attribute will end up in either 'ACTIVE' or 'ERROR' state. Since
+    builds don't happen very quickly, the interval will default to 20 seconds
+    to avoid excess polling.
+    """
+    att = att or "status"
+    desired = desired or ["ACTIVE", "ERROR"]
+    interval = interval or 20
+    attempts = attempts or 0
+    verbose_atts = verbose_atts or "progress"
+    return wait_until(obj, att, desired, callback=callback, interval=interval,
+            attempts=attempts, verbose=verbose, verbose_atts=verbose_atts)
+
+
 def iso_time_string(val, show_tzinfo=False):
     """
     Takes either a date, datetime or a string, and returns the standard ISO
