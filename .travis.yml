@@ -7,6 +7,7 @@ python:
 install:
   - python setup.py install
   - pip install --use-mirrors nose pep8
+  - pip install --use-mirrors nose coveralls
 
 script:
   - "pep8 -r --show-source --max-line-length=84 --ignore=E123,E124,E126,E127,E128,E303,E302 pyrax/"
