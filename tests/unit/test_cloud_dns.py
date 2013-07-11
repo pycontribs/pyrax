@@ -223,12 +223,12 @@ class CloudDNSTest(unittest.TestCase):
     def test_manager_get(self):
         ret_body = {"recordsList": {
                 "records": [{
-                "accountId": "728829",
-                "created": "2012-09-21T21:32:27.000+0000",
-                "emailAddress": "me@example.com",
-                "id": "3448214",
-                "name": "example.com",
-                "updated": "2012-09-21T21:35:45.000+0000"
+                    "accountId": "728829",
+                    "created": "2012-09-21T21:32:27.000+0000",
+                    "emailAddress": "me@example.com",
+                    "id": "3448214",
+                    "name": "example.com",
+                    "updated": "2012-09-21T21:35:45.000+0000"
                 }]}}
         mgr = self.client._manager
         mgr.api.method_get = Mock(return_value=(None, ret_body))
@@ -243,12 +243,12 @@ class CloudDNSTest(unittest.TestCase):
         mgr.api.method_post = Mock(return_value=(None, ret_body))
         stat_body = {"status": "complete",
                 "response": {mgr.response_key: [{
-                "accountId": "728829",
-                "created": "2012-09-21T21:32:27.000+0000",
-                "emailAddress": "me@example.com",
-                "id": "3448214",
-                "name": "example.com",
-                "updated": "2012-09-21T21:35:45.000+0000"
+                    "accountId": "728829",
+                    "created": "2012-09-21T21:32:27.000+0000",
+                    "emailAddress": "me@example.com",
+                    "id": "3448214",
+                    "name": "example.com",
+                    "updated": "2012-09-21T21:35:45.000+0000"
                 }]}}
         mgr.api.method_get = Mock(return_value=(None, stat_body))
         dom = mgr._create("fake", {})
