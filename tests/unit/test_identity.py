@@ -131,9 +131,9 @@ class IdentityTest(unittest.TestCase):
         token = utils.random_name()
 
         class FakeResp(object):
+            info = None
             def json(self):
                 return self.info
-
         resp_main = FakeResp()
         resp_main.info = {"access": {
                 "serviceCatalog": [{"a": "a", "name": "a", "type": "a"}],
@@ -144,7 +144,7 @@ class IdentityTest(unittest.TestCase):
         resp_obj.info = {"access": {
                 "serviceCatalog": [{"b": "b", "name": "b", "type": "b"}]}}
         ident._call_token_auth = Mock(side_effect=(resp_main, resp_obj))
-
+ 
         def fake_parse(dct):
             svcs = dct.get("access", {}).get("serviceCatalog", {})
             pyrax.services = [svc["name"] for svc in svcs]
