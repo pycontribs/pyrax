@@ -377,7 +377,7 @@ def from_response(response, body):
         status = response.get("status")
     else:
         status = response.status
-    cls = _code_map.get(status, ClientException)
+    cls = _code_map.get(int(status), ClientException)
     request_id = response.get("x-compute-request-id")
     if body:
         message = "n/a"
