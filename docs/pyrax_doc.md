@@ -148,7 +148,7 @@ Note that changing the environment requires that you authenticate against the ne
 ### Available Configuration Settings
 Setting | Affects | Default | Notes | Env. Variable
 ---- | ---- | ---- | ---- | ----
-**identity_type** | The system used for authentication.  | rackspace | This should be "rackspace" (for the Rackspace Public Cloud) or "keystone" (for all Keystone-based auth systems). Any other system needs a class defined to handle that auth system, and its script added to the pyrax/identity directory. The entry for such custom classes should be in the format of 'module_name.ClassName'. | CLOUD_ID_TYPE
+**identity_type** | The system used for authentication.  | -none- | This should be "rackspace" (for the Rackspace Public Cloud) or "keystone" (for all Keystone-based auth systems). Any other system needs a class defined to handle that auth system, and its script added to the pyrax/identity directory. The entry for such custom classes should be in the format of 'module_name.ClassName'. | CLOUD_ID_TYPE
 **auth_endpoint** | The URI of the authentication service | -none- | Not required for the Rackspace Public Cloud, where it can be determined from the region. For everything else it is required. | CLOUD_AUTH_ENDPOINT
 **keyring_username** | User name used when fetching password from keyring. | -none- | Without setting this, you need to supply the username every time you use keyring_auth(). | CLOUD_KEYRING_USER
 **region** | Regional datacenter to connect to; either 'DFW', 'ORD', or 'LON' for Rackspace; typically 'RegionOne' in Keystone. | DFW | This must be specified for all non-Rackspace environments. | CLOUD_REGION
