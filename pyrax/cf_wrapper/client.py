@@ -32,6 +32,7 @@ import pyrax.exceptions as exc
 EARLY_DATE_STR = "1900-01-01T00:00:00"
 CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
+AUTH_ATTEMPTS = 2
 
 no_such_container_pattern = re.compile(r"Container GET|HEAD failed: .+/(.+) 404")
 etag_fail_pat = r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity"
@@ -40,24 +41,32 @@ etag_failed_pattern = re.compile(etag_fail_pat)
 def handle_swiftclient_exception(fnc):
     @wraps(fnc)
     def _wrapped(*args, **kwargs):
-        try:
-            return fnc(*args, **kwargs)
-        except _swift_client.ClientException as e:
-            str_error = "%s" % e
-            bad_container = no_such_container_pattern.search(str_error)
-            if bad_container:
-                raise exc.NoSuchContainer("Container '%s' doesn't exist" %
-                        bad_container.groups()[0])
-            failed_upload = etag_failed_pattern.search(str_error)
-            if failed_upload:
-                cont, fname = failed_upload.groups()
-                raise exc.UploadFailed("Upload of file '%(fname)s' to "
-                        "container '%(cont)s' failed." % locals())
-            if e.http_status == 404:
-                raise exc.NoSuchObject("The requested object/container does "
-                        "not exist.")
-            # Not handled; re-raise
-            raise
+        attempts = 0
+        while attempts < AUTH_ATTEMPTS:
+            attempts += 1
+            try:
+                print "ATTEMPT", attempts
+                return fnc(*args, **kwargs)
+            except _swift_client.ClientException as e:
+                if attempts < AUTH_ATTEMPTS:
+                    # Assume it is an auth failure. Re-auth and retry.
+                    pyrax.authenticate()
+                    continue
+                str_error = "%s" % e
+                bad_container = no_such_container_pattern.search(str_error)
+                if bad_container:
+                    raise exc.NoSuchContainer("Container '%s' doesn't exist" %
+                            bad_container.groups()[0])
+                failed_upload = etag_failed_pattern.search(str_error)
+                if failed_upload:
+                    cont, fname = failed_upload.groups()
+                    raise exc.UploadFailed("Upload of file '%(fname)s' to "
+                            "container '%(cont)s' failed." % locals())
+                if e.http_status == 404:
+                    raise exc.NoSuchObject("The requested object/container does "
+                            "not exist.")
+                # Not handled; re-raise
+                raise
     return _wrapped
 
 
