@@ -600,9 +600,16 @@ class CFClient(object):
                         file_or_path)
             fname = os.path.basename(file_or_path)
         else:
-            fname = file_or_path.name
+            try:
+                fname = file_or_path.name
+            except AttributeError:
+                fname = None
+
         if not obj_name:
             obj_name = fname
+        if not obj_name:
+            raise InvalidUploadID("No filename provided and/or it cannot "
+                    "be inferred from context")
 
         headers = {}
         if content_encoding is not None:
