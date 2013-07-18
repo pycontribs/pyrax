@@ -138,6 +138,13 @@ class BaseAuth(object):
         If a valid token is already known, this call will use it to generate
         the service catalog.
         """
+        resp = self._call_token_auth(token, tenant_id, tenant_name)
+        resp_body = resp.json()
+        self._parse_response(resp_body)
+        self.authenticated = True
+
+
+    def _call_token_auth(self, token, tenant_id, tenant_name):
         if not any((tenant_id, tenant_name)):
             raise exc.MissingAuthSettings("You must supply either the tenant "
                     "name or tenant ID")
@@ -164,9 +171,7 @@ class BaseAuth(object):
             msg_dict = resp.json()
             msg = msg_dict[msg_dict.keys()[0]]["message"]
             raise exc.AuthenticationFailed("%s - %s." % (resp.reason, msg))
-        resp_body = resp.json()
-        self._parse_response(resp_body)
-        self.authenticated = True
+        return resp
 
 
     def _read_credential_file(self, cfg):

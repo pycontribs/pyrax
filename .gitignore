@@ -6,3 +6,4 @@
 *.egg*
 .tox
 .coveralls.yml
+.coverage

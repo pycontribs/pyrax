@@ -599,10 +599,16 @@ class CFClient(object):
                 raise exc.FileNotFound("The file '%s' does not exist" %
                         file_or_path)
             fname = os.path.basename(file_or_path)
-        else:
+        elif hasattr(file_or_path, "name"):
             fname = file_or_path.name
+        else:
+            fname = None
+
         if not obj_name:
             obj_name = fname
+        if not obj_name:
+            raise InvalidUploadID("No filename provided and/or it cannot "
+                                  "be inferred from context")
 
         headers = {}
         if content_encoding is not None:

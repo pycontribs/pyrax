@@ -105,7 +105,7 @@ class SelfDeletingTempDirectory(object):
         shutil.rmtree(self.name)
 
 
-def get_checksum(content, encoding="utf8"):
+def get_checksum(content, encoding="utf8", block_size=8192):
     """
     Returns the MD5 checksum in hex for the given content. If 'content'
     is a file-like object, the content will be obtained from its read()
@@ -113,22 +113,36 @@ def get_checksum(content, encoding="utf8"):
     contents used. Otherwise, 'content' is assumed to be the string whose
     checksum is desired. If the content is unicode, it will be encoded
     using the specified encoding.
+
+    To conserve memory, files and file-like objects will be read in blocks,
+    with the default block size of 8192 bytes, which is 64 * the digest block
+    size of md5 (128). This is optimal for most cases, but you can change this
+    by passing in a different value for `block_size`.
     """
+    md = hashlib.md5()
+
+    def safe_update(txt):
+        try:
+            md.update(txt)
+        except UnicodeEncodeError:
+            md.update(txt.encode(encoding))
+
     if hasattr(content, "read"):
         pos = content.tell()
         content.seek(0)
-        txt = content.read()
+        txt = content.read(block_size)
+        while txt:
+            safe_update(txt)
+            txt = content.read(block_size)
         content.seek(pos)
     elif os.path.isfile(content):
         with open(content, "rb") as ff:
-            txt = ff.read()
+            txt = ff.read(block_size)
+            while txt:
+                safe_update(txt)
+                txt = ff.read(block_size)
     else:
-        txt = content
-    md = hashlib.md5()
-    try:
-        md.update(txt)
-    except UnicodeEncodeError:
-        md.update(txt.encode(encoding))
+        safe_update(content)
     return md.hexdigest()
 
 
@@ -327,6 +341,23 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
         time.sleep(interval)
         attempt += 1
     return obj
+
+
+def wait_for_build(obj, att=None, desired=None, callback=None, interval=None,
+        attempts=None, verbose=None, verbose_atts=None):
+    """
+    Designed to handle the most common use case for wait_unti: an object whose
+    'status' attribute will end up in either 'ACTIVE' or 'ERROR' state. Since
+    builds don't happen very quickly, the interval will default to 20 seconds
+    to avoid excess polling.
+    """
+    att = att or "status"
+    desired = desired or ["ACTIVE", "ERROR"]
+    interval = interval or 20
+    attempts = attempts or 0
+    verbose_atts = verbose_atts or "progress"
+    return wait_until(obj, att, desired, callback=callback, interval=interval,
+            attempts=attempts, verbose=verbose, verbose_atts=verbose_atts)
 
 
 def iso_time_string(val, show_tzinfo=False):
