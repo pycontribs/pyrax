@@ -16,7 +16,7 @@ with open("pyrax/version.py", "rt") as vfile:
 vmatch = re.search(r'version ?= ?"(.+)"$', version_text)
 version = vmatch.groups()[0]
 
-testing_requires = ["mock", "coveralls"]
+testing_requires = ["mock"]
 
 setup(
     name="pyrax",

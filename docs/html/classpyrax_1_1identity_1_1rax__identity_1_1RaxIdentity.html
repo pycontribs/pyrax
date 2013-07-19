@@ -125,6 +125,8 @@ Inheritance diagram for RaxIdentity:</div>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a2323e991798b13063610509c2bb4aaf4">auth_with_token</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">If a valid token is already known, this call will use it to generate the service catalog.  <a href="#a2323e991798b13063610509c2bb4aaf4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#ab0abba97256f91ebca2ded800fcf440d">find_user_by_name</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a User object by searching for the supplied user name.  <a href="#ab0abba97256f91ebca2ded800fcf440d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#adf5de79a326a6b6b6eac3cba7e0b8cfb">find_user_by_id</a></td></tr>
@@ -138,6 +140,7 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">username</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a9dbb300e28bc21c8dab41b01883918eb">password</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a48f0dc4cf47cd14cdfda7e8495b0a76b">authenticated</a></td></tr>
 <tr><td colspan="2"><h2><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#abdf92c6a761ccb5139c8eaccfc09d775">us_auth_endpoint</a> = &quot;https://identity.api.rackspacecloud.com/v2.0/&quot;</td></tr>
@@ -146,6 +149,49 @@ Static Public Attributes</h2></td></tr>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>This class handles all of the authentication requirements for working with the Rackspace Cloud. </p>
 </div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a2323e991798b13063610509c2bb4aaf4"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::auth_with_token" ref="a2323e991798b13063610509c2bb4aaf4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a2323e991798b13063610509c2bb4aaf4">auth_with_token</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>token</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>tenant_id</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>tenant_name</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>If a valid token is already known, this call will use it to generate the service catalog. </p>
+
+<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a2323e991798b13063610509c2bb4aaf4">BaseAuth</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="adf5de79a326a6b6b6eac3cba7e0b8cfb"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::find_user_by_id" ref="adf5de79a326a6b6b6eac3cba7e0b8cfb" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -322,6 +368,21 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Member Data Documentation</h2>
+<a class="anchor" id="a48f0dc4cf47cd14cdfda7e8495b0a76b"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::authenticated" ref="a48f0dc4cf47cd14cdfda7e8495b0a76b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a48f0dc4cf47cd14cdfda7e8495b0a76b">authenticated</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a48f0dc4cf47cd14cdfda7e8495b0a76b">BaseAuth</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a9dbb300e28bc21c8dab41b01883918eb"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::password" ref="a9dbb300e28bc21c8dab41b01883918eb" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -399,7 +460,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 27 2013 23:24:39 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 19 2013 08:17:07 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

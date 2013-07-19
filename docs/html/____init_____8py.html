@@ -119,6 +119,8 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Use the password stored within the keyring to authenticate.  <a href="#a6b0a7da6189b998c14aad23517c03d1e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a14a943d0bb5ce4bcec385d1b733c6544">authenticate</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Generally you will not need to call this directly; passing in your credentials via <a class="el" href="namespacepyrax.html#a171229a7210ff6cb20c8162b859cb5df" title="Set the credentials directly, and then try to authenticate.">set_credentials()</a> and <a class="el" href="namespacepyrax.html#a7375be0702b4c4322b674eaf94795c19" title="Read in the credentials from the supplied file path, and then try to authenticate.">set_credential_file()</a> will call <a class="el" href="namespacepyrax.html#a14a943d0bb5ce4bcec385d1b733c6544" title="Generally you will not need to call this directly; passing in your credentials via set_credentials() ...">authenticate()</a> on the identity object by default.  <a href="#a14a943d0bb5ce4bcec385d1b733c6544"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a52520cf6c40b52d2b67faf9762accb18">plug_hole_in_swiftclient_auth</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This is necessary because swiftclient has an issue when a token expires and it needs to re-authenticate against Rackspace auth.  <a href="#a52520cf6c40b52d2b67faf9762accb18"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ac84933adaea04f7479d32c6a5cf6e028">clear_credentials</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">De-authenticate by clearing all the names back to None.  <a href="#ac84933adaea04f7479d32c6a5cf6e028"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a708483dfb93616381fb0ec9338ab5528">connect_to_services</a></td></tr>
@@ -184,7 +186,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 27 2013 23:24:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 19 2013 08:17:04 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

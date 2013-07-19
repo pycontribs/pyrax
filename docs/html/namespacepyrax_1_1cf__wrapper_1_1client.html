@@ -117,11 +117,13 @@ Classes</h2></td></tr>
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#aed48921b20ac7d5d1bf17dae8e2f971d">handle_swiftclient_exception</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Swiftclient often leaves the connection open.  <a href="#aed48921b20ac7d5d1bf17dae8e2f971d"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a9115ffad088bca27e5e8c2cea2c413e2">EARLY_DATE_STR</a> = &quot;1900-01-01T00:00:00&quot;</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a32d68802775b5e101a259fb6f3edf5d7">CONNECTION_TIMEOUT</a> = 20</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a19074fb0e7d33e5cb6f2fc49877e64c1">CONNECTION_RETRIES</a> = 5</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a8086cfcceb4dcb4059f9b974ccf12fea">AUTH_ATTEMPTS</a> = 2</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#ab3150aa95b9e341f9b4c3f11214a9097">no_such_container_pattern</a> = re.compile(r&quot;Container GET|HEAD failed: .+/(.+) 404&quot;)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a73ecac0c29c1866713f3d26ca05f986c">etag_fail_pat</a> = r&quot;Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity&quot;</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a2902c02c2870c84af5ee318ad3bd548f">etag_failed_pattern</a> = re.compile(<a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a73ecac0c29c1866713f3d26ca05f986c">etag_fail_pat</a>)</td></tr>
@@ -142,9 +144,24 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Swiftclient often leaves the connection open. </p>
+
 </div>
 </div>
 <hr/><h2>Variable Documentation</h2>
+<a class="anchor" id="a8086cfcceb4dcb4059f9b974ccf12fea"></a><!-- doxytag: member="pyrax::cf_wrapper::client::AUTH_ATTEMPTS" ref="a8086cfcceb4dcb4059f9b974ccf12fea" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="namespacepyrax_1_1cf__wrapper_1_1client.html#a8086cfcceb4dcb4059f9b974ccf12fea">AUTH_ATTEMPTS</a> = 2</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a19074fb0e7d33e5cb6f2fc49877e64c1"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CONNECTION_RETRIES" ref="a19074fb0e7d33e5cb6f2fc49877e64c1" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -241,7 +258,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Feb 15 2013 15:48:41 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 19 2013 08:17:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

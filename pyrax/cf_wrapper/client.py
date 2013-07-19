@@ -32,32 +32,57 @@ import pyrax.exceptions as exc
 EARLY_DATE_STR = "1900-01-01T00:00:00"
 CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
+AUTH_ATTEMPTS = 2
 
 no_such_container_pattern = re.compile(r"Container GET|HEAD failed: .+/(.+) 404")
 etag_fail_pat = r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity"
 etag_failed_pattern = re.compile(etag_fail_pat)
 
+
 def handle_swiftclient_exception(fnc):
     @wraps(fnc)
-    def _wrapped(*args, **kwargs):
-        try:
-            return fnc(*args, **kwargs)
-        except _swift_client.ClientException as e:
-            str_error = "%s" % e
-            bad_container = no_such_container_pattern.search(str_error)
-            if bad_container:
-                raise exc.NoSuchContainer("Container '%s' doesn't exist" %
-                        bad_container.groups()[0])
-            failed_upload = etag_failed_pattern.search(str_error)
-            if failed_upload:
-                cont, fname = failed_upload.groups()
-                raise exc.UploadFailed("Upload of file '%(fname)s' to "
-                        "container '%(cont)s' failed." % locals())
-            if e.http_status == 404:
-                raise exc.NoSuchObject("The requested object/container does "
-                        "not exist.")
-            # Not handled; re-raise
-            raise
+    def _wrapped(self, *args, **kwargs):
+        attempts = 0
+        clt_url = self.connection.url
+
+        def close_swiftclient_conn(conn):
+            """Swiftclient often leaves the connection open."""
+            try:
+                conn.http_conn[1].close()
+            except Exception:
+                pass
+
+        while attempts < AUTH_ATTEMPTS:
+            attempts += 1
+            try:
+                ret = fnc(self, *args, **kwargs)
+                close_swiftclient_conn(self.connection)
+                return ret
+            except _swift_client.ClientException as e:
+                if attempts < AUTH_ATTEMPTS:
+                    # Assume it is an auth failure. Re-auth and retry.
+                    ### NOTE: This is a hack to get around an apparent bug
+                    ### in python-swiftclient when using Rackspace auth.
+                    pyrax.authenticate(connect=False)
+                    if pyrax.identity.authenticated:
+                        pyrax.plug_hole_in_swiftclient_auth(self, clt_url)
+                        close_swiftclient_conn(self.connection)
+                    continue
+                str_error = "%s" % e
+                bad_container = no_such_container_pattern.search(str_error)
+                if bad_container:
+                    raise exc.NoSuchContainer("Container '%s' doesn't exist" %
+                            bad_container.groups()[0])
+                failed_upload = etag_failed_pattern.search(str_error)
+                if failed_upload:
+                    cont, fname = failed_upload.groups()
+                    raise exc.UploadFailed("Upload of file '%(fname)s' to "
+                            "container '%(cont)s' failed." % locals())
+                if e.http_status == 404:
+                    raise exc.NoSuchObject("The requested object/container "
+                            "does not exist.")
+                # Not handled; re-raise
+                raise
     return _wrapped
 
 
@@ -600,9 +625,15 @@ class CFClient(object):
                         file_or_path)
             fname = os.path.basename(file_or_path)
         else:
-            fname = file_or_path.name
+            try:
+                fname = file_or_path.name
+            except AttributeError:
+                fname = None
         if not obj_name:
             obj_name = fname
+        if not obj_name:
+            raise InvalidUploadID("No filename provided and/or it cannot be "
+                    "inferred from context")
 
         headers = {}
         if content_encoding is not None:

@@ -124,6 +124,40 @@ class IdentityTest(unittest.TestCase):
             self.assertRaises(exc.MissingAuthSettings, ident.auth_with_token,
                     utils.random_name())
 
+    def test_auth_with_token_rax(self):
+        ident = self.rax_identity_class()
+        mid = utils.random_name()
+        oid = utils.random_name()
+        token = utils.random_name()
+
+        class FakeResp(object):
+            info = None
+
+            def json(self):
+                return self.info
+
+        resp_main = FakeResp()
+        resp_main.info = {"access": {
+                "serviceCatalog": [{"a": "a", "name": "a", "type": "a"}],
+                "user": {"roles":
+                        [{"tenantId": oid, "name": "object-store:default"}],
+                }}}
+        resp_obj = FakeResp()
+        resp_obj.info = {"access": {
+                "serviceCatalog": [{"b": "b", "name": "b", "type": "b"}]}}
+        ident._call_token_auth = Mock(side_effect=(resp_main, resp_obj))
+
+        def fake_parse(dct):
+            svcs = dct.get("access", {}).get("serviceCatalog", {})
+            pyrax.services = [svc["name"] for svc in svcs]
+
+        ident._parse_response = fake_parse
+        ident.auth_with_token(token, tenant_id=mid)
+        ident._call_token_auth.assert_called_with(token, oid, None)
+        self.assertTrue("a" in pyrax.services)
+        self.assertTrue("b" in pyrax.services)
+
+
     def test_set_credentials(self):
         for cls in self.id_classes.values():
             ident = cls()
@@ -249,6 +283,15 @@ class IdentityTest(unittest.TestCase):
         ident = self.base_identity_class()
         self.assertRaises(NotImplementedError, ident._get_auth_endpoint)
 
+    def test_rax_endpoints(self):
+        ident = self.rax_identity_class()
+        ident.region = "LON"
+        ep = ident._get_auth_endpoint()
+        self.assertEqual(ep, ident.uk_auth_endpoint)
+        ident.region = "ORD"
+        ep = ident._get_auth_endpoint()
+        self.assertEqual(ep, ident.us_auth_endpoint)
+
     def test_auth_token(self):
         for cls in self.id_classes.values():
             ident = cls()
@@ -260,7 +303,7 @@ class IdentityTest(unittest.TestCase):
         ident = self.base_identity_class()
         fake_resp = fakes.FakeIdentityResponse()
         ident._parse_response(fake_resp.json())
-        expected = ("DFW", "ORD", "FAKE")
+        expected = ("DFW", "ORD", "SYD", "FAKE")
         self.assertEqual(len(pyrax.regions), len(expected))
         for rgn in expected:
             self.assert_(rgn in pyrax.regions)

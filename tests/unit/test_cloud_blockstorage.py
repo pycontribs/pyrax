@@ -245,7 +245,7 @@ class CloudBlockStorageTest(unittest.TestCase):
                 "display_description": display_description,
                 "volume_id": vol.id,
                 "force": str(force).lower(),
-             }}
+                }}
         ret = clt._create_body(name=name, description=display_description,
                 volume=vol, force=force)
         self.assertEqual(ret, fake_body)
