@@ -110,8 +110,8 @@ class ClientTest(unittest.TestCase):
         mgr = self.client._manager
         sav = mgr.create
         mgr.create = Mock()
-        self.client.create("val")
-        mgr.create.assert_called_once_with("val")
+        self.client.create("val", 1, 1)
+        mgr.create.assert_called_once_with("val", 1, 1)
         mgr.create = sav
 
     def test_unauthenticate(self):
