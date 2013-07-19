@@ -76,6 +76,17 @@ class UtilsTest(unittest.TestCase):
         received = utils.get_checksum(test, enc)
         self.assertEqual(expected, received)
 
+    def test_get_checksum_from_binary(self):
+#        test = utils.random_name()
+#        test = open("tests/unit/python-logo.png", "rb").read()
+        test = fakes.png_file
+        md = hashlib.md5()
+        enc = "utf8"
+        md.update(test)
+        expected = md.hexdigest()
+        received = utils.get_checksum(test)
+        self.assertEqual(expected, received)
+
     def test_get_checksum_from_file(self):
         test = "some random text"
         md = hashlib.md5()

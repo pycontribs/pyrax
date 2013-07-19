@@ -127,7 +127,18 @@ def get_checksum(content, encoding="utf8", block_size=8192):
         except UnicodeEncodeError:
             md.update(txt.encode(encoding))
 
-    if hasattr(content, "read"):
+    try:
+        isfile = os.path.isfile(content)
+    except TypeError:
+        # Will happen with binary content.
+        isfile = False
+    if isfile:
+        with open(content, "rb") as ff:
+            txt = ff.read(block_size)
+            while txt:
+                safe_update(txt)
+                txt = ff.read(block_size)
+    elif hasattr(content, "read"):
         pos = content.tell()
         content.seek(0)
         txt = content.read(block_size)
@@ -135,12 +146,6 @@ def get_checksum(content, encoding="utf8", block_size=8192):
             safe_update(txt)
             txt = content.read(block_size)
         content.seek(pos)
-    elif os.path.isfile(content):
-        with open(content, "rb") as ff:
-            txt = ff.read(block_size)
-            while txt:
-                safe_update(txt)
-                txt = ff.read(block_size)
     else:
         safe_update(content)
     return md.hexdigest()
