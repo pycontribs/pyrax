@@ -592,7 +592,8 @@ class FakeIdentityResponse(FakeResponse):
     def read(self):
         return json.dumps(self.content)
 
-_img_path = os.path.join(pyrax.__file__)
+_module_pth = os.path.dirname(pyrax.__file__)
+_img_path = os.path.join(_module_pth, "..", "tests", "unit", "python-logo.png")
 png_file = None
-with open("python-logo.png", "rb") as pfile:
+with open(_img_path, "rb") as pfile:
     png_file = pfile.read()

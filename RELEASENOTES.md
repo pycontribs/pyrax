@@ -1,5 +1,15 @@
 # Release Notes for pyrax
 
+###2013.07.19 - Version 1.4.8
+- Added a hack to work around an apparent bug in python-swiftclient that was
+    preventing automatic re-authentication after a token expired. This affects
+    issues #111, #115, #117, and possibly others.
+- Fixed Issue #131 that caused an exception when uploading a binary file.
+- Fixed Issue #134: uploading file-like objects
+- Fixed auth_with_token() to return the full service catalog. Issue #128.
+- Improved the checksum process to be more memory efficient with very large
+    files. Issue #122.
+
 ###2013.06.28 - Version 1.4.7
 - Added the `update()` method to modify existing load balancers.
 - The `fetch_object()` method was not raising the correct exception when the
