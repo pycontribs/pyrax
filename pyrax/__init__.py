@@ -19,7 +19,7 @@
 
 # For doxygen class doc generation:
 """
-\mainpage Class Documenation for pyrax
+\mainpage Class Documentation for pyrax
 
 This module provides the Python Language Bindings for creating applications
 built on the Rackspace / OpenStack Cloud.<br />
