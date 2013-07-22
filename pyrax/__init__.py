@@ -214,6 +214,10 @@ class Settings(object):
             if "LON" in (current, val):
                 # This is an outlier, as it has a separate auth
                 identity.region = val
+        elif key == "verify_ssl":
+            if not identity:
+                return
+            identity.verify_ssl = val
 
 
     def _getEnvironment(self):
@@ -351,7 +355,8 @@ def _create_identity():
     if not cls:
         raise exc.IdentityClassNotDefined("No identity class has "
                 "been defined for the current environment.")
-    identity = cls()
+    verify_ssl = get_setting("verify_ssl")
+    identity = cls(verify_ssl=verify_ssl)
 
 
 def _assure_identity(fnc):

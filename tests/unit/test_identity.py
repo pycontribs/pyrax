@@ -361,7 +361,7 @@ class IdentityTest(unittest.TestCase):
                 ident.method_post(uri, data=data, headers=headers,
                         std_headers=std_headers, admin=admin)
                 requests.post.assert_called_with(uri, data=jdata,
-                        headers=expected_headers)
+                        headers=expected_headers, verify=True)
                 self.assertTrue(out.getvalue())
                 out.seek(0)
                 out.truncate()
