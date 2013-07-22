@@ -179,7 +179,7 @@ class CF_ContainerTest(unittest.TestCase):
         cont.client.connection.delete_object = Mock()
         cont.delete_object(self.obj_name)
         cont.client.connection.delete_object.assert_called_with(self.cont_name,
-                self.obj_name)
+                self.obj_name, response_dict=None)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_delete_all_objects(self):
@@ -191,14 +191,14 @@ class CF_ContainerTest(unittest.TestCase):
                 return_value=[self.obj_name])
         cont.delete_all_objects()
         cont.client.connection.delete_object.assert_called_with(
-                self.cont_name, self.obj_name)
+                self.cont_name, self.obj_name, response_dict=None)
 
     def test_delete(self):
         cont = self.container
         cont.client.connection.delete_container = Mock()
         cont.delete()
         cont.client.connection.delete_container.assert_called_with(
-                self.cont_name)
+                self.cont_name, response_dict=None)
 
     def test_fetch_object(self):
         cont = self.container
@@ -234,7 +234,7 @@ class CF_ContainerTest(unittest.TestCase):
         cont.client.connection.post_container = Mock()
         cont.set_metadata({"newkey": "newval"})
         cont.client.connection.post_container.assert_called_with(cont.name,
-                {"x-container-meta-newkey": "newval"})
+                {"x-container-meta-newkey": "newval"}, response_dict=None)
 
     def test_set_web_index_page(self):
         cont = self.container
@@ -242,7 +242,7 @@ class CF_ContainerTest(unittest.TestCase):
         cont.client.connection.post_container = Mock()
         cont.set_web_index_page(page)
         cont.client.connection.post_container.assert_called_with(cont.name,
-                {"x-container-meta-web-index": page})
+                {"x-container-meta-web-index": page}, response_dict=None)
 
     def test_set_web_error_page(self):
         cont = self.container
@@ -250,7 +250,7 @@ class CF_ContainerTest(unittest.TestCase):
         cont.client.connection.post_container = Mock()
         cont.set_web_error_page(page)
         cont.client.connection.post_container.assert_called_with(cont.name,
-                {"x-container-meta-web-error": page})
+                {"x-container-meta-web-error": page}, response_dict=None)
 
     def test_make_public(self, ttl=None):
         cont = self.container
@@ -303,7 +303,8 @@ class CF_ContainerTest(unittest.TestCase):
         obj_name = utils.random_name()
         cont.delete_object_in_seconds(obj_name, seconds=secs)
         cont.client.connection.post_object.assert_called_with(cont.name,
-                obj_name, headers={'X-Delete-After': secs})
+                obj_name, headers={'X-Delete-After': secs},
+                response_dict=None)
 
         nm = utils.random_name(ascii_only=True)
         sav = cont.name

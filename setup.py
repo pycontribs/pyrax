@@ -34,7 +34,7 @@ setup(
     install_requires=[
         "python-novaclient>=2.13.0",
         "rackspace-novaclient",
-        "python-swiftclient",
+        "python-swiftclient>=1.5.0",
         "httplib2",
         "keyring",
     ] + testing_requires,

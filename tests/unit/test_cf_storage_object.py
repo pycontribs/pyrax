@@ -144,7 +144,7 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj.client.connection.delete_object = Mock()
         obj.delete()
         obj.client.connection.delete_object.assert_called_with(
-                obj.container.name, obj.name)
+                obj.container.name, obj.name, response_dict=None)
 
     def test_purge(self):
         obj = self.storage_object
@@ -172,7 +172,8 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj.client.connection.head_object = Mock(return_value={})
         obj.set_metadata({"newkey": "newval"})
         obj.client.connection.post_object.assert_called_with(obj.container.name,
-                obj.name, {"x-object-meta-newkey": "newval"})
+                obj.name, {"x-object-meta-newkey": "newval"},
+                response_dict=None)
 
     def test_remove_metadata_key(self):
         obj = self.storage_object
@@ -180,7 +181,7 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj.client.connection.head_object = Mock(return_value={})
         obj.remove_metadata_key("newkey")
         obj.client.connection.post_object.assert_called_with(obj.container.name,
-                obj.name, {})
+                obj.name, {}, response_dict=None)
 
     def test_change_content_type(self):
         obj = self.storage_object
@@ -203,7 +204,8 @@ class CF_StorageObjectTest(unittest.TestCase):
         secs = random.randint(1, 1000)
         obj.delete_in_seconds(seconds=secs)
         obj.client.connection.post_object.assert_called_with(obj.container.name,
-                obj.name, headers={'X-Delete-After': secs})
+                obj.name, headers={'X-Delete-After': secs},
+                response_dict=None)
 
     def test_repr(self):
         obj = self.storage_object
