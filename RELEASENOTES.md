@@ -1,5 +1,14 @@
 # Release Notes for pyrax
 
+###2013.07.23 - Version 1.4.9
+- Fixed a bug introduced in the last release that prevented progressive
+  fetching of objects. GitHub #139
+- Fixed an issue where the `verify_ssl` setting was not being passed to the
+  Identity instance. GitHub #140
+- Added support for returning extra info about API calls to Swift. This
+  includes info on the status, reason, and header information for the call.
+  GitHub #138
+
 ###2013.07.19 - Version 1.4.8
 - Added a hack to work around an apparent bug in python-swiftclient that was
     preventing automatic re-authentication after a token expired. This affects
