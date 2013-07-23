@@ -48,7 +48,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li class="current"><a href="namespaces.html"><span>Packages</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -71,7 +70,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
       <li><a href="namespaces.html"><span>Packages</span></a></li>
-      <li><a href="namespacemembers.html"><span>Package&#160;Functions</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -79,7 +77,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Properties</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -96,75 +94,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">pyrax::cloudnetworks Namespace Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
-<tr><td colspan="2"><h2><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetwork.html">CloudNetwork</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This represents a network in the cloud.  <a href="classpyrax_1_1cloudnetworks_1_1CloudNetwork.html#details">More...</a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkManager.html">CloudNetworkManager</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Does nothing special, but is used in testing.  <a href="classpyrax_1_1cloudnetworks_1_1CloudNetworkManager.html#details">More...</a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html">CloudNetworkClient</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the base client for creating and managing Cloud Networks.  <a href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html#details">More...</a><br/></td></tr>
-<tr><td colspan="2"><h2><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cloudnetworks.html#ab08316ceccd63a9b160cb4b587a3f35d">PUBLIC_NET_ID</a> = &quot;00000000-0000-0000-0000-000000000000&quot;</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cloudnetworks.html#a5c62116f0587043d67f22717c26a88f5">SERVICE_NET_ID</a> = &quot;11111111-1111-1111-1111-111111111111&quot;</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cloudnetworks.html#a38c15ff4244e5bd8cf394fab766e9d61">PSEUDO_NETWORKS</a> = (<a class="el" href="namespacepyrax_1_1cloudnetworks.html#ab08316ceccd63a9b160cb4b587a3f35d">PUBLIC_NET_ID</a>, <a class="el" href="namespacepyrax_1_1cloudnetworks.html#a5c62116f0587043d67f22717c26a88f5">SERVICE_NET_ID</a>)</td></tr>
-</table>
-<hr/><h2>Variable Documentation</h2>
-<a class="anchor" id="a38c15ff4244e5bd8cf394fab766e9d61"></a><!-- doxytag: member="pyrax::cloudnetworks::PSEUDO_NETWORKS" ref="a38c15ff4244e5bd8cf394fab766e9d61" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">tuple <a class="el" href="namespacepyrax_1_1cloudnetworks.html#a38c15ff4244e5bd8cf394fab766e9d61">PSEUDO_NETWORKS</a> = (<a class="el" href="namespacepyrax_1_1cloudnetworks.html#ab08316ceccd63a9b160cb4b587a3f35d">PUBLIC_NET_ID</a>, <a class="el" href="namespacepyrax_1_1cloudnetworks.html#a5c62116f0587043d67f22717c26a88f5">SERVICE_NET_ID</a>)</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="ab08316ceccd63a9b160cb4b587a3f35d"></a><!-- doxytag: member="pyrax::cloudnetworks::PUBLIC_NET_ID" ref="ab08316ceccd63a9b160cb4b587a3f35d" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">string <a class="el" href="namespacepyrax_1_1cloudnetworks.html#ab08316ceccd63a9b160cb4b587a3f35d">PUBLIC_NET_ID</a> = &quot;00000000-0000-0000-0000-000000000000&quot;</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a5c62116f0587043d67f22717c26a88f5"></a><!-- doxytag: member="pyrax::cloudnetworks::SERVICE_NET_ID" ref="a5c62116f0587043d67f22717c26a88f5" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">string <a class="el" href="namespacepyrax_1_1cloudnetworks.html#a5c62116f0587043d67f22717c26a88f5">SERVICE_NET_ID</a> = &quot;11111111-1111-1111-1111-111111111111&quot;</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Properties</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -176,7 +116,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 29 2013 11:39:23 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 23 2013 09:38:53 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
