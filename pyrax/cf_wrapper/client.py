@@ -35,6 +35,7 @@ CONNECTION_RETRIES = 5
 AUTH_ATTEMPTS = 2
 
 no_such_container_pattern = re.compile(r"Container GET|HEAD failed: .+/(.+) 404")
+no_such_object_pattern = re.compile(r"Object GET|HEAD failed: .+/(.+) 404")
 etag_fail_pat = r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity"
 etag_failed_pattern = re.compile(etag_fail_pat)
 
@@ -55,8 +56,8 @@ def handle_swiftclient_exception(fnc):
         while attempts < AUTH_ATTEMPTS:
             attempts += 1
             try:
-                ret = fnc(self, *args, **kwargs)
                 close_swiftclient_conn(self.connection)
+                ret = fnc(self, *args, **kwargs)
                 return ret
             except _swift_client.ClientException as e:
                 if attempts < AUTH_ATTEMPTS:
@@ -66,13 +67,16 @@ def handle_swiftclient_exception(fnc):
                     pyrax.authenticate(connect=False)
                     if pyrax.identity.authenticated:
                         pyrax.plug_hole_in_swiftclient_auth(self, clt_url)
-                        close_swiftclient_conn(self.connection)
                     continue
                 str_error = "%s" % e
                 bad_container = no_such_container_pattern.search(str_error)
                 if bad_container:
                     raise exc.NoSuchContainer("Container '%s' doesn't exist" %
                             bad_container.groups()[0])
+                bad_object = no_such_object_pattern.search(str_error)
+                if bad_object:
+                    raise exc.NoSuchObject("object '%s' doesn't exist" %
+                            bad_object.groups()[0])
                 failed_upload = etag_failed_pattern.search(str_error)
                 if failed_upload:
                     cont, fname = failed_upload.groups()
