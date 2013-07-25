@@ -606,7 +606,8 @@ class CFClient(object):
     @handle_swiftclient_exception
     def upload_file(self, container, file_or_path, obj_name=None,
             content_type=None, etag=None, return_none=False,
-            content_encoding=None, ttl=None, extra_info=None):
+            content_encoding=None, ttl=None, extra_info=None,
+            content_length=None):
         """
         Uploads the specified file to the container. If no name is supplied,
         the file's name will be used. Either a file path or an open file-like
@@ -616,6 +617,8 @@ class CFClient(object):
         You may optionally set the `content_type` and `content_encoding`
         parameters; pyrax will create the appropriate headers when the object
         is stored.
+
+        If the size of the file is known, it can be passed as `content_length`.
 
         If you wish for the object to be temporary, specify the time it should
         be stored in seconds in the `ttl` parameter. If this is specified, the
@@ -637,7 +640,10 @@ class CFClient(object):
                 # This is an empty directory file
                 fsize = 0
             else:
-                fsize = get_file_size(fileobj)
+                if content_length is None:
+                    fsize = get_file_size(fileobj)
+                else:
+                    fsize = content_length
             if fsize < self.max_file_size:
                 # We can just upload it as-is.
                 return self.connection.put_object(cont.name, obj_name,
