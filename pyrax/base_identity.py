@@ -286,7 +286,7 @@ class BaseAuth(object):
         for svc in svc_cat:
             # Replace any dashes with underscores.
             # Also, some service types have RAX-specific identifiers; strip them.
-            typ = svc["type"].replace("-", "_").lstrip("rax:")
+            typ = svc["type"].replace("-", "_").replace("rax:", "")
             if typ == "compute":
                 if svc["name"].lower() == "cloudservers":
                     # First-generation Rackspace cloud servers
