@@ -139,10 +139,11 @@ class CFClient(object):
         cdn_url = os_options.pop("object_cdn_url", None)
         pw_key = api_key or password
         insecure = not verify_ssl
-        self.connection = Connection(auth_endpoint, username, pw_key,
-                tenant_name, preauthurl=preauthurl, preauthtoken=preauthtoken,
-                auth_version=auth_version, os_options=os_options,
-                insecure=insecure, http_log_debug=http_log_debug)
+        self.connection = Connection(authurl=auth_endpoint, user=username,
+                key=pw_key, tenant_name=tenant_name, preauthurl=preauthurl,
+                preauthtoken=preauthtoken, auth_version=auth_version,
+                os_options=os_options, insecure=insecure,
+                http_log_debug=http_log_debug)
         if cdn_url:
             self.connection._make_cdn_connection(cdn_url)
 
