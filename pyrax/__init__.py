@@ -575,7 +575,7 @@ def _get_service_endpoint(svc, region=None, public=True):
 
 
 @_require_auth
-def connect_to_cloudservers(region=None):
+def connect_to_cloudservers(region=None, **kwargs):
     """Creates a client for working with cloud servers."""
     _cs_auth_plugin.discover_auth_systems()
     id_type = get_setting("identity_type")
@@ -594,7 +594,7 @@ def connect_to_cloudservers(region=None):
             project_id=identity.tenant_id, auth_url=identity.auth_endpoint,
             auth_system=id_type, region_name=region, service_type="compute",
             auth_plugin=auth_plugin, insecure=insecure,
-            http_log_debug=_http_debug)
+            http_log_debug=_http_debug, **kwargs)
     agt = cloudservers.client.USER_AGENT
     cloudservers.client.USER_AGENT = _make_agent_name(agt)
     cloudservers.client.management_url = mgt_url
