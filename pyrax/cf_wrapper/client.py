@@ -948,7 +948,8 @@ class CFClient(object):
         path, fname = os.path.split(obj_name)
         if structure:
             fullpath = os.path.join(directory, path)
-            os.makedirs(fullpath)
+            if (os.path.isdir(fullpath)):
+                os.makedirs(fullpath)
             target = os.path.join(fullpath, fname)
         else:
             target = os.path.join(directory, fname)
