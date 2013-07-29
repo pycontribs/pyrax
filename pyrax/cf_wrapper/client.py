@@ -499,14 +499,14 @@ class CFClient(object):
         return True
 
 
-    def get_object(self, container, obj_name):
+    def get_object(self, container, obj):
         """Returns a StorageObject instance for the object in the container."""
         # NOTE: This is a hack to get around a bug in the current version of
         # the swiftclient library.
         for attempts in range(2):
             try:
                 cont = self.get_container(container)
-                obj = cont.get_object(self._resolve_name(obj_name))
+                obj = cont.get_object(self._resolve_name(obj))
                 return obj
             except (exc.NoSuchContainer, exc.NoSuchObject) as e:
                 continue
@@ -551,14 +551,14 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def copy_object(self, container, obj_name, new_container, new_obj_name=None,
+    def copy_object(self, container, obj, new_container, new_obj_name=None,
             extra_info=None):
         """
         Copies the object to the new container, optionally giving it a new name.
         If you copy to the same container, you must supply a different name.
         """
         cont = self.get_container(container)
-        obj = self.get_object(cont, obj_name)
+        obj = self.get_object(cont, obj)
         new_cont = self.get_container(new_container)
         if new_obj_name is None:
             new_obj_name = obj.name
@@ -568,20 +568,20 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def move_object(self, container, obj_name, new_container, new_obj_name=None):
+    def move_object(self, container, obj, new_container, new_obj_name=None):
         """
         Works just like copy_object, except that the source object is deleted
         after a successful copy.
         """
-        new_obj_etag = self.copy_object(container, obj_name, new_container,
+        new_obj_etag = self.copy_object(container, obj, new_container,
                 new_obj_name=new_obj_name)
         if new_obj_etag:
             # Copy succeeded; delete the original.
-            self.delete_object(container, obj_name)
+            self.delete_object(container, obj)
         return new_obj_etag
 
     @handle_swiftclient_exception
-    def change_object_content_type(self, container, obj_name, new_ctype,
+    def change_object_content_type(self, container, obj, new_ctype,
             guess=False, extra_info=None):
         """
         Copies object to itself, but applies a new content-type. The guess
@@ -591,7 +591,7 @@ class CFClient(object):
         Failure during the put will result in a swift exception.
         """
         cont = self.get_container(container)
-        obj = self.get_object(cont, obj_name)
+        obj = self.get_object(cont, obj)
         if guess and cont.cdn_enabled:
             #Test against the CDN url to guess the content-type.
             obj_url = "%s/%s" % (cont.cdn_uri, obj.name)
@@ -907,7 +907,7 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def fetch_object(self, container, obj_name, include_meta=False,
+    def fetch_object(self, container, obj, include_meta=False,
             chunk_size=None, extra_info=None):
         """
         Fetches the object from storage.
@@ -928,7 +928,7 @@ class CFClient(object):
         underlying swiftclient call.
         """
         cname = self._resolve_name(container)
-        oname = self._resolve_name(obj_name)
+        oname = self._resolve_name(obj)
         (meta, data) = self.connection.get_object(cname, oname,
                 resp_chunk_size=chunk_size, response_dict=extra_info)
         if include_meta:
@@ -938,7 +938,7 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def download_object(self, container, obj_name, directory, structure=True):
+    def download_object(self, container, obj, directory, structure=True):
         """
         Fetches the object from storage, and writes it to the specified
         directory. The directory must exist before calling this method.
@@ -951,15 +951,17 @@ class CFClient(object):
         if not os.path.isdir(directory):
             raise exc.FolderNotFound("The directory '%s' does not exist." %
                     directory)
+        obj_name = self._resolve_name(obj)
         path, fname = os.path.split(obj_name)
         if structure:
             fullpath = os.path.join(directory, path)
-            os.makedirs(fullpath)
+            if not os.path.exists(fullpath):
+                os.makedirs(fullpath)
             target = os.path.join(fullpath, fname)
         else:
             target = os.path.join(directory, fname)
         with open(target, "wb") as dl:
-            dl.write(self.fetch_object(container, obj_name))
+            dl.write(self.fetch_object(container, obj))
 
 
     @handle_swiftclient_exception
