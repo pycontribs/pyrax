@@ -136,7 +136,7 @@ class CF_StorageObjectTest(unittest.TestCase):
         dname = utils.random_name()
         stru = random.choice((True, False))
         obj.download(dname, structure=stru)
-        obj.client.download_object.assert_called_once_with(obj.container, obj,
+        obj.client.download_object.assert_called_once_with(obj.container, obj.name,
                 dname, structure=stru)
 
     def test_delete(self):

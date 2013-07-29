@@ -88,7 +88,7 @@ class StorageObject(object):
         directory by default. If you do not want the nested folders to be
         created, pass `structure=False` in the parameters.
         """
-        return self.client.download_object(self.container, self, directory,
+        return self.client.download_object(self.container, self.name, directory,
                 structure=structure)
 
 
