@@ -227,7 +227,10 @@ class BaseAuth(object):
         the resulting response object.
         """
         if not uri.startswith("http"):
-            uri = urlparse.urljoin(self.auth_endpoint, uri)
+            if self.auth_endpoint.endswith("/"):
+                uri = urlparse.urljoin(self.auth_endpoint, uri)
+            else:
+                uri = urlparse.urljoin(self.auth_endpoint + "/", uri)
         if admin:
             # Admin calls use a different port
             uri = re.sub(r":\d+/", ":35357/", uri)
