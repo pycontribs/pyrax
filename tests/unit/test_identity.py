@@ -308,7 +308,7 @@ class IdentityTest(unittest.TestCase):
         for rgn in expected:
             self.assert_(rgn in pyrax.regions)
 
- 
+
     def test_http_methods(self):
         ident = self.base_identity_class()
         ident._call = Mock()
@@ -380,7 +380,7 @@ class IdentityTest(unittest.TestCase):
         ident._call(mthd, "tokens", False, {}, {}, False)
         mthd.assert_called_with("http://example.com/v2.0/tokens", data=None,
             headers={}, verify=False)
-  
+
     def test_call_with_slash(self):
         ident = self.base_identity_class()
         ident._get_auth_endpoint = Mock()

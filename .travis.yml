@@ -9,6 +9,7 @@ matrix:
     - python: pypy
 
 install:
+  - pip install -U setuptools
   - python setup.py install
   - pip install --use-mirrors nose pep8
   - pip install --use-mirrors nose coveralls
