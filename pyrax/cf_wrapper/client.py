@@ -30,6 +30,8 @@ import pyrax.exceptions as exc
 
 
 EARLY_DATE_STR = "1900-01-01T00:00:00"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+HEAD_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %Z"
 CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
 AUTH_ATTEMPTS = 2
@@ -502,17 +504,20 @@ class CFClient(object):
 
     def get_object(self, container, obj):
         """Returns a StorageObject instance for the object in the container."""
-        # NOTE: This is a hack to get around a bug in the current version of
-        # the swiftclient library.
-        for attempts in range(2):
-            try:
-                cont = self.get_container(container)
-                obj = cont.get_object(self._resolve_name(obj))
-                return obj
-            except (exc.NoSuchContainer, exc.NoSuchObject) as e:
-                continue
-        # If we made it to here, it is an actual exception
-        raise
+        cname = self._resolve_name(container)
+        oname = self._resolve_name(obj)
+        obj_info = self.connection.head_object(cname, oname)
+        # Need to convert last modified time to a datetime object.
+        lm_str = obj_info["last-modified"]
+        tm_tuple = time.strptime(lm_str, HEAD_DATE_FORMAT)
+        dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
+        # Now convert it back to the format returned by GETting the object.
+        dtstr = dttm.strftime(DATE_FORMAT)
+        obj = StorageObject(self, self.get_container(container),
+                name=oname, content_type=obj_info["content-type"],
+                total_bytes=int(obj_info["content-length"]),
+                last_modified=dtstr, etag=obj_info["etag"])
+        return obj
 
 
     @handle_swiftclient_exception

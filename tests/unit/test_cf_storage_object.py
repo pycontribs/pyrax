@@ -12,6 +12,7 @@ import pyrax
 from pyrax.cf_wrapper.storage_object import StorageObject
 import pyrax.exceptions as exc
 import pyrax.utils as utils
+from tests.unit.fakes import fake_attdict
 from tests.unit.fakes import FakeContainer
 from tests.unit.fakes import FakeIdentity
 from tests.unit.fakes import FakeResponse
@@ -51,11 +52,7 @@ class CF_StorageObjectTest(unittest.TestCase):
         self.container.name = self.container_name
         self.client.get_container = Mock(return_value=self.container)
         self.client.connection.get_container = Mock()
-        self.client.connection.head_object = Mock()
-        objs = [{"name": self.obj_name, "content_type": "test/test",
-                "bytes": 444, "hash": "abcdef0123456789"}]
-        self.client.connection.head_object.return_value = ({}, objs)
-        self.client.connection.get_container.return_value = ({}, objs)
+        self.client.connection.head_object = Mock(return_value=fake_attdict)
         self.storage_object = self.client.get_object(self.container, "testobj")
         self.client._container_cache = {}
         self.container.object_cache = {}
