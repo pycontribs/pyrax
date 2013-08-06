@@ -364,7 +364,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>, </td>
+          <td class="paramname"><em>obj</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -418,7 +418,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>, </td>
+          <td class="paramname"><em>obj</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -640,7 +640,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>, </td>
+          <td class="paramname"><em>obj</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -689,7 +689,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>, </td>
+          <td class="paramname"><em>obj</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1081,7 +1081,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>&#160;</td>
+          <td class="paramname"><em>obj</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1418,7 +1418,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>, </td>
+          <td class="paramname"><em>obj</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -2093,7 +2093,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>content_length</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2107,6 +2113,7 @@ Properties</h2></td></tr>
 <p>Uploads the specified file to the container. </p>
 <p>If no name is supplied, the file's name will be used. Either a file path or an open file-like object may be supplied. A StorageObject reference to the uploaded file will be returned, unless 'return_none' is set to True.</p>
 <p>You may optionally set the `content_type` and `content_encoding` parameters; pyrax will create the appropriate headers when the object is stored.</p>
+<p>If the size of the file is known, it can be passed as `content_length`.</p>
 <p>If you wish for the object to be temporary, specify the time it should be stored in seconds in the `ttl` parameter. If this is specified, the object will be deleted after that number of seconds. Returns the size of a file-like object. </p>
 
 </div>
@@ -2346,7 +2353,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jul 23 2013 13:59:44 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Aug 6 2013 12:09:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
