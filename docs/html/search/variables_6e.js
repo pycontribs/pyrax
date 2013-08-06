@@ -4,5 +4,6 @@ var searchData=
   ['name_5fattr',['NAME_ATTR',['../classpyrax_1_1resource_1_1BaseResource.html#a74fac10a98253f8b0308159a33113ab9',1,'pyrax::resource::BaseResource']]],
   ['next_5furi',['next_uri',['../classpyrax_1_1clouddns_1_1ResultsIterator.html#a52d2d557c979c7d47d2f6733f9bb30c7',1,'pyrax::clouddns::ResultsIterator']]],
   ['no_5fsuch_5fcontainer_5fpattern',['no_such_container_pattern',['../namespacepyrax_1_1cf__wrapper_1_1client.html#ab3150aa95b9e341f9b4c3f11214a9097',1,'pyrax::cf_wrapper::client']]],
+  ['no_5fsuch_5fobject_5fpattern',['no_such_object_pattern',['../namespacepyrax_1_1cf__wrapper_1_1client.html#a8141ed8d74dd957f7bad8300a7fed3da',1,'pyrax::cf_wrapper::client']]],
   ['node',['Node',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#aed91756449328e2c454e53e9c5e53936',1,'pyrax::cloudloadbalancers::CloudLoadBalancerClient']]]
 ];

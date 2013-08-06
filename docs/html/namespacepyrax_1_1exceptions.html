@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li class="current"><a href="namespaces.html"><span>Packages</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -70,6 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
       <li><a href="namespaces.html"><span>Packages</span></a></li>
+      <li><a href="namespacemembers.html"><span>Package&#160;Functions</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -77,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Properties</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -94,17 +96,207 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">pyrax::exceptions Namespace Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1PyraxException.html">PyraxException</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1AccessListIDNotFound.html">AccessListIDNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1AuthenticationFailed.html">AuthenticationFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1AuthorizationFailure.html">AuthorizationFailure</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1AuthSystemNotFound.html">AuthSystemNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1CDNFailed.html">CDNFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1DNSCallTimedOut.html">DNSCallTimedOut</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1DomainCreationFailed.html">DomainCreationFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1DomainDeletionFailed.html">DomainDeletionFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1DomainRecordAdditionFailed.html">DomainRecordAdditionFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1DomainRecordDeletionFailed.html">DomainRecordDeletionFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1DomainRecordNotFound.html">DomainRecordNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1DomainRecordNotUnique.html">DomainRecordNotUnique</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1DomainRecordUpdateFailed.html">DomainRecordUpdateFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1DomainUpdateFailed.html">DomainUpdateFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1DuplicateUser.html">DuplicateUser</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1EndpointNotDefined.html">EndpointNotDefined</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1EndpointNotFound.html">EndpointNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1EnvironmentNotFound.html">EnvironmentNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1FlavorNotFound.html">FlavorNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1FileNotFound.html">FileNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1FolderNotFound.html">FolderNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1KeyringModuleNotInstalled.html">KeyringModuleNotInstalled</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1KeyringPasswordNotFound.html">KeyringPasswordNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1KeyringUsernameMissing.html">KeyringUsernameMissing</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1IdentityClassNotDefined.html">IdentityClassNotDefined</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidCDNMetadata.html">InvalidCDNMetadata</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidConfigurationFile.html">InvalidConfigurationFile</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidCredentialFile.html">InvalidCredentialFile</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidDateTimeString.html">InvalidDateTimeString</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidDeviceType.html">InvalidDeviceType</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidLoadBalancerParameters.html">InvalidLoadBalancerParameters</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidNodeCondition.html">InvalidNodeCondition</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidNodeParameters.html">InvalidNodeParameters</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidPTRRecord.html">InvalidPTRRecord</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidSessionPersistenceType.html">InvalidSessionPersistenceType</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidSetting.html">InvalidSetting</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidSize.html">InvalidSize</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidTemporaryURLMethod.html">InvalidTemporaryURLMethod</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidUploadID.html">InvalidUploadID</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidVirtualIPType.html">InvalidVirtualIPType</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidVirtualIPVersion.html">InvalidVirtualIPVersion</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidVolumeResize.html">InvalidVolumeResize</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1MissingAuthSettings.html">MissingAuthSettings</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1MissingDNSSettings.html">MissingDNSSettings</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1MissingHealthMonitorSettings.html">MissingHealthMonitorSettings</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1MissingLoadBalancerParameters.html">MissingLoadBalancerParameters</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1MissingName.html">MissingName</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1MissingTemporaryURLKey.html">MissingTemporaryURLKey</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NetworkCIDRInvalid.html">NetworkCIDRInvalid</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NetworkCIDRMalformed.html">NetworkCIDRMalformed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NetworkCountExceeded.html">NetworkCountExceeded</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NetworkInUse.html">NetworkInUse</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NetworkNotFound.html">NetworkNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NetworkLabelNotUnique.html">NetworkLabelNotUnique</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NoMoreResults.html">NoMoreResults</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NoReloadError.html">NoReloadError</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NoSSLTerminationConfiguration.html">NoSSLTerminationConfiguration</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NoSuchContainer.html">NoSuchContainer</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NoSuchDatabase.html">NoSuchDatabase</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NoSuchDatabaseUser.html">NoSuchDatabaseUser</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NoSuchObject.html">NoSuchObject</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NotAuthenticated.html">NotAuthenticated</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NotCDNEnabled.html">NotCDNEnabled</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NoTokenLookupException.html">NoTokenLookupException</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1PasswordChangeFailed.html">PasswordChangeFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1ProtocolMismatch.html">ProtocolMismatch</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1PTRRecordCreationFailed.html">PTRRecordCreationFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1PTRRecordDeletionFailed.html">PTRRecordDeletionFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1PTRRecordUpdateFailed.html">PTRRecordUpdateFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1ServiceNotAvailable.html">ServiceNotAvailable</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1SnapshotNotAvailable.html">SnapshotNotAvailable</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1TenantNotFound.html">TenantNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1UnattachedNode.html">UnattachedNode</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1UnattachedVirtualIP.html">UnattachedVirtualIP</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1UnicodePathError.html">UnicodePathError</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1UploadFailed.html">UploadFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1UserNotFound.html">UserNotFound</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1VolumeAttachmentFailed.html">VolumeAttachmentFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1VolumeDetachmentFailed.html">VolumeDetachmentFailed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1VolumeNotAvailable.html">VolumeNotAvailable</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1AmbiguousEndpoints.html">AmbiguousEndpoints</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Found more than one matching endpoint in Service Catalog.  <a href="classpyrax_1_1exceptions_1_1AmbiguousEndpoints.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1ClientException.html">ClientException</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The base exception class for all exceptions this library raises.  <a href="classpyrax_1_1exceptions_1_1ClientException.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1BadRequest.html">BadRequest</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">HTTP 400 - Bad request: you sent some malformed data.  <a href="classpyrax_1_1exceptions_1_1BadRequest.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1Unauthorized.html">Unauthorized</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">HTTP 401 - <a class="el" href="classpyrax_1_1exceptions_1_1Unauthorized.html" title="HTTP 401 - Unauthorized: bad credentials.">Unauthorized</a>: bad credentials.  <a href="classpyrax_1_1exceptions_1_1Unauthorized.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1Forbidden.html">Forbidden</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">HTTP 403 - <a class="el" href="classpyrax_1_1exceptions_1_1Forbidden.html" title="HTTP 403 - Forbidden: your credentials don&#39;t give you access to this resource.">Forbidden</a>: your credentials don't give you access to this resource.  <a href="classpyrax_1_1exceptions_1_1Forbidden.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NotFound.html">NotFound</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">HTTP 404 - Not found.  <a href="classpyrax_1_1exceptions_1_1NotFound.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1NoUniqueMatch.html">NoUniqueMatch</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">HTTP 400 - Bad Request.  <a href="classpyrax_1_1exceptions_1_1NoUniqueMatch.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1OverLimit.html">OverLimit</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">HTTP 413 - Over limit: you're over the API limits for this time period.  <a href="classpyrax_1_1exceptions_1_1OverLimit.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1exceptions_1_1HTTPNotImplemented.html">HTTPNotImplemented</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">HTTP 501 - Not Implemented: the server does not support this operation.  <a href="classpyrax_1_1exceptions_1_1HTTPNotImplemented.html#details">More...</a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1exceptions.html#a6ec044b1084ca1566f5a0e9555c63998">from_response</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an instance of a <a class="el" href="classpyrax_1_1exceptions_1_1ClientException.html" title="The base exception class for all exceptions this library raises.">ClientException</a> or subclass based on an httplib2 response.  <a href="#a6ec044b1084ca1566f5a0e9555c63998"></a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1exceptions.html#aa7887bc0806ad489b281e31ec228dcc3">ServerNotFound</a> = _nova_exceptions.NotFound</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1exceptions.html#a033b7e579f64b8616b8c34e2406e24d7">ServerClientException</a> = _nova_exceptions.ClientException</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1exceptions.html#ab5d31bf8fb13068e1eecee2640858771">_code_map</a></td></tr>
+</table>
+<hr/><h2>Function Documentation</h2>
+<a class="anchor" id="a6ec044b1084ca1566f5a0e9555c63998"></a><!-- doxytag: member="pyrax::exceptions::from_response" ref="a6ec044b1084ca1566f5a0e9555c63998" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1exceptions.html#a6ec044b1084ca1566f5a0e9555c63998">pyrax.exceptions.from_response</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>response</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>body</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Return an instance of a <a class="el" href="classpyrax_1_1exceptions_1_1ClientException.html" title="The base exception class for all exceptions this library raises.">ClientException</a> or subclass based on an httplib2 response. </p>
+<p>Usage::</p>
+<p>resp, body = http.request(...) if resp.status != 200: raise exception_from_response(resp, body) </p>
+
+</div>
+</div>
+<hr/><h2>Variable Documentation</h2>
+<a class="anchor" id="ab5d31bf8fb13068e1eecee2640858771"></a><!-- doxytag: member="pyrax::exceptions::_code_map" ref="ab5d31bf8fb13068e1eecee2640858771" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">tuple <a class="el" href="namespacepyrax_1_1exceptions.html#ab5d31bf8fb13068e1eecee2640858771">_code_map</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<b>Initial value:</b><div class="fragment"><pre class="fragment"><a name="l00001"></a><a class="code" href="namespacepyrax_1_1exceptions.html">00001</a> dict((c.http_status, c) <span class="keywordflow">for</span> c <span class="keywordflow">in</span> [BadRequest, Unauthorized,
+<a name="l00002"></a>00002         Forbidden, NotFound, OverLimit, HTTPNotImplemented])
+</pre></div>
+</div>
+</div>
+<a class="anchor" id="a033b7e579f64b8616b8c34e2406e24d7"></a><!-- doxytag: member="pyrax::exceptions::ServerClientException" ref="a033b7e579f64b8616b8c34e2406e24d7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepyrax_1_1exceptions.html#a033b7e579f64b8616b8c34e2406e24d7">ServerClientException</a> = _nova_exceptions.ClientException</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa7887bc0806ad489b281e31ec228dcc3"></a><!-- doxytag: member="pyrax::exceptions::ServerNotFound" ref="aa7887bc0806ad489b281e31ec228dcc3" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepyrax_1_1exceptions.html#aa7887bc0806ad489b281e31ec228dcc3">ServerNotFound</a> = _nova_exceptions.NotFound</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Properties</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -116,7 +308,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jul 23 2013 09:38:53 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 23 2013 13:59:45 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
