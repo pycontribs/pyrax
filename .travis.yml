@@ -10,7 +10,7 @@ matrix:
 
 install:
   - pip install -U setuptools
-  - python setup.py install
+  - pip install .
   - pip install --use-mirrors nose pep8
   - pip install --use-mirrors nose coveralls
 
