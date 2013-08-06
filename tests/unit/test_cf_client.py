@@ -975,11 +975,25 @@ class CF_ClientTest(unittest.TestCase):
         gc = client.get_container
         client.get_container = Mock()
         client.get_container.side_effect = _swift_client.ClientException(
-                "Container GET failed: some_container 404")
+                "Container GET failed: https://example.com/some_container 404")
         # Note: we're using delete_object because its first call
         # is get_container()
         self.assertRaises(exc.NoSuchContainer, client.delete_object,
                 "some_container", "some_object")
+        client.get_container = gc
+
+    def test_handle_swiftclient_exception_object(self):
+        client = self.client
+        gc = client.get_container
+        client.get_container = Mock()
+        go = client.get_object
+        client.get_object = Mock()
+        client.get_object.side_effect = _swift_client.ClientException(
+                "Object GET failed: https://example.com/cont/some_object 404")
+        # Note: we're using copy_object because it calls get_object().
+        self.assertRaises(exc.NoSuchObject, client.copy_object,
+                "some_container", "some_object", "fake")
+        client.get_object = go
         client.get_container = gc
 
     def test_handle_swiftclient_exception_upload(self):
