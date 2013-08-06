@@ -36,8 +36,8 @@ CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
 AUTH_ATTEMPTS = 2
 
-no_such_container_pattern = re.compile(r"Container GET|HEAD failed: .+/(.+) 404")
-no_such_object_pattern = re.compile(r"Object GET|HEAD failed: .+/(.+) 404")
+no_such_container_pattern = re.compile(r"Container (?:GET|HEAD) failed: .+/(.+) 404")
+no_such_object_pattern = re.compile(r"Object (?:GET|HEAD) failed: .+/(.+) 404")
 etag_fail_pat = r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity"
 etag_failed_pattern = re.compile(etag_fail_pat)
 
@@ -77,7 +77,7 @@ def handle_swiftclient_exception(fnc):
                             bad_container.groups()[0])
                 bad_object = no_such_object_pattern.search(str_error)
                 if bad_object:
-                    raise exc.NoSuchObject("object '%s' doesn't exist" %
+                    raise exc.NoSuchObject("Object '%s' doesn't exist" %
                             bad_object.groups()[0])
                 failed_upload = etag_failed_pattern.search(str_error)
                 if failed_upload:
@@ -502,6 +502,7 @@ class CFClient(object):
         return True
 
 
+    @handle_swiftclient_exception
     def get_object(self, container, obj):
         """Returns a StorageObject instance for the object in the container."""
         cname = self._resolve_name(container)
