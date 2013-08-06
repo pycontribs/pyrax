@@ -36,7 +36,8 @@ CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
 AUTH_ATTEMPTS = 2
 
-no_such_container_pattern = re.compile(r"Container (?:GET|HEAD) failed: .+/(.+) 404")
+no_such_container_pattern = re.compile(
+        r"Container (?:GET|HEAD) failed: .+/(.+) 404")
 no_such_object_pattern = re.compile(r"Object (?:GET|HEAD) failed: .+/(.+) 404")
 etag_fail_pat = r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity"
 etag_failed_pattern = re.compile(etag_fail_pat)
