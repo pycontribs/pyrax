@@ -10,7 +10,7 @@ Start by listing all the servers in your account:
     cs = pyrax.cloudservers
     print cs.servers.list()
 
-If you already have Cloud Servers, you will get back a list of `Server` objects. But if you are just getting started with the Rackspace Cloud, and you got back an empty list, creating a new cloud server would be a good first step.
+If you already have Cloud Servers, you get back a list of `Server` objects. But if you are just getting started with the Rackspace Cloud, and you got back an empty list, creating a new cloud server would be a good first step.
 
 To do that, you'll need to specify the operating system image to use for your new server, as well as the flavor. `Flavor` is a class that represents the combination of RAM and disk size for the new server.
 
@@ -179,7 +179,7 @@ Wait - the server has no network addresses? How useful is that? How are you supp
 
 If you ran that code, you noticed that it returned almost immediately. What happened is that the cloud API recorded your request, and returned as much information as it could about the server that it was *going to create*. The networking for the server had not yet been created, so it could not provide that information.
 
-One important piece of information is the __adminPass__ – without that, you will not be able to log into your server unless you are using SSH key authentication. It is *only* supplied with the `Server` object returned from the initial `create()` request. After that, future calls to `get()` the server do not return that value. Note: if this does happen, you can call the `change_password()` method of the `Server` object to set a new root password on the server.
+One important piece of information is the __adminPass__ – without that, you are not be able to log into your server unless you are using SSH key authentication. It is *only* supplied with the `Server` object returned from the initial `create()` request. After that, future calls to `get()` the server do not return that value. Note: if this does happen, you can call the `change_password()` method of the `Server` object to set a new root password on the server.
 
 This brings up an important point: the `Server` objects you get back are essentially snapshots of that server at the moment you requested the information. Your object's 'BUILD' status won't change no matter how long you wait. You have to refresh it to see any changes. In other words, these objects are not dynamic. Fortunately, refreshing the object is simple enough to do:
 
@@ -287,7 +287,7 @@ The created image also appears in the list of images with the name you gave it.
 
     cs.images.list()
 
-You will need to wait for the imaging to finish before you are able to clone it.
+You need to wait for the imaging to finish before you are able to clone it.
 
     image_id = server.create_image("base_image")
     # Unlike the create_server() call, create_image() returns the id

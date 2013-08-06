@@ -1,14 +1,14 @@
 # Installing pyrax
-This document will explain how to install pyrax on your system so that you can start creating cloud-based applications in Python.
+This document explains how to install pyrax on your system so that you can start creating cloud-based applications in Python.
 
 ## Installation with `pip`
-This is the preferred method, as `pip` will handle all of the dependency requirements for pyrax for you.
+This is the preferred method, as `pip` handles all of the dependency requirements for pyrax for you.
 
 If you don't already have `pip` installed, you should follow the [pip installation instructions](http://www.pip-installer.org/en/latest/installing.html).
 
-> For all of the examples below, it is assumed that you are installing into a virtualenv, or on a system where you are logged in as the root/administrator. If that is not the case, then you will probably have to run the installation under `sudo` to get administrator privileges.
+> For all of the examples below, it is assumed that you are installing into a virtualenv, or on a system where you are logged in as the root/administrator. If that is not the case, then you probably have to run the installation under `sudo` to get administrator privileges.
 
-`pip` will install pyrax and its dependencies from one of two sources: the official packaged releases on the [Python Package Index (PyPI)](http://pypi.python.org/pypi), or from the source code repository on [GitHub](https://github.com/rackspace/pyrax). The only difference between the two is that with PyPI you can only install the latest official release of pyrax, while with GitHub you can install any branch, including the current development trunk version. Bear in mind that this option is only for developers who need the latest changes and are willing to live with occasional bugs as the code gets updated – what is commonly referred to as the "bleeding edge".
+`pip` installs pyrax and its dependencies from one of two sources: the official packaged releases on the [Python Package Index (PyPI)](http://pypi.python.org/pypi), or from the source code repository on [GitHub](https://github.com/rackspace/pyrax). The only difference between the two is that with PyPI you can only install the latest official release of pyrax, while with GitHub you can install any branch, including the current development trunk version. Bear in mind that this option is only for developers who need the latest changes and are willing to live with occasional bugs as the code gets updated – what is commonly referred to as the "bleeding edge".
 
 To install from PyPI, run the following:
 
@@ -24,7 +24,7 @@ To install the development trunk version from GitHub, run:
 
 
 ## Installing From Source
-> NOTE: some Python distributions come with versions of `distutils` that do not support the `install_requires` option to `setup.py`. If you have one of those versions, you will get errors as you try to install using the steps below. The best option at this point is to use `pip` to install, as described above.
+> NOTE: some Python distributions come with versions of `distutils` that do not support the `install_requires` option to `setup.py`. If you have one of those versions, you get errors as you try to install using the steps below. The best option at this point is to use `pip` to install, as described above.
 
 Download the source code for pyrax from GitHub, and install from that. First, grab the source:
 
@@ -52,6 +52,6 @@ If all goes well, pyrax and all its dependencies should be installed and ready t
 
 
 ## Updating to Future Versions
-`pip` makes it simple to update pyrax to the latest released version. All you need to do is add `--upgrade` to the command you used to install pyrax, and pip will install the latest version of pyrax along with the latest version of any dependencies.
+`pip` makes it simple to update pyrax to the latest released version. All you need to do is add `--upgrade` to the command you used to install pyrax, and pip installs the latest version of pyrax along with the latest version of any dependencies.
 
-For a source install, you will have to download the latest source, and then manually check each of the dependencies for updated releases, and if found, install them according to their directions.
+For a source install, you have to download the latest source, and then manually check each of the dependencies for updated releases, and if found, install them according to their directions.
