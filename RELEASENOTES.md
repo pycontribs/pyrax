@@ -1,5 +1,13 @@
 # Release Notes for pyrax
 
+###2013.08.06 - Version 1.4.10
+- Fixed a performance issue when GETting a single object. GitHub #156.
+- Fixed an issue with error response parsing. GitHub #151.
+- Fixed trailing slash bug in identity. GitHub #154.
+- Fixed a bug noticed in #69 in which the parameters to the swiftclient connection object were incorrect.
+- Fixed a bug in download_object() that would throw an exception if the target directory already exists. GitHub #148.
+- Added ability to specify content length when uploading an object to swift. GitHub #146.
+
 ###2013.07.23 - Version 1.4.9
 - Fixed a bug introduced in the last release that prevented progressive
   fetching of objects. GitHub #139
