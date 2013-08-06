@@ -7,7 +7,7 @@ This is a standalone, API-based, relational database service built on OpenStackÂ
 ## Terminology
 One potential source of confusion is the use of 'database' in multiple contexts. To clarify, the overall service is named 'Cloud Databases'. Each deployment is referred to as an 'Instance'. Each Instance can contain many 'databases', which is a grouping of related tables in indexes for storing relational information.
 
-To keep these concepts clear, the term 'database' by itself always refers to the relational entity in an instance. When referring to the overall service, the term 'Cloud Databases' will be used.
+To keep these concepts clear, the term 'database' by itself always refers to the relational entity in an instance. When referring to the overall service, the term 'Cloud Databases' is used.
 
 
 ## Using Cloud Databases in pyrax
@@ -52,7 +52,7 @@ Assuming that all went well, you should see your new instance:
 
     <CloudDatabaseInstance hostname=a1d5f7312d85f95071ea658d699962b690bd6b60.rackspaceclouddb.com, id=471eff58-66bb-40af-8030-405451e38c02, links=[{u'href': u'https://localhost:8778/v1.0/728829/instances/471eff58-66bb-40af-8030-405451e38c02', u'rel': u'self'}, {u'href': u'https://localhost:8778/instances/471eff58-66bb-40af-8030-405451e38c02', u'rel': u'bookmark'}], name=first_instance, status=BUILD, volume=<pyrax.clouddatabases.CloudDatabaseVolume object at 0x104f73590>>
 
-If you are planning on using your Cloud Database instance from one of your Cloud Servers, you will need the `hostname` attribute of that instance. In this case, it is `a1d5f7312d85f95071ea658d699962b690bd6b60.rackspaceclouddb.com`. Since this host is not publicly accessible, only Cloud Servers and Cloud Load Balancers within the same region can access this instance.
+If you are planning on using your Cloud Database instance from one of your Cloud Servers, you need the `hostname` attribute of that instance. In this case, it is `a1d5f7312d85f95071ea658d699962b690bd6b60.rackspaceclouddb.com`. Since this host is not publicly accessible, only Cloud Servers and Cloud Load Balancers within the same region can access this instance.
 
 
 ## Resizing an Instance
@@ -75,7 +75,7 @@ Resizing a volume refers to increasing the amount of disk space for your instanc
 ## Create a Database
 Once you have an instance, you need to create a database. You must specify a name for the new database, as well as the optional parameters for `character_set` and `collate`. If these are not specified, the defaults of `utf8` and `utf8_general_ci` are used, respectively.
 
-There are two variations: calling the `create_database()` method of a `CloudDatabaseInstance` object, or calling the `create_database()` method of the cloud_databases module itself. With the second version, you must specify the instance in which to create the database. Either a `CloudDatabaseInstance` object or its `id` will work. Assuming that `inst` is a reference to the instance you created above, here are both versions:
+There are two variations: calling the `create_database()` method of a `CloudDatabaseInstance` object, or calling the `create_database()` method of the cloud_databases module itself. With the second version, you must specify the instance in which to create the database. Either a `CloudDatabaseInstance` object or its `id` works. Assuming that `inst` is a reference to the instance you created above, here are both versions:
 
     db = inst.create_database("db_name")
     print "DB:", db
@@ -138,7 +138,7 @@ Note that there is a bug in the underlying Python library for the API that affec
 
     inst.delete("john.doe")
 
-the API will actually delete the user `"john"`, and `"john.doe"` will be untouched! The best way to avoid this problem is to ensure that you do not use user names that contain periods. If you must include periods, do not use pyrax or any other cloud API-based tool to delete them. Instead, use any one of the many MySQL admin tools available.
+the API actually deletes the user `"john"`, and `"john.doe"` is untouched! The best way to avoid this problem is to ensure that you do not use user names that contain periods. If you must include periods, do not use pyrax or any other cloud API-based tool to delete them. Instead, use any one of the many MySQL admin tools available.
 
 
 

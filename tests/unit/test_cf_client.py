@@ -12,6 +12,7 @@ from pyrax.cf_wrapper.client import _swift_client
 from pyrax.cf_wrapper.container import Container
 import pyrax.utils as utils
 import pyrax.exceptions as exc
+from tests.unit.fakes import fake_attdict
 from tests.unit.fakes import FakeContainer
 from tests.unit.fakes import FakeFolderUploader
 from tests.unit.fakes import FakeIdentity
@@ -371,6 +372,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_get_object(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.head_object = Mock(return_value=fake_attdict)
         cont = client.get_container(self.cont_name)
         cont.client.connection.get_container = Mock()
         cont.client.connection.get_container.return_value = ({},
@@ -378,16 +380,17 @@ class CF_ClientTest(unittest.TestCase):
         obj = client.get_object(self.cont_name, "o1")
         self.assertEqual(obj.name, "o1")
 
-    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
-    def test_get_object_hack(self):
-        client = self.client
-        client.connection.head_container = Mock()
-        cont = client.get_container(self.cont_name)
-        effects = (exc.NoSuchObject(""), FakeStorageObject(self.client,
-                self.cont_name, self.obj_name))
-        cont.get_object = Mock(side_effect=effects)
-        obj = client.get_object(self.cont_name, "o1")
-        self.assertEqual(obj.name, self.obj_name)
+#    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+#    def test_get_object_hack(self):
+#        client = self.client
+#        client.connection.head_container = Mock()
+#        client.connection.head_object = Mock(return_value=fake_attdict)
+#        cont = client.get_container(self.cont_name)
+#        effects = (exc.NoSuchObject(""), FakeStorageObject(self.client,
+#                self.cont_name, self.obj_name))
+#        cont.get_object = Mock(side_effect=effects)
+#        obj = client.get_object(self.cont_name, "o1")
+#        self.assertEqual(obj.name, self.obj_name)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_store_object(self):
@@ -670,6 +673,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_copy_object(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.head_object = Mock(return_value=fake_attdict)
         cont = client.get_container(self.cont_name)
         client.connection.put_object = Mock()
         cont.client.connection.get_container = Mock()
@@ -684,6 +688,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_move_object(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.head_object = Mock(return_value=fake_attdict)
         cont = client.get_container(self.cont_name)
         client.connection.put_object = Mock(return_value="0000")
         cont.client.connection.get_container = Mock()
@@ -700,6 +705,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_change_object_content_type(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.head_object = Mock(return_value=fake_attdict)
         cont = client.get_container(self.cont_name)
         client.connection.put_object = Mock(return_value="0000")
         cont.client.connection.get_container = Mock()
@@ -969,11 +975,25 @@ class CF_ClientTest(unittest.TestCase):
         gc = client.get_container
         client.get_container = Mock()
         client.get_container.side_effect = _swift_client.ClientException(
-                "Container GET failed: some_container 404")
+                "Container GET failed: https://example.com/some_container 404")
         # Note: we're using delete_object because its first call
         # is get_container()
         self.assertRaises(exc.NoSuchContainer, client.delete_object,
                 "some_container", "some_object")
+        client.get_container = gc
+
+    def test_handle_swiftclient_exception_object(self):
+        client = self.client
+        gc = client.get_container
+        client.get_container = Mock()
+        go = client.get_object
+        client.get_object = Mock()
+        client.get_object.side_effect = _swift_client.ClientException(
+                "Object GET failed: https://example.com/cont/some_object 404")
+        # Note: we're using copy_object because it calls get_object().
+        self.assertRaises(exc.NoSuchObject, client.copy_object,
+                "some_container", "some_object", "fake")
+        client.get_object = go
         client.get_container = gc
 
     def test_handle_swiftclient_exception_upload(self):

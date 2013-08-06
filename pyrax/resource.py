@@ -37,6 +37,8 @@ class BaseResource(object):
     get_details = True
     # Atts not to display when showing the __repr__()
     _non_display = []
+    # Properties to add to the __repr__() display
+    _repr_properties = []
 
 
     def __init__(self, manager, info, key=None, loaded=False):
@@ -91,6 +93,7 @@ class BaseResource(object):
                 if (key[0] != "_")
                 and (key not in ("manager", "created", "updated"))
                 and (key not in self._non_display))
+        reprkeys += self._repr_properties
         info = ", ".join("%s=%s" % (key, getattr(self, key))
                 for key in reprkeys)
         return "<%s %s>" % (self.__class__.__name__, info)

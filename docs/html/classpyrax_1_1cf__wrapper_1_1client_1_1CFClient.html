@@ -364,7 +364,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>, </td>
+          <td class="paramname"><em>obj</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -376,7 +376,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>guess</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>guess</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -412,7 +418,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>, </td>
+          <td class="paramname"><em>obj</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -424,7 +430,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>new_obj_name</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>new_obj_name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -454,7 +466,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>name</em>&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -466,6 +484,7 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Creates a container with the specified name. </p>
+<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -489,7 +508,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>del_objects</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>del_objects</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -501,7 +526,8 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Deletes the specified container. </p>
-<p>This will fail if the container still has objects stored in it; if that's the case and you want to delete the container anyway, set del_objects to True, and the container's objects will be deleted before the container is deleted. </p>
+<p>This will fail if the container still has objects stored in it; if that's the case and you want to delete the container anyway, set del_objects to True, and the container's objects will be deleted before the container is deleted.</p>
+<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -525,7 +551,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>name</em>&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -537,6 +569,7 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Deletes the specified object from the container. </p>
+<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -566,7 +599,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>seconds</em>&#160;</td>
+          <td class="paramname"><em>seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -601,7 +640,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>, </td>
+          <td class="paramname"><em>obj</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -650,7 +689,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>, </td>
+          <td class="paramname"><em>obj</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -662,7 +701,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>chunk_size</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>chunk_size</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -676,7 +721,8 @@ Properties</h2></td></tr>
 <p>Fetches the object from storage. </p>
 <p>If 'include_meta' is False, only the bytes representing the file is returned.</p>
 <p>Note: if 'chunk_size' is defined, you must fully read the object's contents before making another request.</p>
-<p>When 'include_meta' is True, what is returned from this method is a 2-tuple: Element 0: a dictionary containing metadata about the file. Element 1: a stream of bytes representing the object's contents. </p>
+<p>When 'include_meta' is True, what is returned from this method is a 2-tuple: Element 0: a dictionary containing metadata about the file. Element 1: a stream of bytes representing the object's contents.</p>
+<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -1035,7 +1081,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>&#160;</td>
+          <td class="paramname"><em>obj</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1372,7 +1418,7 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>obj_name</em>, </td>
+          <td class="paramname"><em>obj</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1458,7 +1504,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>key</em>&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1536,7 +1588,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>clear</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>clear</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1548,7 +1606,8 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Accepts a dictionary of metadata key/value pairs and updates the specified account metadata with them. </p>
-<p>If 'clear' is True, any existing metadata is deleted and only the passed metadata is retained. Otherwise, the values passed here update the account's metadata. </p>
+<p>If 'clear' is True, any existing metadata is deleted and only the passed metadata is retained. Otherwise, the values passed here update the account's metadata.</p>
+<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -1650,7 +1709,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>clear</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>clear</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1662,7 +1727,8 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Accepts a dictionary of metadata key/value pairs and updates the specified container metadata with them. </p>
-<p>If 'clear' is True, any existing metadata is deleted and only the passed metadata is retained. Otherwise, the values passed here update the container's metadata. </p>
+<p>If 'clear' is True, any existing metadata is deleted and only the passed metadata is retained. Otherwise, the values passed here update the container's metadata.</p>
+<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -1770,7 +1836,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>clear</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>clear</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1782,7 +1854,8 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Accepts a dictionary of metadata key/value pairs and updates the specified object metadata with them. </p>
-<p>If 'clear' is True, any existing metadata is deleted and only the passed metadata is retained. Otherwise, the values passed here update the object's metadata. </p>
+<p>If 'clear' is True, any existing metadata is deleted and only the passed metadata is retained. Otherwise, the values passed here update the object's metadata.</p>
+<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -1873,7 +1946,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>return_none</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>return_none</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1885,7 +1964,8 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Creates a new object in the specified container, and populates it with the given data. </p>
-<p>A StorageObject reference to the uploaded file will be returned, unless 'return_none' is set to True. </p>
+<p>A StorageObject reference to the uploaded file will be returned, unless 'return_none' is set to True.</p>
+<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -2007,7 +2087,19 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>ttl</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>ttl</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>content_length</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2021,6 +2113,7 @@ Properties</h2></td></tr>
 <p>Uploads the specified file to the container. </p>
 <p>If no name is supplied, the file's name will be used. Either a file path or an open file-like object may be supplied. A StorageObject reference to the uploaded file will be returned, unless 'return_none' is set to True.</p>
 <p>You may optionally set the `content_type` and `content_encoding` parameters; pyrax will create the appropriate headers when the object is stored.</p>
+<p>If the size of the file is known, it can be passed as `content_length`.</p>
 <p>If you wish for the object to be temporary, specify the time it should be stored in seconds in the `ttl` parameter. If this is specified, the object will be deleted after that number of seconds. Returns the size of a file-like object. </p>
 
 </div>
@@ -2260,7 +2353,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 27 2013 23:24:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Aug 6 2013 12:09:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

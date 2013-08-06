@@ -10,7 +10,7 @@ Start by listing all the servers in your account:
     cs = pyrax.cloudservers
     print cs.servers.list()
 
-If you already have Cloud Servers, you will get back a list of `Server` objects. But if you are just getting started with the Rackspace Cloud, and you got back an empty list, creating a new cloud server would be a good first step.
+If you already have Cloud Servers, you get back a list of `Server` objects. But if you are just getting started with the Rackspace Cloud, and you got back an empty list, creating a new cloud server would be a good first step.
 
 To do that, you'll need to specify the operating system image to use for your new server, as well as the flavor. `Flavor` is a class that represents the combination of RAM and disk size for the new server.
 
@@ -140,10 +140,26 @@ You can do something similar to get the 512MB flavor:
 
 Note that these calls are somewhat inefficient, so if you are going to be working with images and flavors a lot, it is best to make the listing call once and store the results locally. Images and flavors typically do not change very often.
 
+## SSH Key Authentication
+The default method for authenticating to a server is by supplying a username/password combination. However, when using SSH to connect to a Linux server, it is generally preferable to authenticate using an SSH key.
+
+You can store your public key on the API server, giving it a name that can be used to identify it when creating a server. Here is an example of storing your key:
+
+    with open(os.path.expanduser("~/.ssh/id_rsa.pub")) as keyfile:
+        cs.keypairs.create("my_key", keyfile.read())
+
+The first line above assumes that your public key is named "**id_rsa.pub**", and is located in the "**.ssh**" folder inside your home directory. This is a typical case; if your file location differs, change the path accordingly. After the above code executes, your key is saved in your account, and you can reference by the name you gave it; in this case, "**my_key**".
+
 ## Creating a Server
 Now that you have the image and flavor objects you want (actually, it's their `id` attributes you really need), you are ready to create your new cloud server! To do this, call the `create()` method, passing in the name you want to give to the new server, along with the IDs for the desired image and flavor.
 
     server = cs.servers.create("first_server", ubu_image.id, flavor_512.id)
+
+If you wanted to create the server with your SSH key as described in the preceeding section, add it using the `key_name` parameter:
+
+    server = cs.servers.create("first_server", ubu_image.id, flavor_512.id,
+            key_name="my_key")
+
 
 This returns a new `Server` object. You can test it out using the following code:
 
@@ -163,9 +179,9 @@ Wait - the server has no network addresses? How useful is that? How are you supp
 
 If you ran that code, you noticed that it returned almost immediately. What happened is that the cloud API recorded your request, and returned as much information as it could about the server that it was *going to create*. The networking for the server had not yet been created, so it could not provide that information.
 
-One important piece of information is the __adminPass__ – without that, you will not be able to log into your server. It is *only* supplied with the `Server` object returned from the initial `create()` request. After that you can no longer retrieve it. Note: if this does happen, you can call the `change_password()` method of the `Server` object to set a new root password on the server.
+One important piece of information is the __adminPass__ – without that, you are not be able to log into your server unless you are using SSH key authentication. It is *only* supplied with the `Server` object returned from the initial `create()` request. After that, future calls to `get()` the server do not return that value. Note: if this does happen, you can call the `change_password()` method of the `Server` object to set a new root password on the server.
 
-This brings up an important point: the `Server` objects you get back are essentially snapshots of that server at the moment you requested the information. Your object's 'BUILD' status won't change no matter how long you wait. You will have to refresh it to see any changes. In other words, these objects are not dynamic. Fortunately, refreshing the object is simple enough to do:
+This brings up an important point: the `Server` objects you get back are essentially snapshots of that server at the moment you requested the information. Your object's 'BUILD' status won't change no matter how long you wait. You have to refresh it to see any changes. In other words, these objects are not dynamic. Fortunately, refreshing the object is simple enough to do:
 
     server = cs.servers.get(server.id)
 
@@ -181,12 +197,11 @@ This should return something like:
 Since you can't do anything with your new server until it finishes building, it would be helpful to have a way of determining when the build is complete. So `pyrax` includes the `wait_until()` method in its `utils` module. Here is a typical usage:
 
     srv = cs.servers.create(…)
-    new_srv = pyrax.utils.wait_until(srv, "status",
-            ["ACTIVE", "ERROR"], attempts=0)
+    new_srv = pyrax.utils.wait_until(srv, "status", ["ACTIVE", "ERROR"])
 
-When you run the above code, execution will block until the server's status reaches one of the two values in the list. Note that we just don't want to check for "ACTIVE" status, since server creation can fail, and the `wait_until()` call will wait forever.
+When you run the above code, execution blocks until the server's status reaches one of the two values in the list. Note that we just don't want to check for "ACTIVE" status, since server creation can fail, and the `wait_until()` call waits forever.
 
-Another common use case is when you are creating several servers, and you don't want to block your app's execution while each server builds. For this case, you can pass a callback function to `wait_until()`, which will create a separate thread for the wait process, and that callback function will be called when `wait_until()` completes.
+Another common use case is when you are creating several servers, and you don't want to block your app's execution while each server builds. For this case, you can pass a callback function to `wait_until()`, which creates a separate thread for the wait process, and that callback function is called when `wait_until()` completes.
 
 #### Parameters for wait_until():
 
@@ -194,12 +209,26 @@ Another common use case is when you are creating several servers, and you don't 
 | ---- | ---- | ---- |
 | obj | Yes | The object to examine. |
 | att | Yes | The name of the attribute of the object to examine. |
-| desired | Yes | The desired value(s) of the attribute. |
-| callback | No | An optional function that will be called when the `wait_until()` process completes. Providing the callback makes wait_until() non-blocking. The callback function should accept a single parameter: the updated version of the object. |
-| interval | No | How long (in seconds) to wait between checking the object for changes in the target attribute. |
-| attempts | No | How many times should wait_until() check the object before giving up? Passing `attempts=0` will cause `wait_until()` to loop until the desired attribute value is reached. |
-| verbose | No | When True, each attempt will print out the current value of the watched attribute and the time that has elapsed since the original request. Note that if a callback function is specified, the value of `verbose` is ignored; all print output is suppressed. |
-| verbose_atts | No | A list of additional attributes whose values will be printed out for each attempt. If `verbose=False`, this parameter has no effect. |
+| desired | Yes | The desired value(s) of the attribute that the method waits for. |
+| callback | No | An optional function that is called when the `wait_until()` process completes. Providing the callback makes wait_until() non-blocking. The callback function should accept a single parameter: the updated version of the object. Default = `None` |
+| interval | No | How long (in seconds) to wait between polling the API for changes in the target object's attribute. Default = `5` seconds.|
+| attempts | No | How many times should wait_until() check the object before giving up? Passing `attempts=0` causes `wait_until()` to loop until the desired attribute value is reached. Default = `0`, meaning that `wait_until()` loops indefinitely until one of the attribute in `att` reaches one of the `desired` values. |
+| verbose | No | When True, each attempt prints out the current value of the watched attribute and the time that has elapsed since the original request. Note that if a callback function is specified, the value of `verbose` is ignored; all print output is suppressed. Default = `False` |
+| verbose_atts | No | A list of additional attributes whose values are printed out for each attempt. If `verbose=False`, this parameter has no effect. Default = `None` |
+
+### Even Easier: `wait_for_build()`
+Since waiting for servers (as well as databases and load balancers) to build is such a common use case, pyrax provides a convenience method that provides the most common default values for `wait_until()`. So assuming that you have a reference `srv` to a newly-created server, you can call:
+
+    wait_for_build(srv)
+
+and this would be equivalent to the call:
+
+    wait_until(srv, "status", ["ACTIVE", "ERROR"], interval=20, callback=None,
+            attempts=0, verbose=False, verbose_atts="progress")
+
+You can override any of these defaults in the call to `wait_for_build()`. For example, if you want verbose output, you would call:
+
+    wait_for_build(srv, verbose=True)
 
 
 ### Additional Parameters to Create()
@@ -207,7 +236,9 @@ There are several optional parameters that you can include when creating a serve
 
 `meta` - An arbitrary dict of up to 5 key/value pairs that can be stored with the server. Note that the keys and values must be simple strings, and not numbers, datetimes, tuples, or anything else.
 
-`files` - A dict of up to 5 files that will be written to the server upon creation. The keys for this dict are the absolute file paths on the server where these files will be written, and the values are the contents for those files. Values can either be a string, or a file-like object that will be read. File sizes are limited to 10K, and binary files are not supported (text only).
+`key_name` – As mentioned above, this is the name you gave to an SSH key that you previously uploaded using `cs.keypairs.create()`. The key is installed in the newly-created server's `/root/.ssh/authorized_keys` file, allowing for key-based authenticating when SSHing into the server.
+
+`files` - A dict of up to 5 files that are written to the server upon creation. The keys for this dict are the absolute file paths on the server where these files are written, and the values are the contents for those files. Values can either be a string, or a file-like object that is read. File sizes are limited to 10K, and binary files are not supported (text only).
 
 Now create a server using the `meta` and `files` options. The setup code is the same as in the previous examples; here is the part that you need to change:
 
@@ -231,7 +262,7 @@ Finally, when you are done with a server, you can easily delete it:
 
     server.delete()
 
-Note that the server isn't deleted immediately (though it usually does happen pretty quickly). If you try refreshing your server object just after calling `delete()`, the call will probably succeed. But trying again a few seconds later will result in a `NotFound` exception being raised.
+Note that the server isn't deleted immediately (though it usually does happen pretty quickly). If you try refreshing your server object just after calling `delete()`, the call may succeed. But trying again a few seconds later results in a `NotFound` exception being raised.
 
 ## Deleting All Servers
 Since each `Server` object has a `delete()` method, it is simple to delete all the servers that you've created:
@@ -252,14 +283,15 @@ Another option is to use call `pyrax.servers.create_image()`, passing in either 
     cs = pyrax.cloudservers
     cs.servers.create_image("my_awesome_server", "my_image_name")
 
-The created image will also appear in the list of images with the name you gave it.
+The created image also appears in the list of images with the name you gave it.
 
     cs.images.list()
 
-You will need to wait for the imaging to finish before you are able to clone it.
+You need to wait for the imaging to finish before you are able to clone it.
 
     image_id = server.create_image("base_image")
-    # Unlike the create_server() call, create_image() returns the id rather than an Image object
+    # Unlike the create_server() call, create_image() returns the id
+    # rather than an Image object.
     image = cs.images.get(im)
     image = pyrax.wait_until(image, "status", ["ACTIVE", "ERROR"], attempts=0)
     cs.servers.create(name="clone", image=image.id, flavor=my_flavor)
@@ -268,24 +300,23 @@ You will need to wait for the imaging to finish before you are able to clone it.
 ## Resizing a Server
 Resizing a server is the process of changing the amount of resources allocated to the server. In Cloud Servers terms, it means changing the Flavor of the server: that is, changing the RAM and disk space allocated to that server.
 
-Resizing is a multi-step process. First, determine the desired `Flavor` to which the server is to be resized. Then call the `resize()` method on the server, passing in the ID of the desired `Flavor`. The server's status will then be set to "RESIZE".
+Resizing is a multi-step process. First, determine the desired `Flavor` to which the server is to be resized. Then call the `resize()` method on the server, passing in the ID of the desired `Flavor`. The server's status is then set to "RESIZE".
 
     cs = pyrax.cloudservers
     server = cs.servers.get(id_of_server)
     server.resize(new_flavor_ID)
 
-On the host, a new server instance with the new flavor size will be created based on your existing server. When it is ready, the ID, name, networking, and so forth for the current server instance will be transferred to the new instance. At that point, `get(ID)` will return the new instance, and it will have a status of "VERIFY_RESIZE". Now you will need to determine if the resize was successful, and that the server is functioning properly. If all is well, call:
+On the host, a new server instance with the new flavor size is created based on your existing server. When it is ready, the ID, name, networking, and so forth for the current server instance is transferred to the new instance. At that point, `get(ID)` returns the new instance, and it has a status of "VERIFY_RESIZE". Now you need to determine if the resize was successful, and that the server is functioning properly. If all is well, call:
 
     server.confirm_resize()
 
-and the old instance will be deleted, and the new server's status will be set to "ACTIVE". However, if there are any problems with the new server, call:
+and the old instance is then deleted, and the new server's status is set to "ACTIVE". However, if there are any problems with the new server, call:
 
     server.revert_resize()
 
 to restore the original server, and delete the resized version.
 
 ## Resetting a Server's State
-Occasionally a server gets "stuck" in a particular state when a process fails or otherwise gets interrupted. For example, if you called `server.create_image("image_name")`, but something went wrong during the process, you can delete the bad image, but the server's state will still be stuck in `task_state image_snapshot`, and you will not be able to perform actions with that server, such as creating another image. If you ever find one of your servers in this state, you can use the following command to reset its state back to "ACTIVE":
+Occasionally a server gets "stuck" in a particular state when a process fails or otherwise gets interrupted. For example, if you called `server.create_image("image_name")`, but something went wrong during the process, you can delete the bad image, but the server's state is still stuck in `task_state image_snapshot`, and you cannot perform actions with that server, such as creating another image. If you ever find one of your servers in this state, you can use the following command to reset its state back to "ACTIVE":
 
     cs.servers.reset_state("ACTIVE")
-

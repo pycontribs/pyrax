@@ -125,10 +125,10 @@ This table lists the algorithms and how they work:
 
 Algorithm | Description
 ---- | ----
-LEAST_CONNECTIONS | The node with the lowest number of connections will receive requests.
+LEAST_CONNECTIONS | The node with the lowest number of connections receives the requests.
 RANDOM | Back-end servers are selected at random.
 ROUND_ROBIN | Connections are routed to each of the back-end servers in turn.
-WEIGHTED_LEAST_CONNECTIONS | Each request will be assigned to a node based on the number of concurrent connections to the node and its weight.
+WEIGHTED_LEAST_CONNECTIONS | Each request is assigned to a node based on the number of concurrent connections to the node and its weight.
 WEIGHTED_ROUND_ROBIN | A round robin algorithm, but with different proportions of traffic being directed to the back-end nodes. Weights must be defined as part of the load balancer's node configuration.
 
 
@@ -170,7 +170,7 @@ UDP_STRE (UDP_STREAM) | This protocol is designed to stream media over networks 
 ## SSL Termination
 The SSL Termination feature allows a load balancer user to terminate SSL traffic at the load balancer layer versus at the web server layer. A user may choose to configure SSL Termination using a key and an SSL certificate or an (Intermediate) SSL certificate.
 
-When SSL Termination is configured on a load balancer, a secure shadow server is created that listens only for secure traffic on a user-specified port. This shadow server is only visible to and manageable by the system. Existing or updated attributes on a load balancer with SSL Termination also apply to its shadow server. For example, if Connection Logging is enabled on an SSL load balancer, it will also be enabled on the shadow server and Cloud Files logs will contain log files for both.
+When SSL Termination is configured on a load balancer, a secure shadow server is created that listens only for secure traffic on a user-specified port. This shadow server is only visible to and manageable by the system. Existing or updated attributes on a load balancer with SSL Termination also apply to its shadow server. For example, if Connection Logging is enabled on an SSL load balancer, it is also enabled on the shadow server and Cloud Files logs contain log files for both.
 
 NOTE: SSL termination should not be used when transferring certain types of Personally Identifiable Information (PII). For the definition of PII, see this [Knowledge Center article](http://www.rackspace.com/knowledge_center/article/definition-of-personally-identifiable-information-pii).
 
@@ -399,8 +399,8 @@ Name | Description | Default | Required
 attemptsBeforeDeactivation | Number of permissible monitor failures before removing a node from rotation. Must be a number between 1 and 10. | 3 | Yes
 bodyRegex | A regular expression that is used to evaluate the contents of the body of the response. | None | Yes
 delay | The minimum number of seconds to wait before executing the health monitor. Must be a number betwe en 1 and 3600. | 10 | Yes
-hostHeader | The name of a host for which the health monitors will check. | None | No
-path | The HTTP path that will be used in the sample request. | "/" | Yes
+hostHeader | The name of a host for which the health monitors check. | None | No
+path | The HTTP path that is used in the sample request. | "/" | Yes
 statusRegex | A regular expression that is used to evaluate the HTTP status code returned in the res ponse. | None | Yes
 timeout | Maximum number of seconds to wait for a connection to be established before timing out. Must be a number between 1 and 300. | 10 | Yes
 type | Type of the health monitor. Must be specified as "HTTP" to monitor an HTTP response or "HTTPS" to monitor an HTTPS response. | None | Yes
@@ -421,7 +421,7 @@ Session persistence is a feature of the load balancing service that forces multi
 | Name | Description |
 | ---- | ----------- |
 | HTTP_COOKIE | A session persistence mechanism that inserts an HTTP cookie and is used to determine the destination back-end node. This is supported for HTTP load balancing only. |
-| SOURCE_IP | A session persistence mechanism that will keep track of the source IP address that is mapped and is able to determine the destination back-end node. This is supported for HTTPS pass-through and non-HTTP load balancing only. |
+| SOURCE_IP | A session persistence mechanism that keeps track of the source IP address that is mapped and is able to determine the destination back-end node. This is supported for HTTPS pass-through and non-HTTP load balancing only. |
 
 To get the session persistence setting for a load balancer, you would run:
 

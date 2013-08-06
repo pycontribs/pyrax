@@ -48,6 +48,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li class="current"><a href="namespaces.html"><span>Packages</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -70,6 +71,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
       <li><a href="namespaces.html"><span>Packages</span></a></li>
+      <li><a href="namespacemembers.html"><span>Package&#160;Functions</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -77,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Properties</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -94,17 +96,94 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">pyrax::clouddns Namespace Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSRecord.html">CloudDNSRecord</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This class represents a domain record.  <a href="classpyrax_1_1clouddns_1_1CloudDNSRecord.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSDomain.html">CloudDNSDomain</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This class represents a DNS domain.  <a href="classpyrax_1_1clouddns_1_1CloudDNSDomain.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSPTRRecord.html">CloudDNSPTRRecord</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This represents a Cloud DNS PTR record (reverse DNS).  <a href="classpyrax_1_1clouddns_1_1CloudDNSPTRRecord.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSManager.html">CloudDNSManager</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html">CloudDNSClient</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the primary class for interacting with Cloud DNS.  <a href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1ResultsIterator.html">ResultsIterator</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This object will iterate over all the results for a given type of listing, no matter how many items exist.  <a href="classpyrax_1_1clouddns_1_1ResultsIterator.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1DomainResultsIterator.html">DomainResultsIterator</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpyrax_1_1clouddns_1_1ResultsIterator.html" title="This object will iterate over all the results for a given type of listing, no matter how many items e...">ResultsIterator</a> subclass for iterating over all domains.  <a href="classpyrax_1_1clouddns_1_1DomainResultsIterator.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1SubdomainResultsIterator.html">SubdomainResultsIterator</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpyrax_1_1clouddns_1_1ResultsIterator.html" title="This object will iterate over all the results for a given type of listing, no matter how many items e...">ResultsIterator</a> subclass for iterating over all subdomains.  <a href="classpyrax_1_1clouddns_1_1SubdomainResultsIterator.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1RecordResultsIterator.html">RecordResultsIterator</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpyrax_1_1clouddns_1_1ResultsIterator.html" title="This object will iterate over all the results for a given type of listing, no matter how many items e...">ResultsIterator</a> subclass for iterating over all domain records.  <a href="classpyrax_1_1clouddns_1_1RecordResultsIterator.html#details">More...</a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1clouddns.html#ae456353f0a4abcc4b605b5eeac0656d1">assure_domain</a></td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1clouddns.html#aa66130c897c01393a63de104588aceb7">DEFAULT_TIMEOUT</a> = 5</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1clouddns.html#a0695d4ce7bb0b1de03ba3068cde8d89a">DEFAULT_DELAY</a> = 0.5</td></tr>
+</table>
+<hr/><h2>Function Documentation</h2>
+<a class="anchor" id="ae456353f0a4abcc4b605b5eeac0656d1"></a><!-- doxytag: member="pyrax::clouddns::assure_domain" ref="ae456353f0a4abcc4b605b5eeac0656d1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1clouddns.html#ae456353f0a4abcc4b605b5eeac0656d1">pyrax.clouddns.assure_domain</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>fnc</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<hr/><h2>Variable Documentation</h2>
+<a class="anchor" id="a0695d4ce7bb0b1de03ba3068cde8d89a"></a><!-- doxytag: member="pyrax::clouddns::DEFAULT_DELAY" ref="a0695d4ce7bb0b1de03ba3068cde8d89a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float <a class="el" href="namespacepyrax_1_1clouddns.html#a0695d4ce7bb0b1de03ba3068cde8d89a">DEFAULT_DELAY</a> = 0.5</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa66130c897c01393a63de104588aceb7"></a><!-- doxytag: member="pyrax::clouddns::DEFAULT_TIMEOUT" ref="aa66130c897c01393a63de104588aceb7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="namespacepyrax_1_1clouddns.html#aa66130c897c01393a63de104588aceb7">DEFAULT_TIMEOUT</a> = 5</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Properties</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -116,7 +195,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jul 23 2013 09:38:53 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 23 2013 13:59:44 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

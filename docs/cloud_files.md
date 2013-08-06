@@ -3,7 +3,7 @@
 ----
 
 ## Basic Concepts
-Rackspace Cloud Files allows you to store files in a scalable, redundant manner, and optionally make them available globally using the Akamai CDN network. Unlike a typical computer OS, though, Cloud Files consists of containers, each of which can store millions of objects. But unlike directories on your computer, you cannot nest containers within other containers: they exist only at the root level. However, you can simulate a nested folder structure by naming your objects with names that resemble traditional path notation; for example: "photos/vacations/2012/cancun/beach.jpg". So while all your files will be at the base level of their containers, you can retrieve them based on the "path" prefix.
+Rackspace Cloud Files allows you to store files in a scalable, redundant manner, and optionally make them available globally using the Akamai CDN network. Unlike a typical computer OS, though, Cloud Files consists of containers, each of which can store millions of objects. But unlike directories on your computer, you cannot nest containers within other containers: they exist only at the root level. However, you can simulate a nested folder structure by naming your objects with names that resemble traditional path notation; for example: "photos/vacations/2012/cancun/beach.jpg". So while all your files are at the base level of their containers, you can retrieve them based on the "path" prefix.
 
 In pyrax, Cloud Files is represented by `Container` and `StorageObject` classes. Once you're authenticated with pyrax, you can interact with Cloud Files via the `pyrax.cloudfiles` object. All of the example code that follows assumes that you have already imported pyrax and authenticated.
 
@@ -20,7 +20,7 @@ If you want to get an idea of the overall usage for your Cloud Files account, yo
 
     cf.get_account_metadata()
 
-This will return a dict that will look something like the following:
+This returns a dict that looks something like the following:
 
     {'x-account-bytes-used': '693966',
      'x-account-container-count': '4',
@@ -34,7 +34,7 @@ Accounts can have metadata (arbitrary key pairs) associated with them; this meta
     meta = {"color": "blue", "flower": "lily"}
     cf.set_account_metadata(meta)
 
-Note that by default this call will add all of the key pairs to your existing metadata. If you wish to overwrite any existing metadata with the new values, add the parameter `clear=True` to the call:
+Note that by default this call adds all of the key pairs to your existing metadata. If you wish to overwrite any existing metadata with the new values, add the parameter `clear=True` to the call:
 
     meta = {"color": "blue", "flower": "lily"}
     cf.set_account_metadata(meta, clear=True)
@@ -83,13 +83,13 @@ This should print:
 
     Container: <Container 'example'>
 
-Note that if there is no existing container with the name you specify, a `NoSuchContainer` exception is raised. A more robust option is the `create_container()` method, which will act like `get_container()` if the specified container exists, and if not, will create it first and return a matching `Container` object.
+Note that if there is no existing container with the name you specify, a `NoSuchContainer` exception is raised. A more robust option is the `create_container()` method, which acts like `get_container()` if the specified container exists, and if not, creates it first and then returns the `Container` object for it.
 
 
 ## [Storing Objects in Cloud Files](id:uploadfiles)
-There are two primary options for getting your objects into Cloud Files: passing the content directly, or passing in a file-like object reference. In the latter case, pyrax will read the content to be stored from the object. The two methods for this are `store_object()` and `upload_file()`, respectively.
+There are two primary options for getting your objects into Cloud Files: passing the content directly, or passing in a file-like object reference. In the latter case, pyrax reads the content to be stored from the object. The two methods for this are `store_object()` and `upload_file()`, respectively.
 
-You also have two options for specifying the container in which the object should be stored. If you already have the `Container` object, you can call either of those methods directly on the `Container`, and the object will be stored in the corresponding container. You can also pass the name of the container to pyrax.cloudfiles, and the container with that name will be chosen to store the object. If there is no container by that name, a `NoSuchContainer` exception is raised.
+You also have two options for specifying the container in which the object should be stored. If you already have the `Container` object, you can call either of those methods directly on the `Container`, and the object is stored in the corresponding container. You can also pass the name of the container to pyrax.cloudfiles, and the container with that name is chosen to store the object. If there is no container by that name, a `NoSuchContainer` exception is raised.
 
 Both methods take several optional parameters:
 
@@ -107,7 +107,7 @@ The example creates some simple content: a single text sentence stored in the va
 
 When an object is successfully created, you receive a `StorageObject` instance representing that object.
 
-One common issue when storing objects is ensuring that the object did not get changed or corrupted in the process. In other words, ensuring that the object that is stored is exactly what you uploaded. `StorageObject` instances have an `etag` attribute that is the MD5 checksum of the file as it exists on Cloud Files. You can run a checksum on your local copy to see if the two values match; if they do, the file was stored intact. However, if you're concerned about integrity, you can compute the MD5 checksum of your file before uploading, and then pass that value in the `etag` parameter of `store_object()` or `upload_file()`, and Cloud Files will check to make sure that its generated checksum matches your supplied etag. If the two don't match, the file is not stored in Cloud Files, and an `UploadFailed` exception is raised.
+One common issue when storing objects is ensuring that the object did not get changed or corrupted in the process. In other words, ensuring that the object that is stored is exactly what you uploaded. `StorageObject` instances have an `etag` attribute that is the MD5 checksum of the file as it exists on Cloud Files. You can run a checksum on your local copy to see if the two values match; if they do, the file was stored intact. However, if you're concerned about integrity, you can compute the MD5 checksum of your file before uploading, and then pass that value in the `etag` parameter of `store_object()` or `upload_file()`, and Cloud Files checks to make sure that its generated checksum matches your supplied etag. If the two don't match, the file is not stored in Cloud Files, and an `UploadFailed` exception is raised.
 
 To make this a simpler process, pyrax includes a utility method for calculating the MD5 checksum; it accepts either raw text or a file-like object. So try this again, this time sending the checksum as the `etag` parameter:
 
@@ -118,7 +118,7 @@ To make this a simpler process, pyrax includes a utility method for calculating 
     print "Calculated checksum:", chksum
     print "Stored object etag:", obj.etag
 
-If all went well, the two values will match. If not, an `UploadFailed` exception would have been raised, and the object would not be stored in Cloud Files.
+If all went well, the two values are identical. If not, an `UploadFailed` exception would have been raised, and the object would not be stored in Cloud Files.
 
 If you have a `Container` object, you can call `store_object()` directly on it to store an object into that container:
 
@@ -129,7 +129,7 @@ If you have a `Container` object, you can call `store_object()` directly on it t
     print "Calculated checksum:", chksum
     print "Stored object etag:", obj.etag
 
-Most of the time, though, you won't have raw text in your code to store; the more likely situation is that you want to store files that exist on your computer into Cloud Files. The way to do that is essentially the same, except that you call `upload_file()`, and pass the full path to the file you want to upload. Additionally, specifying the object's name is optional, since pyrax will use the name of the file as the stored object name by default. `upload_file()` accepts the same `etag` parameter that `store_object()` does, and etag verification works the same way.
+Most of the time, though, you won't have raw text in your code to store; the more likely situation is that you want to store files that exist on your computer into Cloud Files. The way to do that is essentially the same, except that you call `upload_file()`, and pass the full path to the file you want to upload. Additionally, specifying the object's name is optional, since pyrax uses the name of the file as the stored object name by default. `upload_file()` accepts the same `etag` parameter that `store_object()` does, and etag verification works the same way.
 
     pth = "/home/me/path/to/myfile.txt"
     chksum = pyrax.utils.get_checksum(pth)
@@ -139,7 +139,7 @@ Most of the time, though, you won't have raw text in your code to store; the mor
 
 And just as with `store_object()`, you can call `upload_file()` directly on a `Container` object.
 
-Note that (currently) both `store_object()` and `upload_file()` run synchronously, so your code will block while the transfer occurs. If you plan on building an application that will involve significant file transfer, you should plan on making these calls using an asynchronous approach such as threading, eventlet, twisted, or another similar approach.
+Note that (currently) both `store_object()` and `upload_file()` run synchronously, so your code blocks while the transfer occurs. If you plan on building an application that involves significant file transfer, you should plan on making these calls using an asynchronous approach such as the `threading` module, `eventlet`, `twisted`, or another similar approach.
 
 
 ## Retrieving (Downloading) Stored Objects
@@ -209,9 +209,9 @@ These commands take an optional parameter named `structure`. When `True` (the de
 
 
 ## Uploading an Entire Folder to Cloud Files
-A very common use case is needing to upload an entire folder, including subfolders, to a Cloud Files container. Because this is so common, pyrax includes an `upload_folder()` method. You pass in the path to the folder you want to upload, and it will handle the rest in the background. If you specify the name of a container in your request, the folder contents will be uploaded to that container. If you don't specify a container name, a new container with the same name as the folder you are uploading will be created, and the objects stored in there.
+A very common use case is needing to upload an entire folder, including subfolders, to a Cloud Files container. Because this is so common, pyrax includes an `upload_folder()` method. You pass in the path to the folder you want to upload, and it handles the rest in the background. If you specify the name of a container in your request, the folder contents is uploaded to that container. If you don't specify a container name, a new container with the same name as the folder you are uploading is created, and the objects stored in there.
 
-You can also specify one or more file name patterns to ignore, and pyrax will skip any of the files that match any of the patterns. This is useful if there are files that you don't wish to retain, such as .pyc and .pyo files in a Python project. You can pass either a single string pattern, or a list of strings to use.
+You can also specify one or more file name patterns to ignore, and pyrax skips any of the files that match any of the patterns. This is useful if there are files that you don't wish to retain, such as .pyc and .pyo files in a Python project. You can pass either a single string pattern, or a list of strings to use.
 
 `upload_folder()` accepts the same optional parameters as `upload_file()`: `content_type`, `content_encoding`, and `ttl`. See the section on [Storing Objects in Cloud Files](#uploadfiles) for an explanation of these parameters. Calling `upload_folder()` returns a 2-tuple: the key for the upload process, and the total bytes to be uploaded. You can use the key to query `pyrax.cloudfiles` for the status of the upload, or to cancel it if necessary.
 
@@ -219,19 +219,19 @@ Here are some examples, using the local folder **"/home/me/projects/cool_project
 
     folder = "/home/me/projects/cool_project/"
 
-    # This will create a new container named 'cool_project', and
-    # upload the contents of the target folder to it
+    # This creates a new container named 'cool_project', and
+    # uploads the contents of the target folder to it.
     upload_key, total_bytes = cf.upload_folder(folder)
 
-    # This will upload the contents of the target folder to a container
-    # named 'software'. If that container does not exist, it will be created.
+    # This uploads the contents of the target folder to a container
+    # named 'software'. If that container does not exist, it is created.
     upload_key, total_bytes = cf.upload_folder(folder, container="software")
 
-    # This is the same as above, but will ignore any files ending in '.pyc'
+    # This is the same as above, but ignores any files ending in '.pyc'
     upload_key, total_bytes = cf.upload_folder(folder, container="software",
             ignore="*.pyc")
 
-    # Same as above, but will skip several different file name patterns
+    # Same as above, but skips several different file name patterns
     upload_key, total_bytes = cf.upload_folder(folder, container="software",
             ignore=["*.pyc", "*.tgz", "tmp*"])
 
@@ -241,7 +241,7 @@ Since a folder upload can take a while, the uploading happens in a background th
 
 
 ### Interrupting Folder Uploads
-Sometimes it is necessary to stop a folder upload before it has completed. To do this, call `cloudfiles.cancel_folder_upload(upload_key)`, which will cause the background thread to stop uploading.
+Sometimes it is necessary to stop a folder upload before it has completed. To do this, call `cloudfiles.cancel_folder_upload(upload_key)`, which causes the background thread to stop uploading.
 
 
 ## Syncing a Local Folder with a Container
@@ -268,13 +268,13 @@ Assuming you have a `Container` object, simply call:
 
     objects = cont.get_objects()
 
-This will return a list of StorageObjects representing the objects in the container. Note that since a container can hold millions of objects, there are several ways of limiting the number of objects returned by this method.
+This returns a list of `StorageObjects` representing the objects in the container. Note that since a container can hold millions of objects, there are several ways of limiting the number of objects returned by this method.
 
-The first limit is the default for Cloud Files: only the first 10,000 objects will be returned. If you absolutely must have more than that returned in a single call, you can call `cont.get_objects(full_listing=True)`. Be warned that very large containers may take a long time to respond, and connections may time out when waiting for millions of objects to be returned. Conversely, if you have lots of objects and only want to retrieve a much smaller set than 10,000, you can set the `limit` parameter to the maximum number of objects you want returned. If you later on want to get more, such as when paginating your object listings, use the `marker` parameter: setting it to the name of the last object returned from your previous `get_objects()` call will cause Cloud Files to return objects starting after the `marker` setting.
+The first limit is the default for Cloud Files: only the first 10,000 objects are returned. If you must have more than that returned in a single call, you can call `cont.get_objects(full_listing=True)`. Be warned that very large containers may take a long time to respond, and connections may time out when waiting for millions of objects to be returned. Conversely, if you have lots of objects and only want to retrieve a much smaller set than 10,000, you can set the `limit` parameter to the maximum number of objects you want returned. If you later on want to get more, such as when paginating your object listings, use the `marker` parameter: setting it to the name of the last object returned from your previous `get_objects()` call causes Cloud Files to return objects starting after the `marker` setting.
 
 There are also two ways to filter your results: the `prefix` and `delimiter` parameters to `get_objects()`. `prefix` works by only returning objects whose names begin with the value you set it to. `delimiter` takes a single character, and excludes any object whose name contains that character.
 
-To illustrate these uses, start by creating a new folder, and populating it with 10 objects. The first 5 will have names starting with "series_" followed by an integer between 0 and 4; the second 5 will simulate items in a nested folder. They will have names that are a single repeated character. The content of the objects is not important, as `get_objects()` works only on the names.
+To illustrate these uses, start by creating a new folder, and populating it with 10 objects. The first 5 have names starting with "series_" followed by an integer between 0 and 4; the second 5 simulate items in a nested folder. They have names that are a single repeated character. The content of the objects is not important, as `get_objects()` works only on the names.
 
     cont = cf.create_container("my_objects")
     for idx in xrange(5):
@@ -346,7 +346,7 @@ There are several ways to delete an object from Cloud Files.
 
 If you have the associated `StorageObject` instance for that object, just call its `obj.delete()` method. If you have the `Container` object, you can call its `cont.delete_object(obj_name)` method, passing in the object name. You can also call `pyrax.cloudfiles.delete_object(cont_name, obj_name)`, passing in the container and object names. Finally, if you want to delete all the objects in a container, just call the `container.delete_all_objects()` method.
 
-Note that these methods are asynchronous and return almost immediately. They do not wait until the object has actually been deleted, so there may be a period of several seconds where the object will still show up in the container. Do not interpret the presence of the object in the container soon after deleting it as a sign that the deletion failed.
+Note that these methods are asynchronous and return almost immediately. They do not wait until the object has actually been deleted, so there may be a period of several seconds where the object still shows up in the container. Do not interpret the presence of the object in the container soon after deleting it as a sign that the deletion failed.
 
 The following example illustrates object deletion:
 
@@ -382,7 +382,7 @@ The following example illustrates object deletion:
 ### Setting an Object's Expiration
 You can mark a storage object for deletion in the future by calling its `delete_in_seconds()` method. This method accepts an integer number of seconds after which you wish the object to be deleted from Cloud Files.
 
-Containers and the main client both have the related `delete_object_in_seconds(container, object, seconds)` method that will accomplish the same thing.
+Containers and the main client both have the related `delete_object_in_seconds(container, object, seconds)` method that accomplish the same thing.
 
 
 ## Copying / Moving Objects
@@ -392,7 +392,7 @@ Both methods take the parameters: `container, obj_name, new_container, new_obj_n
 
 
 ## Metadata for Containers and Objects
-Cloud Files allows you to set and retrieve arbitrary metadata on containers and storage objects. Metadata are simple key/value pairs, with both key and value being strings. Keys are case-insensitive, and are always returned in lowercase. The content of the metadata can be anything that is useful to you. The only requirement is that the keys begin with "X-Container-Meta-" and "X-Object-Meta-", respectively, for containers and storage objects. However, to make things easy for you, pyrax will automatically prefix your metadata headers with those strings if they aren't already present.
+Cloud Files allows you to set and retrieve arbitrary metadata on containers and storage objects. Metadata are simple key/value pairs, with both key and value being strings. Keys are case-insensitive, and are always returned in lowercase. The content of the metadata can be anything that is useful to you. The only requirement is that the keys begin with "X-Container-Meta-" and "X-Object-Meta-", respectively, for containers and storage objects. However, to make things easy for you, pyrax automatically prefixes your metadata headers with those strings if they aren't already present.
 
     cname = "example"
     cont = cf.create_container(cname)
@@ -404,8 +404,8 @@ Cloud Files allows you to set and retrieve arbitrary metadata on containers and 
 Unless you have explicitly added metadata to this container, you should see it print an empty dict here.
 
     # Create a dict of metadata. Make one key with the required prefix,
-    # and the other without, to illustrate how pyrax will 'massage'
-    # the keys to include the require prefix.
+    # and the other without, to illustrate how pyrax 'massages' the keys
+    # to include the require prefix.
     new_meta = {"X-Account-Meta-City": "Springfield",
             "Famous_Family": "Simpsons"}
     cf.set_container_metadata(cont, new_meta)
@@ -419,7 +419,7 @@ After running this, you should see:
     Updated metadata: {'x-container-meta-x-account-meta-city': 'Springfield',
     'x-container-meta-famous-family': 'Simpsons'}
 
-You can update the metadata for a container at any time by calling `cf.set_container_metadata()` again with a dict containing your new key/value pairs. That method takes an additional parameter `clear` which defaults to False; if you pass clear=True, any existing metadata is deleted, and only the metadata you pass in will remain. If you leave the default clear=False, the key/value pairs you pass will simply update the existing metadata.
+You can update the metadata for a container at any time by calling `cf.set_container_metadata()` again with a dict containing your new key/value pairs. That method takes an additional parameter `clear` which defaults to False; if you pass clear=True, any existing metadata is deleted, and only the metadata you pass in remains. If you leave the default clear=False, the key/value pairs you pass simply update the existing metadata.
 
 To remove a single key from a container's metadata, you can call either `cf.remove_container_metadata_key(cont, key)` or `cont.remove_metadata_key(key)`. Both methods do the same thing.
 
@@ -492,11 +492,11 @@ To remove a container from the public CDN, simply call:
 
     cont.make_private()
 
-One thing to keep in mind is that even though the container is updated immediately, it will remain on the CDN for a period of time, depending on the value of the TTL.
+One thing to keep in mind is that even though the container is updated immediately, it remains on the CDN for a period of time, depending on the value of the TTL.
 
 
 ### CDN Log Retention
-Setting this to True will result in the CDN log files being retained in a container in your Cloud Files account. By default it is turned off on public containers; in order to turn it on, call:
+Setting this to True results in the CDN log files being retained in a container in your Cloud Files account. By default it is turned off on public containers; in order to turn it on, call:
 
     cf.set_cdn_log_retention(container, True)
 
@@ -508,13 +508,13 @@ You can turn off log retention at any time by using the above commands and passi
 
 
 ### Purging CDN Objects
-Normally, deleting an object from a public container will cause it to be eventually deleted from the CDN network, subject to the container's TTL. In some cases, though, you may need to have an object removed from public access due to personal, business, or security concerns. Currently the CDN limits this to 25 such purge requests per day. More than that will require that you open a ticket with Rackspace to handle the request.
+Normally, deleting an object from a public container causes it to be eventually deleted from the CDN network, subject to the container's TTL. In some cases, though, you may need to have an object removed from public access due to personal, business, or security concerns. Currently the CDN limits this to 25 such purge requests per day. More than that requires that you open a ticket with Rackspace to handle the request.
 
 If you wish to purge an object from the CDN network, you need to run:
 
     cf.purge_cdn_object(container, obj, email_addresses=None)
 
-The `container` and `object` parameters refer to the container and object to be removed, respectively. The optional parameter `email_addresses` takes either a single valid email address or a list of addresses. If the `email_addresses` parameter is provided, an email will be sent to each address upon the successful purge of the object from the CDN network.
+The `container` and `object` parameters refer to the container and object to be removed, respectively. The optional parameter `email_addresses` takes either a single valid email address or a list of addresses. If the `email_addresses` parameter is provided, an email is sent to each address upon the successful purge of the object from the CDN network.
 
 If you have a `StorageObject` instance, you can call it directly instead:
 
@@ -528,7 +528,7 @@ The Temporary URL feature (TempURL) allows you to create limited-time Internet a
 
 This feature is useful if you want to allow a limited audience to download a file from your Cloud Files account or website. You can give out the TempURL and know that after a specified time, no one will be able to access your object through the address. Or, if you want to allow your audience to upload objects into your Cloud Files account, you can give them a TempURL. After the specified time expires, no one will be able to upload to the address.
 
-Additionally, you need not worry about time running out when someone downloads a large object. If the time expires while a file is being retrieved, the download will continue until it is finished. Only the link will expire.
+Additionally, you need not worry about time running out when someone downloads a large object. If the time expires while a file is being retrieved, the download continues until it is finished. Only the link expires.
 
 To create a Temporary URL, you must first set a key that only you know. This key can be any arbitrary sequence as it is for encoding your account. Once the key is set, you should not change it while you still want others to be able to access your temporary URL. If you change it, the TempURL becomes invalid (within 60 seconds, which is the cache time for a key) and others will not be allowed to access it.
 
@@ -543,7 +543,7 @@ In either case, you can retrieve your key by calling:
 
     key = cf.get_temp_url_key()
 
-Once your key has been set, you can generate the TempURL by passing in the name of the container, the name of the object, the number of seconds you want the URL to be valid, and the method (either 'GET' or 'PUT'; default='GET'). In this example, a TempURL is generated for GETting an object named "photo.jpg" in the "vacation" container. This URL will be good for 24 hours.
+Once your key has been set, you can generate the TempURL by passing in the name of the container, the name of the object, the number of seconds you want the URL to be valid, and the method (either 'GET' or 'PUT'; default='GET'). In this example, a TempURL is generated for GETting an object named "photo.jpg" in the "vacation" container. This URL is good for 24 hours.
 
     secs = 24 * 60 * 60
     url = cf.get_temp_url("vacation", "photo.jpg", seconds=secs, method="GET")
@@ -556,4 +556,4 @@ Similarly, if you have a StorageObject reference, you can call its get_temp_url(
     # Assume we have a Container 'cont'
     cont.get_temp_url("object_name", 300)
 
-Note that in both of these we omitted the method; this will result in the default method of "GET" being used.
+Note that in both of these we omitted the method; this results in the default method of "GET" being used.
