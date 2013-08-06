@@ -227,7 +227,7 @@ class BaseAuth(object):
         the resulting response object.
         """
         if not uri.startswith("http"):
-            uri = urlparse.urljoin(self.auth_endpoint, uri)
+            uri = "/".join((self.auth_endpoint.rstrip("/"), uri))
         if admin:
             # Admin calls use a different port
             uri = re.sub(r":\d+/", ":35357/", uri)
@@ -266,8 +266,15 @@ class BaseAuth(object):
                     "credentials received")
         elif resp.status_code > 299:
             msg_dict = resp.json()
-            msg = msg_dict[msg_dict.keys()[0]]["message"]
-            raise exc.AuthenticationFailed("%s - %s." % (resp.reason, msg))
+            try:
+                msg = msg_dict[msg_dict.keys()[0]]["message"]
+            except KeyError:
+                msg = None
+            if msg:
+                err = "%s - %s." % (resp.reason, msg)
+            else:
+                err = "%s." % resp.reason
+            raise exc.AuthenticationFailed(err)
         resp_body = resp.json()
         self._parse_response(resp_body)
         self.authenticated = True
@@ -286,7 +293,7 @@ class BaseAuth(object):
         for svc in svc_cat:
             # Replace any dashes with underscores.
             # Also, some service types have RAX-specific identifiers; strip them.
-            typ = svc["type"].replace("-", "_").lstrip("rax:")
+            typ = svc["type"].replace("-", "_").replace("rax:", "")
             if typ == "compute":
                 if svc["name"].lower() == "cloudservers":
                     # First-generation Rackspace cloud servers

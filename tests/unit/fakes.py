@@ -88,6 +88,14 @@ class FakeStorageObject(StorageObject):
             self._read_attdict(attdict)
 
 
+fake_attdict = {"name": "fake",
+        "content-length": 42,
+        "content-type": "text/html",
+        "etag": "ABC",
+        "last-modified": "Tue, 01 Jan 2013 01:02:03 GMT",
+        }
+
+
 class FakeServer(object):
     id = utils.random_name()
 

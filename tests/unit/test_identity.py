@@ -308,6 +308,7 @@ class IdentityTest(unittest.TestCase):
         for rgn in expected:
             self.assert_(rgn in pyrax.regions)
 
+
     def test_http_methods(self):
         ident = self.base_identity_class()
         ident._call = Mock()
@@ -344,7 +345,7 @@ class IdentityTest(unittest.TestCase):
         requests.post = Mock()
         sav_debug = ident.http_log_debug
         ident.http_log_debug = True
-        uri = utils.random_name()
+        uri = "https://%s/%s" % (utils.random_name(), utils.random_name())
         sav_stdout = sys.stdout
         out = StringIO.StringIO()
         sys.stdout = out
@@ -369,6 +370,26 @@ class IdentityTest(unittest.TestCase):
         requests.post = sav_post
         ident.http_log_debug = sav_debug
         sys.stdout = sav_stdout
+
+    def test_call_without_slash(self):
+        ident = self.base_identity_class()
+        ident._get_auth_endpoint = Mock()
+        ident._get_auth_endpoint.return_value = "http://example.com/v2.0"
+        ident.verify_ssl = False
+        mthd = Mock()
+        ident._call(mthd, "tokens", False, {}, {}, False)
+        mthd.assert_called_with("http://example.com/v2.0/tokens", data=None,
+            headers={}, verify=False)
+
+    def test_call_with_slash(self):
+        ident = self.base_identity_class()
+        ident._get_auth_endpoint = Mock()
+        ident._get_auth_endpoint.return_value = "http://example.com/v2.0/"
+        ident.verify_ssl = False
+        mthd = Mock()
+        ident._call(mthd, "tokens", False, {}, {}, False)
+        mthd.assert_called_with("http://example.com/v2.0/tokens", data=None,
+            headers={}, verify=False)
 
     def test_list_users(self):
         ident = self.rax_identity_class()

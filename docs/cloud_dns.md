@@ -27,7 +27,7 @@ All of the code samples in this document assume that you have already imported `
 ## Response Timeouts
 Many API calls in Cloud DNS do not wait to complete before returning; instead, they return immediately with a URI that can be used to get updates on the request. This is done because the API server has to communicate with the DNS servers, and that can take a while sometimes.
 
-This is generally of no concern to a developer, as the calls almost always complete within less than a second, so `pyrax` handles the checking of the status update of a call for you, and when complete, will return the final results. By default, `pyrax` will wait for up to 5 seconds for the call to complete; if it has not completed by then, a `DNSCallTimedOut``` exception will be raised.
+This is generally of no concern to a developer, as the calls almost always complete within less than a second, so `pyrax` handles the checking of the status update of a call for you, and when complete, returns the final results. By default, `pyrax` waits for up to 5 seconds for the call to complete; if it has not completed by then, a `DNSCallTimedOut` exception is raised.
 
 If you need to change that timeout period from the default, make the following call:
 
@@ -419,12 +419,10 @@ The following example shows how to change the TTL of a server whose domain name 
 
 
 ## Deleting PTR Records
-You may delete one or all of the PTR records for a given device by calling the `delete_ptr_records()` method and passing in the device reference. All PTR records for a device are deleted if you pass only the device reference. However, if you specify an IP address, only the record for that address will be deleted.
+You may delete one or all of the PTR records for a given device by calling the `delete_ptr_records()` method and passing in the device reference. All PTR records for a device are deleted if you pass only the device reference. However, if you specify an IP address, only the record for that address is deleted.
 
     server = pyrax.cloudservers.servers.get(id_of_server)
     # To delete just one PTR record:
     dns.delete_ptr_records(server, ip_address="1.2.3.4")
     # To delete all PTR records for the device:
     dns.delete_ptr_records(server)
-
-

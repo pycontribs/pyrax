@@ -183,7 +183,7 @@ The above configuration file defines two environments: **private** and **public*
 
 When using the 'private' environment, pyrax uses Keystone authentication with the tenant name of 'demo', the tenant ID of 'abc123456', and the password stored in the keyring for user 'demo'. It also emits debugging messages for all HTTP requests and responses, and each request contains the standard `User-agent` header of 'pyrax/1.4.x'.
 
-If the environment is then changed to 'public', pyrax switches to Rackspace authentication against the ORD region, using the username 'joeracker'. It no longer emits debug messages, will not perform SSL certificate verification, and all requests have the custom `User-agent` header of 'CrazyApp/2.0 pyrax/1.4.x'.
+If the environment is then changed to 'public', pyrax switches to Rackspace authentication against the ORD region, using the username 'joeracker'. It no longer emits debug messages, does not perform SSL certificate verification, and all requests have the custom `User-agent` header of 'CrazyApp/2.0 pyrax/1.4.x'.
 
 
 ### Accessing Environment Information

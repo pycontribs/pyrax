@@ -143,7 +143,8 @@ class Container(object):
 
 
     def upload_file(self, file_or_path, obj_name=None, content_type=None,
-            etag=None, return_none=False, content_encoding=None, ttl=None):
+            etag=None, return_none=False, content_encoding=None, ttl=None,
+            content_length=None):
         """
         Uploads the specified file to this container. If no name is supplied,
         the file's name will be used. Either a file path or an open file-like
@@ -152,7 +153,8 @@ class Container(object):
         """
         return self.client.upload_file(self, file_or_path, obj_name=obj_name,
                 content_type=content_type, etag=etag, return_none=return_none,
-                content_encoding=content_encoding, ttl=None)
+                content_encoding=content_encoding, ttl=None,
+                content_length=content_length)
 
 
     def delete_object(self, obj):

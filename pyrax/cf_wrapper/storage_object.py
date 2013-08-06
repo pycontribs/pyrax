@@ -72,8 +72,7 @@ class StorageObject(object):
             Element 1: a stream of bytes representing the object's contents.
         """
         return self.client.fetch_object(container=self.container.name,
-                obj_name=self.name, include_meta=include_meta,
-                chunk_size=chunk_size)
+                obj=self, include_meta=include_meta, chunk_size=chunk_size)
     # Changing the name of this method to 'fetch', as 'get' is overloaded.
     fetch = get
 
