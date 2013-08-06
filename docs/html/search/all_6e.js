@@ -11,6 +11,7 @@ var searchData=
   ['next',['next',['../classpyrax_1_1clouddns_1_1ResultsIterator.html#a1add561a14f78ba11ea73195789b60da',1,'pyrax::clouddns::ResultsIterator']]],
   ['next_5furi',['next_uri',['../classpyrax_1_1clouddns_1_1ResultsIterator.html#a52d2d557c979c7d47d2f6733f9bb30c7',1,'pyrax::clouddns::ResultsIterator']]],
   ['no_5fsuch_5fcontainer_5fpattern',['no_such_container_pattern',['../namespacepyrax_1_1cf__wrapper_1_1client.html#ab3150aa95b9e341f9b4c3f11214a9097',1,'pyrax::cf_wrapper::client']]],
+  ['no_5fsuch_5fobject_5fpattern',['no_such_object_pattern',['../namespacepyrax_1_1cf__wrapper_1_1client.html#a8141ed8d74dd957f7bad8300a7fed3da',1,'pyrax::cf_wrapper::client']]],
   ['node',['Node',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#aed91756449328e2c454e53e9c5e53936',1,'pyrax::cloudloadbalancers::CloudLoadBalancerClient']]],
   ['node',['Node',['../classpyrax_1_1cloudloadbalancers_1_1Node.html',1,'pyrax::cloudloadbalancers']]],
   ['nomoreresults',['NoMoreResults',['../classpyrax_1_1exceptions_1_1NoMoreResults.html',1,'pyrax::exceptions']]],
