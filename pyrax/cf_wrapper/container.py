@@ -107,15 +107,7 @@ class Container(object):
             name = name.decode(pyrax.get_encoding())
         ret = self._object_cache.get(name)
         if not ret:
-            cont_objs = self.client.get_container_objects(self.name,
-                    full_listing=True)
-            objs = [obj for obj in cont_objs
-                    if obj.name == name]
-            try:
-                ret = objs[0]
-            except IndexError:
-                raise exc.NoSuchObject("No object with the name '%s' exists"
-                        % name)
+            ret = self.client.get_object(self, name)
             self._object_cache[name] = ret
         return ret
 
