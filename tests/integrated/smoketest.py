@@ -354,7 +354,10 @@ if __name__ == "__main__":
             use for the test. If not specified, the `default` environment is
             used.""")
     args = parser.parse_args()
-    regions = args.regions or pyrax.regions
+    regions = args.regions 
+    if not regions:
+        pyrax.keyring_auth()
+        regions = pyrax.regions
     env = args.env
     if env:
         pyrax.set_environment(env)
@@ -373,14 +376,14 @@ if __name__ == "__main__":
         finally:
             smoke_tester.cleanup()
 
-    print
-    print "=" * 88
-    if smoke_tester.failures:
-        print "The following tests failed:"
-        for failure in smoke_tester.failures:
-            print " -", failure
-    else:
-        print "All tests passed!"
+        print
+        print "=" * 88
+        if smoke_tester.failures:
+            print "The following tests failed:"
+            for failure in smoke_tester.failures:
+                print " -", failure
+        else:
+            print "All tests passed!"
     end = time.time()
     print
     print "Running the smoketests took %6.1f seconds." % (end - start)
