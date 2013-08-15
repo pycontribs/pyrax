@@ -22,7 +22,7 @@ import pyrax
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cs = pyrax.cloudservers
-server_name = pyrax.utils.random_name(8)
+server_name = pyrax.utils.random_name(8, ascii_only=True)
 
 ubu_image = [img for img in cs.images.list()
         if "12.04" in img.name][0]
