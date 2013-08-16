@@ -9,10 +9,12 @@ from mock import patch
 from mock import MagicMock as Mock
 
 import pyrax
+from pyrax.cf_wrapper.client import _swift_client
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.container import Fault
 import pyrax.utils as utils
 import pyrax.exceptions as exc
+from tests.unit.fakes import fake_attdict
 from tests.unit.fakes import FakeContainer
 from tests.unit.fakes import FakeIdentity
 from tests.unit.fakes import FakeResponse
@@ -46,9 +48,9 @@ class CF_ContainerTest(unittest.TestCase):
         pyrax.connect_to_cloudfiles()
         self.client = pyrax.cloudfiles
         self.client.connection.head_container = Mock()
-        self.cont_name = utils.random_name()
+        self.cont_name = utils.random_name(ascii_only=True)
         self.container = self.client.get_container(self.cont_name)
-        self.obj_name = utils.random_name()
+        self.obj_name = utils.random_name(ascii_only=True)
         self.fake_object = FakeStorageObject(self.client, self.cont_name,
                 self.obj_name)
         self.client._container_cache = {}
@@ -132,11 +134,18 @@ class CF_ContainerTest(unittest.TestCase):
     def test_get_object(self):
         cont = self.container
         cont.client.connection.get_container = Mock()
-        cont.client.connection.get_container.return_value = ({},
-                [{"name": "o1"}, {"name": "o2"}])
+        cont.client.connection.head_object = Mock(return_value=fake_attdict)
+        obj = cont.get_object("fake")
+        self.assertEqual(obj.name, "fake")
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_get_object_missing(self):
+        cont = self.container
+        cont.client.connection.get_container = Mock()
+        side_effect=_swift_client.ClientException(
+                "Object GET failed: https://example.com/cont/some_object 404")
+        cont.client.connection.head_object = Mock(side_effect=side_effect)
         self.assertRaises(exc.NoSuchObject, cont.get_object, "missing")
-        obj = cont.get_object("o2")
-        self.assertEqual(obj.name, "o2")
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_store_object(self):
@@ -300,7 +309,7 @@ class CF_ContainerTest(unittest.TestCase):
         cont = self.container
         cont.client.connection.post_object = Mock()
         secs = random.randint(1, 1000)
-        obj_name = utils.random_name()
+        obj_name = utils.random_name(ascii_only=True)
         cont.delete_object_in_seconds(obj_name, seconds=secs)
         cont.client.connection.post_object.assert_called_with(cont.name,
                 obj_name, headers={'X-Delete-After': secs},

@@ -42,8 +42,8 @@ class CF_ClientTest(unittest.TestCase):
         pyrax.connect_to_cloudfiles(region="FAKE")
         self.client = pyrax.cloudfiles
         self.client._container_cache = {}
-        self.cont_name = utils.random_name()
-        self.obj_name = utils.random_name()
+        self.cont_name = utils.random_name(ascii_only=True)
+        self.obj_name = utils.random_name(ascii_only=True)
         self.fake_object = FakeStorageObject(self.client, self.cont_name,
                 self.obj_name)
 
@@ -380,18 +380,6 @@ class CF_ClientTest(unittest.TestCase):
         obj = client.get_object(self.cont_name, "o1")
         self.assertEqual(obj.name, "o1")
 
-#    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
-#    def test_get_object_hack(self):
-#        client = self.client
-#        client.connection.head_container = Mock()
-#        client.connection.head_object = Mock(return_value=fake_attdict)
-#        cont = client.get_container(self.cont_name)
-#        effects = (exc.NoSuchObject(""), FakeStorageObject(self.client,
-#                self.cont_name, self.obj_name))
-#        cont.get_object = Mock(side_effect=effects)
-#        obj = client.get_object(self.cont_name, "o1")
-#        self.assertEqual(obj.name, self.obj_name)
-
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_store_object(self):
         client = self.client
@@ -586,6 +574,7 @@ class CF_ClientTest(unittest.TestCase):
         clt.upload_file = Mock()
         clt.connection.head_container = Mock()
         clt.connection.put_container = Mock()
+        clt.connection.head_object = Mock(return_value=fake_attdict)
         clt.get_container_objects = Mock(return_value=[])
         cont_name = utils.random_name(8)
         cont = clt.create_container(cont_name)
@@ -606,6 +595,7 @@ class CF_ClientTest(unittest.TestCase):
         clt.upload_file = Mock()
         clt.connection.head_container = Mock()
         clt.connection.put_container = Mock()
+        clt.connection.head_object = Mock(return_value=fake_attdict)
         clt.get_container_objects = Mock(return_value=[])
         cont_name = utils.random_name(8)
         cont = clt.create_container(cont_name)
@@ -632,6 +622,7 @@ class CF_ClientTest(unittest.TestCase):
         clt.upload_file = Mock()
         clt.connection.head_container = Mock()
         clt.connection.put_container = Mock()
+        clt.connection.head_object = Mock(return_value=fake_attdict)
         clt.get_container_objects = Mock(return_value=[])
         cont_name = utils.random_name(8)
         cont = clt.create_container(cont_name)
