@@ -142,7 +142,7 @@ class CF_ContainerTest(unittest.TestCase):
     def test_get_object_missing(self):
         cont = self.container
         cont.client.connection.get_container = Mock()
-        side_effect=_swift_client.ClientException(
+        side_effect = _swift_client.ClientException(
                 "Object GET failed: https://example.com/cont/some_object 404")
         cont.client.connection.head_object = Mock(side_effect=side_effect)
         self.assertRaises(exc.NoSuchObject, cont.get_object, "missing")

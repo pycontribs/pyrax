@@ -354,7 +354,7 @@ if __name__ == "__main__":
             use for the test. If not specified, the `default` environment is
             used.""")
     args = parser.parse_args()
-    regions = args.regions 
+    regions = args.regions
     if not regions:
         pyrax.keyring_auth()
         regions = pyrax.regions
