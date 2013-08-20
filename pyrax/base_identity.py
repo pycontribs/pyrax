@@ -191,7 +191,7 @@ class BaseAuth(object):
         Implements the default (keystone) behavior.
         """
         self.username = cfg.get("keystone", "username")
-        self.password = cfg.get("keystone", "password")
+        self.password = cfg.get("keystone", "password", raw=True)
         self.tenant_id = cfg.get("keystone", "tenant_id")
 
 
