@@ -3,6 +3,7 @@
 
 import locale
 import os
+import random
 import unittest
 
 from mock import ANY, patch
@@ -385,7 +386,18 @@ class CF_ClientTest(unittest.TestCase):
     def test_get_object_locale(self):
         client = self.client
         orig_locale = locale.getlocale(locale.LC_TIME)
-        locale.setlocale(locale.LC_TIME, "ja_JP")
+        nonUS_locales = ("de_DE", "fr_FR", "hu_HU", "ja_JP", "nl_NL", "pl_PL",
+                "pt_BR", "pt_PT", "ro_RO", "ru_RU", "zh_CN", "zh_HK", "zh_TW")
+        # Note: the loop below is only for Travis CI, which seems to not like
+        # some otherwise valid locale settings.
+        changed = False
+        while not changed:
+            new_locale = random.choice(nonUS_locales)
+            try:
+                locale.setlocale(locale.LC_TIME, new_locale)
+            except Exception:
+                continue
+            changed = True
         client.connection.head_container = Mock()
         client.connection.head_object = Mock(return_value=fake_attdict)
         obj = client.get_object(self.cont_name, "fake")
