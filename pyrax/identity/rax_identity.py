@@ -3,10 +3,13 @@
 
 import ConfigParser
 
+import pyrax
 from pyrax.base_identity import BaseAuth
 from pyrax.base_identity import User
 import pyrax.exceptions as exc
 import pyrax.utils as utils
+
+AUTH_ENDPOINT = "https://identity.api.rackspacecloud.com/v2.0/"
 
 
 class RaxIdentity(BaseAuth):
@@ -14,14 +17,11 @@ class RaxIdentity(BaseAuth):
     This class handles all of the authentication requirements for working
     with the Rackspace Cloud.
     """
-    us_auth_endpoint = "https://identity.api.rackspacecloud.com/v2.0/"
-    uk_auth_endpoint = "https://lon.identity.api.rackspacecloud.com/v2.0/"
+    default_region = "SYD"
 
 
     def _get_auth_endpoint(self):
-        if self.region and self.region.upper() in ("LON", ):
-            return self.uk_auth_endpoint
-        return self.us_auth_endpoint
+        return AUTH_ENDPOINT
 
 
     def _read_credential_file(self, cfg):
@@ -79,7 +79,9 @@ class RaxIdentity(BaseAuth):
         """Gets the authentication information from the returned JSON."""
         super(RaxIdentity, self)._parse_response(resp)
         user = resp["access"]["user"]
-        self.user["default_region"] = user["RAX-AUTH:defaultRegion"]
+        defreg = user.get("RAX-AUTH:defaultRegion")
+        if defreg:
+            self._default_region = defreg
 
 
     def find_user_by_name(self, name):

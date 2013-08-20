@@ -18,6 +18,7 @@ import pyrax
 import pyrax.utils as utils
 import pyrax.exceptions as exc
 from pyrax import base_identity
+from pyrax.identity import rax_identity
 
 from tests.unit import fakes
 
@@ -285,12 +286,8 @@ class IdentityTest(unittest.TestCase):
 
     def test_rax_endpoints(self):
         ident = self.rax_identity_class()
-        ident.region = "LON"
         ep = ident._get_auth_endpoint()
-        self.assertEqual(ep, ident.uk_auth_endpoint)
-        ident.region = "ORD"
-        ep = ident._get_auth_endpoint()
-        self.assertEqual(ep, ident.us_auth_endpoint)
+        self.assertEqual(ep, rax_identity.AUTH_ENDPOINT)
 
     def test_auth_token(self):
         for cls in self.id_classes.values():

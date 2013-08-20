@@ -94,7 +94,7 @@ cloud_blockstorage = None
 cloud_dns = None
 cloud_networks = None
 # Default region for all services. Can be individually overridden if needed
-default_region = "DFW"
+default_region = None
 # Encoding to use when working with non-ASCII names
 default_encoding = "utf-8"
 
@@ -383,7 +383,11 @@ def _require_auth(fnc):
 @_assure_identity
 def _safe_region(region=None):
     """Value to use when no region is specified."""
-    return region or settings.get("region") or default_region
+    ret = region or settings.get("region")
+    if not ret:
+        # Nothing specified; get the default from the identity object.
+        ret = identity.get_default_region()
+    return ret
 
 
 @_assure_identity

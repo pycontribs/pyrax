@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import json
 import os
+import random
 import uuid
 
 import pyrax
@@ -394,6 +395,7 @@ class FakeIdentity(RaxIdentity):
         super(FakeIdentity, self).__init__(*args, **kwargs)
         self._good_username = "fakeuser"
         self._good_password = "fakeapikey"
+        self._default_region = random.choice(("DFW", "ORD"))
 
     def authenticate(self):
         if ((self.username == self._good_username) and
@@ -404,6 +406,12 @@ class FakeIdentity(RaxIdentity):
             self.authenticated = False
             raise exc.AuthenticationFailed("No match for '%s'/'%s' "
                     "username/password" % (self.username, self.password))
+
+    def auth_with_token(self, token, tenant_id=None, tenant_name=None):
+        self.token = token
+        self.tenant_id = tenant_id
+        self.tenant_name = tenant_name
+        self.authenticated = True
 
     def get_token(self, force=False):
         return self.token
@@ -571,8 +579,7 @@ fake_identity_response = {u'access':
 u'token': {u'expires': u'2222-02-22T22:22:22.000-02:00',
     u'id': u'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
     u'tenant': {u'id': u'000000', u'name': u'000000'}},
-u'user': {u'RAX-AUTH:defaultRegion': u'',
-   u'id': u'123456',
+u'user': {u'id': u'123456',
    u'name': u'fakeuser',
    u'roles': [{u'description': u'User Admin Role.',
                u'id': u'3',

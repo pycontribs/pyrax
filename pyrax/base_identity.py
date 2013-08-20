@@ -56,10 +56,12 @@ class BaseAuth(object):
     authenticated = False
     user_agent = "pyrax"
     http_log_debug = False
+    _default_region = None
 
 
     def __init__(self, username=None, password=None, token=None,
             credential_file=None, region=None, timeout=None, verify_ssl=True):
+
         self.username = username
         self.password = password
         self.token = token
@@ -87,6 +89,15 @@ class BaseAuth(object):
         """Each subclass will have to implement its own method."""
         raise NotImplementedError("The _get_auth_endpoint() method must be "
                 "defined in Auth subclasses.")
+
+
+    def get_default_region(self):
+        """
+        In cases where the region has not been specified, return the value to
+        use. Subclasses may use information in the service catalog to determine
+        the appropriate default value.
+        """
+        return self._default_region
 
 
     def set_credentials(self, username, password=None, region=None,
