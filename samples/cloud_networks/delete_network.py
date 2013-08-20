@@ -21,6 +21,7 @@ import pyrax
 from pyrax import exc
 from pyrax import utils
 
+pyrax.set_setting("identity_type", "rackspace")
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 

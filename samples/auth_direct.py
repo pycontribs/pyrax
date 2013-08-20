@@ -21,6 +21,8 @@ import os
 import pyrax
 import pyrax.exceptions as exc
 
+pyrax.set_setting("identity_type", "rackspace")
+
 # Pass credentials directly (replace with your credentials)
 print "Pass directly:"
 try:

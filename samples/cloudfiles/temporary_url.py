@@ -23,6 +23,7 @@ import time
 import pyrax
 import pyrax.exceptions as exc
 
+pyrax.set_setting("identity_type", "rackspace")
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cf = pyrax.cloudfiles
