@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import locale
 import os
 import unittest
 
@@ -379,6 +380,17 @@ class CF_ClientTest(unittest.TestCase):
                 [{"name": "o1"}, {"name": "o2"}])
         obj = client.get_object(self.cont_name, "o1")
         self.assertEqual(obj.name, "o1")
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_get_object_locale(self):
+        client = self.client
+        orig_locale = locale.getlocale(locale.LC_TIME)
+        locale.setlocale(locale.LC_TIME, "ja_JP")
+        client.connection.head_container = Mock()
+        client.connection.head_object = Mock(return_value=fake_attdict)
+        obj = client.get_object(self.cont_name, "fake")
+        self.assertEqual(obj.last_modified, "2013-01-01T01:02:03")
+        locale.setlocale(locale.LC_TIME, orig_locale)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_store_object(self):
