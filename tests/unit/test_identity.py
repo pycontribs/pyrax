@@ -174,7 +174,8 @@ class IdentityTest(unittest.TestCase):
     def test_set_credential_file(self):
         ident = self.rax_identity_class()
         user = "fakeuser"
-        key = "fakeapikey"
+        # Use percent signs in key to ensure it doesn't get interpolated.
+        key = "fake%api%key"
         ident.authenticate = Mock()
         with utils.SelfDeletingTempfile() as tmpname:
             with open(tmpname, "wb") as ff:

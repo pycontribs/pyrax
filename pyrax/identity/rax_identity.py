@@ -27,10 +27,10 @@ class RaxIdentity(BaseAuth):
     def _read_credential_file(self, cfg):
         self.username = cfg.get("rackspace_cloud", "username")
         try:
-            self.password = cfg.get("rackspace_cloud", "api_key")
+            self.password = cfg.get("rackspace_cloud", "api_key", raw=True)
         except ConfigParser.NoOptionError as e:
             # Allow either the use of either 'api_key' or 'password'.
-            self.password = cfg.get("rackspace_cloud", "password")
+            self.password = cfg.get("rackspace_cloud", "password", raw=True)
 
 
     def _get_credentials(self):
