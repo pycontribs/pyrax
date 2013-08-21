@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['uk_5fauth_5fendpoint',['uk_auth_endpoint',['../classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a0463ddafa929788217a52ee8ecf10a5a',1,'pyrax::identity::rax_identity::RaxIdentity']]],
   ['unattachednode',['UnattachedNode',['../classpyrax_1_1exceptions_1_1UnattachedNode.html',1,'pyrax::exceptions']]],
   ['unattachedvirtualip',['UnattachedVirtualIP',['../classpyrax_1_1exceptions_1_1UnattachedVirtualIP.html',1,'pyrax::exceptions']]],
   ['unauthenticate',['unauthenticate',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a143a677947f3597dc3cc3055a0eae66e',1,'pyrax::base_identity::BaseAuth.unauthenticate()'],['../classpyrax_1_1client_1_1BaseClient.html#a143a677947f3597dc3cc3055a0eae66e',1,'pyrax::client::BaseClient.unauthenticate()']]],
@@ -27,7 +26,6 @@ var searchData=
   ['uri_5fbase',['uri_base',['../classpyrax_1_1manager_1_1BaseManager.html#a8fed07611f6d4a6507b40cfa41062e1f',1,'pyrax::manager::BaseManager']]],
   ['url',['url',['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html#afcd5a3e84f2adb7f83fa6c99911f31e4',1,'pyrax::cf_wrapper::client::Connection.url()'],['../namespacesetup.html#aa03c1ef4c41f36b048cf58d5aade7653',1,'setup.url()']]],
   ['url_5ffor',['url_for',['../classpyrax_1_1service__catalog_1_1ServiceCatalog.html#a50e97fbd8e0fb99b0ebf1b6d31958969',1,'pyrax::service_catalog::ServiceCatalog']]],
-  ['us_5fauth_5fendpoint',['us_auth_endpoint',['../classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#abdf92c6a761ccb5139c8eaccfc09d775',1,'pyrax::identity::rax_identity::RaxIdentity']]],
   ['used',['used',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#ab896e794c7918f3e8a6ca0f8339f1add',1,'pyrax::clouddatabases::CloudDatabaseVolume']]],
   ['user',['User',['../classpyrax_1_1base__identity_1_1User.html',1,'pyrax::base_identity']]],
   ['user',['user',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a5cc32e366c87c4cb49e4309b75f57d64',1,'pyrax::base_identity::BaseAuth']]],
