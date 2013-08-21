@@ -34,7 +34,7 @@ You need to submit your username and password in order to authenticate. If you a
 
 Please note that **all versions of pyrax beginning with 1.4.0 require that you define what type of authentication system you are working with**. Previous versions only worked with Rackspace authentication, so this was not an issue. To do this, you have three options, listed below. In all cases the examples use `keystone` as the identity_type, but if you're using the Rackspace Cloud, change this to `rackspace`. 
 
-1. **Configuration File**: make sure that the line `identity_type = keystone` is in your [configuration file](#configfile).
+1. **Configuration File**: make sure that the line `identity_type = keystone` is in your [configuration file](#pyrax-configuration).
 1. **Environment Variable** - If you don't have a configuration file, pyrax checks for the environment variable `CLOUD_ID_TYPE`. Set this by executing `export CLOUD_ID_TYPE=keystone` in a bash shell, or by setting it in the System section of the Control Panel in Windows.
 1. **Set in Code** - if you can't do either of the above, change the import statement to add `pyrax.set_setting("identity_type", "keystone")` immediately after the `import pyrax` statement.
 
@@ -119,7 +119,7 @@ Every request needs to have the authentication information included in the heade
 Please note that if you used `auth_with_token()` to authenticate originally, pyrax does not have your credentials, and so cannot automatically re-authenticate you. In this case, your code must handle the authentication failure when the token expires, and re-authenticate using whatever process you used to get your initial token. Once you've done that, you need to call `auth_with_token()` again to add the new token to pyrax.
 
 
-## [Pyrax Configuration](id:configfile)
+## Pyrax Configuration
 You can control how pyrax behaves through the configuration file. It should be named `~/.pyrax.cfg`. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Alternatively, you may set these values using environment variables in the OS. Note that the configuration file values take precendence over any environment variables. Environment variables also do not support multiple configurations.
 
 **NOTE**: At the very least, you *must* set the `identity_type` setting so that can use the correct identity class. Prior versions only worked with Rackspace identity, but that is no longer the case. If you don't want to use a configuration file or an environment variable, you can do this in code:

@@ -10,6 +10,7 @@ try:
     import eventlet.green.httplib as httplib
 except ImportError:
     import httplib
+import locale
 import math
 import os
 import re
@@ -510,8 +511,13 @@ class CFClient(object):
         oname = self._resolve_name(obj)
         obj_info = self.connection.head_object(cname, oname)
         # Need to convert last modified time to a datetime object.
+        # Times are returned in default locale format, so we need to read
+        # them as such, no matter what the locale setting may be.
         lm_str = obj_info["last-modified"]
+        orig_locale = locale.getlocale(locale.LC_TIME)
+        locale.setlocale(locale.LC_TIME, (None, None))
         tm_tuple = time.strptime(lm_str, HEAD_DATE_FORMAT)
+        locale.setlocale(locale.LC_TIME, orig_locale)
         dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
         # Now convert it back to the format returned by GETting the object.
         dtstr = dttm.strftime(DATE_FORMAT)
