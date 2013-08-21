@@ -1,12 +1,27 @@
 # Release Notes for pyrax
 
+###2013.08.21 - Version 1.4.11
+- Fixed issue #161: different locales caused date parsing error.
+- Fixed issue #166: passwords with non-ASCII characters were causing parsing
+  errors.
+- Added setting identity_type to the sample code. GitHub #169.
+- Fixed the way that default regions are handled. GitHub #165.
+- Changed the example code to use only ASCII characters for server names.
+  GitHub #162.
+- Changed container.get_object() to use the more efficient method in the
+  client. GitHub #160.
+- Fixed broken internal link. GitHub #159.
+
 ###2013.08.06 - Version 1.4.10
 - Fixed a performance issue when GETting a single object. GitHub #156.
 - Fixed an issue with error response parsing. GitHub #151.
 - Fixed trailing slash bug in identity. GitHub #154.
-- Fixed a bug noticed in #69 in which the parameters to the swiftclient connection object were incorrect.
-- Fixed a bug in download_object() that would throw an exception if the target directory already exists. GitHub #148.
-- Added ability to specify content length when uploading an object to swift. GitHub #146.
+- Fixed a bug noticed in #69 in which the parameters to the swiftclient
+  connection object were incorrect.
+- Fixed a bug in download_object() that would throw an exception if the target
+  directory already exists. GitHub #148.
+- Added ability to specify content length when uploading an object to swift.
+  GitHub #146.
 
 ###2013.07.23 - Version 1.4.9
 - Fixed a bug introduced in the last release that prevented progressive
