@@ -351,7 +351,7 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
 def wait_for_build(obj, att=None, desired=None, callback=None, interval=None,
         attempts=None, verbose=None, verbose_atts=None):
     """
-    Designed to handle the most common use case for wait_unti: an object whose
+    Designed to handle the most common use case for wait_until: an object whose
     'status' attribute will end up in either 'ACTIVE' or 'ERROR' state. Since
     builds don't happen very quickly, the interval will default to 20 seconds
     to avoid excess polling.
