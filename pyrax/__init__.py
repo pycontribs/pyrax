@@ -121,7 +121,7 @@ _client_classes = {
         "volume": CloudBlockStorageClient,
         "dns": CloudDNSClient,
         "compute:network": CloudNetworkClient,
-        "monitor": CloudMonitorClient
+        "monitor": CloudMonitorClient,
         }
 
 
