@@ -119,6 +119,18 @@ class InvalidDeviceType(PyraxException):
 class InvalidLoadBalancerParameters(PyraxException):
     pass
 
+class InvalidMonitoringCheckDetails(PyraxException):
+    pass
+
+class InvalidMonitoringCheckUpdate(PyraxException):
+    pass
+
+class InvalidMonitoringMetricsRequest(PyraxException):
+    pass
+
+class InvalidMonitoringMetricsResolution(PyraxException):
+    pass
+
 class InvalidNodeCondition(PyraxException):
     pass
 
@@ -164,10 +176,22 @@ class MissingHealthMonitorSettings(PyraxException):
 class MissingLoadBalancerParameters(PyraxException):
     pass
 
+class MissingMonitoringCheckDetails(PyraxException):
+    pass
+
+class MissingMonitoringCheckGranularity(PyraxException):
+    pass
+
 class MissingName(PyraxException):
     pass
 
 class MissingTemporaryURLKey(PyraxException):
+    pass
+
+class MonitoringCheckTargetNotSpecified(PyraxException):
+    pass
+
+class MonitoringZonesPollMissing(PyraxException):
     pass
 
 class NetworkCIDRInvalid(PyraxException):
