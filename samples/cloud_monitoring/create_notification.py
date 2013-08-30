@@ -50,7 +50,7 @@ check = checks[check_num]
 
 email = raw_input("Enter the email address to be notified at: ")
 
-# Create the notification 
+# Create the notification
 notif = cm.create_notification("email", label="sample email",
         details={"address": email})
 
@@ -61,4 +61,3 @@ np = cm.create_notification_plan(label="sample notification plan",
 
 print "Created Notification %s" % notif.id
 print "Added %s to Notification Plan %s" % (notif.id, np.id)
-

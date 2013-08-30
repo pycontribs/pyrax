@@ -149,7 +149,7 @@ class CloudMonitoringTest(unittest.TestCase):
         clt = self.client
         mgr = clt._notification_manager
         clt.method_post = Mock(
-                return_value=({"x-object-id" : utils.random_name()}, None))
+                return_value=({"x-object-id": utils.random_name()}, None))
         mgr.get = Mock()
         ntyp = utils.random_name()
         label = utils.random_name()
@@ -218,7 +218,7 @@ class CloudMonitoringTest(unittest.TestCase):
         self.assertEqual(len(ret), 1)
         inst = ret[0]
         self.assertTrue(isinstance(inst, CloudMonitorNotificationType))
-        self.assertEqual(inst.id, id_) 
+        self.assertEqual(inst.id, id_)
 
     def test_notif_manager_get_type(self):
         clt = self.client
@@ -230,13 +230,13 @@ class CloudMonitoringTest(unittest.TestCase):
         exp_uri = "/notification_types/%s" % id_
         clt.method_get.assert_called_once_with(exp_uri)
         self.assertTrue(isinstance(ret, CloudMonitorNotificationType))
-        self.assertEqual(ret.id, id_) 
+        self.assertEqual(ret.id, id_)
 
     def test_notif_plan_manager_create(self):
         clt = self.client
         mgr = clt._notification_plan_manager
         clt.method_post = Mock(
-                return_value=({"x-object-id" : utils.random_name()}, None))
+                return_value=({"x-object-id": utils.random_name()}, None))
         mgr.get = Mock()
         label = utils.random_name()
         name = utils.random_name()
@@ -277,7 +277,7 @@ class CloudMonitoringTest(unittest.TestCase):
         self.assertEqual(len(ret), 1)
         inst = ret[0]
         self.assertTrue(isinstance(inst, CloudMonitorCheck))
-        self.assertEqual(inst.id, id_) 
+        self.assertEqual(inst.id, id_)
 
     # The following tests need to mock CloudMonitorCheck, as we're mocking out
     # the entity manager's method_post, which is what CloudMonitorCheck is
@@ -544,7 +544,7 @@ class CloudMonitoringTest(unittest.TestCase):
         exp_uri = "/%s/%s/checks/%s" % (mgr.uri_base, ent.id, id_)
         clt.method_get.assert_called_once_with(exp_uri)
         self.assertTrue(isinstance(ret, CloudMonitorCheck))
-        self.assertEqual(ret.id, id_) 
+        self.assertEqual(ret.id, id_)
 
     def test_entity_mgr_delete_check(self):
         ent = self.entity
@@ -714,7 +714,7 @@ class CloudMonitoringTest(unittest.TestCase):
         exp_uri = "/%s/%s/alarms/%s" % (mgr.uri_base, ent.id, id_)
         clt.method_get.assert_called_once_with(exp_uri)
         self.assertTrue(isinstance(ret, CloudMonitorAlarm))
-        self.assertEqual(ret.id, id_) 
+        self.assertEqual(ret.id, id_)
 
     def test_entity_mgr_delete_alarm(self):
         ent = self.entity
@@ -1271,7 +1271,7 @@ class CloudMonitoringTest(unittest.TestCase):
         ent = self.entity
         mgr = clt._notification_manager
         answer = utils.random_name()
-        mgr.delete= Mock(return_value=answer)
+        mgr.delete = Mock(return_value=answer)
         notification = utils.random_name()
         ret = clt.delete_notification(notification)
         mgr.delete.assert_called_once_with(notification)
@@ -1322,7 +1322,7 @@ class CloudMonitoringTest(unittest.TestCase):
         ent = self.entity
         mgr = clt._notification_plan_manager
         answer = utils.random_name()
-        mgr.delete= Mock(return_value=answer)
+        mgr.delete = Mock(return_value=answer)
         notification_plan = utils.random_name()
         ret = clt.delete_notification_plan(notification_plan)
         mgr.delete.assert_called_once_with(notification_plan)
@@ -1422,7 +1422,7 @@ class CloudMonitoringTest(unittest.TestCase):
         ent = self.entity
         mgr = clt._monitoring_zone_manager
         typs = utils.random_name()
-        mgr.list= Mock(return_value=typs)
+        mgr.list = Mock(return_value=typs)
         ret = clt.list_monitoring_zones()
         mgr.list.assert_called_once_with()
         self.assertEqual(ret, typs)
@@ -1433,7 +1433,7 @@ class CloudMonitoringTest(unittest.TestCase):
         mgr = clt._monitoring_zone_manager
         answer = utils.random_name()
         mz_id = utils.random_name()
-        mgr.get= Mock(return_value=answer)
+        mgr.get = Mock(return_value=answer)
         ret = clt.get_monitoring_zone(mz_id)
         mgr.get.assert_called_once_with(mz_id)
         self.assertEqual(ret, answer)

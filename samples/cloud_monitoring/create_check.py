@@ -61,4 +61,3 @@ chk = cm.create_check(entity, label="sample_check", check_type="remote.ping",
 
 print "Name:", chk.name
 print "ID:", chk.id
-

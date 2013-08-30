@@ -22,7 +22,7 @@ def option_chooser(options, attr=None):
     """Given an iterable, enumerate its contents for a user to choose from.
     If the optional `attr` is not None, that attribute in each iterated
     object will be printed.
-    
+
     This function will exit the program if the user chooses the escape option.
     """
     for num, option in enumerate(options):
@@ -34,7 +34,7 @@ def option_chooser(options, attr=None):
     # Add an escape option
     escape_opt = num + 1
     print "%s: I want to exit!" % escape_opt
-    
+
     choice = raw_input("Selection: ")
     try:
         ichoice = int(choice)
@@ -50,4 +50,3 @@ def option_chooser(options, attr=None):
         sys.exit()
 
     return ichoice
-

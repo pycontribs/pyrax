@@ -431,7 +431,6 @@ class FakeCloudMonitorNotification(CloudMonitorNotification):
         super(FakeCloudMonitorNotification, self).__init__(manager=None,
                 info=info, *args, **kwargs)
         self.id = uuid.uuid4()
-    
 
 
 class FakeIdentity(RaxIdentity):

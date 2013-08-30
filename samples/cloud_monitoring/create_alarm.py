@@ -57,4 +57,3 @@ alarm = cm.create_alarm(entity, check, plan,
      "return new AlarmStatus(OK);"), label="sample alarm")
 
 print "Created Alarm %s" % alarm.id
-
