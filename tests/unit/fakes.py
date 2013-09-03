@@ -6,6 +6,11 @@ import random
 import uuid
 
 import pyrax
+from pyrax.autoscale import AutoScaleClient
+from pyrax.autoscale import AutoScalePolicy
+from pyrax.autoscale import AutoScaleWebhook
+from pyrax.autoscale import ScalingGroup
+from pyrax.autoscale import ScalingGroupManager
 from pyrax.cf_wrapper.client import FolderUploader
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
@@ -352,6 +357,7 @@ class FakeLoadBalancer(CloudLoadBalancer):
         info = info or {"fake": "fake"}
         super(FakeLoadBalancer, self).__init__(name, info, *args, **kwargs)
         self.id = utils.random_name(ascii_only=True)
+        self.port = random.randint(1, 256)
         self.manager = FakeLoadBalancerManager()
 
 
@@ -399,6 +405,43 @@ class FakeCloudNetwork(CloudNetwork):
         super(FakeCloudNetwork, self).__init__(manager=None, info=info, *args,
                 **kwargs)
         self.id = uuid.uuid4()
+
+
+class FakeAutoScaleClient(AutoScaleClient):
+    def __init__(self, *args, **kwargs):
+        self._manager = FakeManager()
+        super(FakeAutoScaleClient, self).__init__(*args, **kwargs)
+
+
+class FakeAutoScalePolicy(AutoScalePolicy):
+    def __init__(self, *args, **kwargs):
+        super(FakeAutoScalePolicy, self).__init__(*args, **kwargs)
+        self.id = utils.random_name(ascii_only=True)
+
+
+class FakeAutoScaleWebhook(AutoScaleWebhook):
+    def __init__(self, *args, **kwargs):
+        super(FakeAutoScaleWebhook, self).__init__(*args, **kwargs)
+        self.id = utils.random_name(ascii_only=True)
+
+
+class FakeScalingGroupManager(ScalingGroupManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeAutoScaleClient()
+        super(FakeScalingGroupManager, self).__init__(api, *args, **kwargs)
+        self.id = utils.random_name(ascii_only=True)
+
+
+class FakeScalingGroup(ScalingGroup):
+    def __init__(self, name=None, info=None, *args, **kwargs):
+        name = name or utils.random_name(ascii_only=True)
+        info = info or {"fake": "fake", "scalingPolicies": []}
+        self.groupConfiguration = {}
+        super(FakeScalingGroup, self).__init__(name, info, *args, **kwargs)
+        self.id = utils.random_name(ascii_only=True)
+        self.name = name
+        self.manager = FakeScalingGroupManager()
 
 
 class FakeCloudMonitorClient(CloudMonitorClient):

@@ -373,17 +373,15 @@ def _parse_datetime_string(val):
     will be raised.
     """
     dt = None
-    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
-        try:
-            dt = datetime.datetime.strptime(val, fmt)
-            break
-        except ValueError:
-            continue
-    if dt is None:
+    lenval = len(val)
+    fmt = {19: "%Y-%m-%d %H:%M:%S", 10: "%Y-%m-%d"}.get(lenval)
+    if fmt is None:
+        # Invalid date
         raise exc.InvalidDateTimeString("The supplied value '%s' does not "
-          "match either of the formats 'YYYY-MM-DD HH:MM:SS' or "
-          "'YYYY-MM-DD'." % val)
-    return dt
+              "match either of the formats 'YYYY-MM-DD HH:MM:SS' or "
+              "'YYYY-MM-DD'." % val)
+    return datetime.datetime.strptime(val, fmt)
+
 
 def iso_time_string(val, show_tzinfo=False):
     """
@@ -451,6 +449,20 @@ def get_name(name_or_obj):
         return name_or_obj.name
     except AttributeError:
         raise exc.MissingName(name_or_obj)
+
+
+def params_to_dict(params, dct, local_dict):
+    """
+    Given a set of optional parameter names, constructs a dictionary with the
+    parameter name as the key, and the value for that key in the local_dict as
+    the value, for all non-None values.
+    """
+    for param in params:
+        val = local_dict.get(param)
+        if val is None:
+            continue
+        dct[param] = val
+    return dct
 
 
 def match_pattern(nm, patterns):
