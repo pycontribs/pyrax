@@ -11,5 +11,6 @@ var searchData=
   ['auth_5fendpoint',['AUTH_ENDPOINT',['../namespacepyrax_1_1identity_1_1rax__identity.html#a62e4aae3f13b88a642e7cd2a19d43f36',1,'pyrax::identity::rax_identity']]],
   ['authenticated',['authenticated',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a48f0dc4cf47cd14cdfda7e8495b0a76b',1,'pyrax::base_identity::BaseAuth.authenticated()'],['../classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a48f0dc4cf47cd14cdfda7e8495b0a76b',1,'pyrax::identity::rax_identity::RaxIdentity::authenticated()']]],
   ['author',['author',['../namespacesetup.html#ab873cebb3b7e47db4fe59837d1aaa210',1,'setup']]],
-  ['author_5femail',['author_email',['../namespacesetup.html#a9b3c5cceb9178d1968dd26e6f147265d',1,'setup']]]
+  ['author_5femail',['author_email',['../namespacesetup.html#a9b3c5cceb9178d1968dd26e6f147265d',1,'setup']]],
+  ['autoscale',['autoscale',['../namespacepyrax.html#a71d7ac858bc96ae6302115ab8fe7095a',1,'pyrax']]]
 ];

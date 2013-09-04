@@ -116,11 +116,15 @@ Inheritance diagram for BaseManager:</div>
  <div class="center">
   <img src="classpyrax_1_1manager_1_1BaseManager.png" usemap="#BaseManager_map" alt=""/>
   <map id="BaseManager_map" name="BaseManager_map">
-<area href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html" title="This class manages communication with Cloud Database resources." alt="CloudDatabaseManager" shape="rect" coords="0,56,175,80"/>
-<area href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html" title="This class handles operations on the users in a Cloud Database." alt="CloudDatabaseUserManager" shape="rect" coords="185,56,360,80"/>
-<area href="classpyrax_1_1clouddns_1_1CloudDNSManager.html" alt="CloudDNSManager" shape="rect" coords="370,56,545,80"/>
-<area href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerManager.html" alt="CloudLoadBalancerManager" shape="rect" coords="555,56,730,80"/>
-<area href="classpyrax_1_1cloudnetworks_1_1CloudNetworkManager.html" title="Does nothing special, but is used in testing." alt="CloudNetworkManager" shape="rect" coords="740,56,915,80"/>
+<area href="classpyrax_1_1autoscale_1_1ScalingGroupManager.html" alt="ScalingGroupManager" shape="rect" coords="237,56,464,80"/>
+<area href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html" title="This class manages communication with Cloud Database resources." alt="CloudDatabaseManager" shape="rect" coords="237,112,464,136"/>
+<area href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html" title="This class handles operations on the users in a Cloud Database." alt="CloudDatabaseUserManager" shape="rect" coords="237,168,464,192"/>
+<area href="classpyrax_1_1clouddns_1_1CloudDNSManager.html" alt="CloudDNSManager" shape="rect" coords="237,224,464,248"/>
+<area href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerManager.html" alt="CloudLoadBalancerManager" shape="rect" coords="237,280,464,304"/>
+<area href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntityManager.html" title="Handles all of the entity-specific requests." alt="CloudMonitorEntityManager" shape="rect" coords="237,336,464,360"/>
+<area href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationManager.html" title="Handles all of the requests dealing with notifications." alt="CloudMonitorNotificationManager" shape="rect" coords="237,392,464,416"/>
+<area href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationPlanManager.html" title="Handles all of the requests dealing with Notification Plans." alt="CloudMonitorNotificationPlanManager" shape="rect" coords="237,448,464,472"/>
+<area href="classpyrax_1_1cloudnetworks_1_1CloudNetworkManager.html" title="Does nothing special, but is used in testing." alt="CloudNetworkManager" shape="rect" coords="237,504,464,528"/>
 </map>
  </div></div>
 
@@ -207,7 +211,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSManager.html#ac775ee34451fdfa742b318538164070e">CloudDNSManager</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1autoscale_1_1ScalingGroupManager.html#ac775ee34451fdfa742b318538164070e">ScalingGroupManager</a>, and <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSManager.html#ac775ee34451fdfa742b318538164070e">CloudDNSManager</a>.</p>
 
 </div>
 </div>
@@ -307,24 +311,6 @@ Static Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>return_none</em> = <code>False</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>return_raw</em> = <code>False</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>return_response</em> = <code>False</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
           <td class="paramname"><em>args</em>, </td>
         </tr>
         <tr>
@@ -343,6 +329,9 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Subclasses need to implement the _create_body() method to return a dict that will be used for the API request body. </p>
+<p>For cases where no response is returned from the API on creation, pass `return_none=True` so that the _create method doesn't expect one.</p>
+<p>For cases where you do not want the _create method to attempt to parse the response, but instead have it returned directly, pass `return_raw=True`.</p>
+<p>For cases where the API returns information in the response and not the response_body, pass `return_response=True`. </p>
 
 </div>
 </div>
@@ -631,7 +620,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 13 2013 15:52:04 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Sep 4 2013 09:52:00 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

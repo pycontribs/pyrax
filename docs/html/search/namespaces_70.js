@@ -1,13 +1,15 @@
 var searchData=
 [
+  ['autoscale',['autoscale',['../namespacepyrax_1_1autoscale.html',1,'pyrax']]],
   ['base_5fidentity',['base_identity',['../namespacepyrax_1_1base__identity.html',1,'pyrax']]],
   ['cf_5fwrapper',['cf_wrapper',['../namespacepyrax_1_1cf__wrapper.html',1,'pyrax']]],
-  ['client',['client',['../namespacepyrax_1_1cf__wrapper_1_1client.html',1,'pyrax::cf_wrapper']]],
   ['client',['client',['../namespacepyrax_1_1client.html',1,'pyrax']]],
+  ['client',['client',['../namespacepyrax_1_1cf__wrapper_1_1client.html',1,'pyrax::cf_wrapper']]],
   ['cloudblockstorage',['cloudblockstorage',['../namespacepyrax_1_1cloudblockstorage.html',1,'pyrax']]],
   ['clouddatabases',['clouddatabases',['../namespacepyrax_1_1clouddatabases.html',1,'pyrax']]],
   ['clouddns',['clouddns',['../namespacepyrax_1_1clouddns.html',1,'pyrax']]],
   ['cloudloadbalancers',['cloudloadbalancers',['../namespacepyrax_1_1cloudloadbalancers.html',1,'pyrax']]],
+  ['cloudmonitoring',['cloudmonitoring',['../namespacepyrax_1_1cloudmonitoring.html',1,'pyrax']]],
   ['cloudnetworks',['cloudnetworks',['../namespacepyrax_1_1cloudnetworks.html',1,'pyrax']]],
   ['container',['container',['../namespacepyrax_1_1cf__wrapper_1_1container.html',1,'pyrax::cf_wrapper']]],
   ['exceptions',['exceptions',['../namespacepyrax_1_1exceptions.html',1,'pyrax']]],

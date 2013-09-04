@@ -89,6 +89,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1AuthenticationFailed.html">AuthenticationFailed</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1AuthorizationFailure.html">AuthorizationFailure</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1AuthSystemNotFound.html">AuthSystemNotFound</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1autoscale_1_1AutoScaleClient.html">AutoScaleClient</a></td><td class="indexvalue">This is the primary class for interacting with AutoScale </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1autoscale_1_1AutoScalePolicy.html">AutoScalePolicy</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1autoscale_1_1AutoScaleWebhook.html">AutoScaleWebhook</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1BadRequest.html">BadRequest</a></td><td class="indexvalue">HTTP 400 - Bad request: you sent some malformed data </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html">BaseAuth</a></td><td class="indexvalue">This class handles all of the basic authentication requirements for working with an OpenStack Cloud system </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html">BaseClient</a></td><td class="indexvalue">The base class for all pyrax clients </td></tr>
@@ -117,6 +120,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html">CloudLoadBalancer</a></td><td class="indexvalue">Represents a Cloud Load Balancer instance </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html">CloudLoadBalancerClient</a></td><td class="indexvalue">This is the primary class for interacting with Cloud Load Balancers </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerManager.html">CloudLoadBalancerManager</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorAlarm.html">CloudMonitorAlarm</a></td><td class="indexvalue">Alarms bind alerting rules, entities, and notification plans into a logical unit </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html">CloudMonitorCheck</a></td><td class="indexvalue">Represents a check defined for an entity </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheckType.html">CloudMonitorCheckType</a></td><td class="indexvalue">Represents the type of monitor check to be run </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html">CloudMonitorClient</a></td><td class="indexvalue">This is the base client for creating and managing Cloud Monitoring </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html">CloudMonitorEntity</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntityManager.html">CloudMonitorEntityManager</a></td><td class="indexvalue">Handles all of the entity-specific requests </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotification.html">CloudMonitorNotification</a></td><td class="indexvalue">Represents an action to take when an alarm is triggered </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationManager.html">CloudMonitorNotificationManager</a></td><td class="indexvalue">Handles all of the requests dealing with notifications </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationPlan.html">CloudMonitorNotificationPlan</a></td><td class="indexvalue">A Notification plan is a list of the notification actions to take when an alarm is triggered </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationPlanManager.html">CloudMonitorNotificationPlanManager</a></td><td class="indexvalue">Handles all of the requests dealing with Notification Plans </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationType.html">CloudMonitorNotificationType</a></td><td class="indexvalue">Represents a class of action to take when an alarm is triggered </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorZone.html">CloudMonitorZone</a></td><td class="indexvalue">Represents a location from which Cloud Monitoring collects data </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetwork.html">CloudNetwork</a></td><td class="indexvalue">This represents a network in the cloud </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html">CloudNetworkClient</a></td><td class="indexvalue">This is the base client for creating and managing Cloud Networks </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkManager.html">CloudNetworkManager</a></td><td class="indexvalue">Does nothing special, but is used in testing </td></tr>
@@ -149,7 +164,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidCredentialFile.html">InvalidCredentialFile</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidDateTimeString.html">InvalidDateTimeString</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidDeviceType.html">InvalidDeviceType</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidLoadBalancer.html">InvalidLoadBalancer</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidLoadBalancerParameters.html">InvalidLoadBalancerParameters</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidMonitoringCheckDetails.html">InvalidMonitoringCheckDetails</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidMonitoringCheckUpdate.html">InvalidMonitoringCheckUpdate</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidMonitoringMetricsRequest.html">InvalidMonitoringMetricsRequest</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidMonitoringMetricsResolution.html">InvalidMonitoringMetricsResolution</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidNodeCondition.html">InvalidNodeCondition</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidNodeParameters.html">InvalidNodeParameters</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidPTRRecord.html">InvalidPTRRecord</a></td><td class="indexvalue"></td></tr>
@@ -169,8 +189,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1MissingDNSSettings.html">MissingDNSSettings</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1MissingHealthMonitorSettings.html">MissingHealthMonitorSettings</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1MissingLoadBalancerParameters.html">MissingLoadBalancerParameters</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1MissingMonitoringCheckDetails.html">MissingMonitoringCheckDetails</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1MissingMonitoringCheckGranularity.html">MissingMonitoringCheckGranularity</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1MissingName.html">MissingName</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1MissingTemporaryURLKey.html">MissingTemporaryURLKey</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1MonitoringCheckTargetNotSpecified.html">MonitoringCheckTargetNotSpecified</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1MonitoringZonesPollMissing.html">MonitoringZonesPollMissing</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1NetworkCIDRInvalid.html">NetworkCIDRInvalid</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1NetworkCIDRMalformed.html">NetworkCIDRMalformed</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1NetworkCountExceeded.html">NetworkCountExceeded</a></td><td class="indexvalue"></td></tr>
@@ -200,6 +224,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html">RaxIdentity</a></td><td class="indexvalue">This class handles all of the authentication requirements for working with the Rackspace Cloud </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddns_1_1RecordResultsIterator.html">RecordResultsIterator</a></td><td class="indexvalue"><a class="el" href="classpyrax_1_1clouddns_1_1ResultsIterator.html" title="This object will iterate over all the results for a given type of listing, no matter how many items e...">ResultsIterator</a> subclass for iterating over all domain records </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddns_1_1ResultsIterator.html">ResultsIterator</a></td><td class="indexvalue">This object will iterate over all the results for a given type of listing, no matter how many items exist </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1autoscale_1_1ScalingGroup.html">ScalingGroup</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1autoscale_1_1ScalingGroupManager.html">ScalingGroupManager</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1utils_1_1SelfDeletingTempDirectory.html">SelfDeletingTempDirectory</a></td><td class="indexvalue">Convenience class for dealing with temporary folders and the files within them </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1utils_1_1SelfDeletingTempfile.html">SelfDeletingTempfile</a></td><td class="indexvalue">Convenience class for dealing with temporary files </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1service__catalog_1_1ServiceCatalog.html">ServiceCatalog</a></td><td class="indexvalue">Helper methods for dealing with a Keystone Service Catalog </td></tr>
@@ -240,7 +266,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 27 2013 23:24:40 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Sep 4 2013 09:52:00 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

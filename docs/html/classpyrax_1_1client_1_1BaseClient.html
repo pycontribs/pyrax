@@ -116,11 +116,13 @@ Inheritance diagram for BaseClient:</div>
  <div class="center">
   <img src="classpyrax_1_1client_1_1BaseClient.png" usemap="#BaseClient_map" alt=""/>
   <map id="BaseClient_map" name="BaseClient_map">
-<area href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html" title="This is the primary class for interacting with Cloud Block Storage." alt="CloudBlockStorageClient" shape="rect" coords="0,56,156,80"/>
-<area href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html" title="This is the primary class for interacting with Cloud Databases." alt="CloudDatabaseClient" shape="rect" coords="166,56,322,80"/>
-<area href="classpyrax_1_1clouddns_1_1CloudDNSClient.html" title="This is the primary class for interacting with Cloud DNS." alt="CloudDNSClient" shape="rect" coords="332,56,488,80"/>
-<area href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html" title="This is the primary class for interacting with Cloud Load Balancers." alt="CloudLoadBalancerClient" shape="rect" coords="498,56,654,80"/>
-<area href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html" title="This is the base client for creating and managing Cloud Networks." alt="CloudNetworkClient" shape="rect" coords="664,56,820,80"/>
+<area href="classpyrax_1_1autoscale_1_1AutoScaleClient.html" title="This is the primary class for interacting with AutoScale." alt="AutoScaleClient" shape="rect" coords="0,56,156,80"/>
+<area href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html" title="This is the primary class for interacting with Cloud Block Storage." alt="CloudBlockStorageClient" shape="rect" coords="166,56,322,80"/>
+<area href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html" title="This is the primary class for interacting with Cloud Databases." alt="CloudDatabaseClient" shape="rect" coords="332,56,488,80"/>
+<area href="classpyrax_1_1clouddns_1_1CloudDNSClient.html" title="This is the primary class for interacting with Cloud DNS." alt="CloudDNSClient" shape="rect" coords="498,56,654,80"/>
+<area href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html" title="This is the primary class for interacting with Cloud Load Balancers." alt="CloudLoadBalancerClient" shape="rect" coords="664,56,820,80"/>
+<area href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html" title="This is the base client for creating and managing Cloud Monitoring." alt="CloudMonitorClient" shape="rect" coords="830,56,986,80"/>
+<area href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html" title="This is the base client for creating and managing Cloud Networks." alt="CloudNetworkClient" shape="rect" coords="996,56,1152,80"/>
 </map>
  </div></div>
 
@@ -316,6 +318,8 @@ Static Public Attributes</h2></td></tr>
 
 <p>Creates a new resource. </p>
 
+<p>Reimplemented in <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a5b7ef0221e471e99fa7f0a87a28ba1ea">CloudMonitorClient</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="ab48bde70a0927a83d62464cb0627c34b"></a><!-- doxytag: member="pyrax::client::BaseClient::delete" ref="ab48bde70a0927a83d62464cb0627c34b" args="" -->
@@ -345,7 +349,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>Deletes a specific resource. </p>
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html#ab48bde70a0927a83d62464cb0627c34b">CloudNetworkClient</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#ab48bde70a0927a83d62464cb0627c34b">CloudMonitorClient</a>, and <a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html#ab48bde70a0927a83d62464cb0627c34b">CloudNetworkClient</a>.</p>
 
 </div>
 </div>
@@ -377,6 +381,8 @@ Static Public Attributes</h2></td></tr>
 <p>Finds a single item with attributes matching ``**kwargs``. </p>
 <p>This isn't very efficient: it loads the entire list then filters on the Python side. </p>
 
+<p>Reimplemented in <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a01f90f57b7acd55e177611f5d0f7df23">CloudMonitorClient</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="a1bae9ed7d134ea1c1e9a39726adea1e1"></a><!-- doxytag: member="pyrax::client::BaseClient::findall" ref="a1bae9ed7d134ea1c1e9a39726adea1e1" args="" -->
@@ -407,6 +413,8 @@ Static Public Attributes</h2></td></tr>
 <p>Finds all items with attributes matching ``**kwargs``. </p>
 <p>This isn't very efficient: it loads the entire list then filters on the Python side. </p>
 
+<p>Reimplemented in <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a1bae9ed7d134ea1c1e9a39726adea1e1">CloudMonitorClient</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="a444a1328efb32d5d9d2dcb2efe855d3b"></a><!-- doxytag: member="pyrax::client::BaseClient::get" ref="a444a1328efb32d5d9d2dcb2efe855d3b" args="" -->
@@ -435,6 +443,8 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Gets a specific resource. </p>
+
+<p>Reimplemented in <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a444a1328efb32d5d9d2dcb2efe855d3b">CloudMonitorClient</a>.</p>
 
 </div>
 </div>
@@ -560,7 +570,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>Returns a list of all resources. </p>
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a9b522b4ef7526bfa60b78fe735caa55c">CloudDNSClient</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a9b522b4ef7526bfa60b78fe735caa55c">CloudMonitorClient</a>, and <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a9b522b4ef7526bfa60b78fe735caa55c">CloudDNSClient</a>.</p>
 
 </div>
 </div>
@@ -873,7 +883,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudLoadBalancerClient</a>, <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudDNSClient</a>, <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudDatabaseClient</a>, <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudBlockStorageClient</a>, and <a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html#ab74e6bf80237ddc4109968cedc58c151">CloudNetworkClient</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudLoadBalancerClient</a>, <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudDNSClient</a>, <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#ab74e6bf80237ddc4109968cedc58c151">CloudMonitorClient</a>, <a class="el" href="classpyrax_1_1autoscale_1_1AutoScaleClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">AutoScaleClient</a>, <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudDatabaseClient</a>, <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudBlockStorageClient</a>, and <a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html#ab74e6bf80237ddc4109968cedc58c151">CloudNetworkClient</a>.</p>
 
 </div>
 </div>
@@ -1002,7 +1012,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 27 2013 23:24:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Sep 4 2013 09:51:56 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

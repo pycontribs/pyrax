@@ -1,6 +1,9 @@
 var searchData=
 [
   ['safe_5fissubclass',['safe_issubclass',['../namespacepyrax_1_1utils.html#ab35ae0f6f47300275663bd32a957c5f2',1,'pyrax::utils']]],
+  ['scaling_5fgroup',['scaling_group',['../classpyrax_1_1autoscale_1_1AutoScalePolicy.html#a7f23105293583afca652e62b3dc62613',1,'pyrax::autoscale::AutoScalePolicy']]],
+  ['scalinggroup',['ScalingGroup',['../classpyrax_1_1autoscale_1_1ScalingGroup.html',1,'pyrax::autoscale']]],
+  ['scalinggroupmanager',['ScalingGroupManager',['../classpyrax_1_1autoscale_1_1ScalingGroupManager.html',1,'pyrax::autoscale']]],
   ['search_5frecords',['search_records',['../classpyrax_1_1clouddns_1_1CloudDNSDomain.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSDomain.search_records()'],['../classpyrax_1_1clouddns_1_1CloudDNSManager.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSManager.search_records()'],['../classpyrax_1_1clouddns_1_1CloudDNSClient.html#ae7afc3edf5d837708e01cfa202d748b6',1,'pyrax::clouddns::CloudDNSClient.search_records()']]],
   ['selfdeletingtempdirectory',['SelfDeletingTempDirectory',['../classpyrax_1_1utils_1_1SelfDeletingTempDirectory.html',1,'pyrax::utils']]],
   ['selfdeletingtempfile',['SelfDeletingTempfile',['../classpyrax_1_1utils_1_1SelfDeletingTempfile.html',1,'pyrax::utils']]],
@@ -39,8 +42,8 @@ var searchData=
   ['set_5ftimeout',['set_timeout',['../classpyrax_1_1clouddns_1_1CloudDNSClient.html#a095ce5c15e8d86c06b68342d3ef66c66',1,'pyrax::clouddns::CloudDNSClient']]],
   ['set_5fweb_5ferror_5fpage',['set_web_error_page',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a5fa5ed0e434f44f721a751194551badc',1,'pyrax::cf_wrapper::container::Container']]],
   ['set_5fweb_5findex_5fpage',['set_web_index_page',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#ade8eed6cfb701ccd5d3a42b34dba771c',1,'pyrax::cf_wrapper::container::Container']]],
-  ['settings',['Settings',['../classpyrax_1_1Settings.html',1,'pyrax']]],
   ['settings',['settings',['../namespacepyrax.html#a9f379c663a918bd5beb1ed160f2b0c4d',1,'pyrax']]],
+  ['settings',['Settings',['../classpyrax_1_1Settings.html',1,'pyrax']]],
   ['setup',['setup',['../namespacesetup.html',1,'']]],
   ['setup_2epy',['setup.py',['../setup_8py.html',1,'']]],
   ['size',['size',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#aa3d6656320f1a7278c0c2c7fdf07617c',1,'pyrax::clouddatabases::CloudDatabaseVolume']]],
