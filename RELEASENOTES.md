@@ -1,5 +1,11 @@
 # Release Notes for pyrax
 
+###2013.09.04 - Version 1.5.0
+- Added support for the Rackspace Cloud Monitoring service
+- Added support for the Rackspace Autoscale service
+- Fixed an issue where parameters to the manger.create() method were passed
+  incorrectly.
+
 ###2013.08.21 - Version 1.4.11
 - Fixed issue #161: different locales caused date parsing error.
 - Fixed issue #166: passwords with non-ASCII characters were causing parsing
