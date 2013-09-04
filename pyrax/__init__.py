@@ -64,6 +64,7 @@ try:
     from novaclient.v1_1 import client as _cs_client
     from novaclient.v1_1.servers import Server as CloudServer
 
+    from autoscale import AutoScaleClient
     from clouddatabases import CloudDatabaseClient
     from clouddatabases import CloudDatabaseDatabase
     from clouddatabases import CloudDatabaseFlavor
@@ -74,6 +75,7 @@ try:
     from cloudblockstorage import CloudBlockStorageClient
     from clouddns import CloudDNSClient
     from cloudnetworks import CloudNetworkClient
+    from cloudmonitoring import CloudMonitorClient
 except ImportError:
     # See if this is the result of the importing of version.py in setup.py
     callstack = inspect.stack()
@@ -82,7 +84,7 @@ except ImportError:
         if stack[1].endswith("/setup.py"):
             in_setup = True
     if not in_setup:
-         # This isn't a normal import problem during setup; re-raise
+        # This isn't a normal import problem during setup; re-raise
         raise
 
 # Initiate the services to None until we are authenticated.
@@ -93,6 +95,8 @@ cloud_databases = None
 cloud_blockstorage = None
 cloud_dns = None
 cloud_networks = None
+cloud_monitoring = None
+autoscale = None
 # Default region for all services. Can be individually overridden if needed
 default_region = None
 # Encoding to use when working with non-ASCII names
@@ -119,6 +123,8 @@ _client_classes = {
         "volume": CloudBlockStorageClient,
         "dns": CloudDNSClient,
         "compute:network": CloudNetworkClient,
+        "monitor": CloudMonitorClient,
+        "autoscale": AutoScaleClient,
         }
 
 
@@ -526,7 +532,7 @@ def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, regions, services, cloudservers, cloudfiles
     global cloud_loadbalancers, cloud_databases, cloud_blockstorage, cloud_dns
-    global cloud_networks
+    global cloud_networks, cloud_monitoring, autoscale
     identity = None
     regions = tuple()
     services = tuple()
@@ -537,6 +543,8 @@ def clear_credentials():
     cloud_blockstorage = None
     cloud_dns = None
     cloud_networks = None
+    cloud_monitoring = None
+    autoscale = None
 
 
 def _make_agent_name(base):
@@ -553,7 +561,8 @@ def _make_agent_name(base):
 def connect_to_services(region=None):
     """Establishes authenticated connections to the various cloud APIs."""
     global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
-    global cloud_blockstorage, cloud_dns, cloud_networks
+    global cloud_blockstorage, cloud_dns, cloud_networks, cloud_monitoring
+    global autoscale
     cloudservers = connect_to_cloudservers(region=region)
     cloudfiles = connect_to_cloudfiles(region=region)
     cloud_loadbalancers = connect_to_cloud_loadbalancers(region=region)
@@ -561,6 +570,8 @@ def connect_to_services(region=None):
     cloud_blockstorage = connect_to_cloud_blockstorage(region=region)
     cloud_dns = connect_to_cloud_dns(region=region)
     cloud_networks = connect_to_cloud_networks(region=region)
+    cloud_monitoring = connect_to_cloud_monitoring(region=region)
+    autoscale = connect_to_autoscale(region=region)
 
 
 def _get_service_endpoint(svc, region=None, public=True):
@@ -686,20 +697,31 @@ def connect_to_cloud_loadbalancers(region=None):
 
 def connect_to_cloud_blockstorage(region=None):
     """Creates a client for working with cloud blockstorage."""
-    return _create_client(ep_name="volume",
-            service_type="volume", region=region)
+    return _create_client(ep_name="volume", service_type="volume",
+            region=region)
 
 
 def connect_to_cloud_dns(region=None):
     """Creates a client for working with cloud dns."""
-    return _create_client(ep_name="dns",
-            service_type="rax:dns", region=region)
+    return _create_client(ep_name="dns", service_type="rax:dns", region=region)
 
 
 def connect_to_cloud_networks(region=None):
     """Creates a client for working with cloud networks."""
-    return _create_client(ep_name="compute:network",
-            service_type="compute", region=region)
+    return _create_client(ep_name="compute:network", service_type="compute",
+            region=region)
+
+
+def connect_to_cloud_monitoring(region=None):
+    """Creates a client for working with cloud monitoring."""
+    return _create_client(ep_name="monitor", service_type="monitor",
+            region=region)
+
+
+def connect_to_autoscale(region=None):
+    """Creates a client for working with AutoScale."""
+    return _create_client(ep_name="autoscale",
+            service_type="autoscale", region=region)
 
 
 def get_http_debug():
@@ -713,7 +735,8 @@ def set_http_debug(val):
     # Set debug on the various services
     identity.http_log_debug = val
     for svc in (cloudservers, cloudfiles, cloud_loadbalancers,
-            cloud_blockstorage, cloud_databases, cloud_dns, cloud_networks):
+            cloud_blockstorage, cloud_databases, cloud_dns, cloud_networks,
+            autoscale):
         if svc is not None:
             svc.http_log_debug = val
     if not val:

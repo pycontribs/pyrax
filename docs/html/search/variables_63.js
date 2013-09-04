@@ -14,6 +14,7 @@ var searchData=
   ['cloud_5fdatabases',['cloud_databases',['../namespacepyrax.html#af1a86dab674b703fc06491e66aacadb6',1,'pyrax']]],
   ['cloud_5fdns',['cloud_dns',['../namespacepyrax.html#acb0f91693d36d52270ed91fd2e919fcc',1,'pyrax']]],
   ['cloud_5floadbalancers',['cloud_loadbalancers',['../namespacepyrax.html#a6d6a60201d4fb3fb6208a724c2b7fb1f',1,'pyrax']]],
+  ['cloud_5fmonitoring',['cloud_monitoring',['../namespacepyrax.html#a312b914939298c0bef9d8665edc44646',1,'pyrax']]],
   ['cloud_5fnetworks',['cloud_networks',['../namespacepyrax.html#af25ef81616c79ed5da4655185879259f',1,'pyrax']]],
   ['cloudfiles',['cloudfiles',['../namespacepyrax.html#a87bf34a456a3712f3bd4a7207f1c36ca',1,'pyrax']]],
   ['cloudservers',['cloudservers',['../namespacepyrax.html#a558330633ea0238aee2d4f5f5a7afa07',1,'pyrax']]],

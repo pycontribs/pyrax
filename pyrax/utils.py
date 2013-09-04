@@ -348,10 +348,11 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
     return obj
 
 
+
 def wait_for_build(obj, att=None, desired=None, callback=None, interval=None,
         attempts=None, verbose=None, verbose_atts=None):
     """
-    Designed to handle the most common use case for wait_unti: an object whose
+    Designed to handle the most common use case for wait_until: an object whose
     'status' attribute will end up in either 'ACTIVE' or 'ERROR' state. Since
     builds don't happen very quickly, the interval will default to 20 seconds
     to avoid excess polling.
@@ -365,6 +366,23 @@ def wait_for_build(obj, att=None, desired=None, callback=None, interval=None,
             attempts=attempts, verbose=verbose, verbose_atts=verbose_atts)
 
 
+def _parse_datetime_string(val):
+    """
+    Attempts to parse a string representation of a date or datetime value, and
+    returns a datetime if successful. If not, a InvalidDateTimeString exception
+    will be raised.
+    """
+    dt = None
+    lenval = len(val)
+    fmt = {19: "%Y-%m-%d %H:%M:%S", 10: "%Y-%m-%d"}.get(lenval)
+    if fmt is None:
+        # Invalid date
+        raise exc.InvalidDateTimeString("The supplied value '%s' does not "
+              "match either of the formats 'YYYY-MM-DD HH:MM:SS' or "
+              "'YYYY-MM-DD'." % val)
+    return datetime.datetime.strptime(val, fmt)
+
+
 def iso_time_string(val, show_tzinfo=False):
     """
     Takes either a date, datetime or a string, and returns the standard ISO
@@ -374,17 +392,7 @@ def iso_time_string(val, show_tzinfo=False):
     if not val:
         return ""
     if isinstance(val, basestring):
-        dt = None
-        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
-            try:
-                dt = datetime.datetime.strptime(val, fmt)
-                break
-            except ValueError:
-                continue
-        if dt is None:
-            raise exc.InvalidDateTimeString("The supplied value '%s' does not "
-              "match either of the formats 'YYYY-MM-DD HH:MM:SS' or "
-              "'YYYY-MM-DD'." % val)
+        dt = _parse_datetime_string(val)
     else:
         dt = val
     if not isinstance(dt, datetime.datetime):
@@ -400,6 +408,19 @@ def iso_time_string(val, show_tzinfo=False):
     elif not show_tzinfo and not has_tz:
         ret = dt.isoformat().split(".")[0]
     return ret
+
+
+def to_timestamp(val):
+    """
+    Takes a value that is either a Python date, datetime, or a string
+    representation of a date/datetime value. Returns a standard Unix timestamp
+    corresponding to that value.
+    """
+    if isinstance(val, basestring):
+        dt = _parse_datetime_string(val)
+    else:
+        dt = val
+    return time.mktime(dt.timetuple())
 
 
 def get_id(id_or_obj):
@@ -428,6 +449,20 @@ def get_name(name_or_obj):
         return name_or_obj.name
     except AttributeError:
         raise exc.MissingName(name_or_obj)
+
+
+def params_to_dict(params, dct, local_dict):
+    """
+    Given a set of optional parameter names, constructs a dictionary with the
+    parameter name as the key, and the value for that key in the local_dict as
+    the value, for all non-None values.
+    """
+    for param in params:
+        val = local_dict.get(param)
+        if val is None:
+            continue
+        dct[param] = val
+    return dct
 
 
 def match_pattern(nm, patterns):

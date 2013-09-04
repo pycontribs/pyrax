@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['scalinggroup',['ScalingGroup',['../classpyrax_1_1autoscale_1_1ScalingGroup.html',1,'pyrax::autoscale']]],
+  ['scalinggroupmanager',['ScalingGroupManager',['../classpyrax_1_1autoscale_1_1ScalingGroupManager.html',1,'pyrax::autoscale']]],
   ['selfdeletingtempdirectory',['SelfDeletingTempDirectory',['../classpyrax_1_1utils_1_1SelfDeletingTempDirectory.html',1,'pyrax::utils']]],
   ['selfdeletingtempfile',['SelfDeletingTempfile',['../classpyrax_1_1utils_1_1SelfDeletingTempfile.html',1,'pyrax::utils']]],
   ['servicecatalog',['ServiceCatalog',['../classpyrax_1_1service__catalog_1_1ServiceCatalog.html',1,'pyrax::service_catalog']]],

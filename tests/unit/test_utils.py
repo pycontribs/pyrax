@@ -7,6 +7,7 @@ import os
 import random
 import StringIO
 import sys
+import time
 import unittest
 
 from mock import patch
@@ -16,6 +17,7 @@ import pyrax.utils as utils
 import pyrax.exceptions as exc
 from tests.unit import fakes
 
+FAKE_CONTENT = "x" * 100
 
 
 class UtilsTest(unittest.TestCase):
@@ -100,10 +102,9 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(expected, received)
 
     def test_random_name(self):
-        nm = utils.random_name(33)
-        self.assertEqual(len(nm), 33)
-        nm = utils.random_name(9999)
-        self.assertEqual(len(nm), 9999)
+        testlen = random.randint(50, 500)
+        nm = utils.random_name(testlen)
+        self.assertEqual(len(nm), testlen)
 
     def test_folder_size_bad_folder(self):
         self.assertRaises(exc.FolderNotFound, utils.folder_size,
@@ -111,39 +112,36 @@ class UtilsTest(unittest.TestCase):
 
     def test_folder_size_no_ignore(self):
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            # write 10 files of 100 bytes each
-            content = "x" * 100
-            for idx in xrange(10):
+            # write 5 files of 100 bytes each
+            for idx in xrange(5):
                 pth = os.path.join(tmpdir, "test%s" % idx)
                 with open(pth, "w") as ff:
-                    ff.write(content)
+                    ff.write(FAKE_CONTENT)
             fsize = utils.folder_size(tmpdir)
-        self.assertEqual(fsize, 1000)
+        self.assertEqual(fsize, 500)
 
     def test_folder_size_ignore_string(self):
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            # write 10 files of 100 bytes each
-            content = "x" * 100
-            for idx in xrange(10):
+            # write 5 files of 100 bytes each
+            for idx in xrange(5):
                 pth = os.path.join(tmpdir, "test%s" % idx)
                 with open(pth, "w") as ff:
-                    ff.write(content)
+                    ff.write(FAKE_CONTENT)
             # ignore one file
-            fsize = utils.folder_size(tmpdir, ignore="*7")
-        self.assertEqual(fsize, 900)
+            fsize = utils.folder_size(tmpdir, ignore="*2")
+        self.assertEqual(fsize, 400)
 
     def test_folder_size_ignore_list(self):
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            # write 10 files of 100 bytes each
-            content = "x" * 100
-            for idx in xrange(10):
+            # write 5 files of 100 bytes each
+            for idx in xrange(5):
                 pth = os.path.join(tmpdir, "test%s" % idx)
                 with open(pth, "w") as ff:
-                    ff.write(content)
+                    ff.write(FAKE_CONTENT)
             # ignore odd files
-            ignore = ["*1", "*3", "*5", "*7", "*9"]
+            ignore = ["*1", "*3"]
             fsize = utils.folder_size(tmpdir, ignore=ignore)
-        self.assertEqual(fsize, 500)
+        self.assertEqual(fsize, 300)
 
     def test_add_method(self):
         def fake_method(self):
@@ -207,7 +205,7 @@ class UtilsTest(unittest.TestCase):
         sav_out = sys.stdout
         out = StringIO.StringIO()
         sys.stdout = out
-        ret = utils.wait_until(status_obj, "status", "ready", interval=0.01,
+        ret = utils.wait_until(status_obj, "status", "ready", interval=0.00001,
                 verbose=True, verbose_atts="progress")
         self.assertTrue(isinstance(ret, fakes.FakeStatusChanger))
         self.assertEqual(ret.status, "ready")
@@ -221,7 +219,7 @@ class UtilsTest(unittest.TestCase):
         status_obj.manager = fakes.FakeManager()
         status_obj.manager.get = Mock(return_value=status_obj)
         status_obj.get = status_obj.manager.get
-        ret = utils.wait_until(status_obj, "status", "fake", interval=0.01,
+        ret = utils.wait_until(status_obj, "status", "fake", interval=0.00001,
                 attempts=2)
         self.assertFalse(ret.status == "fake")
 
@@ -232,7 +230,7 @@ class UtilsTest(unittest.TestCase):
         status_obj.manager.get = Mock(return_value=status_obj)
         status_obj.get = status_obj.manager.get
         thread = utils.wait_until(obj=status_obj, att="status", desired="ready",
-                interval=0.01, callback=cback)
+                interval=0.00001, callback=cback)
         thread.join()
         cback.assert_called_once_with(status_obj)
 
@@ -265,7 +263,8 @@ class UtilsTest(unittest.TestCase):
 
     def test_time_string_date(self):
         dt = "1999-12-31"
-        self.assertEqual(utils.iso_time_string(dt), "1999-12-31T00:00:00")
+        iso = utils.iso_time_string(dt)
+        self.assertEqual(iso, "1999-12-31T00:00:00")
 
     def test_time_string_date_obj(self):
         dt = datetime.date(1999, 12, 31)

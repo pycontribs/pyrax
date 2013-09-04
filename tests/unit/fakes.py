@@ -6,6 +6,11 @@ import random
 import uuid
 
 import pyrax
+from pyrax.autoscale import AutoScaleClient
+from pyrax.autoscale import AutoScalePolicy
+from pyrax.autoscale import AutoScaleWebhook
+from pyrax.autoscale import ScalingGroup
+from pyrax.autoscale import ScalingGroupManager
 from pyrax.cf_wrapper.client import FolderUploader
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
@@ -30,6 +35,18 @@ from pyrax.clouddns import CloudDNSRecord
 from pyrax.clouddns import CloudDNSPTRRecord
 from pyrax.cloudnetworks import CloudNetwork
 from pyrax.cloudnetworks import CloudNetworkClient
+from pyrax.cloudmonitoring import CloudMonitorClient
+from pyrax.cloudmonitoring import CloudMonitorEntity
+from pyrax.cloudmonitoring import CloudMonitorNotificationManager
+from pyrax.cloudmonitoring import CloudMonitorNotificationPlanManager
+from pyrax.cloudmonitoring import CloudMonitorEntityManager
+from pyrax.cloudmonitoring import CloudMonitorCheck
+from pyrax.cloudmonitoring import CloudMonitorCheckType
+from pyrax.cloudmonitoring import CloudMonitorZone
+from pyrax.cloudmonitoring import CloudMonitorNotification
+from pyrax.cloudmonitoring import CloudMonitorNotificationType
+from pyrax.cloudmonitoring import CloudMonitorNotificationPlan
+from pyrax.cloudmonitoring import CloudMonitorAlarm
 
 import pyrax.exceptions as exc
 from pyrax.identity.rax_identity import RaxIdentity
@@ -330,7 +347,7 @@ class FakeLoadBalancerClient(CloudLoadBalancerClient):
 class FakeLoadBalancerManager(CloudLoadBalancerManager):
     def __init__(self, api=None, *args, **kwargs):
         if api is None:
-            api = FakeBlockStorageClient()
+            api = FakeLoadBalancerClient()
         super(FakeLoadBalancerManager, self).__init__(api, *args, **kwargs)
 
 
@@ -340,6 +357,7 @@ class FakeLoadBalancer(CloudLoadBalancer):
         info = info or {"fake": "fake"}
         super(FakeLoadBalancer, self).__init__(name, info, *args, **kwargs)
         self.id = utils.random_name(ascii_only=True)
+        self.port = random.randint(1, 256)
         self.manager = FakeLoadBalancerManager()
 
 
@@ -381,11 +399,80 @@ class FakeCloudNetworkClient(CloudNetworkClient):
 
 class FakeCloudNetwork(CloudNetwork):
     def __init__(self, *args, **kwargs):
-        info = kwargs.get("info", {"fake": "fake"})
-        label = kwargs.get("label", kwargs.pop("name", utils.random_name()))
+        info = kwargs.pop("info", {"fake": "fake"})
+        label = kwargs.pop("label", kwargs.pop("name", utils.random_name()))
         info["label"] = label
         super(FakeCloudNetwork, self).__init__(manager=None, info=info, *args,
                 **kwargs)
+        self.id = uuid.uuid4()
+
+
+class FakeAutoScaleClient(AutoScaleClient):
+    def __init__(self, *args, **kwargs):
+        self._manager = FakeManager()
+        super(FakeAutoScaleClient, self).__init__(*args, **kwargs)
+
+
+class FakeAutoScalePolicy(AutoScalePolicy):
+    def __init__(self, *args, **kwargs):
+        super(FakeAutoScalePolicy, self).__init__(*args, **kwargs)
+        self.id = utils.random_name(ascii_only=True)
+
+
+class FakeAutoScaleWebhook(AutoScaleWebhook):
+    def __init__(self, *args, **kwargs):
+        super(FakeAutoScaleWebhook, self).__init__(*args, **kwargs)
+        self.id = utils.random_name(ascii_only=True)
+
+
+class FakeScalingGroupManager(ScalingGroupManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeAutoScaleClient()
+        super(FakeScalingGroupManager, self).__init__(api, *args, **kwargs)
+        self.id = utils.random_name(ascii_only=True)
+
+
+class FakeScalingGroup(ScalingGroup):
+    def __init__(self, name=None, info=None, *args, **kwargs):
+        name = name or utils.random_name(ascii_only=True)
+        info = info or {"fake": "fake", "scalingPolicies": []}
+        self.groupConfiguration = {}
+        super(FakeScalingGroup, self).__init__(name, info, *args, **kwargs)
+        self.id = utils.random_name(ascii_only=True)
+        self.name = name
+        self.manager = FakeScalingGroupManager()
+
+
+class FakeCloudMonitorClient(CloudMonitorClient):
+    def __init__(self, *args, **kwargs):
+        super(FakeCloudMonitorClient, self).__init__("fakeuser",
+                "fakepassword", *args, **kwargs)
+
+
+class FakeCloudMonitorEntity(CloudMonitorEntity):
+    def __init__(self, *args, **kwargs):
+        info = kwargs.pop("info", {"fake": "fake"})
+        super(FakeCloudMonitorEntity, self).__init__(FakeManager(), info=info,
+                *args, **kwargs)
+        self.manager.api = FakeCloudMonitorClient()
+        self.id = utils.random_name()
+
+
+class FakeCloudMonitorCheck(CloudMonitorCheck):
+    def __init__(self, *args, **kwargs):
+        info = kwargs.pop("info", {"fake": "fake"})
+        entity = kwargs.pop("entity", FakeCloudMonitorEntity())
+        super(FakeCloudMonitorCheck, self).__init__(None, info, entity,
+                *args, **kwargs)
+        self.id = uuid.uuid4()
+
+
+class FakeCloudMonitorNotification(CloudMonitorNotification):
+    def __init__(self, *args, **kwargs):
+        info = kwargs.pop("info", {"fake": "fake"})
+        super(FakeCloudMonitorNotification, self).__init__(manager=None,
+                info=info, *args, **kwargs)
         self.id = uuid.uuid4()
 
 
