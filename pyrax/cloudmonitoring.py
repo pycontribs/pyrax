@@ -484,6 +484,7 @@ class CloudMonitorEntityManager(BaseManager):
         start_tm = utils.to_timestamp(start)
         end_tm = utils.to_timestamp(end)
         qparms = []
+        # Timestamps with fractional seconds currently cause a 408 (timeout)
         qparms.append("from=%s" % int(start_tm))
         qparms.append("to=%s" % int(end_tm))
         if points:
