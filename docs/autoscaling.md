@@ -24,9 +24,9 @@ It is important to remember that Autoscale does not configure anything within a 
 
 
 ## Using Autoscaling in pyrax
-Once you have authenticated, you can reference the Autoscaling service via `pyrax.autoscaling`. That is a lot to type over and over in your code, so it is easier if you include the following line at the beginning of your code:
+Once you have authenticated, you can reference the Autoscaling service via `pyrax.autoscale`. That is a lot to type over and over in your code, so it is easier if you include the following line at the beginning of your code:
 
-    au = pyrax.autoscaling
+    au = pyrax.autoscale
 
 Then you can simply use the alias `au` to reference the service. All of the code samples in this document assume that `au` has been defined this way.
 
