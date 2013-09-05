@@ -4,6 +4,7 @@
 import datetime
 import fnmatch
 import hashlib
+from numbers import Number
 import os
 import random
 import re
@@ -416,7 +417,10 @@ def to_timestamp(val):
     representation of a date/datetime value. Returns a standard Unix timestamp
     corresponding to that value.
     """
-    if isinstance(val, basestring):
+    # If we're given a number, give it right back - it's already a timestamp.
+    if isinstance(val, Number):
+        return val
+    elif isinstance(val, basestring):
         dt = _parse_datetime_string(val)
     else:
         dt = val
