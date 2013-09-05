@@ -39,8 +39,11 @@ def assure_domain(fnc):
     @wraps(fnc)
     def _wrapped(self, domain, *args, **kwargs):
         if not isinstance(domain, CloudDNSDomain):
-            # Must be the ID
-            domain = self._manager.get(domain)
+            # Must be the ID or name. Try ID first:
+            try:
+                domain = self._manager.get(domain)
+            except exc.NotFound:
+                domain = self._manager.find(name=domain)
         return fnc(self, domain, *args, **kwargs)
     return _wrapped
 
@@ -1227,6 +1230,15 @@ class CloudDNSClient(BaseClient):
 
     #Create an alias, so that adding a single record is more intuitive
     add_record = add_records
+
+
+    @assure_domain
+    def get_record(self, domain, record):
+        """
+        Gets the full information for an existing record or record ID for the
+        specified domain.
+        """
+        return domain.get_record(record)
 
 
     @assure_domain
