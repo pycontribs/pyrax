@@ -1,3 +1,7 @@
+build/
+dist/
+rpm-build/
+rpms/
 *~
 .DS_Store
 *.swp
