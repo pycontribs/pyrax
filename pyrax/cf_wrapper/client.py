@@ -1042,6 +1042,14 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
+    def list(self, limit=None, marker=None, **parms):
+        """Returns a list of all container objects."""
+        hdrs, conts = self.connection.get_container("")
+        ret = [self.get_container(cont["name"]) for cont in conts]
+        return ret
+
+
+    @handle_swiftclient_exception
     def list_containers(self, limit=None, marker=None, **parms):
         """Returns a list of all container names as strings."""
         hdrs, conts = self.connection.get_container("")
