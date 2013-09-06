@@ -17,11 +17,11 @@ class RaxIdentity(BaseAuth):
     This class handles all of the authentication requirements for working
     with the Rackspace Cloud.
     """
-    default_region = "SYD"
+    _auth_endpoint = None
 
 
     def _get_auth_endpoint(self):
-        return AUTH_ENDPOINT
+        return self._auth_endpoint or AUTH_ENDPOINT
 
 
     def _read_credential_file(self, cfg):

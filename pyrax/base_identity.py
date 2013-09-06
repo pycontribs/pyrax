@@ -71,6 +71,7 @@ class BaseAuth(object):
         self.services = {}
         self.regions = set()
         self.verify_ssl = verify_ssl
+        self._auth_endpoint = None
 
 
     @property
@@ -83,6 +84,11 @@ class BaseAuth(object):
     def auth_endpoint(self):
         """Abstracts out the logic for connecting to different auth endpoints."""
         return self._get_auth_endpoint()
+
+
+    @auth_endpoint.setter
+    def auth_endpoint(self, val):
+        self._auth_endpoint = val
 
 
     def _get_auth_endpoint(self):
