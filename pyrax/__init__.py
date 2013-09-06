@@ -393,6 +393,12 @@ def _safe_region(region=None):
     if not ret:
         # Nothing specified; get the default from the identity object.
         ret = identity.get_default_region()
+    if not ret:
+        # Use the first available region
+        try:
+            ret = regions[0]
+        except IndexError:
+            ret = ""
     return ret
 
 
