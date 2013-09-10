@@ -359,7 +359,7 @@ def wait_for_build(obj, att=None, desired=None, callback=None, interval=None,
     to avoid excess polling.
     """
     att = att or "status"
-    desired = desired or ["ACTIVE", "ERROR"]
+    desired = desired or ["ACTIVE", "ERROR", "available"]
     interval = interval or 20
     attempts = attempts or 0
     verbose_atts = verbose_atts or "progress"
