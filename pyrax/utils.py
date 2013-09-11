@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import email.utils
 import fnmatch
 import hashlib
-from numbers import Number
+import numbers
 import os
 import random
 import re
@@ -411,6 +412,24 @@ def iso_time_string(val, show_tzinfo=False):
     return ret
 
 
+def rfc2822_format(val):
+    """
+    Takes either a date, a datetime, or a string, and returns a string that
+    represents the value in RFC 2822 format. If a string is passed it is
+    returned unchanged.
+    """
+    if isinstance(val, basestring):
+        return val
+    elif isinstance(val, (datetime.datetime, datetime.date)):
+        # Convert to a timestamp
+        val = time.mktime(val.timetuple())
+    if isinstance(val, numbers.Number):
+        return email.utils.formatdate(val)
+    else:
+        # Bail
+        return val
+
+
 def to_timestamp(val):
     """
     Takes a value that is either a Python date, datetime, or a string
@@ -418,7 +437,7 @@ def to_timestamp(val):
     corresponding to that value.
     """
     # If we're given a number, give it right back - it's already a timestamp.
-    if isinstance(val, Number):
+    if isinstance(val, numbers.Number):
         return val
     elif isinstance(val, basestring):
         dt = _parse_datetime_string(val)
