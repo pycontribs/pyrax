@@ -18,6 +18,7 @@ class RaxIdentity(BaseAuth):
     with the Rackspace Cloud.
     """
     _auth_endpoint = None
+    _creds_style = "apikey"
 
 
     def _get_auth_endpoint(self):
@@ -25,6 +26,9 @@ class RaxIdentity(BaseAuth):
 
 
     def _read_credential_file(self, cfg):
+        """
+        Parses the credential file with Rackspace-specific labels.
+        """
         self.username = cfg.get("rackspace_cloud", "username")
         try:
             self.password = cfg.get("rackspace_cloud", "api_key", raw=True)
@@ -35,13 +39,32 @@ class RaxIdentity(BaseAuth):
 
     def _get_credentials(self):
         """
-        Returns the current credentials in the format expected by
-        the authentication service. Note that Rackspace credentials
-        expect 'api_key' instead of 'password'.
+        Returns the current credentials in the format expected by the
+        authentication service. Note that by default Rackspace credentials
+        expect 'api_key' instead of 'password'. However, if authentication
+        fails, return the creds in standard password format, in case they are
+        using a username / password combination.
         """
-        return {"auth": {"RAX-KSKEY:apiKeyCredentials":
-                {"username": "%s" % self.username,
-                "apiKey": "%s" % self.password}}}
+        if self._creds_style == "apikey":
+            return {"auth": {"RAX-KSKEY:apiKeyCredentials":
+                    {"username": "%s" % self.username,
+                    "apiKey": "%s" % self.password}}}
+        else:
+            # Return in the default password-style
+            return super(RaxIdentity, self)._get_credentials()
+
+
+    def authenticate(self):
+        """
+        If the user's credentials include an API key, the default behavior will
+        work. But if they are using a password, the initial attempt will fail,
+        so try again, but this time using the standard password format.
+        """
+        try:
+            super(RaxIdentity, self).authenticate()
+        except exc.AuthenticationFailed:
+            self._creds_style = "password"
+            super(RaxIdentity, self).authenticate()
 
 
     def auth_with_token(self, token, tenant_id=None, tenant_name=None):
@@ -114,6 +137,9 @@ class RaxIdentity(BaseAuth):
 
     def update_user(self, user, email=None, username=None,
             uid=None, defaultRegion=None, enabled=None):
+        """
+        Allows you to update settings for a given user.
+        """
         user_id = utils.get_id(user)
         uri = "users/%s" % user_id
         upd = {"id": user_id}

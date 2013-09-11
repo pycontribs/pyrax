@@ -464,7 +464,7 @@ class BaseAuth(object):
         # NOTE: the OpenStack docs say that the name key in the following dict
         # is supposed to be 'username', but the service actually expects 'name'.
         data = {"user": {
-                "name": name,
+                "username": name,
                 "email": email,
                 "enabled": enabled,
                 }}

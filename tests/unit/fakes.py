@@ -685,10 +685,13 @@ u'token': {u'expires': u'2222-02-22T22:22:22.000-02:00',
     u'id': u'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
     u'tenant': {u'id': u'000000', u'name': u'000000'}},
 u'user': {u'id': u'123456',
-   u'name': u'fakeuser',
-   u'roles': [{u'description': u'User Admin Role.',
-               u'id': u'3',
-               u'name': u'identity:user-admin'}]}}}
+    u'name': u'fakeuser',
+    u'RAX-AUTH:defaultRegion': u'DFW',
+    u'roles': [{u'description': u'User Admin Role.',
+            u'id': u'3',
+            u'name': u'identity:user-admin'}],
+            }}}
+
 
 
 class FakeIdentityResponse(FakeResponse):
