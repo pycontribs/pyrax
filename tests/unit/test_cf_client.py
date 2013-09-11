@@ -818,6 +818,21 @@ class CF_ClientTest(unittest.TestCase):
         self.assert_("o2" in obj_names)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_list_container_subdirs(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        objs = [{"name": "subdir1", "content_type": "application/directory"},
+                {"name": "file1", "content_type": "text/plain"},
+                {"name": "subdir2", "content_type": "application/directory"},
+                {"name": "file2", "content_type": "text/plain"}]
+        client.connection.get_container = Mock(return_value=(None, objs))
+        ret = client.list_container_subdirs("fake")
+        self.assertEqual(len(ret), 2)
+        obj_names = [obj.name for obj in ret]
+        self.assert_("subdir1" in obj_names)
+        self.assert_("subdir2" in obj_names)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_info(self):
         client = self.client
         dct = {"x-account-container-count": 2, "x-account-bytes-used": 1234}
@@ -846,6 +861,19 @@ class CF_ClientTest(unittest.TestCase):
         self.assertEqual(uri, example_uri)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_list(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        client.connection.get_container = Mock()
+        cont_list = [{"name": self.cont_name, "count": "2", "bytes": "12345"},
+                {"name": "anothercont", "count": "1", "bytes": "67890"}]
+        client.connection.get_container = Mock()
+        client.connection.get_container.return_value = ({}, cont_list)
+        resp = client.list()
+        self.assertEqual(len(resp), 2)
+        self.assert_(all([isinstance(cont, Container) for cont in resp]))
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_list_containers(self):
         client = self.client
         client.connection.get_container = Mock()
@@ -857,7 +885,6 @@ class CF_ClientTest(unittest.TestCase):
         self.assertEqual(len(resp), 2)
         self.assert_(self.cont_name in resp)
         self.assert_("anothercont" in resp)
-
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_list_containers_info(self):

@@ -148,6 +148,22 @@ class CF_ContainerTest(unittest.TestCase):
         self.assertRaises(exc.NoSuchObject, cont.get_object, "missing")
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_list_subdirs(self):
+        cont = self.container
+        clt = cont.client
+        clt.list_container_subdirs = Mock()
+        marker = utils.random_name()
+        limit = utils.random_name()
+        prefix = utils.random_name()
+        delimiter = utils.random_name()
+        full_listing = utils.random_name()
+        cont.list_subdirs(marker=marker, limit=limit, prefix=prefix,
+                delimiter=delimiter, full_listing=full_listing)
+        clt.list_container_subdirs.assert_called_once_with(cont.name,
+                marker=marker, limit=limit, prefix=prefix, delimiter=delimiter,
+                full_listing=full_listing)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_store_object(self):
         cont = self.container
         cont.client.connection.head_container = Mock()

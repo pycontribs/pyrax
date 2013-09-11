@@ -1032,6 +1032,24 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
+    def list_container_subdirs(self, container, marker=None, limit=None,
+            prefix=None, delimiter=None, full_listing=False):
+        """
+        Return a list of StorageObjects representing the pseudo-subdirectories
+        in the specified container. You can use the marker and limit params to
+        handle pagination, and the prefix and delimiter params to filter the
+        objects returned.
+        """
+        cname = self._resolve_name(container)
+        hdrs, objs = self.connection.get_container(cname, marker=marker,
+                limit=limit, prefix=prefix, delimiter=delimiter,
+                full_listing=full_listing)
+        cont = self.get_container(cname)
+        return [StorageObject(self, container=cont, attdict=obj) for obj in objs
+                if obj.get("content_type") == "application/directory"]
+
+
+    @handle_swiftclient_exception
     def get_info(self):
         """
         Returns a tuple for the number of containers and total bytes in

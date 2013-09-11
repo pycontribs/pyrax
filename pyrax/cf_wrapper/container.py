@@ -123,6 +123,20 @@ class Container(object):
         return [obj.name for obj in objs]
 
 
+    def list_subdirs(self, marker=None, limit=None, prefix=None, delimiter=None,
+            full_listing=False):
+        """
+        Return a list of StorageObjects representing the pseudo-subdirectories
+        in this container. You can use the marker and limit params to handle
+        pagination, and the prefix and delimiter params to filter the objects
+        returned.
+        """
+        subdirs = self.client.list_container_subdirs(self.name, marker=marker,
+                limit=limit, prefix=prefix, delimiter=delimiter,
+                full_listing=full_listing)
+        return subdirs
+
+
     def store_object(self, obj_name, data, content_type=None, etag=None,
             content_encoding=None, ttl=None):
         """
