@@ -276,6 +276,30 @@ class CloudDNSManager(BaseManager):
         self._delay = DEFAULT_DELAY
 
 
+    def _create_body(self, name, emailAddress, ttl=3600, comment=None,
+            subdomains=None, records=None):
+        """
+        Creates the appropriate dict for creating a new domain.
+        """
+        if subdomains is None:
+            subdomains = []
+        if records is None:
+            records = []
+        body = {"domains": [{
+                "name": name,
+                "emailAddress": emailAddress,
+                "ttl": ttl,
+                "comment": comment,
+                "subdomains": {
+                    "domains": subdomains
+                    },
+                "recordsList": {
+                    "records": records
+                    },
+                }]}
+        return body
+
+
     def _set_timeout(self, timeout):
         """
         Changes the duration for which the program will wait for a response from
@@ -988,30 +1012,6 @@ class CloudDNSClient(BaseClient):
         self._manager = CloudDNSManager(self, resource_class=CloudDNSDomain,
                 response_key="domains", plural_response_key="domains",
                 uri_base="domains")
-
-
-    def _create_body(self, name, emailAddress, ttl=3600, comment=None,
-            subdomains=None, records=None):
-        """
-        Creates the appropriate dict for creating a new domain.
-        """
-        if subdomains is None:
-            subdomains = []
-        if records is None:
-            records = []
-        body = {"domains": [{
-                "name": name,
-                "emailAddress": emailAddress,
-                "ttl": ttl,
-                "comment": comment,
-                "subdomains": {
-                    "domains": subdomains
-                    },
-                "recordsList": {
-                    "records": records
-                    },
-                }]}
-        return body
 
 
     def set_timeout(self, timeout):

@@ -59,7 +59,7 @@ class CloudDatabaseVolume(object):
 
 class CloudDatabaseManager(BaseManager):
     """
-    This class manages communication with Cloud Database resources.
+    This class manages communication with Cloud Database instances.
     """
     def get(self, item):
         """
@@ -72,10 +72,59 @@ class CloudDatabaseManager(BaseManager):
         return resource
 
 
+    def _create_body(self, name, flavor=None, volume=None, databases=None,
+            users=None):
+        """
+        Used to create the dict required to create a Cloud Database instance.
+        """
+        if flavor is None:
+            flavor = 1
+        flavor_ref = self.api._get_flavor_ref(flavor)
+        if volume is None:
+            volume = 1
+        if databases is None:
+            databases = []
+        if users is None:
+            users = []
+        body = {"instance": {
+                "name": name,
+                "flavorRef": flavor_ref,
+                "volume": {"size": volume},
+                "databases": databases,
+                "users": users,
+                }}
+        return body
+
+
+class CloudDatabaseDatabaseManager(BaseManager):
+    """
+    This class manages communication with databases on Cloud Database instances.
+    """
+    def _create_body(self, name, character_set=None, collate=None):
+        body = {"databases": [
+                {"name": name,
+                "character_set": character_set,
+                "collate": collate,
+                }]}
+        return body
+
+
+
 class CloudDatabaseUserManager(BaseManager):
     """
-    This class handles operations on the users in a Cloud Database.
+    This class handles operations on the users in a database on a Cloud
+    Database instance.
     """
+    def _create_body(self, name, password, databases=None, database_names=None):
+        db_dicts = [{"name": db} for db in database_names]
+        body = {"users": [
+                {"name": name,
+                "password": password,
+                "databases": db_dicts,
+                }]}
+        return body
+
+
     def _get_db_names(self, dbs, strict=True):
         """
         Accepts a single db (name or object) or a list of dbs, and returns a
@@ -169,7 +218,7 @@ class CloudDatabaseInstance(BaseResource):
     """
     def __init__(self, *args, **kwargs):
         super(CloudDatabaseInstance, self).__init__(*args, **kwargs)
-        self._database_manager = CloudDatabaseManager(self.manager.api,
+        self._database_manager = CloudDatabaseDatabaseManager(self.manager.api,
                 resource_class=CloudDatabaseDatabase, response_key="database",
                 uri_base="instances/%s/databases" % self.id)
         self._user_manager = CloudDatabaseUserManager(self.manager.api,
@@ -239,9 +288,6 @@ class CloudDatabaseInstance(BaseResource):
             character_set = "utf8"
         if collate is None:
             collate = "utf8_general_ci"
-        # Note that passing in non-None values is required for the _create_body
-        # method to distinguish between this and the request to create and
-        # instance.
         self._database_manager.create(name=name, character_set=character_set,
                 collate=collate, return_none=True)
         # Since the API doesn't return the info for creating the database
@@ -254,22 +300,18 @@ class CloudDatabaseInstance(BaseResource):
         Creates a user with the specified name and password, and gives that
         user access to the specified database(s).
 
-        If a user with
-        that name already exists, a BadRequest (400) exception will
-        be raised.
+        If a user with that name already exists, a BadRequest (400) exception
+        will be raised.
         """
-        if not isinstance(database_names, list):
+        if not isinstance(database_names, (list, tuple)):
             database_names = [database_names]
         # The API only accepts names, not DB objects
         database_names = [db if isinstance(db, basestring) else db.name
                 for db in database_names]
-        # Note that passing in non-None values is required for the create_body
-        # method to distinguish between this and the request to create and
-        # instance.
         self._user_manager.create(name=name, password=password,
                 database_names=database_names, return_none=True)
-        # Since the API doesn't return the info for creating the user object, we
-        # have to do it manually.
+        # Since the API doesn't return the info for creating the user object,
+        # we have to do it manually.
         return self._user_manager.find(name=name)
 
 
@@ -652,47 +694,3 @@ class CloudDatabaseClient(BaseClient):
         href = [link["href"] for link in flavor_obj.links
                 if link["rel"] == "self"][0]
         return href
-
-
-    def _create_body(self, name, flavor=None, volume=None, databases=None,
-            users=None, character_set=None, collate=None, password=None,
-            database_names=None):
-        """
-        Used to create the dict required to create any of the following:
-            A database instance
-            A database for an instance
-            A user for an instance
-        """
-        if character_set is not None:
-            # Creating a database
-            body = {"databases": [
-                    {"name": name,
-                    "character_set": character_set,
-                    "collate": collate,
-                    }]}
-        elif password is not None:
-            # Creating a user
-            db_dicts = [{"name": db} for db in database_names]
-            body = {"users": [
-                    {"name": name,
-                    "password": password,
-                    "databases": db_dicts,
-                    }]}
-        else:
-            if flavor is None:
-                flavor = 1
-            flavor_ref = self._get_flavor_ref(flavor)
-            if volume is None:
-                volume = 1
-            if databases is None:
-                databases = []
-            if users is None:
-                users = []
-            body = {"instance": {
-                    "name": name,
-                    "flavorRef": flavor_ref,
-                    "volume": {"size": volume},
-                    "databases": databases,
-                    "users": users,
-                    }}
-        return body

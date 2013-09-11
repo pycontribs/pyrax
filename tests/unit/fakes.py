@@ -16,13 +16,16 @@ from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
 from pyrax.client import BaseClient
 from pyrax.clouddatabases import CloudDatabaseClient
+from pyrax.clouddatabases import CloudDatabaseDatabaseManager
 from pyrax.clouddatabases import CloudDatabaseInstance
+from pyrax.clouddatabases import CloudDatabaseManager
 from pyrax.clouddatabases import CloudDatabaseUser
 from pyrax.clouddatabases import CloudDatabaseUserManager
 from pyrax.clouddatabases import CloudDatabaseVolume
 from pyrax.cloudblockstorage import CloudBlockStorageClient
-from pyrax.cloudblockstorage import CloudBlockStorageVolume
+from pyrax.cloudblockstorage import CloudBlockStorageManager
 from pyrax.cloudblockstorage import CloudBlockStorageSnapshot
+from pyrax.cloudblockstorage import CloudBlockStorageVolume
 from pyrax.cloudloadbalancers import CloudLoadBalancer
 from pyrax.cloudloadbalancers import CloudLoadBalancerManager
 from pyrax.cloudloadbalancers import CloudLoadBalancerClient
@@ -260,13 +263,22 @@ class FakeDatabaseInstance(CloudDatabaseInstance):
         self.id = utils.random_name()
         self.manager = FakeManager()
         self.manager.api = FakeDatabaseClient()
-        self._database_manager = FakeManager()
+        self._database_manager = CloudDatabaseDatabaseManager(
+                FakeDatabaseClient())
         self._user_manager = CloudDatabaseUserManager(FakeDatabaseClient())
         self.volume = FakeDatabaseVolume(self)
 
 
+class FakeDatabaseManager(CloudDNSManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeDatabaseClient()
+        super(FakeDatabaseManager, self).__init__(api, *args, **kwargs)
+
+
 class FakeDatabaseClient(CloudDatabaseClient):
     def __init__(self, *args, **kwargs):
+        self._manager = FakeDatabaseManager(self)
         self._flavor_manager = FakeManager()
         super(FakeDatabaseClient, self).__init__("fakeuser",
                 "fakepassword", *args, **kwargs)
@@ -314,12 +326,18 @@ class FakeNovaVolumeClient(BaseClient):
         pass
 
 
+class FakeBlockStorageManager(CloudBlockStorageManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeBlockStorageClient()
+        super(FakeBlockStorageManager, self).__init__(api, *args, **kwargs)
+
+
 class FakeBlockStorageVolume(CloudBlockStorageVolume):
     def __init__(self, *args, **kwargs):
         volname = utils.random_name(8)
         self.id = utils.random_name()
-        self.manager = FakeManager()
-        self._snapshot_manager = FakeManager()
+        self.manager = FakeBlockStorageManager()
         self._nova_volumes = FakeNovaVolumeClient()
 
 
@@ -333,7 +351,7 @@ class FakeBlockStorageSnapshot(CloudBlockStorageSnapshot):
 class FakeBlockStorageClient(CloudBlockStorageClient):
     def __init__(self, *args, **kwargs):
         self._types_manager = FakeManager()
-        self._snaps_manager = FakeManager()
+        self._snapshot_manager = FakeManager()
         super(FakeBlockStorageClient, self).__init__("fakeuser",
                 "fakepassword", *args, **kwargs)
 

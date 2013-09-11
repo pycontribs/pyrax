@@ -1463,7 +1463,7 @@ class CloudMonitoringTest(unittest.TestCase):
         self.assertRaises(NotImplementedError, clt.findall)
 
     def test_clt_create_body(self):
-        clt = self.client
+        mgr = self.client._entity_manager
         label = utils.random_name()
         name = utils.random_name()
         agent = utils.random_name()
@@ -1471,7 +1471,7 @@ class CloudMonitoringTest(unittest.TestCase):
         metadata = utils.random_name()
         expected = {"label": label, "ip_addresses": ip_addresses,
                 "agent_id": agent, "metadata": metadata}
-        ret = clt._create_body(name, label=label, agent=agent,
+        ret = mgr._create_body(name, label=label, agent=agent,
                 ip_addresses=ip_addresses, metadata=metadata)
         self.assertEqual(ret, expected)
 

@@ -98,6 +98,7 @@ class CloudDatabasesTest(unittest.TestCase):
         inst = self.instance
         sav = inst._database_manager.create
         inst._database_manager.create = Mock()
+        inst._database_manager.find = Mock()
         db = inst.create_database(name="test")
         inst._database_manager.create.assert_called_once_with(name="test",
                 character_set="utf8", collate="utf8_general_ci",
@@ -521,9 +522,9 @@ class CloudDatabasesTest(unittest.TestCase):
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_create_body_db(self):
-        clt = self.client
+        mgr = self.instance._database_manager
         nm = utils.random_name()
-        ret = clt._create_body(nm, character_set="CS", collate="CO")
+        ret = mgr._create_body(nm, character_set="CS", collate="CO")
         expected = {"databases": [
                 {"name": nm,
                 "character_set": "CS",
@@ -532,10 +533,11 @@ class CloudDatabasesTest(unittest.TestCase):
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_create_body_user(self):
-        clt = self.client
+        inst = self.instance
+        mgr = inst._user_manager
         nm = utils.random_name()
         pw = utils.random_name()
-        ret = clt._create_body(nm, password=pw, database_names=[])
+        ret = mgr._create_body(nm, password=pw, database_names=[])
         expected = {"users": [
                 {"name": nm,
                 "password": pw,
@@ -548,7 +550,7 @@ class CloudDatabasesTest(unittest.TestCase):
         nm = utils.random_name()
         sav = clt._get_flavor_ref
         clt._get_flavor_ref = Mock(return_value=example_uri)
-        ret = clt._create_body(nm)
+        ret = clt._manager._create_body(nm)
         expected = {"instance": {
                 "name": nm,
                 "flavorRef": example_uri,

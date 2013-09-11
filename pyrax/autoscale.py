@@ -606,6 +606,94 @@ class ScalingGroupManager(BaseManager):
         return None
 
 
+    @staticmethod
+    def _resolve_lbs(load_balancers):
+        """
+        Takes either a single LB reference or a list of references and returns
+        the dictionary required for creating a Scaling Group.
+
+        References can be either a dict that matches the structure required by
+        the autoscale API, a CloudLoadBalancer instance, or the ID of the load
+        balancer.
+        """
+        lb_args = []
+        lbs = utils.coerce_string_to_list(load_balancers)
+        for lb in lbs:
+            if isinstance(lb, dict):
+                lb_args.append(lb)
+            elif isinstance(lb, CloudLoadBalancer):
+                lb_args.append({
+                        "loadBalancerId": lb.id,
+                        "port": lb.port,
+                        })
+            else:
+                # See if it's an ID for a Load Balancer
+                try:
+                    instance = pyrax.cloud_loadbalancers.get(lb)
+                except Exception:
+                    raise exc.InvalidLoadBalancer("Received an invalid "
+                            "specification for a Load Balancer: '%s'" % lb)
+                lb_args.append({
+                        "loadBalancerId": instance.id,
+                        "port": instance.port,
+                        })
+        return lb_args
+
+
+    def _create_body(self, name, cooldown, min_entities, max_entities,
+            launch_config_type, server_name, image, flavor, disk_config=None,
+            metadata=None, personality=None, networks=None,
+            load_balancers=None, scaling_policies=None):
+        """
+        Used to create the dict required to create any of the following:
+            A Scaling Group
+        """
+        if disk_config is None:
+            disk_config = "AUTO"
+        if metadata is None:
+            metadata = {}
+        if personality is None:
+            personality = []
+        if networks is None:
+            # Default to ServiceNet only
+            networks = [{"uuid": SERVICE_NET_ID}]
+        if load_balancers is None:
+            load_balancers = []
+        if scaling_policies is None:
+            scaling_policies = []
+        server_args = {
+            "flavorRef": flavor,
+            "name": server_name,
+            "imageRef": utils.get_id(image),
+        }
+        if metadata is not None:
+            server_args["metadata"] = metadata
+        if personality is not None:
+            server_args["personality"] = personality
+        if networks is not None:
+            server_args["networks"] = networks
+        if disk_config is not None:
+            server_args["OS-DCF:diskConfig"] = disk_config
+        load_balancer_args = self._resolve_lbs(load_balancers)
+        body = {"groupConfiguration": {
+                    "name": name,
+                    "cooldown": cooldown,
+                    "minEntities": min_entities,
+                    "maxEntities": max_entities,
+                },
+                "launchConfiguration": {
+                    "type": launch_config_type,
+                    "args": {
+                        "server": server_args,
+                        "loadBalancers": load_balancer_args,
+                    },
+                },
+                "scalingPolicies": scaling_policies,
+            }
+        body
+        return body
+
+
 
 class AutoScalePolicy(BaseResource):
     def __init__(self, manager, info, scaling_group, *args, **kwargs):
@@ -934,90 +1022,3 @@ class AutoScaleClient(BaseClient):
         Deletes the specified webhook from the policy.
         """
         return self._manager.delete_webhook(scaling_group, policy, webhook)
-
-
-    def _resolve_lbs(self, load_balancers):
-        """
-        Takes either a single LB reference or a list of references and returns
-        the dictionary required for creating a Scaling Group.
-
-        References can be either a dict that matches the structure required by
-        the autoscale API, a CloudLoadBalancer instance, or the ID of the load
-        balancer.
-        """
-        lb_args = []
-        lbs = utils.coerce_string_to_list(load_balancers)
-        for lb in lbs:
-            if isinstance(lb, dict):
-                lb_args.append(lb)
-            elif isinstance(lb, CloudLoadBalancer):
-                lb_args.append({
-                        "loadBalancerId": lb.id,
-                        "port": lb.port,
-                        })
-            else:
-                # See if it's an ID for a Load Balancer
-                try:
-                    instance = pyrax.cloud_loadbalancers.get(lb)
-                except Exception:
-                    raise exc.InvalidLoadBalancer("Received an invalid "
-                            "specification for a Load Balancer: '%s'" % lb)
-                lb_args.append({
-                        "loadBalancerId": instance.id,
-                        "port": instance.port,
-                        })
-        return lb_args
-
-
-    def _create_body(self, name, cooldown, min_entities, max_entities,
-            launch_config_type, server_name, image, flavor, disk_config=None,
-            metadata=None, personality=None, networks=None,
-            load_balancers=None, scaling_policies=None):
-        """
-        Used to create the dict required to create any of the following:
-            A Scaling Group
-        """
-        if disk_config is None:
-            disk_config = "AUTO"
-        if metadata is None:
-            metadata = {}
-        if personality is None:
-            personality = []
-        if networks is None:
-            # Default to ServiceNet only
-            networks = [{"uuid": SERVICE_NET_ID}]
-        if load_balancers is None:
-            load_balancers = []
-        if scaling_policies is None:
-            scaling_policies = []
-        server_args = {
-            "flavorRef": flavor,
-            "name": server_name,
-            "imageRef": utils.get_id(image),
-        }
-        if metadata is not None:
-            server_args["metadata"] = metadata
-        if personality is not None:
-            server_args["personality"] = personality
-        if networks is not None:
-            server_args["networks"] = networks
-        if disk_config is not None:
-            server_args["OS-DCF:diskConfig"] = disk_config
-        load_balancer_args = self._resolve_lbs(load_balancers)
-        body = {"groupConfiguration": {
-                    "name": name,
-                    "cooldown": cooldown,
-                    "minEntities": min_entities,
-                    "maxEntities": max_entities,
-                },
-                "launchConfiguration": {
-                    "type": launch_config_type,
-                    "args": {
-                        "server": server_args,
-                        "loadBalancers": load_balancer_args,
-                    },
-                },
-                "scalingPolicies": scaling_policies,
-            }
-        body
-        return body

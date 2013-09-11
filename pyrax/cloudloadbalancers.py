@@ -464,6 +464,49 @@ class CloudLoadBalancerManager(BaseManager):
             raise exc.InvalidLoadBalancerParameters(errmsg)
         return resp, resp_body
 
+
+    def _create_body(self, name, port=None, protocol=None, nodes=None,
+            virtual_ips=None, algorithm=None, halfClosed=None, accessList=None,
+            connectionLogging=None, connectionThrottle=None, healthMonitor=None,
+            metadata=None, timeout=None, sessionPersistence=None):
+        """
+        Used to create the dict required to create a load balancer instance.
+        """
+        required = (nodes, virtual_ips, port, protocol)
+        if not all(required):
+            raise exc.MissingLoadBalancerParameters("Load Balancer creation "
+                    "requires at least one node, one virtual IP, "
+                    "a protocol, and a port.")
+        nodes = utils.coerce_string_to_list(nodes)
+        virtual_ips = utils.coerce_string_to_list(virtual_ips)
+        bad_conditions = [node.condition for node in nodes
+                if node.condition.upper() not in ("ENABLED", "DISABLED")]
+        if bad_conditions:
+            raise exc.InvalidNodeCondition("Nodes for new load balancer must be "
+                    "created in either 'ENABLED' or 'DISABLED' condition; "
+                    "received the following invalid conditions: %s" %
+                    ", ".join(set(bad_conditions)))
+        node_dicts = [nd.to_dict() for nd in nodes]
+        vip_dicts = [vip.to_dict() for vip in virtual_ips]
+        body = {"loadBalancer": {
+                "name": name,
+                "port": port,
+                "protocol": protocol,
+                "nodes": node_dicts,
+                "virtualIps": vip_dicts,
+                "algorithm": algorithm or "RANDOM",
+                "halfClosed": halfClosed,
+                "accessList": accessList,
+                "connectionLogging": connectionLogging,
+                "connectionThrottle": connectionThrottle,
+                "healthMonitor": healthMonitor,
+                "metadata": metadata,
+                "timeout": timeout,
+                "sessionPersistence": sessionPersistence,
+                }}
+        return body
+
+
     def add_nodes(self, lb, nodes):
         """Adds the list of nodes to the specified load balancer."""
         if not isinstance(nodes, (list, tuple)):
@@ -491,7 +534,6 @@ class CloudLoadBalancerManager(BaseManager):
         if not lb:
             raise exc.UnattachedNode("No parent Load Balancer for this node "
                     "could be determined.")
-
         if diff is None:
             diff = node._diff()
         req_body = {"node": diff}
@@ -1190,48 +1232,6 @@ class CloudLoadBalancerClient(BaseClient):
         self._manager = CloudLoadBalancerManager(self,
                 resource_class=CloudLoadBalancer,
                 response_key="loadBalancer", uri_base="loadbalancers")
-
-
-    def _create_body(self, name, port=None, protocol=None, nodes=None,
-            virtual_ips=None, algorithm=None, halfClosed=None, accessList=None,
-            connectionLogging=None, connectionThrottle=None, healthMonitor=None,
-            metadata=None, timeout=None, sessionPersistence=None):
-        """
-        Used to create the dict required to create a load balancer instance.
-        """
-        required = (nodes, virtual_ips, port, protocol)
-        if not all(required):
-            raise exc.MissingLoadBalancerParameters("Load Balancer creation "
-                    "requires at least one node, one virtual IP, "
-                    "a protocol, and a port.")
-        nodes = utils.coerce_string_to_list(nodes)
-        virtual_ips = utils.coerce_string_to_list(virtual_ips)
-        bad_conditions = [node.condition for node in nodes
-                if node.condition.upper() not in ("ENABLED", "DISABLED")]
-        if bad_conditions:
-            raise exc.InvalidNodeCondition("Nodes for new load balancer must be "
-                    "created in either 'ENABLED' or 'DISABLED' condition; "
-                    "received the following invalid conditions: %s" %
-                    ", ".join(set(bad_conditions)))
-        node_dicts = [nd.to_dict() for nd in nodes]
-        vip_dicts = [vip.to_dict() for vip in virtual_ips]
-        body = {"loadBalancer": {
-                "name": name,
-                "port": port,
-                "protocol": protocol,
-                "nodes": node_dicts,
-                "virtualIps": vip_dicts,
-                "algorithm": algorithm or "RANDOM",
-                "halfClosed": halfClosed,
-                "accessList": accessList,
-                "connectionLogging": connectionLogging,
-                "connectionThrottle": connectionThrottle,
-                "healthMonitor": healthMonitor,
-                "metadata": metadata,
-                "timeout": timeout,
-                "sessionPersistence": sessionPersistence,
-                }}
-        return body
 
 
     def get_usage(self, loadbalancer=None, start=None, end=None):

@@ -651,6 +651,87 @@ class AutoscaleTest(unittest.TestCase):
         mgr.delete_webhook(sg, pol, hook)
         mgr.api.method_delete.assert_called_once_with(uri)
 
+    def test_mgr_resolve_lbs_dict(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        key = utils.random_name()
+        val = utils.random_name()
+        lb_dict = {key: val}
+        ret = mgr._resolve_lbs(lb_dict)
+        self.assertEqual(ret, [lb_dict])
+
+    def test_mgr_resolve_lbs_clb(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        clb = fakes.FakeLoadBalancer(None, {})
+        ret = mgr._resolve_lbs(clb)
+        expected = {"loadBalancerId": clb.id,
+                "port": clb.port}
+        self.assertEqual(ret, [expected])
+
+    def test_mgr_resolve_lbs_id(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        clb = fakes.FakeLoadBalancer(None, {})
+        sav = pyrax.cloud_loadbalancers
+
+        class PyrCLB(object):
+            def get(self, *args, **kwargs):
+                return clb
+
+        pyrax.cloud_loadbalancers = PyrCLB()
+        ret = mgr._resolve_lbs("fakeid")
+        expected = {"loadBalancerId": clb.id,
+                "port": clb.port}
+        self.assertEqual(ret, [expected])
+        pyrax.cloud_loadbalancers = sav
+
+    def test_mgr_resolve_lbs_id_fail(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        pyclb = pyrax.cloudloadbalancers
+        pyclb.get = Mock(side_effect=Exception())
+        self.assertRaises(exc.InvalidLoadBalancer, mgr._resolve_lbs, "bogus")
+
+    def test_mgr_create_body(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        name = utils.random_name()
+        cooldown = utils.random_name()
+        min_entities = utils.random_name()
+        max_entities = utils.random_name()
+        launch_config_type = utils.random_name()
+        flavor = utils.random_name()
+        server_name = utils.random_name()
+        image = utils.random_name()
+        expected = {
+                "groupConfiguration": {
+                    "cooldown": cooldown,
+                    "maxEntities": max_entities,
+                    "minEntities": min_entities,
+                    "name": name},
+                "launchConfiguration": {
+                    "args": {
+                        "loadBalancers": [],
+                        "server": {
+                            "OS-DCF:diskConfig": "AUTO",
+                            "flavorRef": flavor,
+                            "imageRef": image,
+                            "metadata": {},
+                            "name": server_name,
+                            "networks": [{"uuid": SERVICE_NET_ID}],
+                            "personality": []}
+                        },
+                    "type": launch_config_type},
+                    "scalingPolicies": []}
+
+        self.maxDiff = 1000000
+        ret = mgr._create_body(name, cooldown, min_entities, max_entities,
+                launch_config_type, server_name, image, flavor,
+                disk_config=None, metadata=None, personality=None,
+                networks=None, load_balancers=None, scaling_policies=None)
+        self.assertEqual(ret, expected)
+
     def test_policy_init(self):
         sg = self.scaling_group
         mgr = sg.manager
@@ -1027,82 +1108,6 @@ class AutoscaleTest(unittest.TestCase):
         mgr.delete_webhook = Mock()
         clt.delete_webhook(sg, pol, hook)
         mgr.delete_webhook.assert_called_once_with(sg, pol, hook)
-
-    def test_clt_resolve_lbs_dict(self):
-        clt = fakes.FakeAutoScaleClient()
-        key = utils.random_name()
-        val = utils.random_name()
-        lb_dict = {key: val}
-        ret = clt._resolve_lbs(lb_dict)
-        self.assertEqual(ret, [lb_dict])
-
-    def test_clt_resolve_lbs_clb(self):
-        clt = fakes.FakeAutoScaleClient()
-        clb = fakes.FakeLoadBalancer(None, {})
-        ret = clt._resolve_lbs(clb)
-        expected = {"loadBalancerId": clb.id,
-                "port": clb.port}
-        self.assertEqual(ret, [expected])
-
-    def test_clt_resolve_lbs_id(self):
-        clt = fakes.FakeAutoScaleClient()
-        clb = fakes.FakeLoadBalancer(None, {})
-        sav = pyrax.cloud_loadbalancers
-
-        class PyrCLB(object):
-            def get(self, *args, **kwargs):
-                return clb
-
-        pyrax.cloud_loadbalancers = PyrCLB()
-        ret = clt._resolve_lbs("fakeid")
-        expected = {"loadBalancerId": clb.id,
-                "port": clb.port}
-        self.assertEqual(ret, [expected])
-        pyrax.cloud_loadbalancers = sav
-
-    def test_clt_resolve_lbs_id_fail(self):
-        clt = fakes.FakeAutoScaleClient()
-        pyclb = pyrax.cloudloadbalancers
-        pyclb.get = Mock(side_effect=Exception())
-        self.assertRaises(exc.InvalidLoadBalancer, clt._resolve_lbs, "bogus")
-
-    def test_clt_create_body(self):
-        clt = fakes.FakeAutoScaleClient()
-        name = utils.random_name()
-        cooldown = utils.random_name()
-        min_entities = utils.random_name()
-        max_entities = utils.random_name()
-        launch_config_type = utils.random_name()
-        flavor = utils.random_name()
-        server_name = utils.random_name()
-        image = utils.random_name()
-        expected = {
-                "groupConfiguration": {
-                    "cooldown": cooldown,
-                    "maxEntities": max_entities,
-                    "minEntities": min_entities,
-                    "name": name},
-                "launchConfiguration": {
-                    "args": {
-                        "loadBalancers": [],
-                        "server": {
-                            "OS-DCF:diskConfig": "AUTO",
-                            "flavorRef": flavor,
-                            "imageRef": image,
-                            "metadata": {},
-                            "name": server_name,
-                            "networks": [{"uuid": SERVICE_NET_ID}],
-                            "personality": []}
-                        },
-                    "type": launch_config_type},
-                    "scalingPolicies": []}
-
-        self.maxDiff = 1000000
-        ret = clt._create_body(name, cooldown, min_entities, max_entities,
-                launch_config_type, server_name, image, flavor,
-                disk_config=None, metadata=None, personality=None,
-                networks=None, load_balancers=None, scaling_policies=None)
-        self.assertEqual(ret, expected)
 
 
 

@@ -307,9 +307,9 @@ class CloudDNSTest(unittest.TestCase):
         BaseManager.findall = sav
 
     def test_create_body(self):
-        clt = self.client
+        mgr = self.client._manager
         fake_name = utils.random_name()
-        body = clt._create_body(fake_name, "fake@fake.com")
+        body = mgr._create_body(fake_name, "fake@fake.com")
         self.assertEqual(body["domains"][0]["name"], fake_name)
 
     def test_async_call_body(self):

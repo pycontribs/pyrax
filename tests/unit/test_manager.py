@@ -73,7 +73,7 @@ class ManagerTest(unittest.TestCase):
         sav = mgr._create
         mgr._create = Mock()
         mgr.uri_base = "test"
-        mgr.api._create_body = Mock(return_value="body")
+        mgr._create_body = Mock(return_value="body")
         nm = utils.random_name()
         mgr.create(nm)
         mgr._create.assert_called_once_with("/test", "body", return_none=False,
