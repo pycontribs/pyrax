@@ -526,6 +526,21 @@ class IdentityTest(unittest.TestCase):
             self.assertRaises(exc.AuthorizationFailure, ident.create_user,
                     fake_name, fake_email, fake_password)
 
+    def test_create_user_bad_email(self):
+        for cls in self.id_classes.values():
+            ident = cls()
+            resp = fakes.FakeIdentityResponse()
+            resp.response_type = "users"
+            resp.status_code = 400
+            resp.text = json.dumps(
+                {"badRequest": {"message": "Expecting valid email address"}})
+            ident.method_post = Mock(return_value=resp)
+            fake_name = utils.random_name()
+            fake_email = utils.random_name()
+            fake_password = utils.random_name()
+            self.assertRaises(exc.InvalidEmail, ident.create_user,
+                    fake_name, fake_email, fake_password)
+
     def test_create_user_not_found(self):
         for cls in self.id_classes.values():
             ident = cls()
