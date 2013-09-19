@@ -479,6 +479,13 @@ class BaseAuth(object):
                     "users.")
         elif resp.status_code == 409:
             raise exc.DuplicateUser("User '%s' already exists." % name)
+        elif resp.status_code == 400:
+            status = json.loads(resp.text)
+            message = status["badRequest"]["message"]
+            if "Expecting valid email address" in message:
+                raise exc.InvalidEmail("%s is not valid" % email)
+            else:
+                raise exc.BadRequest(message)
 
 
     # Can we really update the ID? Docs seem to say we can
