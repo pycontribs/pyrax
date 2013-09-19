@@ -1047,6 +1047,7 @@ class Node(object):
         return {"address": self.address,
                 "port": self.port,
                 "condition": self.condition,
+                "type": self.type,
                 }
 
 
