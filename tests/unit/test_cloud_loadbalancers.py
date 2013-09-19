@@ -1093,7 +1093,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
         expected = {"address": nd.address,
                 "port": nd.port,
                 "condition": nd.condition,
-                "test": nd.type}
+                "type": nd.type}
         self.assertEqual(nd.to_dict(), expected)
 
     def test_node_delete(self):
