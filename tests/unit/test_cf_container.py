@@ -302,6 +302,30 @@ class CF_ContainerTest(unittest.TestCase):
         cont.client.connection.cdn_request.assert_called_with("PUT",
                 [cont.name], hdrs={"X-CDN-Enabled": "False"})
 
+    def test_copy_object(self):
+        cont = self.container
+        cont.client.copy_object = Mock()
+        obj = utils.random_name()
+        new_cont = utils.random_name()
+        new_name = utils.random_name()
+        extra_info = utils.random_name()
+        cont.copy_object(obj, new_cont, new_obj_name=new_name,
+                extra_info=extra_info)
+        cont.client.copy_object.assert_called_once_with(cont, obj, new_cont,
+                new_obj_name=new_name, extra_info=extra_info)
+
+    def test_move_object(self):
+        cont = self.container
+        cont.client.move_object = Mock()
+        obj = utils.random_name()
+        new_cont = utils.random_name()
+        new_name = utils.random_name()
+        extra_info = utils.random_name()
+        cont.move_object(obj, new_cont, new_obj_name=new_name,
+                extra_info=extra_info)
+        cont.client.move_object.assert_called_once_with(cont, obj, new_cont,
+                new_obj_name=new_name, extra_info=extra_info)
+
     def test_change_object_content_type(self):
         cont = self.container
         cont.client.change_object_content_type = Mock()

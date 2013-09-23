@@ -582,17 +582,19 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def move_object(self, container, obj, new_container, new_obj_name=None):
+    def move_object(self, container, obj, new_container, new_obj_name=None,
+            extra_info=None):
         """
         Works just like copy_object, except that the source object is deleted
         after a successful copy.
         """
         new_obj_etag = self.copy_object(container, obj, new_container,
-                new_obj_name=new_obj_name)
+                new_obj_name=new_obj_name, extra_info=extra_info)
         if new_obj_etag:
             # Copy succeeded; delete the original.
             self.delete_object(container, obj)
         return new_obj_etag
+
 
     @handle_swiftclient_exception
     def change_object_content_type(self, container, obj, new_ctype,

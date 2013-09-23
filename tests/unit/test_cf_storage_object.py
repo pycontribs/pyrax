@@ -181,6 +181,28 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj.client.connection.post_object.assert_called_with(obj.container.name,
                 obj.name, {}, response_dict=None)
 
+    def test_copy(self):
+        obj = self.storage_object
+        cont = obj.container
+        cont.copy_object = Mock()
+        new_cont = utils.random_name()
+        new_name = utils.random_name()
+        extra_info = utils.random_name()
+        obj.copy(new_cont, new_obj_name=new_name, extra_info=extra_info)
+        cont.copy_object.assert_called_once_with(obj, new_cont,
+                new_obj_name=new_name, extra_info=extra_info)
+
+    def test_move(self):
+        obj = self.storage_object
+        cont = obj.container
+        cont.move_object = Mock()
+        new_cont = utils.random_name()
+        new_name = utils.random_name()
+        extra_info = utils.random_name()
+        obj.move(new_cont, new_obj_name=new_name, extra_info=extra_info)
+        cont.move_object.assert_called_once_with(obj, new_cont,
+                new_obj_name=new_name, extra_info=extra_info)
+
     def test_change_content_type(self):
         obj = self.storage_object
         obj.client.change_object_content_type = Mock()

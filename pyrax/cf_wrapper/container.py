@@ -274,6 +274,26 @@ class Container(object):
         return self.client.make_container_private(self)
 
 
+    def copy_object(self, obj, new_container, new_obj_name=None,
+            extra_info=None):
+        """
+        Copies the object to the new container, optionally giving it a new name.
+        If you copy to the same container, you must supply a different name.
+        """
+        return self.client.copy_object(self, obj, new_container,
+                new_obj_name=new_obj_name, extra_info=extra_info)
+
+
+    def move_object(self, obj, new_container, new_obj_name=None,
+            extra_info=None):
+        """
+        Works just like copy_object, except that the source object is deleted
+        after a successful copy.
+        """
+        return self.client.move_object(self, obj, new_container,
+                new_obj_name=new_obj_name, extra_info=extra_info)
+
+
     def change_object_content_type(self, obj, new_ctype, guess=False):
         """
         Copies object to itself, but applies a new content-type. The guess
