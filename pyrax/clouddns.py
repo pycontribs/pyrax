@@ -24,6 +24,7 @@ import time
 
 import pyrax
 from pyrax.client import BaseClient
+from pyrax.cloudloadbalancers import CloudLoadBalancer
 import pyrax.exceptions as exc
 from pyrax.manager import BaseManager
 from pyrax.resource import BaseResource
@@ -872,11 +873,11 @@ class CloudDNSManager(BaseManager):
             from tests.unit import fakes
             server_types = (pyrax.CloudServer, fakes.FakeServer,
                 fakes.FakeDNSDevice)
-            lb_types = (pyrax.CloudLoadBalancer, fakes.FakeLoadBalancer)
+            lb_types = (CloudLoadBalancer, fakes.FakeLoadBalancer)
         except ImportError:
             # Not running with tests
             server_types = (pyrax.CloudServer, )
-            lb_types = (pyrax.CloudLoadBalancer, )
+            lb_types = (CloudLoadBalancer, )
         if isinstance(device, server_types):
             device_type = "server"
         elif isinstance(device, lb_types):

@@ -6,11 +6,11 @@ import unittest
 from mock import patch
 from mock import MagicMock as Mock
 
-from pyrax import CloudDatabaseClient
-from pyrax import CloudDatabaseDatabase
-from pyrax import CloudDatabaseFlavor
-from pyrax import CloudDatabaseInstance
-from pyrax import CloudDatabaseUser
+from pyrax.clouddatabases import CloudDatabaseClient
+from pyrax.clouddatabases import CloudDatabaseDatabase
+from pyrax.clouddatabases import CloudDatabaseFlavor
+from pyrax.clouddatabases import CloudDatabaseInstance
+from pyrax.clouddatabases import CloudDatabaseUser
 from pyrax.clouddatabases import assure_instance
 from pyrax.clouddatabases import CloudDatabaseUserManager
 import pyrax.exceptions as exc
