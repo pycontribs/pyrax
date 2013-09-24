@@ -468,11 +468,11 @@ class CFClient(object):
         the container's objects will be deleted before the container is
         deleted.
 
-        extra_info is an optional dictionary which will be
+        'extra_info' is an optional dictionary which will be
         populated with 'status', 'reason', and 'headers' keys from the
         underlying swiftclient call.
         """
-        self._remove_container_from_cache(container)
+        self.remove_container_from_cache(container)
         cname = self._resolve_name(container)
         if del_objects:
             objs = self.get_container_object_names(cname)
@@ -482,7 +482,7 @@ class CFClient(object):
         return True
 
 
-    def _remove_container_from_cache(self, container):
+    def remove_container_from_cache(self, container):
         """Removes the container from the cache."""
         nm = self._resolve_name(container)
         self._container_cache.pop(nm, None)
@@ -989,11 +989,19 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def get_container(self, container):
+    def get_container(self, container, cached=True):
+        """
+        Returns a reference to the specified container. By default, if a
+        reference to that container has already been retrieved, a cached
+        reference will be returned. If you need to get an updated version of
+        the container, pass `cached=False` to the method call.
+        """
         cname = self._resolve_name(container)
         if not cname:
             raise exc.MissingName("No container name specified")
-        cont = self._container_cache.get(cname)
+        cont = None
+        if cached:
+            cont = self._container_cache.get(cname)
         if not cont:
             hdrs = self.connection.head_container(cname)
             cont = Container(self, name=cname,
@@ -1134,7 +1142,7 @@ class CFClient(object):
             if hdr[0].lower() == "x-cdn-uri":
                 ct.cdn_uri = hdr[1]
                 break
-        self._remove_container_from_cache(container)
+        self.remove_container_from_cache(container)
         # Read the response to force it to close for the next request.
         response.read()
 

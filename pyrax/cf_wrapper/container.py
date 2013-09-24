@@ -98,14 +98,18 @@ class Container(object):
         return objs
 
 
-    def get_object(self, name):
+    def get_object(self, name, cached=True):
         """
-        Return the StorageObject in this container with the
-        specified name.
+        Return the StorageObject in this container with the specified name. By
+        default, if a reference to that object has already been retrieved, a
+        cached reference will be returned. If you need to get an updated
+        version of the object, pass `cached=False` to the method call.
         """
         if isinstance(name, str):
             name = name.decode(pyrax.get_encoding())
-        ret = self._object_cache.get(name)
+        ret = None
+        if cached:
+            ret = self._object_cache.get(name)
         if not ret:
             ret = self.client.get_object(self, name)
             self._object_cache[name] = ret
@@ -138,14 +142,16 @@ class Container(object):
 
 
     def store_object(self, obj_name, data, content_type=None, etag=None,
-            content_encoding=None, ttl=None):
+            content_encoding=None, ttl=None, return_none=False,
+            extra_info=None):
         """
         Creates a new object in this container, and populates it with
         the given data.
         """
         return self.client.store_object(self, obj_name, data,
                 content_type=content_type, etag=etag,
-                content_encoding=content_encoding, ttl=ttl)
+                content_encoding=content_encoding, ttl=ttl,
+                return_none=return_none, extra_info=extra_info)
 
 
     def upload_file(self, file_or_path, obj_name=None, content_type=None,
