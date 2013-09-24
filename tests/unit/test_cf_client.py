@@ -71,34 +71,42 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {
-                "x-account-meta-foo": "yes", "some-other-key": "no"}
+                "X-Account-Meta-foo": "yes", "some-other-key": "no"}
         client.connection.post_account = Mock()
         client.set_account_metadata({"newkey": "newval"})
         client.connection.post_account.assert_called_with(
-                {"x-account-meta-newkey": "newval"}, response_dict=None)
+                {"X-Account-Meta-newkey": "newval"}, response_dict=None)
+
+    def test_set_account_metadata_prefix(self):
+        client = self.client
+        client.connection.post_account = Mock()
+        prefix = utils.random_name()
+        client.set_account_metadata({"newkey": "newval"}, prefix=prefix)
+        client.connection.post_account.assert_called_with(
+                {"%snewkey" % prefix: "newval"}, response_dict=None)
 
     def test_set_account_metadata_clear(self):
         client = self.client
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {
-                "x-account-meta-foo": "yes", "some-other-key": "no"}
+                "X-Account-Meta-foo": "yes", "some-other-key": "no"}
         client.connection.post_account = Mock()
         client.set_account_metadata({"newkey": "newval"}, clear=True)
         client.connection.post_account.assert_called_with(
-                {"x-account-meta-foo": "", "x-account-meta-newkey": "newval"},
+                {"X-Account-Meta-foo": "", "X-Account-Meta-newkey": "newval"},
                 response_dict=None)
 
     def test_set_account_metadata_response(self):
         client = self.client
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {
-                "x-account-meta-foo": "yes", "some-other-key": "no"}
+                "X-Account-Meta-foo": "yes", "some-other-key": "no"}
         client.connection.post_account = Mock()
         response = {}
         client.set_account_metadata({"newkey": "newval"}, clear=True,
                 extra_info=response)
         client.connection.post_account.assert_called_with(
-                {"x-account-meta-foo": "", "x-account-meta-newkey": "newval"},
+                {"X-Account-Meta-foo": "", "X-Account-Meta-newkey": "newval"},
                 response_dict=response)
 
     def test_set_temp_url_key(self):
@@ -190,13 +198,19 @@ class CF_ClientTest(unittest.TestCase):
 
     def test_set_container_metadata(self):
         client = self.client
-        client.connection.head_container = Mock()
-        client.connection.head_container.return_value = {
-                "X-Container-Meta-Foo": "yes", "Some-Other-Key": "no"}
         client.connection.post_container = Mock()
         client.set_container_metadata(self.cont_name, {"newkey": "newval"})
         client.connection.post_container.assert_called_with(self.cont_name,
-                {"x-container-meta-newkey": "newval"}, response_dict=None)
+                {"X-Container-Meta-newkey": "newval"}, response_dict=None)
+
+    def test_set_container_metadata_prefix(self):
+        client = self.client
+        client.connection.post_container = Mock()
+        prefix = utils.random_name()
+        client.set_container_metadata(self.cont_name, {"newkey": "newval"},
+                prefix=prefix)
+        client.connection.post_container.assert_called_with(self.cont_name,
+                {"%snewkey" % prefix: "newval"}, response_dict=None)
 
     def test_set_container_metadata_clear(self):
         client = self.client
@@ -208,7 +222,7 @@ class CF_ClientTest(unittest.TestCase):
                 clear=True)
         client.connection.post_container.assert_called_with(self.cont_name,
                 {"X-Container-Meta-Foo": "",
-                "x-container-meta-newkey": "newval"}, response_dict=None)
+                "X-Container-Meta-newkey": "newval"}, response_dict=None)
 
     def test_set_container_metadata_response(self):
         client = self.client
@@ -221,7 +235,7 @@ class CF_ClientTest(unittest.TestCase):
                 clear=True, extra_info=response)
         client.connection.post_container.assert_called_with(self.cont_name,
                 {"X-Container-Meta-Foo": "",
-                "x-container-meta-newkey": "newval"}, response_dict=response)
+                "X-Container-Meta-newkey": "newval"}, response_dict=response)
 
     def test_set_object_metadata(self):
         client = self.client
@@ -232,13 +246,26 @@ class CF_ClientTest(unittest.TestCase):
         client.set_object_metadata(self.cont_name, self.obj_name,
                 {"newkey": "newval", "emptykey": ""})
         client.connection.post_object.assert_called_with(self.cont_name,
-                self.obj_name, {"x-object-meta-newkey": "newval",
-                "x-object-meta-foo": "yes"}, response_dict=None)
+                self.obj_name, {"X-Object-Meta-newkey": "newval",
+                "X-Object-Meta-Foo": "yes"}, response_dict=None)
         response = {}
         client.set_object_metadata(self.cont_name, self.obj_name,
                 {"newkey": "newval", "emptykey": ""}, extra_info=response)
         client.connection.post_object.assert_called_with(ANY, ANY, ANY,
                 response_dict=response)
+
+    def test_set_object_metadata_prefix(self):
+        client = self.client
+        client.connection.head_object = Mock()
+        client.connection.head_object.return_value = {
+                "X-Object-Meta-Foo": "yes", "Some-Other-Key": "no"}
+        client.connection.post_object = Mock()
+        prefix = utils.random_name()
+        client.set_object_metadata(self.cont_name, self.obj_name,
+                {"newkey": "newval", "emptykey": ""}, prefix=prefix)
+        client.connection.post_object.assert_called_with(self.cont_name,
+                self.obj_name, {"%snewkey" % prefix: "newval",
+                "X-Object-Meta-Foo": "yes"}, response_dict=None)
 
     def test_remove_object_metadata_key(self):
         client = self.client
@@ -248,7 +275,7 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.post_object = Mock()
         client.remove_object_metadata_key(self.cont_name, self.obj_name, "Bar")
         client.connection.post_object.assert_called_with(self.cont_name,
-                self.obj_name, {"x-object-meta-foo": "foo"},
+                self.obj_name, {"X-Object-Meta-Foo": "foo"},
                 response_dict=None)
 
     def test_remove_container_metadata_key(self):
@@ -259,12 +286,12 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.post_container = Mock()
         client.remove_container_metadata_key(self.cont_name, "Bar")
         client.connection.post_container.assert_called_with(self.cont_name,
-                {"x-container-meta-bar": ""}, response_dict=None)
+                {"X-Container-Meta-Bar": ""}, response_dict=None)
 
     def test_massage_metakeys(self):
         prefix = "ABC-"
         orig = {"ABC-yyy": "ok", "zzz": "change"}
-        expected = {"abc-yyy": "ok", "abc-zzz": "change"}
+        expected = {"ABC-yyy": "ok", "ABC-zzz": "change"}
         fixed = self.client._massage_metakeys(orig, prefix)
         self.assertEqual(fixed, expected)
 
@@ -342,6 +369,13 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.delete_container.assert_called_with(self.cont_name,
                 response_dict=response)
 
+    def test_remove_object_from_cache(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        nm = utils.random_name()
+        client._container_cache = {nm: object()}
+        client.remove_container_from_cache(nm)
+        self.assertEqual(client._container_cache, {})
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_delete_object(self):
@@ -797,6 +831,28 @@ class CF_ClientTest(unittest.TestCase):
         self.assertEqual(cont.total_bytes, 1234)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_get_container_from_cache(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        client.connection.head_container.return_value = {
+                "x-container-object-count": 3, "x-container-bytes-used": 1234}
+        cnt = random.randint(2, 6)
+        for ii in range(cnt):
+            cont = client.get_container(self.cont_name)
+        self.assertEqual(client.connection.head_container.call_count, 1)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_get_container_no_cache(self):
+        client = self.client
+        client.connection.head_container = Mock()
+        client.connection.head_container.return_value = {
+                "x-container-object-count": 3, "x-container-bytes-used": 1234}
+        cnt = random.randint(2, 6)
+        for ii in range(cnt):
+            cont = client.get_container(self.cont_name, cached=False)
+        self.assertEqual(client.connection.head_container.call_count, cnt)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_container_objects(self):
         client = self.client
         client.connection.head_container = Mock()
@@ -982,7 +1038,7 @@ class CF_ClientTest(unittest.TestCase):
         pg = "index.html"
         client.set_container_web_index_page(cont, pg)
         client.connection.post_container.assert_called_with(self.cont_name,
-                {"x-container-meta-web-index": pg}, response_dict=None)
+                {"X-Container-Meta-Web-Index": pg}, response_dict=None)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_set_container_web_error_page(self):
@@ -993,7 +1049,7 @@ class CF_ClientTest(unittest.TestCase):
         pg = "error.html"
         client.set_container_web_error_page(cont, pg)
         client.connection.post_container.assert_called_with(self.cont_name,
-                {"x-container-meta-web-error": pg}, response_dict=None)
+                {"X-Container-Meta-Web-Error": pg}, response_dict=None)
 
     def test_cdn_request(self):
         client = self.client

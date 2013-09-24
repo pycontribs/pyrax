@@ -230,11 +230,32 @@ class Container(object):
 
 
     def get_metadata(self):
+        """
+        Returns a dictionary containing the metadata for the container.
+        """
         return self.client.get_container_metadata(self)
 
 
-    def set_metadata(self, metadata, clear=False):
-        return self.client.set_container_metadata(self, metadata, clear=clear)
+    def set_metadata(self, metadata, clear=False, prefix=None):
+        """
+        Accepts a dictionary of metadata key/value pairs and updates the
+        specified container metadata with them.
+
+        If 'clear' is True, any existing metadata is deleted and only the
+        passed metadata is retained. Otherwise, the values passed here update
+        the container's metadata.
+
+        'extra_info' is an optional dictionary which will be populated with
+        'status', 'reason', and 'headers' keys from the underlying swiftclient
+        call.
+
+        By default, the standard container metadata prefix
+        ('X-Container-Meta-') is prepended to the header name if it isn't
+        present. For non-standard headers, you must include a non-None prefix,
+        such as an empty string.
+        """
+        return self.client.set_container_metadata(self, metadata, clear=clear,
+                prefix=prefix)
 
 
     def remove_metadata_key(self, key):

@@ -170,7 +170,17 @@ class CF_StorageObjectTest(unittest.TestCase):
         obj.client.connection.head_object = Mock(return_value={})
         obj.set_metadata({"newkey": "newval"})
         obj.client.connection.post_object.assert_called_with(obj.container.name,
-                obj.name, {"x-object-meta-newkey": "newval"},
+                obj.name, {"X-Object-Meta-newkey": "newval"},
+                response_dict=None)
+
+    def test_set_metadata_prefix(self):
+        obj = self.storage_object
+        obj.client.connection.post_object = Mock()
+        obj.client.connection.head_object = Mock(return_value={})
+        prefix = utils.random_name()
+        obj.set_metadata({"newkey": "newval"}, prefix=prefix)
+        obj.client.connection.post_object.assert_called_with(obj.container.name,
+                obj.name, {"%snewkey" % prefix: "newval"},
                 response_dict=None)
 
     def test_remove_metadata_key(self):

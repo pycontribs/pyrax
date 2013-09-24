@@ -110,12 +110,12 @@ class StorageObject(object):
         return self.client.get_object_metadata(self.container, self)
 
 
-    def set_metadata(self, metadata, clear=False):
+    def set_metadata(self, metadata, clear=False, prefix=None):
         """
         Sets this object's metadata, optionally clearing existing metadata.
         """
         self.client.set_object_metadata(self.container, self, metadata,
-                clear=clear)
+                clear=clear, prefix=prefix)
 
 
     def remove_metadata_key(self, key):
