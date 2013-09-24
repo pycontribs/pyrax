@@ -57,20 +57,12 @@ try:
     import version
 
     import cf_wrapper.client as _cf
-    from cf_wrapper.storage_object import StorageObject
-    from cf_wrapper.container import Container
     from novaclient import exceptions as _cs_exceptions
     from novaclient import auth_plugin as _cs_auth_plugin
     from novaclient.v1_1 import client as _cs_client
-    from novaclient.v1_1.servers import Server as CloudServer
 
     from autoscale import AutoScaleClient
     from clouddatabases import CloudDatabaseClient
-    from clouddatabases import CloudDatabaseDatabase
-    from clouddatabases import CloudDatabaseFlavor
-    from clouddatabases import CloudDatabaseInstance
-    from clouddatabases import CloudDatabaseUser
-    from cloudloadbalancers import CloudLoadBalancer
     from cloudloadbalancers import CloudLoadBalancerClient
     from cloudblockstorage import CloudBlockStorageClient
     from clouddns import CloudDNSClient

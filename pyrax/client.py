@@ -23,18 +23,11 @@ OpenStack Client interface. Handles the REST calls and responses.
 import httplib2
 import json
 import logging
-import os
-import pkg_resources
 import time
 from urllib import quote
-import urlparse
 
-from manager import BaseManager
-from resource import BaseResource
 import pyrax
 import pyrax.exceptions as exc
-import pyrax.service_catalog as service_catalog
-import pyrax.utils as utils
 
 
 class BaseClient(httplib2.Http):

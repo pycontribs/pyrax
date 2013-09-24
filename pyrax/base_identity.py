@@ -4,10 +4,8 @@
 import ConfigParser
 import datetime
 import json
-import os
 import re
 import requests
-import urlparse
 
 import pyrax
 import pyrax.exceptions as exc

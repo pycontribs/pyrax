@@ -24,7 +24,6 @@ except ImportError:
     import pdb as pudb
 trace = pudb.set_trace
 
-import pyrax
 import pyrax.exceptions as exc
 
 

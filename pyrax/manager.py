@@ -21,10 +21,6 @@
 Base utilities to build API operation managers and objects on top of.
 """
 
-import contextlib
-import hashlib
-import os
-
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 

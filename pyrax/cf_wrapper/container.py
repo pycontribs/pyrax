@@ -19,7 +19,6 @@
 
 
 import pyrax
-from pyrax import exceptions as exc
 
 # Used to indicate values that are lazy-loaded
 class Fault(object):

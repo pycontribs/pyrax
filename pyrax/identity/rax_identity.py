@@ -3,7 +3,6 @@
 
 import ConfigParser
 
-import pyrax
 from pyrax.base_identity import BaseAuth
 from pyrax.base_identity import User
 import pyrax.exceptions as exc
