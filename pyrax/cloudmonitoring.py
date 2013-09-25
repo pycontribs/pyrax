@@ -850,14 +850,6 @@ class CloudMonitorClient(BaseClient):
         return resp_body
 
 
-    def get_limits(self):
-        """
-        Returns a dict with the resource and rate limits for the account.
-        """
-        resp, resp_body = self.method_get("/limits")
-        return resp_body
-
-
     def get_audits(self):
         """
         Every write operation performed against the API (PUT, POST or DELETE)

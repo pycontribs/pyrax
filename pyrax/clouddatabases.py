@@ -606,6 +606,11 @@ class CloudDatabaseClient(BaseClient):
         return instance.resize(flavor)
 
 
+    def get_limits(self):
+        """Overridden as Cloud Databases limits are hard coded."""
+        pass
+
+
     def list_flavors(self):
         """Returns a list of all available Flavors."""
         return self._flavor_manager.list()
