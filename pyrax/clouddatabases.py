@@ -650,7 +650,7 @@ class CloudDatabaseClient(BaseClient):
 
     def get_limits(self):
         """Not implemented in Cloud Databases."""
-        raise NotImplemented()
+        raise NotImplementedError("Limits are not available for Cloud Databases")
 
 
     def list_flavors(self):

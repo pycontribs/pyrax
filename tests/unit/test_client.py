@@ -131,6 +131,13 @@ class ClientTest(unittest.TestCase):
         clt.reset_timings()
         self.assertEqual(clt.get_timings(), [])
 
+    def test_get_limits(self):
+        clt = self.client
+        data = utils.random_name()
+        clt.method_get = Mock(return_value=(None, data))
+        ret = clt.get_limits()
+        self.assertEqual(ret, data)
+
     def test_http_log_req(self):
         clt = self.client
         args = ("a", "b")
