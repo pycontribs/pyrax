@@ -72,6 +72,12 @@ class BaseManager(object):
         return self._list(uri)
 
 
+    def head(self, item):
+        """Makes a HEAD request on a specific item."""
+        uri = "/%s/%s" % (self.uri_base, utils.get_id(item))
+        return self._head(uri)
+
+
     def get(self, item):
         """Gets a specific item."""
         uri = "/%s/%s" % (self.uri_base, utils.get_id(item))
@@ -140,6 +146,16 @@ class BaseManager(object):
                 pass
         return [obj_class(self, res, loaded=False)
                 for res in data if res]
+
+
+    def _head(self, uri):
+        """
+        Handles the communication with the API when performing a HEAD request
+        on a specific resource managed by this class. Returns the headers
+        contained in the response.
+        """
+        resp, resp_body = self.api.method_head(uri)
+        return resp
 
 
     def _get(self, uri):

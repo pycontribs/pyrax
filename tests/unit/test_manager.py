@@ -48,6 +48,18 @@ class ManagerTest(unittest.TestCase):
         mgr._list.assert_called_once_with(expected_uri)
         mgr._list = sav
 
+    def test_head(self):
+        mgr = self.manager
+        sav = mgr._head
+        mgr._head = Mock()
+        mgr.uri_base = "test"
+        x = fakes.FakeException()
+        x.id = "fakeid"
+        mgr.head(x)
+        expected = "/%s/%s" % ("test", x.id)
+        mgr._head.assert_called_once_with(expected)
+        mgr._head = sav
+
     def test_get(self):
         mgr = self.manager
         sav = mgr._get

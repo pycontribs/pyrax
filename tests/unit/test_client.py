@@ -323,6 +323,15 @@ class ClientTest(unittest.TestCase):
         clt._time_request = sav_req
         clt.management_url = sav_mgt
 
+    def test_method_head(self):
+        clt = self.client
+        sav = clt._api_request
+        clt._api_request = Mock()
+        url = DUMMY_URL
+        clt.method_head(url)
+        clt._api_request.assert_called_once_with(url, "HEAD")
+        clt._api_request = sav
+
     def test_method_get(self):
         clt = self.client
         sav = clt._api_request

@@ -239,6 +239,11 @@ class BaseClient(httplib2.Http):
                 raise ex
 
 
+    def method_head(self, uri, **kwargs):
+        """Method used to make HEAD requests."""
+        return self._api_request(uri, "HEAD", **kwargs)
+
+
     def method_get(self, uri, **kwargs):
         """Method used to make GET requests."""
         return self._api_request(uri, "GET", **kwargs)
