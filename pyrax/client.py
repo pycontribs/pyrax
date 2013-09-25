@@ -140,6 +140,14 @@ class BaseClient(httplib2.Http):
         self.times = []
 
 
+    def get_limits(self):
+        """
+        Returns a dict with the resource and rate limits for the account.
+        """
+        resp, resp_body = self.method_get("/limits")
+        return resp_body
+
+
     def http_log_req(self, args, kwargs):
         """
         When self.http_log_debug is True, outputs the equivalent `curl`
