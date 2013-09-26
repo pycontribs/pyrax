@@ -1156,8 +1156,9 @@ class VirtualIP(object):
         Convert this VirtualIP to a dict representation for passing
         to the API.
         """
-        return {"type": self.type,
-                "ipVersion": self.ip_version}
+        if self.id:
+            return {"id": self.id}
+        return {"type": self.type, "ipVersion": self.ip_version}
 
 
     @assure_parent
