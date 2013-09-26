@@ -1133,6 +1133,10 @@ class CloudLoadBalancerTest(unittest.TestCase):
         self.assertTrue("address=1.2.3.4" in vip_repr)
 
     def test_vip_to_dict(self):
+        vip = fakes.FakeVirtualIP(id="fake_id")
+        self.assertEqual(vip.to_dict(), {"id": "fake_id"})
+
+    def test_vip_to_dict(self):
         vip = fakes.FakeVirtualIP()
         expected = {"type": vip.type,
                 "ipVersion": vip.ip_version}
