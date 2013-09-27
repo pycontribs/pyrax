@@ -129,14 +129,15 @@ class ScalingGroup(BaseResource):
         return self.manager.update_launch_metadata(self, metadata)
 
 
-    def add_policy(self, name, policy_type, cooldown, change, is_percent=False):
+    def add_policy(self, name, policy_type, cooldown, change, is_percent=False,
+            args=None):
         """
         Adds a policy with the given values to this scaling group. The
         'change' parameter is treated as an absolute amount, unless
         'is_percent' is True, in which case it is treated as a percentage.
         """
         return self.manager.add_policy(self, name, policy_type, cooldown,
-                change, is_percent=is_percent)
+                change, is_percent=is_percent, args=args)
 
 
     def list_policies(self):
@@ -154,14 +155,14 @@ class ScalingGroup(BaseResource):
 
 
     def update_policy(self, policy, name=None, policy_type=None, cooldown=None,
-            change=None, is_percent=False):
+            change=None, is_percent=False, args=None):
         """
         Updates the specified policy. One or more of the parameters may be
         specified.
         """
         return self.manager.update_policy(scaling_group=self, policy=policy,
                 name=name, policy_type=policy_type, cooldown=cooldown,
-                change=change, is_percent=is_percent)
+                change=change, is_percent=is_percent, args=args)
 
 
     def execute_policy(self, policy):
@@ -439,7 +440,7 @@ class ScalingGroupManager(BaseManager):
 
 
     def add_policy(self, scaling_group, name, policy_type, cooldown, change,
-            is_percent=False):
+            is_percent=False, args=None):
         """
         Adds a policy with the given values to the specified scaling group. The
         'change' parameter is treated as an absolute amount, unless
@@ -451,6 +452,8 @@ class ScalingGroupManager(BaseManager):
             body["changePercent"] = change
         else:
             body["change"] = change
+        if args is not None:
+            body["args"] = args
         # "body" needs to be a list
         body = [body]
         resp, resp_body = self.api.method_post(uri, body=body)
@@ -480,7 +483,7 @@ class ScalingGroupManager(BaseManager):
 
 
     def update_policy(self, scaling_group, policy, name=None, policy_type=None,
-            cooldown=None, change=None, is_percent=False):
+            cooldown=None, change=None, is_percent=False, args=None):
         """
         Updates the specified policy. One or more of the parameters may be
         specified.
@@ -498,6 +501,8 @@ class ScalingGroupManager(BaseManager):
             body["changePercent"] = change or policy.changePercent
         else:
             body["change"] = change or policy.change
+        if args is not None:
+            body["args"] = args
         resp, resp_body = self.api.method_put(uri, body=body)
         return None
 
@@ -718,14 +723,15 @@ class AutoScalePolicy(BaseResource):
 
 
     def update(self, name=None, policy_type=None, cooldown=None, change=None,
-            is_percent=False):
+            is_percent=False, args=None):
         """
         Updates this policy. One or more of the parameters may be
         specified.
         """
         return self.manager.update_policy(scaling_group=self.scaling_group,
                 policy=self, name=name, policy_type=policy_type,
-                cooldown=cooldown, change=change, is_percent=is_percent)
+                cooldown=cooldown, change=change, is_percent=is_percent,
+                args=args)
 
 
     def execute(self):
@@ -923,14 +929,14 @@ class AutoScaleClient(BaseClient):
 
 
     def add_policy(self, scaling_group, name, policy_type, cooldown, change,
-            is_percent=False):
+            is_percent=False, args=None):
         """
         Adds a policy with the given values to the specified scaling group. The
         'change' parameter is treated as an absolute amount, unless
         'is_percent' is True, in which case it is treated as a percentage.
         """
         return self._manager.add_policy(scaling_group, name, policy_type,
-                cooldown, change, is_percent=is_percent)
+                cooldown, change, is_percent=is_percent, args=args)
 
 
     def list_policies(self, scaling_group):
@@ -948,14 +954,15 @@ class AutoScaleClient(BaseClient):
 
 
     def update_policy(self, scaling_group, policy, name=None, policy_type=None,
-            cooldown=None, change=None, is_percent=False):
+            cooldown=None, change=None, is_percent=False, args=None):
         """
         Updates the specified policy. One or more of the parameters may be
         specified.
         """
         return self._manager.update_policy(scaling_group=scaling_group,
                 policy=policy, name=name, policy_type=policy_type,
-                cooldown=cooldown, change=change, is_percent=is_percent)
+                cooldown=cooldown, change=change, is_percent=is_percent,
+                args=args)
 
 
     def execute_policy(self, scaling_group, policy):
