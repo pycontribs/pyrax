@@ -130,14 +130,15 @@ class ScalingGroup(BaseResource):
 
 
     def add_policy(self, name, policy_type, cooldown, change, is_percent=False,
-            args=None):
+            desired_capacity=None, args=None):
         """
         Adds a policy with the given values to this scaling group. The
         'change' parameter is treated as an absolute amount, unless
         'is_percent' is True, in which case it is treated as a percentage.
         """
         return self.manager.add_policy(self, name, policy_type, cooldown,
-                change, is_percent=is_percent, args=args)
+                change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
 
 
     def list_policies(self):
@@ -935,14 +936,15 @@ class AutoScaleClient(BaseClient):
 
 
     def add_policy(self, scaling_group, name, policy_type, cooldown, change,
-            is_percent=False, args=None):
+            is_percent=False, desired_capacity=None, args=None):
         """
         Adds a policy with the given values to the specified scaling group. The
         'change' parameter is treated as an absolute amount, unless
         'is_percent' is True, in which case it is treated as a percentage.
         """
         return self._manager.add_policy(scaling_group, name, policy_type,
-                cooldown, change, is_percent=is_percent, args=args)
+                cooldown, change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
 
 
     def list_policies(self, scaling_group):
