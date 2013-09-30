@@ -147,7 +147,7 @@ class AutoscaleTest(unittest.TestCase):
                 is_percent=is_percent, desired_capacity=desired_capacity,
                 args=args)
         mgr.add_policy.assert_called_once_with(sg, name, policy_type, cooldown,
-                change, is_percent=is_percent,
+                change=change, is_percent=is_percent,
                 desired_capacity=desired_capacity, args=args)
 
     def test_list_policies(self):
@@ -1008,7 +1008,7 @@ class AutoscaleTest(unittest.TestCase):
                 is_percent=is_percent, desired_capacity=desired_capacity,
                 args=args)
         mgr.add_policy.assert_called_once_with(sg, name, policy_type, cooldown,
-                change, is_percent=is_percent,
+                change=change, is_percent=is_percent,
                 desired_capacity=desired_capacity, args=args)
 
     def test_clt_list_policies(self):
