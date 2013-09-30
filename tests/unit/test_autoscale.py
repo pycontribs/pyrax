@@ -720,7 +720,8 @@ class AutoscaleTest(unittest.TestCase):
                     "cooldown": cooldown,
                     "maxEntities": max_entities,
                     "minEntities": min_entities,
-                    "name": name},
+                    "name": name,
+                    "metadata": {}},
                 "launchConfiguration": {
                     "args": {
                         "loadBalancers": [],
@@ -740,7 +741,8 @@ class AutoscaleTest(unittest.TestCase):
         ret = mgr._create_body(name, cooldown, min_entities, max_entities,
                 launch_config_type, server_name, image, flavor,
                 disk_config=None, metadata=None, personality=None,
-                networks=None, load_balancers=None, scaling_policies=None)
+                networks=None, load_balancers=None, scaling_policies=None,
+                group_metadata={})
         self.assertEqual(ret, expected)
 
     def test_policy_init(self):
