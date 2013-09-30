@@ -502,6 +502,13 @@ class CloudMonitorEntityManager(BaseManager):
                         "%s." % (resolution, str(allowed_resolutions)))
         start_tm = utils.to_timestamp(start)
         end_tm = utils.to_timestamp(end)
+        # NOTE: For some odd reason, the timestamps required for this must be
+        # in milliseconds, instead of the UNIX standard for timestamps, which
+        # is in seconds. So the values here are multiplied by 1000 to make it
+        # work. If the API is ever corrected, the next two lines should be
+        # removed. GitHub #176.
+        start_tm *= 1000
+        end_tm *= 1000
         qparms = []
         # Timestamps with fractional seconds currently cause a 408 (timeout)
         qparms.append("from=%s" % int(start_tm))
