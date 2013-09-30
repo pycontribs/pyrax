@@ -506,6 +506,25 @@ class AutoscaleTest(unittest.TestCase):
             mgr.api.method_post.assert_called_with(uri, body=[post_body])
             self.assert_(isinstance(ret, AutoScalePolicy))
 
+    def test_mgr_add_policy_desired_capacity(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        ret_body = {"policies": [{}]}
+        mgr.api.method_post = Mock(return_value=(None, ret_body))
+        uri = "/%s/%s/policies" % (mgr.uri_base, sg.id)
+        name = utils.random_name()
+        ptype = utils.random_name()
+        cooldown = utils.random_name()
+        desired_capacity = utils.random_name()
+        post_body = {"name": name,
+                     "cooldown": cooldown,
+                     "type": ptype,
+                     "desiredCapacity": desired_capacity}
+        ret = mgr.add_policy(sg, name, ptype, cooldown,
+                             desired_capacity=desired_capacity)
+        mgr.api.method_post.assert_called_with(uri, body=[post_body])
+        self.assert_(isinstance(ret, AutoScalePolicy))
+
     def test_mgr_list_policies(self):
         sg = self.scaling_group
         mgr = sg.manager
@@ -550,6 +569,115 @@ class AutoscaleTest(unittest.TestCase):
                     cooldown=cooldown, change=change, is_percent=is_percent,
                     args=args)
             mgr.api.method_put.assert_called_with(uri, body=put_body)
+
+    def test_mgr_update_policy_desired_to_desired(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        pol = utils.random_name()
+        name = utils.random_name()
+        ptype = utils.random_name()
+        cooldown = utils.random_name()
+        change = utils.random_name()
+        args = utils.random_name()
+        new_desired_capacity = 10
+        old_info = {"desiredCapacity": 0}
+        mgr.get_policy = Mock(
+            return_value=fakes.FakeAutoScalePolicy(mgr, old_info, sg))
+        mgr.api.method_put = Mock(return_value=(None, None))
+        uri = "/%s/%s/policies/%s" % (mgr.uri_base, sg.id, pol)
+        put_body = {"name": name, "cooldown": cooldown, "type": ptype,
+                "desiredCapacity": new_desired_capacity}
+        ret = mgr.update_policy(sg, pol, name=name, policy_type=ptype,
+                cooldown=cooldown, desired_capacity=new_desired_capacity)
+        mgr.api.method_put.assert_called_with(uri, body=put_body)
+
+    def test_mgr_update_policy_change_to_desired(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        pol = utils.random_name()
+        name = utils.random_name()
+        ptype = utils.random_name()
+        cooldown = utils.random_name()
+        change = utils.random_name()
+        args = utils.random_name()
+        new_desired_capacity = 10
+        old_info = {"change": -1}
+        mgr.get_policy = Mock(
+            return_value=fakes.FakeAutoScalePolicy(mgr, old_info, sg))
+        mgr.api.method_put = Mock(return_value=(None, None))
+        uri = "/%s/%s/policies/%s" % (mgr.uri_base, sg.id, pol)
+        put_body = {"name": name, "cooldown": cooldown, "type": ptype,
+                "desiredCapacity": new_desired_capacity}
+        ret = mgr.update_policy(sg, pol, name=name, policy_type=ptype,
+                cooldown=cooldown, desired_capacity=new_desired_capacity)
+        mgr.api.method_put.assert_called_with(uri, body=put_body)
+
+    def test_mgr_update_policy_desired_to_change(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        pol = utils.random_name()
+        name = utils.random_name()
+        ptype = utils.random_name()
+        cooldown = utils.random_name()
+        change = utils.random_name()
+        args = utils.random_name()
+        new_change = 1
+        old_info = {"desiredCapacity": 0}
+        mgr.get_policy = Mock(
+            return_value=fakes.FakeAutoScalePolicy(mgr, old_info, sg))
+        mgr.api.method_put = Mock(return_value=(None, None))
+        uri = "/%s/%s/policies/%s" % (mgr.uri_base, sg.id, pol)
+        put_body = {"name": name, "cooldown": cooldown, "type": ptype,
+                "change": new_change}
+        ret = mgr.update_policy(sg, pol, name=name, policy_type=ptype,
+                cooldown=cooldown, change=new_change)
+        mgr.api.method_put.assert_called_with(uri, body=put_body)
+
+    def test_mgr_update_policy_maintain_desired_capacity(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        pol = utils.random_name(ascii_only=True)
+        name = utils.random_name(ascii_only=True)
+        ptype = utils.random_name(ascii_only=True)
+        cooldown = utils.random_name(ascii_only=True)
+        change = utils.random_name(ascii_only=True)
+        args = utils.random_name(ascii_only=True)
+        new_name = utils.random_name(ascii_only=True)
+        old_capacity = 0
+        old_info = {"type": ptype,
+                    "desiredCapacity": old_capacity,
+                    "cooldown": cooldown}
+        mgr.get_policy = Mock(
+            return_value=fakes.FakeAutoScalePolicy(mgr, old_info, sg))
+        mgr.api.method_put = Mock(return_value=(None, None))
+        uri = "/%s/%s/policies/%s" % (mgr.uri_base, sg.id, pol)
+        put_body = {"name": new_name, "cooldown": cooldown, "type": ptype,
+                "desiredCapacity": old_capacity}
+        ret = mgr.update_policy(sg, pol, name=new_name)
+        mgr.api.method_put.assert_called_with(uri, body=put_body)
+
+    def test_mgr_update_policy_maintain_is_percent(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        pol = utils.random_name()
+        name = utils.random_name()
+        ptype = utils.random_name()
+        cooldown = utils.random_name()
+        change = utils.random_name()
+        args = utils.random_name()
+        new_name = utils.random_name()
+        old_percent = 10
+        old_info = {"type": ptype,
+                    "changePercent": old_percent,
+                    "cooldown": cooldown}
+        mgr.get_policy = Mock(
+            return_value=fakes.FakeAutoScalePolicy(mgr, old_info, sg))
+        mgr.api.method_put = Mock(return_value=(None, None))
+        uri = "/%s/%s/policies/%s" % (mgr.uri_base, sg.id, pol)
+        put_body = {"name": new_name, "cooldown": cooldown, "type": ptype,
+                "changePercent": old_percent}
+        ret = mgr.update_policy(sg, pol, name=new_name)
+        mgr.api.method_put.assert_called_with(uri, body=put_body)
 
     def test_mgr_execute_policy(self):
         sg = self.scaling_group
