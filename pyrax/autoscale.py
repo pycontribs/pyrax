@@ -959,10 +959,9 @@ class AutoScaleClient(BaseClient):
         Updates the specified policy. One or more of the parameters may be
         specified.
         """
-        return self._manager.update_policy(scaling_group=scaling_group,
-                policy=policy, name=name, policy_type=policy_type,
-                cooldown=cooldown, change=change, is_percent=is_percent,
-                args=args)
+        return self._manager.update_policy(scaling_group, policy, name=name,
+                policy_type=policy_type, cooldown=cooldown, change=change,
+                is_percent=is_percent, args=args)
 
 
     def execute_policy(self, scaling_group, policy):

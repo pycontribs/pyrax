@@ -140,11 +140,12 @@ class AutoscaleTest(unittest.TestCase):
         cooldown = utils.random_name()
         change = utils.random_name()
         is_percent = utils.random_name()
+        args = utils.random_name()
         mgr.add_policy = Mock()
         sg.add_policy(name, policy_type, cooldown, change,
-                is_percent=is_percent)
+                is_percent=is_percent, args=args)
         mgr.add_policy.assert_called_once_with(sg, name, policy_type, cooldown,
-                change, is_percent=is_percent)
+                change, is_percent=is_percent, args=args)
 
     def test_list_policies(self):
         sg = self.scaling_group
@@ -170,12 +171,15 @@ class AutoscaleTest(unittest.TestCase):
         cooldown = utils.random_name()
         change = utils.random_name()
         is_percent = utils.random_name()
+        args = utils.random_name()
         mgr.update_policy = Mock()
         sg.update_policy(policy, name=name, policy_type=policy_type,
-                cooldown=cooldown, change=change, is_percent=is_percent)
+                cooldown=cooldown, change=change, is_percent=is_percent,
+                args=args)
         mgr.update_policy.assert_called_once_with(scaling_group=sg,
                 policy=policy, name=name, policy_type=policy_type,
-                cooldown=cooldown, change=change, is_percent=is_percent)
+                cooldown=cooldown, change=change, is_percent=is_percent,
+                args=args)
 
     def test_execute_policy(self):
         sg = self.scaling_group
@@ -526,18 +530,21 @@ class AutoscaleTest(unittest.TestCase):
         ptype = utils.random_name()
         cooldown = utils.random_name()
         change = utils.random_name()
+        args = utils.random_name()
         mgr.get_policy = Mock(return_value=fakes.FakeAutoScalePolicy(mgr, {},
                 sg))
         mgr.api.method_put = Mock(return_value=(None, None))
         uri = "/%s/%s/policies/%s" % (mgr.uri_base, sg.id, pol)
         for is_percent in (True, False):
-            put_body = {"name": name, "cooldown": cooldown, "type": ptype}
+            put_body = {"name": name, "cooldown": cooldown, "type": ptype,
+                    "args": args}
             if is_percent:
                 put_body["changePercent"] = change
             else:
                 put_body["change"] = change
             ret = mgr.update_policy(sg, pol, name=name, policy_type=ptype,
-                    cooldown=cooldown, change=change, is_percent=is_percent)
+                    cooldown=cooldown, change=change, is_percent=is_percent,
+                    args=args)
             mgr.api.method_put.assert_called_with(uri, body=put_body)
 
     def test_mgr_execute_policy(self):
@@ -764,12 +771,14 @@ class AutoscaleTest(unittest.TestCase):
         cooldown = utils.random_name()
         change = utils.random_name()
         is_percent = utils.random_name()
+        args = utils.random_name()
         mgr.update_policy = Mock()
         pol.update(name=name, policy_type=policy_type, cooldown=cooldown,
-                change=change, is_percent=is_percent)
+                change=change, is_percent=is_percent, args=args)
         mgr.update_policy.assert_called_once_with(scaling_group=sg,
                 policy=pol, name=name, policy_type=policy_type,
-                cooldown=cooldown, change=change, is_percent=is_percent)
+                cooldown=cooldown, change=change, is_percent=is_percent,
+                args=args)
 
     def test_policy_execute(self):
         sg = self.scaling_group
@@ -986,11 +995,12 @@ class AutoscaleTest(unittest.TestCase):
         cooldown = utils.random_name()
         change = utils.random_name()
         is_percent = utils.random_name()
+        args = utils.random_name()
         mgr.add_policy = Mock()
         clt.add_policy(sg, name, policy_type, cooldown, change,
-                is_percent=is_percent)
+                is_percent=is_percent, args=args)
         mgr.add_policy.assert_called_once_with(sg, name, policy_type, cooldown,
-                change, is_percent=is_percent)
+                change, is_percent=is_percent, args=args)
 
     def test_clt_list_policies(self):
         clt = fakes.FakeAutoScaleClient()
@@ -1019,12 +1029,14 @@ class AutoscaleTest(unittest.TestCase):
         cooldown = utils.random_name()
         change = utils.random_name()
         is_percent = utils.random_name()
+        args = utils.random_name()
         mgr.update_policy = Mock()
         clt.update_policy(sg, pol, name=name, policy_type=policy_type,
-                cooldown=cooldown, change=change, is_percent=is_percent)
-        mgr.update_policy.assert_called_once_with(scaling_group=sg, policy=pol,
-                name=name, policy_type=policy_type, cooldown=cooldown,
-                change=change, is_percent=is_percent)
+                cooldown=cooldown, change=change, is_percent=is_percent,
+                args=args)
+        mgr.update_policy.assert_called_once_with(sg, pol, name=name,
+                policy_type=policy_type, cooldown=cooldown, change=change,
+                is_percent=is_percent, args=args)
 
     def test_clt_execute_policy(self):
         clt = fakes.FakeAutoScaleClient()
