@@ -451,7 +451,7 @@ class ScalingGroupManager(BaseManager):
         uri = "/%s/%s/policies" % (self.uri_base, utils.get_id(scaling_group))
         body = {"name": name, "cooldown": cooldown, "type": policy_type}
         if change is not None:
-            if change and is_percent:
+            if is_percent:
                 body["changePercent"] = change
             else:
                 body["change"] = change
