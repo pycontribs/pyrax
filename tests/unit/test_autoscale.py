@@ -140,12 +140,15 @@ class AutoscaleTest(unittest.TestCase):
         cooldown = utils.random_name()
         change = utils.random_name()
         is_percent = utils.random_name()
+        desired_capacity = utils.random_name()
         args = utils.random_name()
         mgr.add_policy = Mock()
         sg.add_policy(name, policy_type, cooldown, change,
-                is_percent=is_percent, args=args)
+                is_percent=is_percent, desired_capacity=desired_capacity,
+                args=args)
         mgr.add_policy.assert_called_once_with(sg, name, policy_type, cooldown,
-                change, is_percent=is_percent, args=args)
+                change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
 
     def test_list_policies(self):
         sg = self.scaling_group
@@ -170,16 +173,17 @@ class AutoscaleTest(unittest.TestCase):
         policy_type = utils.random_name()
         cooldown = utils.random_name()
         change = utils.random_name()
+        desired_capacity = utils.random_name()
         is_percent = utils.random_name()
         args = utils.random_name()
         mgr.update_policy = Mock()
         sg.update_policy(policy, name=name, policy_type=policy_type,
                 cooldown=cooldown, change=change, is_percent=is_percent,
-                args=args)
+                desired_capacity=desired_capacity, args=args)
         mgr.update_policy.assert_called_once_with(scaling_group=sg,
                 policy=policy, name=name, policy_type=policy_type,
                 cooldown=cooldown, change=change, is_percent=is_percent,
-                args=args)
+                desired_capacity=desired_capacity, args=args)
 
     def test_execute_policy(self):
         sg = self.scaling_group
@@ -771,14 +775,16 @@ class AutoscaleTest(unittest.TestCase):
         cooldown = utils.random_name()
         change = utils.random_name()
         is_percent = utils.random_name()
+        desired_capacity = utils.random_name()
         args = utils.random_name()
         mgr.update_policy = Mock()
         pol.update(name=name, policy_type=policy_type, cooldown=cooldown,
-                change=change, is_percent=is_percent, args=args)
+                change=change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
         mgr.update_policy.assert_called_once_with(scaling_group=sg,
                 policy=pol, name=name, policy_type=policy_type,
                 cooldown=cooldown, change=change, is_percent=is_percent,
-                args=args)
+                desired_capacity=desired_capacity, args=args)
 
     def test_policy_execute(self):
         sg = self.scaling_group
@@ -995,12 +1001,15 @@ class AutoscaleTest(unittest.TestCase):
         cooldown = utils.random_name()
         change = utils.random_name()
         is_percent = utils.random_name()
+        desired_capacity = utils.random_name()
         args = utils.random_name()
         mgr.add_policy = Mock()
         clt.add_policy(sg, name, policy_type, cooldown, change,
-                is_percent=is_percent, args=args)
+                is_percent=is_percent, desired_capacity=desired_capacity,
+                args=args)
         mgr.add_policy.assert_called_once_with(sg, name, policy_type, cooldown,
-                change, is_percent=is_percent, args=args)
+                change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
 
     def test_clt_list_policies(self):
         clt = fakes.FakeAutoScaleClient()
@@ -1029,14 +1038,16 @@ class AutoscaleTest(unittest.TestCase):
         cooldown = utils.random_name()
         change = utils.random_name()
         is_percent = utils.random_name()
+        desired_capacity = utils.random_name()
         args = utils.random_name()
         mgr.update_policy = Mock()
         clt.update_policy(sg, pol, name=name, policy_type=policy_type,
                 cooldown=cooldown, change=change, is_percent=is_percent,
-                args=args)
+                desired_capacity=desired_capacity, args=args)
         mgr.update_policy.assert_called_once_with(sg, pol, name=name,
                 policy_type=policy_type, cooldown=cooldown, change=change,
-                is_percent=is_percent, args=args)
+                is_percent=is_percent, desired_capacity=desired_capacity,
+                args=args)
 
     def test_clt_execute_policy(self):
         clt = fakes.FakeAutoScaleClient()
