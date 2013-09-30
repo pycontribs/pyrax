@@ -129,15 +129,15 @@ class ScalingGroup(BaseResource):
         return self.manager.update_launch_metadata(self, metadata)
 
 
-    def add_policy(self, name, policy_type, cooldown, change, is_percent=False,
-            desired_capacity=None, args=None):
+    def add_policy(self, name, policy_type, cooldown, change=None,
+            is_percent=False, desired_capacity=None, args=None):
         """
         Adds a policy with the given values to this scaling group. The
         'change' parameter is treated as an absolute amount, unless
         'is_percent' is True, in which case it is treated as a percentage.
         """
         return self.manager.add_policy(self, name, policy_type, cooldown,
-                change, is_percent=is_percent,
+                change=change, is_percent=is_percent,
                 desired_capacity=desired_capacity, args=args)
 
 
@@ -441,8 +441,8 @@ class ScalingGroupManager(BaseManager):
         return self.update_launch_config(scaling_group, metadata=curr_meta)
 
 
-    def add_policy(self, scaling_group, name, policy_type, cooldown, change,
-            is_percent=False, desired_capacity=None, args=None):
+    def add_policy(self, scaling_group, name, policy_type, cooldown,
+            change=None, is_percent=False, desired_capacity=None, args=None):
         """
         Adds a policy with the given values to the specified scaling group. The
         'change' parameter is treated as an absolute amount, unless
@@ -450,10 +450,11 @@ class ScalingGroupManager(BaseManager):
         """
         uri = "/%s/%s/policies" % (self.uri_base, utils.get_id(scaling_group))
         body = {"name": name, "cooldown": cooldown, "type": policy_type}
-        if is_percent:
-            body["changePercent"] = change
-        else:
-            body["change"] = change
+        if change is not None:
+            if change and is_percent:
+                body["changePercent"] = change
+            else:
+                body["change"] = change
         if desired_capacity is not None:
             body["desiredCapacity"] = desired_capacity
         if args is not None:
@@ -935,15 +936,15 @@ class AutoScaleClient(BaseClient):
         return self._manager.update_launch_metadata(scaling_group, metadata)
 
 
-    def add_policy(self, scaling_group, name, policy_type, cooldown, change,
-            is_percent=False, desired_capacity=None, args=None):
+    def add_policy(self, scaling_group, name, policy_type, cooldown,
+            change=None, is_percent=False, desired_capacity=None, args=None):
         """
         Adds a policy with the given values to the specified scaling group. The
         'change' parameter is treated as an absolute amount, unless
         'is_percent' is True, in which case it is treated as a percentage.
         """
         return self._manager.add_policy(scaling_group, name, policy_type,
-                cooldown, change, is_percent=is_percent,
+                cooldown, change=change, is_percent=is_percent,
                 desired_capacity=desired_capacity, args=args)
 
 
