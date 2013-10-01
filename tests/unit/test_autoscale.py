@@ -636,13 +636,13 @@ class AutoscaleTest(unittest.TestCase):
     def test_mgr_update_policy_maintain_desired_capacity(self):
         sg = self.scaling_group
         mgr = sg.manager
-        pol = utils.random_name(ascii_only=True)
-        name = utils.random_name(ascii_only=True)
-        ptype = utils.random_name(ascii_only=True)
-        cooldown = utils.random_name(ascii_only=True)
-        change = utils.random_name(ascii_only=True)
-        args = utils.random_name(ascii_only=True)
-        new_name = utils.random_name(ascii_only=True)
+        pol = utils.random_name()
+        name = utils.random_name()
+        ptype = utils.random_name()
+        cooldown = utils.random_name()
+        change = utils.random_name()
+        args = utils.random_name()
+        new_name = utils.random_name()
         old_capacity = 0
         old_info = {"type": ptype,
                     "desiredCapacity": old_capacity,
