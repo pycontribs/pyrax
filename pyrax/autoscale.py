@@ -106,7 +106,7 @@ class ScalingGroup(BaseResource):
 
     def update_launch_config(self, server_name=None, image=None, flavor=None,
             disk_config=None, metadata=None, personality=None, networks=None,
-            load_balancers=None):
+            load_balancers=None, key_name=None):
         """
         Updates the server launch configuration for this scaling group.
         One or more of the available attributes can be specified.
@@ -118,7 +118,7 @@ class ScalingGroup(BaseResource):
         return self.manager.update_launch_config(self, server_name=server_name,
                 image=image, flavor=flavor, disk_config=disk_config,
                 metadata=metadata, personality=personality, networks=networks,
-                load_balancers=load_balancers)
+                load_balancers=load_balancers, key_name=key_name)
 
 
     def update_launch_metadata(self, metadata):
@@ -388,12 +388,13 @@ class ScalingGroupManager(BaseManager):
         ret["metadata"] = srv.get("metadata")
         ret["personality"] = srv.get("personality")
         ret["networks"] = srv.get("networks")
+        ret["key_name"] = srv.get("key_name")
         return ret
 
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
             flavor=None, disk_config=None, metadata=None, personality=None,
-            networks=None, load_balancers=None):
+            networks=None, load_balancers=None, key_name=None):
         """
         Updates the server launch configuration for an existing scaling group.
         One or more of the available attributes can be specified.
@@ -424,6 +425,8 @@ class ScalingGroupManager(BaseManager):
                     "loadBalancers": load_balancers or lb_args,
                 },
             }
+        if key_name is not None:
+            body["args"]["server"]["key_name"] = key_name
         resp, resp_body = self.api.method_put(uri, body=body)
         return None
 
@@ -663,7 +666,8 @@ class ScalingGroupManager(BaseManager):
     def _create_body(self, name, cooldown, min_entities, max_entities,
             launch_config_type, server_name, image, flavor, disk_config=None,
             metadata=None, personality=None, networks=None,
-            load_balancers=None, scaling_policies=None, group_metadata=None):
+            load_balancers=None, scaling_policies=None, group_metadata=None,
+            key_name=None):
         """
         Used to create the dict required to create any of the following:
             A Scaling Group
@@ -694,6 +698,8 @@ class ScalingGroupManager(BaseManager):
             server_args["networks"] = networks
         if disk_config is not None:
             server_args["OS-DCF:diskConfig"] = disk_config
+        if key_name is not None:
+            server_args["key_name"] = key_name
         load_balancer_args = self._resolve_lbs(load_balancers)
         body = {"groupConfiguration": {
                     "name": name,
@@ -922,7 +928,7 @@ class AutoScaleClient(BaseClient):
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
             flavor=None, disk_config=None, metadata=None, personality=None,
-            networks=None, load_balancers=None):
+            networks=None, load_balancers=None, key_name=None):
         """
         Updates the server launch configuration for an existing scaling group.
         One or more of the available attributes can be specified.
@@ -935,7 +941,7 @@ class AutoScaleClient(BaseClient):
                 server_name=server_name, image=image, flavor=flavor,
                 disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers)
+                load_balancers=load_balancers, key_name=key_name)
 
 
     def update_launch_metadata(self, scaling_group, metadata):
