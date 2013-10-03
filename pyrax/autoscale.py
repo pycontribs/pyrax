@@ -663,7 +663,7 @@ class ScalingGroupManager(BaseManager):
     def _create_body(self, name, cooldown, min_entities, max_entities,
             launch_config_type, server_name, image, flavor, disk_config=None,
             metadata=None, personality=None, networks=None,
-            load_balancers=None, scaling_policies=None):
+            load_balancers=None, scaling_policies=None, group_metadata=None):
         """
         Used to create the dict required to create any of the following:
             A Scaling Group
@@ -710,7 +710,8 @@ class ScalingGroupManager(BaseManager):
                 },
                 "scalingPolicies": scaling_policies,
             }
-        body
+        if group_metadata is not None:
+            body["groupConfiguration"]["metadata"] = group_metadata
         return body
 
 

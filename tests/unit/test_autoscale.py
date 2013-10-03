@@ -843,12 +843,15 @@ class AutoscaleTest(unittest.TestCase):
         flavor = utils.random_name()
         server_name = utils.random_name()
         image = utils.random_name()
+        group_metadata = utils.random_name()
+        server_metadata = utils.random_name()
         expected = {
                 "groupConfiguration": {
                     "cooldown": cooldown,
                     "maxEntities": max_entities,
                     "minEntities": min_entities,
-                    "name": name},
+                    "name": name,
+                    "metadata": group_metadata},
                 "launchConfiguration": {
                     "args": {
                         "loadBalancers": [],
@@ -856,7 +859,7 @@ class AutoscaleTest(unittest.TestCase):
                             "OS-DCF:diskConfig": "AUTO",
                             "flavorRef": flavor,
                             "imageRef": image,
-                            "metadata": {},
+                            "metadata": server_metadata,
                             "name": server_name,
                             "networks": [{"uuid": SERVICE_NET_ID}],
                             "personality": []}
@@ -867,8 +870,9 @@ class AutoscaleTest(unittest.TestCase):
         self.maxDiff = 1000000
         ret = mgr._create_body(name, cooldown, min_entities, max_entities,
                 launch_config_type, server_name, image, flavor,
-                disk_config=None, metadata=None, personality=None,
-                networks=None, load_balancers=None, scaling_policies=None)
+                disk_config=None, metadata=server_metadata, personality=None,
+                networks=None, load_balancers=None, scaling_policies=None,
+                group_metadata=group_metadata)
         self.assertEqual(ret, expected)
 
     def test_policy_init(self):
