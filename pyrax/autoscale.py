@@ -106,7 +106,7 @@ class ScalingGroup(BaseResource):
 
     def update_launch_config(self, server_name=None, image=None, flavor=None,
             disk_config=None, metadata=None, personality=None, networks=None,
-            load_balancers=None):
+            load_balancers=None, key_name=None):
         """
         Updates the server launch configuration for this scaling group.
         One or more of the available attributes can be specified.
@@ -118,7 +118,7 @@ class ScalingGroup(BaseResource):
         return self.manager.update_launch_config(self, server_name=server_name,
                 image=image, flavor=flavor, disk_config=disk_config,
                 metadata=metadata, personality=personality, networks=networks,
-                load_balancers=load_balancers)
+                load_balancers=load_balancers, key_name=key_name)
 
 
     def update_launch_metadata(self, metadata):
@@ -928,7 +928,7 @@ class AutoScaleClient(BaseClient):
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
             flavor=None, disk_config=None, metadata=None, personality=None,
-            networks=None, load_balancers=None):
+            networks=None, load_balancers=None, key_name=None):
         """
         Updates the server launch configuration for an existing scaling group.
         One or more of the available attributes can be specified.
@@ -941,7 +941,7 @@ class AutoScaleClient(BaseClient):
                 server_name=server_name, image=image, flavor=flavor,
                 disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers)
+                load_balancers=load_balancers, key_name=key_name)
 
 
     def update_launch_metadata(self, scaling_group, metadata):

@@ -114,15 +114,16 @@ class AutoscaleTest(unittest.TestCase):
         personality = utils.random_name()
         networks = utils.random_name()
         load_balancers = utils.random_name()
+        key_name = utils.random_name()
         sg.update_launch_config(server_name=server_name, flavor=flavor,
                 image=image, disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers)
+                load_balancers=load_balancers, key_name=key_name)
         mgr.update_launch_config.assert_called_once_with(sg,
                 server_name=server_name, flavor=flavor, image=image,
                 disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers)
+                load_balancers=load_balancers, key_name=key_name)
 
     def test_update_launch_metadata(self):
         sg = self.scaling_group
@@ -404,6 +405,7 @@ class AutoscaleTest(unittest.TestCase):
         metadata = utils.random_name()
         personality = utils.random_name()
         networks = utils.random_name()
+        key_name = utils.random_name()
         launchdict = {"launchConfiguration": {
                 "type": typ,
                 "args": {
@@ -416,6 +418,7 @@ class AutoscaleTest(unittest.TestCase):
                         "metadata": metadata,
                         "personality": personality,
                         "networks": networks,
+                        "key_name": key_name,
                     },
                 },
             },
@@ -430,6 +433,7 @@ class AutoscaleTest(unittest.TestCase):
                 "metadata": metadata,
                 "personality": personality,
                 "networks": networks,
+                "key_name": key_name,
                 }
         mgr.api.method_get = Mock(return_value=(None, launchdict))
         uri = "/%s/%s/launch" % (mgr.uri_base, sg.id)
@@ -845,6 +849,7 @@ class AutoscaleTest(unittest.TestCase):
         image = utils.random_name()
         group_metadata = utils.random_name()
         server_metadata = utils.random_name()
+        key_name = utils.random_name()
         expected = {
                 "groupConfiguration": {
                     "cooldown": cooldown,
@@ -862,7 +867,8 @@ class AutoscaleTest(unittest.TestCase):
                             "metadata": server_metadata,
                             "name": server_name,
                             "networks": [{"uuid": SERVICE_NET_ID}],
-                            "personality": []}
+                            "personality": [],
+                            "key_name": key_name}
                         },
                     "type": launch_config_type},
                     "scalingPolicies": []}
@@ -872,7 +878,7 @@ class AutoscaleTest(unittest.TestCase):
                 launch_config_type, server_name, image, flavor,
                 disk_config=None, metadata=server_metadata, personality=None,
                 networks=None, load_balancers=None, scaling_policies=None,
-                group_metadata=group_metadata)
+                group_metadata=group_metadata, key_name=key_name)
         self.assertEqual(ret, expected)
 
     def test_policy_init(self):
@@ -1105,15 +1111,17 @@ class AutoscaleTest(unittest.TestCase):
         personality = utils.random_name()
         networks = utils.random_name()
         load_balancers = utils.random_name()
+        key_name = utils.random_name()
         clt.update_launch_config(sg, server_name=server_name, flavor=flavor,
                 image=image, disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers)
+                load_balancers=load_balancers,
+                key_name=key_name)
         mgr.update_launch_config.assert_called_once_with(sg,
                 server_name=server_name, flavor=flavor, image=image,
                 disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers)
+                load_balancers=load_balancers, key_name=key_name)
 
     def test_clt_update_launch_metadata(self):
         clt = fakes.FakeAutoScaleClient()
