@@ -388,12 +388,13 @@ class ScalingGroupManager(BaseManager):
         ret["metadata"] = srv.get("metadata")
         ret["personality"] = srv.get("personality")
         ret["networks"] = srv.get("networks")
+        ret["keypair"] = srv.get("keypair")
         return ret
 
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
             flavor=None, disk_config=None, metadata=None, personality=None,
-            networks=None, load_balancers=None):
+            networks=None, load_balancers=None, keypair=None):
         """
         Updates the server launch configuration for an existing scaling group.
         One or more of the available attributes can be specified.
@@ -424,6 +425,8 @@ class ScalingGroupManager(BaseManager):
                     "loadBalancers": load_balancers or lb_args,
                 },
             }
+        if keypair is not None:
+            body["args"]["server"]["keypair"] = keypair
         resp, resp_body = self.api.method_put(uri, body=body)
         return None
 
@@ -663,7 +666,8 @@ class ScalingGroupManager(BaseManager):
     def _create_body(self, name, cooldown, min_entities, max_entities,
             launch_config_type, server_name, image, flavor, disk_config=None,
             metadata=None, personality=None, networks=None,
-            load_balancers=None, scaling_policies=None, group_metadata=None):
+            load_balancers=None, scaling_policies=None, group_metadata=None,
+            keypair=None):
         """
         Used to create the dict required to create any of the following:
             A Scaling Group
@@ -694,6 +698,8 @@ class ScalingGroupManager(BaseManager):
             server_args["networks"] = networks
         if disk_config is not None:
             server_args["OS-DCF:diskConfig"] = disk_config
+        if keypair is not None:
+            server_args["keypair"] = keypair
         load_balancer_args = self._resolve_lbs(load_balancers)
         body = {"groupConfiguration": {
                     "name": name,
