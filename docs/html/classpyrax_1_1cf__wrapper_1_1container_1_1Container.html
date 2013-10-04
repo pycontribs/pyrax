@@ -123,6 +123,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the StorageObject in this container with the specified name.  <a href="#af1075eab57e4a3c67fe8d474080407a8"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a1ffef9ff929707223146f6c5373e2a14">get_object_names</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of the names of all the objects in this container.  <a href="#a1ffef9ff929707223146f6c5373e2a14"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a3da53c909075fab5c230e40d5aab4e51">list_subdirs</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of StorageObjects representing the pseudo-subdirectories in this container.  <a href="#a3da53c909075fab5c230e40d5aab4e51"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#af0a50c69bbe50a35557fb373cf3b4b6f">store_object</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new object in this container, and populates it with the given data.  <a href="#af0a50c69bbe50a35557fb373cf3b4b6f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a3857f84faa9608b0bf0a4e84ba5b1566">upload_file</a></td></tr>
@@ -140,7 +142,9 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a4d536318080f1745a14922224b2a28b5">download_object</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the object from storage, and writes it to the specified directory.  <a href="#a4d536318080f1745a14922224b2a28b5"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#abc9975b34823bfba383eb240ecde3783">get_metadata</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a dictionary containing the metadata for the container.  <a href="#abc9975b34823bfba383eb240ecde3783"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a72a400370828e749dd0d63a622a95ee2">set_metadata</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepts a dictionary of metadata key/value pairs and updates the specified container metadata with them.  <a href="#a72a400370828e749dd0d63a622a95ee2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a01a67fdfd99526a56bef1e3c0a01a68d">remove_metadata_key</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the specified key from the container's metadata.  <a href="#a01a67fdfd99526a56bef1e3c0a01a68d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#ade8eed6cfb701ccd5d3a42b34dba771c">set_web_index_page</a></td></tr>
@@ -151,6 +155,10 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables CDN access for the specified container.  <a href="#a800f9f6744c62cf60897710ef2c9d1b1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#ae4ca302cb84a4ecfc7418e4aa129a4ac">make_private</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Disables CDN access to this container.  <a href="#ae4ca302cb84a4ecfc7418e4aa129a4ac"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a7d45157fae0af819d907da6b00fa2378">copy_object</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies the object to the new container, optionally giving it a new name.  <a href="#a7d45157fae0af819d907da6b00fa2378"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a536af175d76546af80d86eda21eaaccc">move_object</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Works just like copy_object, except that the source object is deleted after a successful copy.  <a href="#a536af175d76546af80d86eda21eaaccc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a7e76f3530378ae1328a083c7766c2ada">change_object_content_type</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies object to itself, but applies a new content-type.  <a href="#a7e76f3530378ae1328a083c7766c2ada"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a26cd51b10d04d2f632fc6f12fa2e3b43">get_temp_url</a></td></tr>
@@ -302,6 +310,54 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a7d45157fae0af819d907da6b00fa2378"></a><!-- doxytag: member="pyrax::cf_wrapper::container::Container::copy_object" ref="a7d45157fae0af819d907da6b00fa2378" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a7d45157fae0af819d907da6b00fa2378">copy_object</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_obj_name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Copies the object to the new container, optionally giving it a new name. </p>
+<p>If you copy to the same container, you must supply a different name. </p>
+
+</div>
+</div>
 <a class="anchor" id="ab48bde70a0927a83d62464cb0627c34b"></a><!-- doxytag: member="pyrax::cf_wrapper::container::Container::delete" ref="ab48bde70a0927a83d62464cb0627c34b" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -340,14 +396,26 @@ Properties</h2></td></tr>
           <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a29c7d5f06a4fdc49b064a4352e8c8763">delete_all_objects</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>async</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>Deletes all objects from this container. </p>
+<p>By default the call will block until all objects have been deleted. By passing True for the 'async' parameter, this method will not block, and instead return an object that can be used to follow the progress of the deletion. When deletion is complete the bulk deletion object's 'results' attribute will be populated with the information returned from the API call. In synchronous mode this is the value that is returned when the call completes. It is a dictionary with the following keys:</p>
+<p>deleted - the number of objects deleted not_found - the number of objects not found status - the HTTP return status code. '200 OK' indicates success errors - a list of any errors returned by the bulk delete call </p>
 
 </div>
 </div>
@@ -517,6 +585,8 @@ Properties</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Returns a dictionary containing the metadata for the container. </p>
+
 </div>
 </div>
 <a class="anchor" id="af1075eab57e4a3c67fe8d474080407a8"></a><!-- doxytag: member="pyrax::cf_wrapper::container::Container::get_object" ref="af1075eab57e4a3c67fe8d474080407a8" args="" -->
@@ -533,7 +603,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>name</em>&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>cached</em> = <code>True</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -545,6 +621,7 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Return the StorageObject in this container with the specified name. </p>
+<p>By default, if a reference to that object has already been retrieved, a cached reference will be returned. If you need to get an updated version of the object, pass `cached=False` to the method call. </p>
 
 </div>
 </div>
@@ -699,6 +776,60 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a3da53c909075fab5c230e40d5aab4e51"></a><!-- doxytag: member="pyrax::cf_wrapper::container::Container::list_subdirs" ref="a3da53c909075fab5c230e40d5aab4e51" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a3da53c909075fab5c230e40d5aab4e51">list_subdirs</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>marker</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>limit</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>prefix</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>delimiter</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>full_listing</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Return a list of StorageObjects representing the pseudo-subdirectories in this container. </p>
+<p>You can use the marker and limit params to handle pagination, and the prefix and delimiter params to filter the objects returned. </p>
+
+</div>
+</div>
 <a class="anchor" id="ae4ca302cb84a4ecfc7418e4aa129a4ac"></a><!-- doxytag: member="pyrax::cf_wrapper::container::Container::make_private" ref="ae4ca302cb84a4ecfc7418e4aa129a4ac" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -745,6 +876,53 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Enables CDN access for the specified container. </p>
+
+</div>
+</div>
+<a class="anchor" id="a536af175d76546af80d86eda21eaaccc"></a><!-- doxytag: member="pyrax::cf_wrapper::container::Container::move_object" ref="a536af175d76546af80d86eda21eaaccc" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a536af175d76546af80d86eda21eaaccc">move_object</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_obj_name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Works just like copy_object, except that the source object is deleted after a successful copy. </p>
 
 </div>
 </div>
@@ -827,7 +1005,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>clear</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>clear</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>prefix</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -837,6 +1021,11 @@ Properties</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Accepts a dictionary of metadata key/value pairs and updates the specified container metadata with them. </p>
+<p>If 'clear' is True, any existing metadata is deleted and only the passed metadata is retained. Otherwise, the values passed here update the container's metadata.</p>
+<p>'extra_info' is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call.</p>
+<p>By default, the standard container metadata prefix ('X-Container-Meta-') is prepended to the header name if it isn't present. For non-standard headers, you must include a non-None prefix, such as an empty string. </p>
 
 </div>
 </div>
@@ -944,7 +1133,19 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>ttl</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>ttl</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>return_none</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1184,7 +1385,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Aug 6 2013 12:09:06 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 4 2013 13:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

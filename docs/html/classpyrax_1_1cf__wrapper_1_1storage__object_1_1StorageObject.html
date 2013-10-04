@@ -132,6 +132,10 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets this object's metadata, optionally clearing existing metadata.  <a href="#a72a400370828e749dd0d63a622a95ee2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a01a67fdfd99526a56bef1e3c0a01a68d">remove_metadata_key</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the specified key from the storage object's metadata.  <a href="#a01a67fdfd99526a56bef1e3c0a01a68d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a2fa43c22b5f7af93ba8b4a56871f006a">copy</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies this object to the new container, optionally giving it a new name.  <a href="#a2fa43c22b5f7af93ba8b4a56871f006a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#af348e10e4e4162711ceedc9841276eb4">move</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Works just like copy_object, except that this object is deleted after a successful copy.  <a href="#af348e10e4e4162711ceedc9841276eb4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a9ff9b500eb0d5020f41595749b3b636f">change_content_type</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies object to itself, but applies a new content-type.  <a href="#a9ff9b500eb0d5020f41595749b3b636f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a26cd51b10d04d2f632fc6f12fa2e3b43">get_temp_url</a></td></tr>
@@ -277,6 +281,48 @@ Static Public Attributes</h2></td></tr>
 
 <p>Copies object to itself, but applies a new content-type. </p>
 <p>The guess feature requires the container to be CDN-enabled. If not then the content-type must be supplied. If using guess with a CDN-enabled container, new_ctype can be set to None. Failure during the put will result in a swift exception. </p>
+
+</div>
+</div>
+<a class="anchor" id="a2fa43c22b5f7af93ba8b4a56871f006a"></a><!-- doxytag: member="pyrax::cf_wrapper::storage_object::StorageObject::copy" ref="a2fa43c22b5f7af93ba8b4a56871f006a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a2fa43c22b5f7af93ba8b4a56871f006a">copy</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_obj_name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Copies this object to the new container, optionally giving it a new name. </p>
+<p>If you copy to the same container, you must supply a different name. </p>
 
 </div>
 </div>
@@ -459,6 +505,48 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="af348e10e4e4162711ceedc9841276eb4"></a><!-- doxytag: member="pyrax::cf_wrapper::storage_object::StorageObject::move" ref="af348e10e4e4162711ceedc9841276eb4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#af348e10e4e4162711ceedc9841276eb4">move</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>new_obj_name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Works just like copy_object, except that this object is deleted after a successful copy. </p>
+<p>This means that this <a class="el" href="namespacepyrax_1_1cf__wrapper_1_1storage__object.html">storage_object</a> reference will no longer be valid. </p>
+
+</div>
+</div>
 <a class="anchor" id="a24447386d5cd26a6a61fd75fd19842c7"></a><!-- doxytag: member="pyrax::cf_wrapper::storage_object::StorageObject::purge" ref="a24447386d5cd26a6a61fd75fd19842c7" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -538,7 +626,13 @@ Static Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>clear</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>clear</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>prefix</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -679,7 +773,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 27 2013 23:24:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 4 2013 13:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

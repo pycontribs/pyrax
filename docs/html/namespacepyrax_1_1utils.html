@@ -133,6 +133,8 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Designed to handle the most common use case for wait_until: an object whose 'status' attribute will end up in either 'ACTIVE' or 'ERROR' state.  <a href="#a91863ca4b8cb032146b697e43f2732c9"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a837450152ddaf3a18bb5dbaf98a27994">iso_time_string</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes either a date, datetime or a string, and returns the standard ISO formatted string for that date/time, with any fractional second portion removed.  <a href="#a837450152ddaf3a18bb5dbaf98a27994"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a6ea62353ce94e3d28ad8f6cae3e2ec5f">rfc2822_format</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes either a date, a datetime, or a string, and returns a string that represents the value in RFC 2822 format.  <a href="#a6ea62353ce94e3d28ad8f6cae3e2ec5f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#af4be48d96f3ad2c6cd297a76ccdb1a40">to_timestamp</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes a value that is either a Python date, datetime, or a string representation of a date/datetime value.  <a href="#af4be48d96f3ad2c6cd297a76ccdb1a40"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a9cc7cce8ec3ad4b58c806254ca8ea58e">get_id</a></td></tr>
@@ -513,6 +515,26 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a6ea62353ce94e3d28ad8f6cae3e2ec5f"></a><!-- doxytag: member="pyrax::utils::rfc2822_format" ref="a6ea62353ce94e3d28ad8f6cae3e2ec5f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1utils.html#a6ea62353ce94e3d28ad8f6cae3e2ec5f">pyrax.utils.rfc2822_format</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Takes either a date, a datetime, or a string, and returns a string that represents the value in RFC 2822 format. </p>
+<p>If a string is passed it is returned unchanged. </p>
+
+</div>
+</div>
 <a class="anchor" id="a246bab6cd0c9c356c323014ce9724a72"></a><!-- doxytag: member="pyrax::utils::runproc" ref="a246bab6cd0c9c356c323014ce9724a72" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -824,7 +846,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 4 2013 09:52:00 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 4 2013 13:36:40 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

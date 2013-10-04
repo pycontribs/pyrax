@@ -167,6 +167,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a single record for this domain that matches the supplied search criteria.  <a href="#a20415cf3e70cdff472ca1161a6ad2e64"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#abf676b7d485de10f8409a7904a0a8018">add_records</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the records to this domain.  <a href="#abf676b7d485de10f8409a7904a0a8018"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#acd6f2e6f8bdc1c8f65d8dffbb6631445">get_record</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the full information for an existing record or record ID for the specified domain.  <a href="#acd6f2e6f8bdc1c8f65d8dffbb6631445"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a68301b71ce78f89e6a5d44f1cb9c362a">update_record</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Modifies an existing record for a domain.  <a href="#a68301b71ce78f89e6a5d44f1cb9c362a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a42e0e029c6c4823504401e8a3ba99d14">delete_record</a></td></tr>
@@ -556,6 +558,41 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Returns a dict with the current rate limit information for domain and status requests. </p>
+
+</div>
+</div>
+<a class="anchor" id="acd6f2e6f8bdc1c8f65d8dffbb6631445"></a><!-- doxytag: member="pyrax::clouddns::CloudDNSClient::get_record" ref="acd6f2e6f8bdc1c8f65d8dffbb6631445" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#acd6f2e6f8bdc1c8f65d8dffbb6631445">get_record</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>record</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Gets the full information for an existing record or record ID for the specified domain. </p>
 
 </div>
 </div>
@@ -1249,7 +1286,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed May 29 2013 11:39:23 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 4 2013 13:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

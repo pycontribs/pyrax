@@ -97,20 +97,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html">BaseClient</a></td><td class="indexvalue">The base class for all pyrax clients </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html">BaseManager</a></td><td class="indexvalue">Managers interact with a particular type of API (servers, databases, dns, etc.) and provide CRUD operations for them </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html">BaseResource</a></td><td class="indexvalue">A resource represents a particular instance of an object (server, flavor, etc) </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1BulkDeleter.html">BulkDeleter</a></td><td class="indexvalue">Threading class to allow for bulk deletion of objects from a container </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1CDNFailed.html">CDNFailed</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html">CFClient</a></td><td class="indexvalue">Wraps the calls to swiftclient with objects representing Containers and StorageObjects </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1ClientException.html">ClientException</a></td><td class="indexvalue">The base exception class for all exceptions this library raises </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html">CloudBlockStorageClient</a></td><td class="indexvalue">This is the primary class for interacting with Cloud Block Storage </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageManager.html">CloudBlockStorageManager</a></td><td class="indexvalue">Manager class for Cloud Block Storage </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageSnapshot.html">CloudBlockStorageSnapshot</a></td><td class="indexvalue">This class represents a Snapshot (copy) of a Block Storage Volume </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageSnapshotManager.html">CloudBlockStorageSnapshotManager</a></td><td class="indexvalue">Manager class for Cloud Block Storage </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html">CloudBlockStorageVolume</a></td><td class="indexvalue">This class represents a Block Storage volume </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolumeType.html">CloudBlockStorageVolumeType</a></td><td class="indexvalue">This class represents a Block Storage Volume Type </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html">CloudDatabaseClient</a></td><td class="indexvalue">This is the primary class for interacting with Cloud Databases </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseDatabase.html">CloudDatabaseDatabase</a></td><td class="indexvalue">This class represents a database on a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html" title="This class represents a MySQL instance in the cloud.">CloudDatabaseInstance</a> </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseDatabaseManager.html">CloudDatabaseDatabaseManager</a></td><td class="indexvalue">This class manages communication with databases on Cloud Database instances </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseFlavor.html">CloudDatabaseFlavor</a></td><td class="indexvalue">This class represents the available instance configurations, or 'flavors', which you use to define the memory and CPU size of your instance </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html">CloudDatabaseInstance</a></td><td class="indexvalue">This class represents a MySQL instance in the cloud </td></tr>
-  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html">CloudDatabaseManager</a></td><td class="indexvalue">This class manages communication with Cloud Database resources </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html">CloudDatabaseManager</a></td><td class="indexvalue">This class manages communication with Cloud Database instances </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUser.html">CloudDatabaseUser</a></td><td class="indexvalue">This class represents a user on a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html" title="This class represents a MySQL instance in the cloud.">CloudDatabaseInstance</a> </td></tr>
-  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html">CloudDatabaseUserManager</a></td><td class="indexvalue">This class handles operations on the users in a Cloud Database </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseUserManager.html">CloudDatabaseUserManager</a></td><td class="indexvalue">This class handles operations on the users in a database on a Cloud Database instance </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html">CloudDatabaseVolume</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html">CloudDNSClient</a></td><td class="indexvalue">This is the primary class for interacting with Cloud DNS </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSDomain.html">CloudDNSDomain</a></td><td class="indexvalue">This class represents a DNS domain </td></tr>
@@ -164,6 +168,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidCredentialFile.html">InvalidCredentialFile</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidDateTimeString.html">InvalidDateTimeString</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidDeviceType.html">InvalidDeviceType</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidEmail.html">InvalidEmail</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidLoadBalancer.html">InvalidLoadBalancer</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidLoadBalancerParameters.html">InvalidLoadBalancerParameters</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1InvalidMonitoringCheckDetails.html">InvalidMonitoringCheckDetails</a></td><td class="indexvalue"></td></tr>
@@ -266,7 +271,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 4 2013 09:52:00 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 4 2013 13:36:40 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

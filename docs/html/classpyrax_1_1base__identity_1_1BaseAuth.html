@@ -130,6 +130,7 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple alias to self.token.  <a href="#a1fbf2af4f60163ea873bf30e0980839e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a146f36df43eb5ac08c7c7b09bf50d6ed">auth_endpoint</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstracts out the logic for connecting to different auth endpoints.  <a href="#a146f36df43eb5ac08c7c7b09bf50d6ed"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a146f36df43eb5ac08c7c7b09bf50d6ed">auth_endpoint</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#aa48069d87e240c6f35caed1b76e8cb4e">get_default_region</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">In cases where the region has not been specified, return the value to use.  <a href="#aa48069d87e240c6f35caed1b76e8cb4e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a29ca4bc84123f642dc6cf191e2d61543">set_credentials</a></td></tr>
@@ -288,6 +289,33 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a146f36df43eb5ac08c7c7b09bf50d6ed"></a><!-- doxytag: member="pyrax::base_identity::BaseAuth::auth_endpoint" ref="a146f36df43eb5ac08c7c7b09bf50d6ed" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a146f36df43eb5ac08c7c7b09bf50d6ed">auth_endpoint</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a1fbf2af4f60163ea873bf30e0980839e"></a><!-- doxytag: member="pyrax::base_identity::BaseAuth::auth_token" ref="a1fbf2af4f60163ea873bf30e0980839e" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -367,6 +395,8 @@ Static Public Attributes</h2></td></tr>
 
 <p>Using the supplied credentials, connects to the specified authentication endpoint and attempts to log in. </p>
 <p>If successful, records the token information. </p>
+
+<p>Reimplemented in <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#ac0665028c611e61881f7e9fd0e752b99">RaxIdentity</a>.</p>
 
 </div>
 </div>
@@ -1519,7 +1549,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Aug 21 2013 07:38:01 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 4 2013 13:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
