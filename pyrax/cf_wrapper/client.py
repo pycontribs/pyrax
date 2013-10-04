@@ -118,6 +118,8 @@ class CFClient(object):
     # The app can use that key query the status of the upload. This dict
     # will also be used to hold the flag to interrupt uploads in progress.
     folder_upload_status = {}
+    # Interval in seconds between checks for completion of bulk deletes.
+    bulk_delete_interval = 1
 
 
     def __init__(self, auth_endpoint, username, api_key=None, password=None,
@@ -493,9 +495,8 @@ class CFClient(object):
         self.remove_container_from_cache(container)
         cname = self._resolve_name(container)
         if del_objects:
-            objs = self.get_container_object_names(cname)
-            for obj in objs:
-                self.delete_object(cname, obj)
+            nms = self.get_container_object_names(cname, full_listing=True)
+            self.bulk_delete(cname, nms, async=False)
         self.connection.delete_container(cname, response_dict=extra_info)
         return True
 
@@ -508,7 +509,8 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def delete_object(self, container, name, extra_info=None):
-        """Deletes the specified object from the container.
+        """
+        Deletes the specified object from the container.
 
         'extra_info' is an optional dictionary which will be
         populated with 'status', 'reason', and 'headers' keys from the
@@ -520,6 +522,42 @@ class CFClient(object):
         self.connection.delete_object(ct.name, oname,
                 response_dict=extra_info)
         return True
+
+
+    @handle_swiftclient_exception
+    def bulk_delete(self, container, object_names, async=False):
+        """
+        Deletes multiple objects from a container in a single call.
+
+        The bulk deletion call does not return until all of the specified
+        objects have been processed. For large numbers of objects, this can
+        take quite a while, so there is an 'async' parameter to give you the
+        option to have this call return immediately. If 'async' is True, an
+        object is returned with a 'completed' attribute that will be set to
+        True as soon as the bulk deletion is complete, and a 'results'
+        attribute that will contain a dictionary (described below) with the
+        results of the bulk deletion.
+
+        When deletion is complete the bulk deletion object's 'results'
+        attribute will be populated with the information returned from the API
+        call. In synchronous mode this is the value that is returned when the
+        call completes. It is a dictionary with the following keys:
+
+            deleted - the number of objects deleted
+            not_found - the number of objects not found
+            status - the HTTP return status code. '200 OK' indicates success
+            errors - a list of any errors returned by the bulk delete call
+
+        This isn't available in swiftclient yet, so it's using code patterned
+        after the client code in that library.
+        """
+        deleter = BulkDeleter(self, container, object_names)
+        deleter.start()
+        if async:
+            return deleter
+        while not deleter.completed:
+            time.sleep(self.bulk_delete_interval)
+        return deleter.results
 
 
     @handle_swiftclient_exception
@@ -893,12 +931,12 @@ class CFClient(object):
         Finds all the objects in the specified container that are not present
         in the self._local_files list, and deletes them.
         """
-        for obj in cont.get_objects(full_listing=True):
-            objname = obj.name
-            if isinstance(objname, unicode):
-                objname = objname.encode(pyrax.encoding)
-            if objname not in self._local_files:
-                obj.delete()
+        objnames = set(cont.get_object_names(full_listing=True))
+        localnames = set(self._local_files)
+        to_delete = list(objnames.difference(localnames))
+        # We don't need to wait around for this to complete. Store the thread
+        # reference in case it is needed at some point.
+        self._thread = self.bulk_delete(cont, to_delete, async=True)
 
 
     def _valid_upload_key(fnc):
@@ -1402,3 +1440,54 @@ class FolderUploader(threading.Thread):
         root_path, folder_name = os.path.split(self.root_folder)
         self.base_path = os.path.join(root_path, folder_name)
         os.path.walk(self.root_folder, self.upload_files_in_folder, None)
+
+
+
+class BulkDeleter(threading.Thread):
+    """
+    Threading class to allow for bulk deletion of objects from a container.
+    """
+    completed = False
+    results = None
+
+    def __init__(self, client, container, object_names):
+        self.client = client
+        self.container = container
+        self.object_names = object_names
+        threading.Thread.__init__(self)
+
+
+    def run(self):
+        client = self.client
+        container = self.container
+        object_names = self.object_names
+        cname = client._resolve_name(container)
+        parsed, conn = client.connection.http_connection()
+        method = "DELETE"
+        headers = {"X-Auth-Token": pyrax.identity.token,
+                "Content-type": "text/plain",
+                }
+        obj_paths = ("%s/%s" % (cname, nm) for nm in object_names)
+        body = "\n".join(obj_paths)
+        pth = "%s/?bulk-delete=1" % parsed.path
+        conn.request(method, pth, body, headers)
+        resp = conn.getresponse()
+        status = resp.status
+        reason = resp.reason
+        resp_body = resp.read()
+        resp_lines = resp_body.splitlines()
+        self.results = {}
+        res_keys = {"Number Deleted": "deleted",
+                "Number Not Found": "not_found",
+                "Response Status": "status",
+                "Errors": "errors",
+                }
+        for resp_line in resp_lines:
+            if not resp_line:
+                continue
+            resp_key, val = resp_line.split(":")
+            result_key = res_keys.get(resp_key)
+            if not result_key:
+                continue
+            self.results[result_key] = val.strip()
+        self.completed = True

@@ -3,6 +3,7 @@
 import json
 import os
 import random
+import time
 import uuid
 
 import pyrax
@@ -11,6 +12,7 @@ from pyrax.autoscale import AutoScalePolicy
 from pyrax.autoscale import AutoScaleWebhook
 from pyrax.autoscale import ScalingGroup
 from pyrax.autoscale import ScalingGroupManager
+from pyrax.cf_wrapper.client import BulkDeleter
 from pyrax.cf_wrapper.client import FolderUploader
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
@@ -169,6 +171,19 @@ class FakeFolderUploader(FolderUploader):
 
     def fake_run(self):
         pass
+
+
+class FakeBulkDeleter(BulkDeleter):
+    def __init__(self, *args, **kwargs):
+        super(FakeBulkDeleter, self).__init__(*args, **kwargs)
+        # Useful for when we mock out the run() method.
+        self.actual_run = self.run
+        self.run = self.fake_run
+
+    def fake_run(self):
+        time.sleep(0.0001)
+        self.results = {}
+        self.completed = True
 
 
 class FakeEntryPoint(object):

@@ -14,13 +14,14 @@ from pyrax.cf_wrapper.client import _swift_client
 from pyrax.cf_wrapper.container import Container
 import pyrax.utils as utils
 import pyrax.exceptions as exc
+
 from tests.unit.fakes import fake_attdict
+from tests.unit.fakes import FakeBulkDeleter
 from tests.unit.fakes import FakeContainer
 from tests.unit.fakes import FakeFolderUploader
 from tests.unit.fakes import FakeIdentity
 from tests.unit.fakes import FakeResponse
 from tests.unit.fakes import FakeStorageObject
-
 
 
 class CF_ClientTest(unittest.TestCase):
@@ -351,16 +352,19 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         client.connection.delete_container = Mock()
         client.get_container_object_names = Mock()
-        client.get_container_object_names.return_value = ["o1", "o2", "o3"]
+        onames = ["o1", "o2", "o3"]
+        client.get_container_object_names.return_value = onames
         client.delete_object = Mock()
+        client.bulk_delete = Mock()
         client.delete_container(self.cont_name)
         self.assertEqual(client.get_container_object_names.call_count, 0)
         client.connection.delete_container.assert_called_with(self.cont_name,
                 response_dict=None)
         # Now call with del_objects=True
-        client.delete_container(self.cont_name, True)
+        client.delete_container(self.cont_name, del_objects=True)
         self.assertEqual(client.get_container_object_names.call_count, 1)
-        self.assertEqual(client.delete_object.call_count, 3)
+        client.bulk_delete.assert_called_once_with(self.cont_name, onames,
+                async=False)
         client.connection.delete_container.assert_called_with(self.cont_name,
                 response_dict=None)
         response = {}
@@ -403,6 +407,27 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.cdn_request.assert_called_with("DELETE",
                 [self.cont_name, self.obj_name],
                 hdrs={"X-Purge-Email": "foo@example.com, bar@example.com"})
+
+    @patch('pyrax.cf_wrapper.client.BulkDeleter', new=FakeBulkDeleter)
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_bulk_delete(self):
+        client = self.client
+        sav = client.bulk_delete_interval
+        client.bulk_delete_interval = 0.001
+        container = self.cont_name
+        obj_names = [utils.random_name()]
+        ret = client.bulk_delete(container, obj_names, async=False)
+        self.assertTrue(isinstance(ret, dict))
+        client.bulk_delete_interval = sav
+
+    @patch('pyrax.cf_wrapper.client.BulkDeleter', new=FakeBulkDeleter)
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_bulk_delete_async(self):
+        client = self.client
+        container = self.cont_name
+        obj_names = [utils.random_name()]
+        ret = client.bulk_delete(container, obj_names, async=True)
+        self.assertTrue(isinstance(ret, FakeBulkDeleter))
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_object(self):
@@ -703,17 +728,14 @@ class CF_ClientTest(unittest.TestCase):
     def test_delete_objects_not_in_list(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.get_container = Mock()
         cont = client.get_container(self.cont_name)
-        objs = [FakeStorageObject(client, cont, name="First"),
-                FakeStorageObject(client, cont, name="Second")]
-        cont.get_objects = Mock(return_value=objs)
+        cont.get_object_names = Mock(return_value=["First", "Second"])
         good_names = ["First", "Third"]
         client._local_files = good_names
-        client.delete_object = Mock()
+        client.bulk_delete = Mock()
         client._delete_objects_not_in_list(cont)
-        client.delete_object.assert_called_with(container=cont.name,
-                name="Second")
-
+        client.bulk_delete.assert_called_with(cont, ["Second"], async=True)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_copy_object(self):
@@ -1114,6 +1136,64 @@ class CF_ClientTest(unittest.TestCase):
         self.assertRaises(_swift_client.ClientException, client.delete_object,
                 "some_container", "some_object")
         client.get_container = gc
+
+    def test_bulk_deleter(self):
+        client = self.client
+        container = self.cont_name
+        object_names = utils.random_name()
+        bd = FakeBulkDeleter(client, container, object_names)
+        self.assertEqual(bd.client, client)
+        self.assertEqual(bd.container, container)
+        self.assertEqual(bd.object_names, object_names)
+
+    def test_bulk_deleter_run(self):
+        client = self.client
+        container = self.cont_name
+        object_names = utils.random_name()
+        bd = FakeBulkDeleter(client, container, object_names)
+
+        class FakeConn(object):
+            pass
+
+        class FakePath(object):
+            path = utils.random_name()
+
+        class FakeResp(object):
+            status = utils.random_name()
+            reason = utils.random_name()
+
+        fpath = FakePath()
+        conn = FakeConn()
+        resp = FakeResp()
+        # Need to make these ASCII, since some characters will confuse the
+        # splitlines() call.
+        num_del = utils.random_name(ascii_only=True)
+        num_not_found = utils.random_name(ascii_only=True)
+        status = utils.random_name(ascii_only=True)
+        errors = utils.random_name(ascii_only=True)
+        useless = utils.random_name(ascii_only=True)
+        fake_read = """Number Deleted: %s
+Number Not Found: %s
+Response Status: %s
+Errors: %s
+
+Useless Line: %s
+""" % (num_del, num_not_found, status, errors, useless)
+        resp.read = Mock(return_value=fake_read)
+        client.connection.http_connection = Mock(return_value=(fpath, conn))
+        conn.request = Mock()
+        conn.getresponse = Mock(return_value=resp)
+        self.assertFalse(bd.completed)
+        bd.actual_run()
+        self.assertTrue(bd.completed)
+        results = bd.results
+        self.assertEqual(results.get("deleted"), num_del)
+        self.assertEqual(results.get("not_found"), num_not_found)
+        self.assertEqual(results.get("status"), status)
+        self.assertEqual(results.get("errors"), errors)
+        self.assertTrue(useless not in results.values())
+
+
 
 
 if __name__ == "__main__":

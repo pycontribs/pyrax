@@ -121,9 +121,9 @@ class Container(object):
         Returns a list of the names of all the objects in this container. The
         same pagination parameters apply as in self.get_objects().
         """
-        objs = self.get_objects(marker=marker, limit=limit, prefix=prefix,
-                delimiter=delimiter, full_listing=full_listing)
-        return [obj.name for obj in objs]
+        return self.client.get_container_object_names(self.name, marker=marker,
+                limit=limit, prefix=prefix, delimiter=delimiter,
+                full_listing=full_listing)
 
 
     def list_subdirs(self, marker=None, limit=None, prefix=None, delimiter=None,
@@ -174,10 +174,26 @@ class Container(object):
         return self.client.delete_object(self, obj)
 
 
-    def delete_all_objects(self):
-        """Deletes all objects from this container."""
-        for obj_name in self.client.get_container_object_names(self):
-            self.client.delete_object(self, obj_name)
+    def delete_all_objects(self, async=False):
+        """
+        Deletes all objects from this container.
+
+        By default the call will block until all objects have been deleted. By
+        passing True for the 'async' parameter, this method will not block, and
+        instead return an object that can be used to follow the progress of the
+        deletion. When deletion is complete the bulk deletion object's
+        'results' attribute will be populated with the information returned
+        from the API call. In synchronous mode this is the value that is
+        returned when the call completes. It is a dictionary with the following
+        keys:
+
+            deleted - the number of objects deleted
+            not_found - the number of objects not found
+            status - the HTTP return status code. '200 OK' indicates success
+            errors - a list of any errors returned by the bulk delete call
+        """
+        nms = self.get_object_names(full_listing=True)
+        self.client.bulk_delete(self, nms, async=False)
 
 
     def remove_from_cache(self, obj):

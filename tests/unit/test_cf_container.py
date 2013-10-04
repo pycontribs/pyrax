@@ -111,9 +111,7 @@ class CF_ContainerTest(unittest.TestCase):
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_object_names(self):
         cont = self.container
-        cont.client.connection.get_container = Mock()
-        cont.client.connection.get_container.return_value = ({},
-                [{"name": "o1"}, {"name": "o2"}])
+        cont.client.get_container_object_names = Mock(return_value=["o1", "o2"])
         nms = cont.get_object_names()
         self.assertEqual(len(nms), 2)
         self.assert_("o1" in nms)
@@ -231,12 +229,12 @@ class CF_ContainerTest(unittest.TestCase):
         cont = self.container
         client = cont.client
         cont.client.connection.head_container = Mock()
-        cont.client.connection.delete_object = Mock()
+        cont.client.bulk_delete = Mock()
         cont.client.get_container_object_names = Mock(
                 return_value=[self.obj_name])
         cont.delete_all_objects()
-        cont.client.connection.delete_object.assert_called_with(
-                self.cont_name, self.obj_name, response_dict=None)
+        cont.client.bulk_delete.assert_called_once_with(cont, [self.obj_name],
+                async=False)
 
     def test_delete(self):
         cont = self.container
