@@ -1,5 +1,45 @@
 # Release Notes for pyrax
 
+###2013.10.04 - Version 1.5.1
+ - Pyrax in general:
+     - Moved the `get_limits()` behavior to the base client (Nate House)
+     - Added ability to call a full URL from the client.
+     - Added HEAD methods to base client and manager classes.
+     - Removed unused imports. GitHub #189
+     - Improved handling of 400 errors in `identity.create_user()`
+     - Fixed issue with password auth failing with Rackspace identity.
+        GitHub #190
+     - Added utility method for RFC 2822-compliant dates.
+     - Refactored the `_create_body()` method into the BaseManager class.
+     - Improved handling of default regions in the service catalog.
+     - Added support for different auth endpoints for Rackspace auth.
+     - Added files to allow creating RPMs. (Greg Swift)
+ - Cloud Files:
+     - Added the `bulk_delete()` method.
+     - Added support for "bare" metadata keys. GitHub #164
+     - Added cache override capability. GitHub #191
+     - Added copy/move methods to Container and StorageObject classes.
+        GitHub #192
+     - Added listing of pseudo-subdirectories. GitHub #174
+     - Added the `list()` method to generate a list of container objects.
+        GitHub #186
+ - Autoscale improvements, thanks to Christopher Armstrong:
+     - Added additional arguments for launch configurations.
+        GitHub #207, #209, #212
+     - Added support for group metadata. GitHub #202
+     - Added suppport for desired_capacity in policies. GitHub #208
+     - Added `args` to expand capabilities in webhook policy updates.
+        GitHub #204, #205
+ - Monitoring:
+     - Workaround the odd requirement to use millisecond timestamps in
+        `get_metric_data_points()` GitHub #176
+     - Unix timestamps are now supported in addition to Python date/datetimes.
+ - Load Balancers:
+     - Fixed VirtualIP `to_dict()` method to use the ID if available. (Vaibhav)
+     - Add node type to the dict passed to the API (Troy C)
+ - DNS:
+     - Domains can now be specified by name, not just ID. GitHub #180
+
 ###2013.09.04 - Version 1.5.0
 - Added support for the Rackspace Cloud Monitoring service
 - Added support for the Rackspace Autoscale service

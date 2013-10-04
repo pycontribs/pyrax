@@ -3,6 +3,7 @@
 import json
 import os
 import random
+import time
 import uuid
 
 import pyrax
@@ -11,18 +12,22 @@ from pyrax.autoscale import AutoScalePolicy
 from pyrax.autoscale import AutoScaleWebhook
 from pyrax.autoscale import ScalingGroup
 from pyrax.autoscale import ScalingGroupManager
+from pyrax.cf_wrapper.client import BulkDeleter
 from pyrax.cf_wrapper.client import FolderUploader
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.storage_object import StorageObject
 from pyrax.client import BaseClient
 from pyrax.clouddatabases import CloudDatabaseClient
+from pyrax.clouddatabases import CloudDatabaseDatabaseManager
 from pyrax.clouddatabases import CloudDatabaseInstance
+from pyrax.clouddatabases import CloudDatabaseManager
 from pyrax.clouddatabases import CloudDatabaseUser
 from pyrax.clouddatabases import CloudDatabaseUserManager
 from pyrax.clouddatabases import CloudDatabaseVolume
 from pyrax.cloudblockstorage import CloudBlockStorageClient
-from pyrax.cloudblockstorage import CloudBlockStorageVolume
+from pyrax.cloudblockstorage import CloudBlockStorageManager
 from pyrax.cloudblockstorage import CloudBlockStorageSnapshot
+from pyrax.cloudblockstorage import CloudBlockStorageVolume
 from pyrax.cloudloadbalancers import CloudLoadBalancer
 from pyrax.cloudloadbalancers import CloudLoadBalancerManager
 from pyrax.cloudloadbalancers import CloudLoadBalancerClient
@@ -168,6 +173,19 @@ class FakeFolderUploader(FolderUploader):
         pass
 
 
+class FakeBulkDeleter(BulkDeleter):
+    def __init__(self, *args, **kwargs):
+        super(FakeBulkDeleter, self).__init__(*args, **kwargs)
+        # Useful for when we mock out the run() method.
+        self.actual_run = self.run
+        self.run = self.fake_run
+
+    def fake_run(self):
+        time.sleep(0.0001)
+        self.results = {}
+        self.completed = True
+
+
 class FakeEntryPoint(object):
     def __init__(self, name):
         self.name = name
@@ -260,13 +278,22 @@ class FakeDatabaseInstance(CloudDatabaseInstance):
         self.id = utils.random_name()
         self.manager = FakeManager()
         self.manager.api = FakeDatabaseClient()
-        self._database_manager = FakeManager()
+        self._database_manager = CloudDatabaseDatabaseManager(
+                FakeDatabaseClient())
         self._user_manager = CloudDatabaseUserManager(FakeDatabaseClient())
         self.volume = FakeDatabaseVolume(self)
 
 
+class FakeDatabaseManager(CloudDNSManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeDatabaseClient()
+        super(FakeDatabaseManager, self).__init__(api, *args, **kwargs)
+
+
 class FakeDatabaseClient(CloudDatabaseClient):
     def __init__(self, *args, **kwargs):
+        self._manager = FakeDatabaseManager(self)
         self._flavor_manager = FakeManager()
         super(FakeDatabaseClient, self).__init__("fakeuser",
                 "fakepassword", *args, **kwargs)
@@ -314,12 +341,18 @@ class FakeNovaVolumeClient(BaseClient):
         pass
 
 
+class FakeBlockStorageManager(CloudBlockStorageManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeBlockStorageClient()
+        super(FakeBlockStorageManager, self).__init__(api, *args, **kwargs)
+
+
 class FakeBlockStorageVolume(CloudBlockStorageVolume):
     def __init__(self, *args, **kwargs):
         volname = utils.random_name(8)
         self.id = utils.random_name()
-        self.manager = FakeManager()
-        self._snapshot_manager = FakeManager()
+        self.manager = FakeBlockStorageManager()
         self._nova_volumes = FakeNovaVolumeClient()
 
 
@@ -333,7 +366,7 @@ class FakeBlockStorageSnapshot(CloudBlockStorageSnapshot):
 class FakeBlockStorageClient(CloudBlockStorageClient):
     def __init__(self, *args, **kwargs):
         self._types_manager = FakeManager()
-        self._snaps_manager = FakeManager()
+        self._snapshot_manager = FakeManager()
         super(FakeBlockStorageClient, self).__init__("fakeuser",
                 "fakepassword", *args, **kwargs)
 
@@ -667,10 +700,13 @@ u'token': {u'expires': u'2222-02-22T22:22:22.000-02:00',
     u'id': u'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
     u'tenant': {u'id': u'000000', u'name': u'000000'}},
 u'user': {u'id': u'123456',
-   u'name': u'fakeuser',
-   u'roles': [{u'description': u'User Admin Role.',
-               u'id': u'3',
-               u'name': u'identity:user-admin'}]}}}
+    u'name': u'fakeuser',
+    u'RAX-AUTH:defaultRegion': u'DFW',
+    u'roles': [{u'description': u'User Admin Role.',
+            u'id': u'3',
+            u'name': u'identity:user-admin'}],
+            }}}
+
 
 
 class FakeIdentityResponse(FakeResponse):

@@ -21,10 +21,6 @@
 Base utilities to build API operation managers and objects on top of.
 """
 
-import contextlib
-import hashlib
-import os
-
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
@@ -76,6 +72,12 @@ class BaseManager(object):
         return self._list(uri)
 
 
+    def head(self, item):
+        """Makes a HEAD request on a specific item."""
+        uri = "/%s/%s" % (self.uri_base, utils.get_id(item))
+        return self._head(uri)
+
+
     def get(self, item):
         """Gets a specific item."""
         uri = "/%s/%s" % (self.uri_base, utils.get_id(item))
@@ -100,10 +102,19 @@ class BaseManager(object):
         return_none = kwargs.pop("return_none", False)
         return_raw = kwargs.pop("return_raw", False)
         return_response = kwargs.pop("return_response", False)
-        body = self.api._create_body(name, *args, **kwargs)
+        body = self._create_body(name, *args, **kwargs)
         return self._create("/%s" % self.uri_base, body,
                 return_none=return_none, return_raw=return_raw,
                 return_response=return_response)
+
+
+    def _create_body(self, name, *args, **kwargs):
+        """
+        Creates the dictionary that is passed in the POST call to create a new
+        resource. Must be defined in each subclass.
+        """
+        raise NotImplementedError("Managers must define their _create_body() "
+                "method.")
 
 
     def delete(self, item):
@@ -135,6 +146,16 @@ class BaseManager(object):
                 pass
         return [obj_class(self, res, loaded=False)
                 for res in data if res]
+
+
+    def _head(self, uri):
+        """
+        Handles the communication with the API when performing a HEAD request
+        on a specific resource managed by this class. Returns the headers
+        contained in the response.
+        """
+        resp, resp_body = self.api.method_head(uri)
+        return resp
 
 
     def _get(self, uri):

@@ -232,12 +232,23 @@ class IdentityTest(unittest.TestCase):
         self.assertEqual(ident.username, user)
         self.assertEqual(ident.password, password)
 
-    def test_get_credentials(self):
+    def test_get_credentials_rax(self):
         ident = self.rax_identity_class(username=self.username,
                 password=self.password)
+        ident._creds_style = "apikey"
         creds = ident._get_credentials()
         user = creds["auth"]["RAX-KSKEY:apiKeyCredentials"]["username"]
         key = creds["auth"]["RAX-KSKEY:apiKeyCredentials"]["apiKey"]
+        self.assertEqual(self.username, user)
+        self.assertEqual(self.password, key)
+
+    def test_get_credentials_rax_password(self):
+        ident = self.rax_identity_class(username=self.username,
+                password=self.password)
+        ident._creds_style = "password"
+        creds = ident._get_credentials()
+        user = creds["auth"]["passwordCredentials"]["username"]
+        key = creds["auth"]["passwordCredentials"]["password"]
         self.assertEqual(self.username, user)
         self.assertEqual(self.password, key)
 
@@ -499,7 +510,7 @@ class IdentityTest(unittest.TestCase):
             self.assertEqual(len(cargs), 2)
             self.assertEqual(cargs[0], ("users", ))
             data = cargs[1]["data"]["user"]
-            self.assertEqual(data["name"], fake_name)
+            self.assertEqual(data["username"], fake_name)
             self.assert_(fake_password in data.values())
 
     def test_create_user_not_authorized(self):
@@ -513,6 +524,21 @@ class IdentityTest(unittest.TestCase):
             fake_email = utils.random_name()
             fake_password = utils.random_name()
             self.assertRaises(exc.AuthorizationFailure, ident.create_user,
+                    fake_name, fake_email, fake_password)
+
+    def test_create_user_bad_email(self):
+        for cls in self.id_classes.values():
+            ident = cls()
+            resp = fakes.FakeIdentityResponse()
+            resp.response_type = "users"
+            resp.status_code = 400
+            resp.text = json.dumps(
+                {"badRequest": {"message": "Expecting valid email address"}})
+            ident.method_post = Mock(return_value=resp)
+            fake_name = utils.random_name()
+            fake_email = utils.random_name()
+            fake_password = utils.random_name()
+            self.assertRaises(exc.InvalidEmail, ident.create_user,
                     fake_name, fake_email, fake_password)
 
     def test_create_user_not_found(self):

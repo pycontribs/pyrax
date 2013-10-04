@@ -33,12 +33,15 @@ class CloudDNSTest(unittest.TestCase):
         super(CloudDNSTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
+        super(CloudDNSTest, self).setUp()
         self.client = fakes.FakeDNSClient()
         self.client._manager = fakes.FakeDNSManager(self.client)
+        self.client._manager._set_delay(0.000001)
         self.domain = fakes.FakeDNSDomain()
         self.domain.manager = self.client._manager
 
     def tearDown(self):
+        super(CloudDNSTest, self).tearDown()
         self.client = None
         self.domain = None
 
@@ -48,12 +51,32 @@ class CloudDNSTest(unittest.TestCase):
             return domain
         clt = self.client
         dom = self.domain
-        clt._manager._get = Mock(return_value=dom)
         d1 = test(clt, dom)
-        d2 = test(clt, dom.id)
-        self.assertEqual(d1, d2)
+        self.assertEqual(d1, dom)
         self.assertTrue(isinstance(d1, CloudDNSDomain))
+
+    def test_assure_domain_id(self):
+        @assure_domain
+        def test(self, domain):
+            return domain
+        clt = self.client
+        dom = self.domain
+        clt._manager._get = Mock(return_value=dom)
+        d2 = test(clt, dom.id)
+        self.assertEqual(d2, dom)
         self.assertTrue(isinstance(d2, CloudDNSDomain))
+
+    def test_assure_domain_name(self):
+        @assure_domain
+        def test(self, domain):
+            return domain
+        clt = self.client
+        dom = self.domain
+        clt._manager._get = Mock(side_effect=exc.NotFound(""))
+        clt._manager._list = Mock(return_value=[dom])
+        d3 = test(clt, dom.name)
+        self.assertEqual(d3, dom)
+        self.assertTrue(isinstance(d3, CloudDNSDomain))
 
     def test_set_timeout(self):
         clt = self.client
@@ -284,9 +307,9 @@ class CloudDNSTest(unittest.TestCase):
         BaseManager.findall = sav
 
     def test_create_body(self):
-        clt = self.client
+        mgr = self.client._manager
         fake_name = utils.random_name()
-        body = clt._create_body(fake_name, "fake@fake.com")
+        body = mgr._create_body(fake_name, "fake@fake.com")
         self.assertEqual(body["domains"][0]["name"], fake_name)
 
     def test_async_call_body(self):
@@ -348,7 +371,7 @@ class CloudDNSTest(unittest.TestCase):
         mgr = clt._manager
         uri = "http://example.com"
         callback_uri = "https://fake.example.com/status/fake"
-        clt.set_timeout(0.001)
+        clt.set_timeout(0.000001)
         clt.method_get = Mock(return_value=({}, {"callbackUrl": callback_uri,
                 "status": "RUNNING"}))
         self.assertRaises(exc.DNSCallTimedOut, mgr._async_call, uri,
@@ -601,6 +624,18 @@ class CloudDNSTest(unittest.TestCase):
                 body={"records": [rec]},
                 error_class=exc.DomainRecordAdditionFailed,
                 has_response=False)
+
+    def test_get_record(self):
+        clt = self.client
+        mgr = clt._manager
+        dom = self.domain
+        nm = utils.random_name()
+        rec_id = utils.random_name()
+        rec_dict = {"id": rec_id, "name": nm}
+        mgr.api.method_get = Mock(return_value=(None, rec_dict))
+        ret = clt.get_record(dom, rec_id)
+        mgr.api.method_get.assert_called_once_with("/%s/%s/records/%s" %
+                (mgr.uri_base, dom.id, rec_id))
 
     def test_update_record(self):
         clt = self.client

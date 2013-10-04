@@ -131,6 +131,13 @@ class ClientTest(unittest.TestCase):
         clt.reset_timings()
         self.assertEqual(clt.get_timings(), [])
 
+    def test_get_limits(self):
+        clt = self.client
+        data = utils.random_name()
+        clt.method_get = Mock(return_value=(None, data))
+        ret = clt.get_limits()
+        self.assertEqual(ret, data)
+
     def test_http_log_req(self):
         clt = self.client
         args = ("a", "b")
@@ -322,6 +329,15 @@ class ClientTest(unittest.TestCase):
         id_svc.authenticate = sav_auth
         clt._time_request = sav_req
         clt.management_url = sav_mgt
+
+    def test_method_head(self):
+        clt = self.client
+        sav = clt._api_request
+        clt._api_request = Mock()
+        url = DUMMY_URL
+        clt.method_head(url)
+        clt._api_request.assert_called_once_with(url, "HEAD")
+        clt._api_request = sav
 
     def test_method_get(self):
         clt = self.client

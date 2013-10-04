@@ -23,18 +23,12 @@ OpenStack Client interface. Handles the REST calls and responses.
 import httplib2
 import json
 import logging
-import os
-import pkg_resources
 import time
-from urllib import quote
+import urllib
 import urlparse
 
-from manager import BaseManager
-from resource import BaseResource
 import pyrax
 import pyrax.exceptions as exc
-import pyrax.service_catalog as service_catalog
-import pyrax.utils as utils
 
 
 class BaseClient(httplib2.Http):
@@ -140,6 +134,14 @@ class BaseClient(httplib2.Http):
         self.times = []
 
 
+    def get_limits(self):
+        """
+        Returns a dict with the resource and rate limits for the account.
+        """
+        resp, resp_body = self.method_get("/limits")
+        return resp_body
+
+
     def http_log_req(self, args, kwargs):
         """
         When self.http_log_debug is True, outputs the equivalent `curl`
@@ -196,11 +198,10 @@ class BaseClient(httplib2.Http):
                 pass
         else:
             body = None
-
         if resp.status >= 400:
             raise exc.from_response(resp, body)
-
         return resp, body
+
 
     def _time_request(self, uri, method, **kwargs):
         """Wraps the request call and records the elapsed time."""
@@ -209,6 +210,7 @@ class BaseClient(httplib2.Http):
         self.times.append(("%s %s" % (method, uri),
                 start_time, time.time()))
         return resp, body
+
 
     def _api_request(self, uri, method, **kwargs):
         """
@@ -225,6 +227,17 @@ class BaseClient(httplib2.Http):
             # indicates that the service is not available.
             raise exc.ServiceNotAvailable("The '%s' service is not available."
                     % self)
+        if uri.startswith("http"):
+            parsed = list(urlparse.urlparse(uri))
+            for pos, item in enumerate(parsed):
+                if pos < 2:
+                    # Don't escape the scheme or netloc
+                    continue
+                parsed[pos] = urllib.quote(parsed[pos], safe="/.?&=")
+            safe_uri = urlparse.urlunparse(parsed)
+        else:
+            safe_uri = "%s%s" % (self.management_url,
+                    urllib.quote(uri, safe="/.?&="))
         # Perform the request once. If we get a 401 back then it
         # might be because the auth token expired, so try to
         # re-authenticate and try again. If it still fails, bail.
@@ -232,18 +245,21 @@ class BaseClient(httplib2.Http):
             kwargs.setdefault("headers", {})["X-Auth-Token"] = id_svc.token
             if id_svc.tenant_id:
                 kwargs["headers"]["X-Auth-Project-Id"] = id_svc.tenant_id
-            resp, body = self._time_request(self.management_url +
-                    quote(uri, safe="/.?&="), method, **kwargs)
+            resp, body = self._time_request(safe_uri, method, **kwargs)
             return resp, body
         except exc.Unauthorized as ex:
             try:
                 id_svc.authenticate()
                 kwargs["headers"]["X-Auth-Token"] = id_svc.token
-                resp, body = self._time_request(self.management_url + uri,
-                        method, **kwargs)
+                resp, body = self._time_request(safe_uri, method, **kwargs)
                 return resp, body
             except exc.Unauthorized:
                 raise ex
+
+
+    def method_head(self, uri, **kwargs):
+        """Method used to make HEAD requests."""
+        return self._api_request(uri, "HEAD", **kwargs)
 
 
     def method_get(self, uri, **kwargs):

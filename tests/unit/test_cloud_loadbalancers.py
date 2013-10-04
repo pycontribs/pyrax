@@ -1092,7 +1092,8 @@ class CloudLoadBalancerTest(unittest.TestCase):
         nd = fakes.FakeNode()
         expected = {"address": nd.address,
                 "port": nd.port,
-                "condition": nd.condition}
+                "condition": nd.condition,
+                "type": nd.type}
         self.assertEqual(nd.to_dict(), expected)
 
     def test_node_delete(self):
@@ -1132,6 +1133,10 @@ class CloudLoadBalancerTest(unittest.TestCase):
         self.assertTrue("address=1.2.3.4" in vip_repr)
 
     def test_vip_to_dict(self):
+        vip = fakes.FakeVirtualIP(id="fake_id")
+        self.assertEqual(vip.to_dict(), {"id": "fake_id"})
+
+    def test_vip_to_dict(self):
         vip = fakes.FakeVirtualIP()
         expected = {"type": vip.type,
                 "ipVersion": vip.ip_version}
@@ -1145,7 +1150,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
         lb.delete_virtualip.assert_called_once_with(vip)
 
     def test_client_create_body(self):
-        clt = self.client
+        mgr = self.client._manager
         nd = fakes.FakeNode()
         vip = fakes.FakeVirtualIP()
         fake_name = "FAKE"
@@ -1178,7 +1183,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
                 "timeout": fake_timeout,
                 "sessionPersistence": fake_sessionPersistence,
                 }}
-        ret = clt._create_body(fake_name, port=fake_port,
+        ret = mgr._create_body(fake_name, port=fake_port,
                 protocol=fake_protocol, nodes=fake_nodes,
                 virtual_ips=fake_virtual_ips, algorithm=fake_algorithm,
                 accessList=fake_accessList,
@@ -1191,7 +1196,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
         self.assertEqual(ret, expected)
 
     def test_bad_node_condition(self):
-        clt = self.client
+        mgr = self.client._manager
         nd = fakes.FakeNode()
         nd.condition = "DRAINING"
         vip = fakes.FakeVirtualIP()
@@ -1209,7 +1214,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
         fake_metadata = {"fake": utils.random_name()}
         fake_timeout = 42
         fake_sessionPersistence = True
-        self.assertRaises(exc.InvalidNodeCondition, clt._create_body,
+        self.assertRaises(exc.InvalidNodeCondition, mgr._create_body,
                 fake_name, port=fake_port, protocol=fake_protocol,
                 nodes=fake_nodes, virtual_ips=fake_virtual_ips,
                 algorithm=fake_algorithm, accessList=fake_accessList,
@@ -1221,7 +1226,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
                 sessionPersistence=fake_sessionPersistence)
 
     def test_missing_lb_parameters(self):
-        clt = self.client
+        mgr = self.client._manager
         nd = fakes.FakeNode()
         vip = fakes.FakeVirtualIP()
         fake_name = "FAKE"
@@ -1238,7 +1243,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
         fake_metadata = {"fake": utils.random_name()}
         fake_timeout = 42
         fake_sessionPersistence = True
-        self.assertRaises(exc.MissingLoadBalancerParameters, clt._create_body,
+        self.assertRaises(exc.MissingLoadBalancerParameters, mgr._create_body,
                 fake_name, port=fake_port, protocol=fake_protocol,
                 nodes=fake_nodes, virtual_ips=fake_virtual_ips,
                 algorithm=fake_algorithm, accessList=fake_accessList,

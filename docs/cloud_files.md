@@ -379,6 +379,21 @@ The following example illustrates object deletion:
             print "It took %4.2f seconds to appear as deleted." % (time.time() - start)
 
 
+### Bulk Deletion
+The methods above describe how to delete a single object, or every object in a container. But what about the case where you want to delete several objects at once? Sure, you could call `delete()` for each object, but if you had more than a few that would be very inefficient, as each deletion would require a separate API call and response.
+
+For this situation, Cloud Files offers the `bulk_delete()` method. You pass the name of the container along with a list containing the names of all the objects you wish to delete, and they are all deleted with a single API call. The `bulk_delete()` method returns a dictionary (described below) with the results of the process. Please note that while this is faster than many individual calls, it does take some time to complete, depending on how many objects are to be deleted. If you want your program to continue execution without waiting for the bulk deletion to complete, `bulk_delete()` takes an optional third parameter: including `async=True` in the call results in the method returning immediately. Instead of the dictionary that is returned by the synchronous call, it returns an object that can be used to query the status of the bulk deletion by checking its `completed` attribute. When `completed` is True, its `results` attribute contains the same dictionary that is returned from the synchronous call.
+
+The returned dictionary contains the following keys:
+
+Key | Value
+---- | ----
+**deleted** | the number of objects deleted
+**not_found** | the number of objects not found
+**status** | the HTTP return status code. '200 OK' indicates success
+**errors** | a list of any errors returned by the bulk delete call
+
+
 ### Setting an Object's Expiration
 You can mark a storage object for deletion in the future by calling its `delete_in_seconds()` method. This method accepts an integer number of seconds after which you wish the object to be deleted from Cloud Files.
 

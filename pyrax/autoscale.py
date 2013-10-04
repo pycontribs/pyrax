@@ -17,8 +17,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from functools import wraps
-
 import pyrax
 from pyrax.client import BaseClient
 from pyrax.cloudloadbalancers import CloudLoadBalancer
@@ -108,7 +106,7 @@ class ScalingGroup(BaseResource):
 
     def update_launch_config(self, server_name=None, image=None, flavor=None,
             disk_config=None, metadata=None, personality=None, networks=None,
-            load_balancers=None):
+            load_balancers=None, key_name=None):
         """
         Updates the server launch configuration for this scaling group.
         One or more of the available attributes can be specified.
@@ -120,7 +118,7 @@ class ScalingGroup(BaseResource):
         return self.manager.update_launch_config(self, server_name=server_name,
                 image=image, flavor=flavor, disk_config=disk_config,
                 metadata=metadata, personality=personality, networks=networks,
-                load_balancers=load_balancers)
+                load_balancers=load_balancers, key_name=key_name)
 
 
     def update_launch_metadata(self, metadata):
@@ -131,14 +129,16 @@ class ScalingGroup(BaseResource):
         return self.manager.update_launch_metadata(self, metadata)
 
 
-    def add_policy(self, name, policy_type, cooldown, change, is_percent=False):
+    def add_policy(self, name, policy_type, cooldown, change=None,
+            is_percent=False, desired_capacity=None, args=None):
         """
         Adds a policy with the given values to this scaling group. The
         'change' parameter is treated as an absolute amount, unless
         'is_percent' is True, in which case it is treated as a percentage.
         """
         return self.manager.add_policy(self, name, policy_type, cooldown,
-                change, is_percent=is_percent)
+                change=change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
 
 
     def list_policies(self):
@@ -156,14 +156,15 @@ class ScalingGroup(BaseResource):
 
 
     def update_policy(self, policy, name=None, policy_type=None, cooldown=None,
-            change=None, is_percent=False):
+            change=None, is_percent=False, desired_capacity=None, args=None):
         """
         Updates the specified policy. One or more of the parameters may be
         specified.
         """
         return self.manager.update_policy(scaling_group=self, policy=policy,
                 name=name, policy_type=policy_type, cooldown=cooldown,
-                change=change, is_percent=is_percent)
+                change=change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
 
 
     def execute_policy(self, policy):
@@ -387,12 +388,13 @@ class ScalingGroupManager(BaseManager):
         ret["metadata"] = srv.get("metadata")
         ret["personality"] = srv.get("personality")
         ret["networks"] = srv.get("networks")
+        ret["key_name"] = srv.get("key_name")
         return ret
 
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
             flavor=None, disk_config=None, metadata=None, personality=None,
-            networks=None, load_balancers=None):
+            networks=None, load_balancers=None, key_name=None):
         """
         Updates the server launch configuration for an existing scaling group.
         One or more of the available attributes can be specified.
@@ -423,6 +425,8 @@ class ScalingGroupManager(BaseManager):
                     "loadBalancers": load_balancers or lb_args,
                 },
             }
+        if key_name is not None:
+            body["args"]["server"]["key_name"] = key_name
         resp, resp_body = self.api.method_put(uri, body=body)
         return None
 
@@ -440,8 +444,8 @@ class ScalingGroupManager(BaseManager):
         return self.update_launch_config(scaling_group, metadata=curr_meta)
 
 
-    def add_policy(self, scaling_group, name, policy_type, cooldown, change,
-            is_percent=False):
+    def add_policy(self, scaling_group, name, policy_type, cooldown,
+            change=None, is_percent=False, desired_capacity=None, args=None):
         """
         Adds a policy with the given values to the specified scaling group. The
         'change' parameter is treated as an absolute amount, unless
@@ -449,10 +453,15 @@ class ScalingGroupManager(BaseManager):
         """
         uri = "/%s/%s/policies" % (self.uri_base, utils.get_id(scaling_group))
         body = {"name": name, "cooldown": cooldown, "type": policy_type}
-        if is_percent:
-            body["changePercent"] = change
-        else:
-            body["change"] = change
+        if change is not None:
+            if is_percent:
+                body["changePercent"] = change
+            else:
+                body["change"] = change
+        if desired_capacity is not None:
+            body["desiredCapacity"] = desired_capacity
+        if args is not None:
+            body["args"] = args
         # "body" needs to be a list
         body = [body]
         resp, resp_body = self.api.method_post(uri, body=body)
@@ -482,7 +491,8 @@ class ScalingGroupManager(BaseManager):
 
 
     def update_policy(self, scaling_group, policy, name=None, policy_type=None,
-            cooldown=None, change=None, is_percent=False):
+            cooldown=None, change=None, is_percent=False,
+            desired_capacity=None, args=None):
         """
         Updates the specified policy. One or more of the parameters may be
         specified.
@@ -496,10 +506,23 @@ class ScalingGroupManager(BaseManager):
                 "type": policy_type or policy.type,
                 "cooldown": cooldown or policy.cooldown,
                 }
-        if is_percent:
-            body["changePercent"] = change or policy.changePercent
+        if desired_capacity is not None or change is not None:
+            if desired_capacity is not None:
+                body["desiredCapacity"] = desired_capacity
+            elif change is not None:
+                if is_percent:
+                    body["changePercent"] = change
+                else:
+                    body["change"] = change
         else:
-            body["change"] = change or policy.change
+            if getattr(policy, 'changePercent', None) is not None:
+                body["changePercent"] = policy.changePercent
+            elif getattr(policy, 'change', None) is not None:
+                body["change"] = policy.change
+            elif getattr(policy, 'desiredCapacity', None) is not None:
+                body["desiredCapacity"] = policy.desiredCapacity
+        if args is not None:
+            body["args"] = args
         resp, resp_body = self.api.method_put(uri, body=body)
         return None
 
@@ -606,6 +629,98 @@ class ScalingGroupManager(BaseManager):
         return None
 
 
+    @staticmethod
+    def _resolve_lbs(load_balancers):
+        """
+        Takes either a single LB reference or a list of references and returns
+        the dictionary required for creating a Scaling Group.
+
+        References can be either a dict that matches the structure required by
+        the autoscale API, a CloudLoadBalancer instance, or the ID of the load
+        balancer.
+        """
+        lb_args = []
+        lbs = utils.coerce_string_to_list(load_balancers)
+        for lb in lbs:
+            if isinstance(lb, dict):
+                lb_args.append(lb)
+            elif isinstance(lb, CloudLoadBalancer):
+                lb_args.append({
+                        "loadBalancerId": lb.id,
+                        "port": lb.port,
+                        })
+            else:
+                # See if it's an ID for a Load Balancer
+                try:
+                    instance = pyrax.cloud_loadbalancers.get(lb)
+                except Exception:
+                    raise exc.InvalidLoadBalancer("Received an invalid "
+                            "specification for a Load Balancer: '%s'" % lb)
+                lb_args.append({
+                        "loadBalancerId": instance.id,
+                        "port": instance.port,
+                        })
+        return lb_args
+
+
+    def _create_body(self, name, cooldown, min_entities, max_entities,
+            launch_config_type, server_name, image, flavor, disk_config=None,
+            metadata=None, personality=None, networks=None,
+            load_balancers=None, scaling_policies=None, group_metadata=None,
+            key_name=None):
+        """
+        Used to create the dict required to create any of the following:
+            A Scaling Group
+        """
+        if disk_config is None:
+            disk_config = "AUTO"
+        if metadata is None:
+            metadata = {}
+        if personality is None:
+            personality = []
+        if networks is None:
+            # Default to ServiceNet only
+            networks = [{"uuid": SERVICE_NET_ID}]
+        if load_balancers is None:
+            load_balancers = []
+        if scaling_policies is None:
+            scaling_policies = []
+        server_args = {
+            "flavorRef": flavor,
+            "name": server_name,
+            "imageRef": utils.get_id(image),
+        }
+        if metadata is not None:
+            server_args["metadata"] = metadata
+        if personality is not None:
+            server_args["personality"] = personality
+        if networks is not None:
+            server_args["networks"] = networks
+        if disk_config is not None:
+            server_args["OS-DCF:diskConfig"] = disk_config
+        if key_name is not None:
+            server_args["key_name"] = key_name
+        load_balancer_args = self._resolve_lbs(load_balancers)
+        body = {"groupConfiguration": {
+                    "name": name,
+                    "cooldown": cooldown,
+                    "minEntities": min_entities,
+                    "maxEntities": max_entities,
+                },
+                "launchConfiguration": {
+                    "type": launch_config_type,
+                    "args": {
+                        "server": server_args,
+                        "loadBalancers": load_balancer_args,
+                    },
+                },
+                "scalingPolicies": scaling_policies,
+            }
+        if group_metadata is not None:
+            body["groupConfiguration"]["metadata"] = group_metadata
+        return body
+
+
 
 class AutoScalePolicy(BaseResource):
     def __init__(self, manager, info, scaling_group, *args, **kwargs):
@@ -632,14 +747,15 @@ class AutoScalePolicy(BaseResource):
 
 
     def update(self, name=None, policy_type=None, cooldown=None, change=None,
-            is_percent=False):
+            is_percent=False, desired_capacity=None, args=None):
         """
         Updates this policy. One or more of the parameters may be
         specified.
         """
         return self.manager.update_policy(scaling_group=self.scaling_group,
                 policy=self, name=name, policy_type=policy_type,
-                cooldown=cooldown, change=change, is_percent=is_percent)
+                cooldown=cooldown, change=change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
 
 
     def execute(self):
@@ -812,7 +928,7 @@ class AutoScaleClient(BaseClient):
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
             flavor=None, disk_config=None, metadata=None, personality=None,
-            networks=None, load_balancers=None):
+            networks=None, load_balancers=None, key_name=None):
         """
         Updates the server launch configuration for an existing scaling group.
         One or more of the available attributes can be specified.
@@ -825,7 +941,7 @@ class AutoScaleClient(BaseClient):
                 server_name=server_name, image=image, flavor=flavor,
                 disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers)
+                load_balancers=load_balancers, key_name=key_name)
 
 
     def update_launch_metadata(self, scaling_group, metadata):
@@ -836,15 +952,16 @@ class AutoScaleClient(BaseClient):
         return self._manager.update_launch_metadata(scaling_group, metadata)
 
 
-    def add_policy(self, scaling_group, name, policy_type, cooldown, change,
-            is_percent=False):
+    def add_policy(self, scaling_group, name, policy_type, cooldown,
+            change=None, is_percent=False, desired_capacity=None, args=None):
         """
         Adds a policy with the given values to the specified scaling group. The
         'change' parameter is treated as an absolute amount, unless
         'is_percent' is True, in which case it is treated as a percentage.
         """
         return self._manager.add_policy(scaling_group, name, policy_type,
-                cooldown, change, is_percent=is_percent)
+                cooldown, change=change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
 
 
     def list_policies(self, scaling_group):
@@ -862,14 +979,16 @@ class AutoScaleClient(BaseClient):
 
 
     def update_policy(self, scaling_group, policy, name=None, policy_type=None,
-            cooldown=None, change=None, is_percent=False):
+            cooldown=None, change=None, is_percent=False,
+            desired_capacity=None, args=None):
         """
         Updates the specified policy. One or more of the parameters may be
         specified.
         """
-        return self._manager.update_policy(scaling_group=scaling_group,
-                policy=policy, name=name, policy_type=policy_type,
-                cooldown=cooldown, change=change, is_percent=is_percent)
+        return self._manager.update_policy(scaling_group, policy, name=name,
+                policy_type=policy_type, cooldown=cooldown, change=change,
+                is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
 
 
     def execute_policy(self, scaling_group, policy):
@@ -934,90 +1053,3 @@ class AutoScaleClient(BaseClient):
         Deletes the specified webhook from the policy.
         """
         return self._manager.delete_webhook(scaling_group, policy, webhook)
-
-
-    def _resolve_lbs(self, load_balancers):
-        """
-        Takes either a single LB reference or a list of references and returns
-        the dictionary required for creating a Scaling Group.
-
-        References can be either a dict that matches the structure required by
-        the autoscale API, a CloudLoadBalancer instance, or the ID of the load
-        balancer.
-        """
-        lb_args = []
-        lbs = utils.coerce_string_to_list(load_balancers)
-        for lb in lbs:
-            if isinstance(lb, dict):
-                lb_args.append(lb)
-            elif isinstance(lb, CloudLoadBalancer):
-                lb_args.append({
-                        "loadBalancerId": lb.id,
-                        "port": lb.port,
-                        })
-            else:
-                # See if it's an ID for a Load Balancer
-                try:
-                    instance = pyrax.cloud_loadbalancers.get(lb)
-                except Exception:
-                    raise exc.InvalidLoadBalancer("Received an invalid "
-                            "specification for a Load Balancer: '%s'" % lb)
-                lb_args.append({
-                        "loadBalancerId": instance.id,
-                        "port": instance.port,
-                        })
-        return lb_args
-
-
-    def _create_body(self, name, cooldown, min_entities, max_entities,
-            launch_config_type, server_name, image, flavor, disk_config=None,
-            metadata=None, personality=None, networks=None,
-            load_balancers=None, scaling_policies=None):
-        """
-        Used to create the dict required to create any of the following:
-            A Scaling Group
-        """
-        if disk_config is None:
-            disk_config = "AUTO"
-        if metadata is None:
-            metadata = {}
-        if personality is None:
-            personality = []
-        if networks is None:
-            # Default to ServiceNet only
-            networks = [{"uuid": SERVICE_NET_ID}]
-        if load_balancers is None:
-            load_balancers = []
-        if scaling_policies is None:
-            scaling_policies = []
-        server_args = {
-            "flavorRef": flavor,
-            "name": server_name,
-            "imageRef": utils.get_id(image),
-        }
-        if metadata is not None:
-            server_args["metadata"] = metadata
-        if personality is not None:
-            server_args["personality"] = personality
-        if networks is not None:
-            server_args["networks"] = networks
-        if disk_config is not None:
-            server_args["OS-DCF:diskConfig"] = disk_config
-        load_balancer_args = self._resolve_lbs(load_balancers)
-        body = {"groupConfiguration": {
-                    "name": name,
-                    "cooldown": cooldown,
-                    "minEntities": min_entities,
-                    "maxEntities": max_entities,
-                },
-                "launchConfiguration": {
-                    "type": launch_config_type,
-                    "args": {
-                        "server": server_args,
-                        "loadBalancers": load_balancer_args,
-                    },
-                },
-                "scalingPolicies": scaling_policies,
-            }
-        body
-        return body

@@ -32,7 +32,7 @@ class PyraxInitTest(unittest.TestCase):
         vers = pyrax.version.version
         pyrax.settings._settings = {
                 "default": {
-                    "auth_endpoint": None,
+                    "auth_endpoint": "DEFAULT_AUTH",
                     "region": "DFW",
                     "encoding": "utf-8",
                     "http_debug": False,
@@ -44,7 +44,7 @@ class PyraxInitTest(unittest.TestCase):
                     "user_agent": "pyrax/%s" % vers,
                 },
                 "alternate": {
-                    "auth_endpoint": None,
+                    "auth_endpoint": "ALT_AUTH",
                     "region": "NOWHERE",
                     "encoding": "utf-8",
                     "http_debug": False,
@@ -82,6 +82,25 @@ class PyraxInitTest(unittest.TestCase):
         testfunc()
         pyrax.identity.authenticated = False
         self.assertRaises(exc.NotAuthenticated, testfunc)
+
+    def test_settings_get(self):
+        def_ep = pyrax.get_setting("auth_endpoint", "default")
+        alt_ep = pyrax.get_setting("auth_endpoint", "alternate")
+        self.assertEqual(def_ep, "DEFAULT_AUTH")
+        self.assertEqual(alt_ep, "ALT_AUTH")
+
+    def test_settings_get_from_env(self):
+        pyrax.settings._settings = {"default": {}}
+        pyrax.settings.env_dct = {"identity_type": "fake"}
+        typ = utils.random_name()
+        ident = utils.random_name()
+        sav_env = os.environ
+        sav_imp = pyrax._import_identity
+        pyrax._import_identity = Mock(return_value=ident)
+        os.environ = {"fake": typ}
+        ret = pyrax.get_setting("identity_class")
+        pyrax._import_identity = sav_imp
+        os.environ = sav_env
 
     def test_read_config(self):
         dummy_cfg = fakes.fake_config_file

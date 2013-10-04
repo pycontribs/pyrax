@@ -15,6 +15,7 @@ var searchData=
   ['invalidcredentialfile',['InvalidCredentialFile',['../classpyrax_1_1exceptions_1_1InvalidCredentialFile.html',1,'pyrax::exceptions']]],
   ['invaliddatetimestring',['InvalidDateTimeString',['../classpyrax_1_1exceptions_1_1InvalidDateTimeString.html',1,'pyrax::exceptions']]],
   ['invaliddevicetype',['InvalidDeviceType',['../classpyrax_1_1exceptions_1_1InvalidDeviceType.html',1,'pyrax::exceptions']]],
+  ['invalidemail',['InvalidEmail',['../classpyrax_1_1exceptions_1_1InvalidEmail.html',1,'pyrax::exceptions']]],
   ['invalidloadbalancer',['InvalidLoadBalancer',['../classpyrax_1_1exceptions_1_1InvalidLoadBalancer.html',1,'pyrax::exceptions']]],
   ['invalidloadbalancerparameters',['InvalidLoadBalancerParameters',['../classpyrax_1_1exceptions_1_1InvalidLoadBalancerParameters.html',1,'pyrax::exceptions']]],
   ['invalidmonitoringcheckdetails',['InvalidMonitoringCheckDetails',['../classpyrax_1_1exceptions_1_1InvalidMonitoringCheckDetails.html',1,'pyrax::exceptions']]],

@@ -599,6 +599,13 @@ class CloudMonitoringTest(unittest.TestCase):
         start = end - datetime.timedelta(days=7)
         start_stamp = int(utils.to_timestamp(start))
         end_stamp = int(utils.to_timestamp(end))
+        # NOTE: For some odd reason, the timestamps required for this must be
+        # in milliseconds, instead of the UNIX standard for timestamps, which
+        # is in seconds. So the values here are multiplied by 1000 to make it
+        # work. If the API is ever corrected, the next two lines should be
+        # removed. GitHub #176.
+        start_stamp *= 1000
+        end_stamp *= 1000
         stats = ["foo", "bar"]
         exp_qp = "from=%s&to=%s&points=%s&resolution=%s&select=%s&select=%s" % (
                 start_stamp, end_stamp, points, resolution, stats[0], stats[1])
@@ -1463,7 +1470,7 @@ class CloudMonitoringTest(unittest.TestCase):
         self.assertRaises(NotImplementedError, clt.findall)
 
     def test_clt_create_body(self):
-        clt = self.client
+        mgr = self.client._entity_manager
         label = utils.random_name()
         name = utils.random_name()
         agent = utils.random_name()
@@ -1471,7 +1478,7 @@ class CloudMonitoringTest(unittest.TestCase):
         metadata = utils.random_name()
         expected = {"label": label, "ip_addresses": ip_addresses,
                 "agent_id": agent, "metadata": metadata}
-        ret = clt._create_body(name, label=label, agent=agent,
+        ret = mgr._create_body(name, label=label, agent=agent,
                 ip_addresses=ip_addresses, metadata=metadata)
         self.assertEqual(ret, expected)
 

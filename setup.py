@@ -21,7 +21,7 @@ testing_requires = ["mock"]
 setup(
     name="pyrax",
     version=version,
-    description="Python language bindings for the Rackspace Cloud.",
+    description="Python language bindings for OpenStack Clouds.",
     author="Rackspace",
     author_email="ed.leafe@rackspace.com",
     url="https://github.com/rackspace/pyrax",

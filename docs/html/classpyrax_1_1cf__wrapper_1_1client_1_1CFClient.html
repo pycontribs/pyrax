@@ -149,8 +149,12 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a container with the specified name.  <a href="#a31b9196903b253dd2cd99dc4d7a0774e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ac314b663a2e0552b6403f04558be2735">delete_container</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the specified container.  <a href="#ac314b663a2e0552b6403f04558be2735"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a71217dd504682153d8dbbd8bd84eed56">remove_container_from_cache</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the container from the cache.  <a href="#a71217dd504682153d8dbbd8bd84eed56"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aaf3e88c7945760a803d04d99c7a39364">delete_object</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the specified object from the container.  <a href="#aaf3e88c7945760a803d04d99c7a39364"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a31f701453fcf7a01b2af1e67d4d9a55b">bulk_delete</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes multiple objects from a container in a single call.  <a href="#a31f701453fcf7a01b2af1e67d4d9a55b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#af1075eab57e4a3c67fe8d474080407a8">get_object</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a StorageObject instance for the object in the container.  <a href="#af1075eab57e4a3c67fe8d474080407a8"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#af0a50c69bbe50a35557fb373cf3b4b6f">store_object</a></td></tr>
@@ -177,11 +181,16 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the object from storage, and writes it to the specified directory.  <a href="#a4d536318080f1745a14922224b2a28b5"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ae413c04282e2a1f584d7b99bbea09b54">get_all_containers</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ade2af720b771c722f092076b29a0ef64">get_container</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a reference to the specified container.  <a href="#ade2af720b771c722f092076b29a0ef64"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aaf73308b26a79abf34f31686698ce8fc">get_container_objects</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of StorageObjects representing the objects in the container.  <a href="#aaf73308b26a79abf34f31686698ce8fc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a6104ca24badc598cb4f2e17f20cc7e07">get_container_object_names</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a67a23cb99d99eb7027e487e506cf68f6">list_container_subdirs</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of StorageObjects representing the pseudo-subdirectories in the specified container.  <a href="#a67a23cb99d99eb7027e487e506cf68f6"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a384aea54f97656a3742b60bae861bc34">get_info</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a tuple for the number of containers and total bytes in the account.  <a href="#a384aea54f97656a3742b60bae861bc34"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all container objects.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a43f33f69f2026d24a426ce6f6cdc11f9">list_containers</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all container names as strings.  <a href="#a43f33f69f2026d24a426ce6f6cdc11f9"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ac56c2c448f1e4c975621d2921bfb1e9c">list_containers_info</a></td></tr>
@@ -217,6 +226,7 @@ Static Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a15a3ad1a3abde8c5a3fede95c2b24c19">default_cdn_ttl</a> = 86400</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a38c5b8bfe2405c63c56e3dec85a057bc">max_file_size</a> = 5368709119</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dictionary&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aa27847dbcb2f79be04aaabd5b85291e6">folder_upload_status</a> = {}</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#accd7312117a68637f8a9ad3f2b6968e6">bulk_delete_interval</a> = 1</td></tr>
 <tr><td colspan="2"><h2><a name="properties"></a>
 Properties</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ac1b27022e729d81b2b33590aea822188">user_agent</a> = property(_get_user_agent, _set_user_agent)</td></tr>
@@ -314,6 +324,51 @@ Properties</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a31f701453fcf7a01b2af1e67d4d9a55b"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::bulk_delete" ref="a31f701453fcf7a01b2af1e67d4d9a55b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a31f701453fcf7a01b2af1e67d4d9a55b">bulk_delete</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>object_names</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>async</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Deletes multiple objects from a container in a single call. </p>
+<p>The bulk deletion call does not return until all of the specified objects have been processed. For large numbers of objects, this can take quite a while, so there is an 'async' parameter to give you the option to have this call return immediately. If 'async' is True, an object is returned with a 'completed' attribute that will be set to True as soon as the bulk deletion is complete, and a 'results' attribute that will contain a dictionary (described below) with the results of the bulk deletion.</p>
+<p>When deletion is complete the bulk deletion object's 'results' attribute will be populated with the information returned from the API call. In synchronous mode this is the value that is returned when the call completes. It is a dictionary with the following keys:</p>
+<p>deleted - the number of objects deleted not_found - the number of objects not found status - the HTTP return status code. '200 OK' indicates success errors - a list of any errors returned by the bulk delete call</p>
+<p>This isn't available in swiftclient yet, so it's using code patterned after the client code in that library. </p>
+
+</div>
+</div>
 <a class="anchor" id="a621a0e61fdb17290b5e9f5dec5eb12fc"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::cancel_folder_upload" ref="a621a0e61fdb17290b5e9f5dec5eb12fc" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -484,7 +539,7 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Creates a container with the specified name. </p>
-<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
+<p>'extra_info' is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -527,7 +582,7 @@ Properties</h2></td></tr>
 
 <p>Deletes the specified container. </p>
 <p>This will fail if the container still has objects stored in it; if that's the case and you want to delete the container anyway, set del_objects to True, and the container's objects will be deleted before the container is deleted.</p>
-<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
+<p>'extra_info' is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -569,7 +624,7 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Deletes the specified object from the container. </p>
-<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
+<p>'extra_info' is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -722,7 +777,7 @@ Properties</h2></td></tr>
 <p>If 'include_meta' is False, only the bytes representing the file is returned.</p>
 <p>Note: if 'chunk_size' is defined, you must fully read the object's contents before making another request.</p>
 <p>When 'include_meta' is True, what is returned from this method is a 2-tuple: Element 0: a dictionary containing metadata about the file. Element 1: a stream of bytes representing the object's contents.</p>
-<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
+<p>'extra_info' is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -796,7 +851,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>container</em>&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>cached</em> = <code>True</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -806,6 +867,9 @@ Properties</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Returns a reference to the specified container. </p>
+<p>By default, if a reference to that container has already been retrieved, a cached reference will be returned. If you need to get an updated version of the container, pass `cached=False` to the method call. </p>
 
 </div>
 </div>
@@ -881,7 +945,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>container</em>&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>prefix</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1228,6 +1298,107 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a9b522b4ef7526bfa60b78fe735caa55c"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::list" ref="a9b522b4ef7526bfa60b78fe735caa55c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>limit</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>marker</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>parms</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a list of all container objects. </p>
+
+</div>
+</div>
+<a class="anchor" id="a67a23cb99d99eb7027e487e506cf68f6"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::list_container_subdirs" ref="a67a23cb99d99eb7027e487e506cf68f6" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a67a23cb99d99eb7027e487e506cf68f6">list_container_subdirs</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>marker</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>limit</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>prefix</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>delimiter</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>full_listing</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Return a list of StorageObjects representing the pseudo-subdirectories in the specified container. </p>
+<p>You can use the marker and limit params to handle pagination, and the prefix and delimiter params to filter the objects returned. </p>
+
+</div>
+</div>
 <a class="anchor" id="a43f33f69f2026d24a426ce6f6cdc11f9"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::list_containers" ref="a43f33f69f2026d24a426ce6f6cdc11f9" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1430,7 +1601,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>new_obj_name</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>new_obj_name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1481,6 +1658,35 @@ Properties</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a71217dd504682153d8dbbd8bd84eed56"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::remove_container_from_cache" ref="a71217dd504682153d8dbbd8bd84eed56" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a71217dd504682153d8dbbd8bd84eed56">remove_container_from_cache</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>container</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Removes the container from the cache. </p>
 
 </div>
 </div>
@@ -1594,7 +1800,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>prefix</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1607,7 +1819,8 @@ Properties</h2></td></tr>
 
 <p>Accepts a dictionary of metadata key/value pairs and updates the specified account metadata with them. </p>
 <p>If 'clear' is True, any existing metadata is deleted and only the passed metadata is retained. Otherwise, the values passed here update the account's metadata.</p>
-<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
+<p>'extra_info' is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call.</p>
+<p>By default, the standard account metadata prefix ('X-Account-Meta-') is prepended to the header name if it isn't present. For non-standard headers, you must include a non-None prefix, such as an empty string. </p>
 
 </div>
 </div>
@@ -1715,7 +1928,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>prefix</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1728,7 +1947,8 @@ Properties</h2></td></tr>
 
 <p>Accepts a dictionary of metadata key/value pairs and updates the specified container metadata with them. </p>
 <p>If 'clear' is True, any existing metadata is deleted and only the passed metadata is retained. Otherwise, the values passed here update the container's metadata.</p>
-<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
+<p>'extra_info' is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call.</p>
+<p>By default, the standard container metadata prefix ('X-Container-Meta-') is prepended to the header name if it isn't present. For non-standard headers, you must include a non-None prefix, such as an empty string. </p>
 
 </div>
 </div>
@@ -1842,7 +2062,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>extra_info</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>prefix</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1855,7 +2081,8 @@ Properties</h2></td></tr>
 
 <p>Accepts a dictionary of metadata key/value pairs and updates the specified object metadata with them. </p>
 <p>If 'clear' is True, any existing metadata is deleted and only the passed metadata is retained. Otherwise, the values passed here update the object's metadata.</p>
-<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
+<p>'extra_info; is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call.</p>
+<p>By default, the standard object metadata prefix ('X-Object-Meta-') is prepended to the header name if it isn't present. For non-standard headers, you must include a non-None prefix, such as an empty string. </p>
 
 </div>
 </div>
@@ -1965,7 +2192,7 @@ Properties</h2></td></tr>
 
 <p>Creates a new object in the specified container, and populates it with the given data. </p>
 <p>A StorageObject reference to the uploaded file will be returned, unless 'return_none' is set to True.</p>
-<p>extra_info is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
+<p>'extra_info' is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
 </div>
@@ -2185,6 +2412,19 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="accd7312117a68637f8a9ad3f2b6968e6"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::bulk_delete_interval" ref="accd7312117a68637f8a9ad3f2b6968e6" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#accd7312117a68637f8a9ad3f2b6968e6">bulk_delete_interval</a> = 1<code> [static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a9ebd30d3926b0fe246ca66e564caf148"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::cdn_connection" ref="a9ebd30d3926b0fe246ca66e564caf148" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -2353,7 +2593,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Aug 6 2013 12:09:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Oct 4 2013 13:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
