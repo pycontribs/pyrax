@@ -1,30 +1,30 @@
-# Autoscaling
+# Auto Scale
 
 ## Basic Concepts
-Autoscale is a service that enables you to scale your application by adding or removing servers based on monitoring events, a schedule, or arbitrary webhooks.
+Auto Scale is a service that enables you to scale your application by adding or removing servers based on monitoring events, a schedule, or arbitrary webhooks.
 
 Please note that _this is a Rackspace-specific service_. It is not available in any other OpenStack cloud, so if you add it to your application, keep the code isolated if you need to run your application on non-Rackspace clouds.
 
-Autoscale functions by linking three services:
+Auto Scale functions by linking three services:
 
 * Monitoring (such as Monitoring as a Service)
-* Autoscale API
+* Auto Scale API
 * Servers and Load Balancers
 
 
 ## Workflow
 
-An Autoscaling group is monitored by Rackspace Cloud Monitoring. When Monitoring triggers an alarm for high utilization within the Autoscaling group, a webhook is triggered. The webhook calls the autoscale service, which consults a policy in accordance with the webhook. The policy determines how many additional Cloud Servers should be added or removed in accordance with the alarm.
+A _scaling group_ is monitored by Rackspace Cloud Monitoring. When Monitoring triggers an alarm for high utilization within the scaling group, a webhook is triggered. The webhook calls the Auto Scale service, which consults a policy in accordance with the webhook. The policy determines how many additional Cloud Servers should be added or removed in accordance with the alarm.
 
-Alarms may trigger scaling up or scaling down. Scale down events always remove the oldest server in the group.
+Alarms may trigger scaling up or scaling down. Scale-down events always remove the oldest server in the group.
 
 Cooldowns allow you to ensure that you don't scale up or down too fast. When a scaling policy runs, both the scaling policy cooldown and the group cooldown start. Any additional requests to the group are discarded while the group cooldown is active. Any additional requests to the specific policy are discarded when the policy cooldown is active.
 
-It is important to remember that Autoscale does not configure anything within a server. This means that all images should be self-provisioning. It is up to you to make sure that your services are configured to function properly when the server is started. We recommend using something like Chef, Salt, or Puppet.
+It is important to remember that Auto Scale does not configure anything within a server. This means that all images should be self-provisioning. It is up to you to make sure that your services are configured to function properly when the server is started. We recommend using something like Chef, Salt, or Puppet.
 
 
-## Using Autoscaling in pyrax
-Once you have authenticated, you can reference the Autoscaling service via `pyrax.autoscale`. That is a lot to type over and over in your code, so it is easier if you include the following line at the beginning of your code:
+## Using Auto Scale in pyrax
+Once you have authenticated, you can reference the Auto Scale service via `pyrax.autoscale`. That is a lot to type again and again in your code, so it is easier if you include the following line at the beginning of your code:
 
     au = pyrax.autoscale
 
@@ -32,10 +32,10 @@ Then you can simply use the alias `au` to reference the service. All of the code
 
 
 ## The Scaling Group
-The **Scaling Group** is the basic unit of Autoscaling. It determines the minimum and maximum number of servers that exist at any time for the group, the cooldown period between Autoscaling events, the configuration for each new server, the load balancer to add these servers to (optional), and any policies that are used for this group.
+The **scaling group** is the basic unit of Auto Scale. It determines the minimum and maximum number of servers that exist at any time for the group, the cooldown period between scaling events, the configuration for each new server, the load balancer to add these servers to (optional), and any policies that are used for this group.
 
 ### Listing Your Scaling Groups
-The `list()` method displays all the Scaling Groups currently defined in your account:
+The `list()` method displays all the scaling groups currently defined in your account:
 
     print au.list()
 
@@ -50,7 +50,7 @@ This returns a list of `ScalingGroup` objects:
     pendingCapacity=0, name=SecondTest, cooldown=90, metadata={},
     min_entities=2, max_entities=5>]
 
-To see the [launch configuration](#launch-configuration) for a group, call the `get_launch_config()` method:
+To see the [launch configuration](#launch_configuration) for a group, call the `get_launch_config()` method:
 
     groups = au.list()
     group = groups[0]
@@ -87,8 +87,8 @@ The `active` key holds a list of the IDs of the servers created as part of this 
 
 Key | Respresents
 ---- | ----
-**active_capacity** | The number of active servers that are part of this scaling group
-**desired_capacity** | The target number of servers for this scaling group, based on the combination of configuration settings and monitoring alarm responses
+**active_capacity** | The number of active servers that are part of this scaling group.
+**desired_capacity** | The target number of servers for this scaling group, based on the combination of configuration settings and monitoring alarm responses.
 **pending_capacity** | The number of servers which are in the process of being created (when positive) or destroyed (when negative).
 
 ### Pausing a Scaling Group's Policies
@@ -113,9 +113,9 @@ To create a scaling group, you call the `create()` method of the client with the
             disk_config="AUTO", metadata={"mykey": "myvalue"},
             load_balancers=(1234, 80))
 
-This creates the Scaling Group with the name "MyScalingGroup", and returns a `ScalingGroup` object representing the new group. Since the `min_entities` is 2, it immediately creates 2 servers for the group, based on the image whose ID is in the variable `my_image_id`. When they are created, they are then added to the load balancer whose ID is `1234`, and receive requests on port 80.
+This creates the scaling group with the name "MyScalingGroup", and returns a `ScalingGroup` object representing the new group. Since the `min_entities` is 2, it immediately creates 2 servers for the group, based on the image whose ID is in the variable `my_image_id`. When they are created, they are then added to the load balancer whose ID is `1234`, and receive requests on port 80.
 
-Note that the `server_name` parameter represents a base string to which Autoscale prepends a 10-character prefix to create a unique name for each server. The prefix always begins with 'as' and is followed by 8 random hex digits. For example, if you set the server_name to 'testgroup', and the scaling group creates 3 servers, their names would look like these:
+Note that the `server_name` parameter represents a base string to which Auto Scale prepends a 10-character prefix to create a unique name for each server. The prefix always begins with 'as' and is followed by 8 random hex digits and a dash (-). For example, if you set the server_name to 'testgroup', and the scaling group creates 3 servers, their names would look like these:
 
     as5defddd4-testgroup
     as92e512fe-testgroup
@@ -125,16 +125,16 @@ Note that the `server_name` parameter represents a base string to which Autoscal
 Parameter | Required | Default | Notes
 ---- | ---- | ---- | ----
 **name** | yes |  |
-**cooldown** | yes |  | Period in seconds after a scaling event in which further events are ignored
+**cooldown** | yes |  | Period in seconds after a scaling event in which further events are ignored.
 **min_entities** | yes |  |
 **max_entities** | yes |  |
-**launch_config_type** | yes |  | Only option currently is`launch_server`
-**flavor** | yes |  | Flavor to use for each server that is launched
+**launch_config_type** | yes |  | Only option currently is `launch_server`.
+**flavor** | yes |  | Flavor to use for each server that is launched.
 **server_name** | yes |  | The base name for servers created by Autoscale.
 **image** | yes |  | Either a Cloud Servers Image object, or its ID. This is the image that all new servers are created from.
 **disk_config** | no | MANUAL | Determines if the server's disk is partitioned to the full size of the flavor ('AUTO') or just to the size of the image ('MANUAL').
 **metadata** | no |  | Arbitrary key-value pairs you want to associate with your servers.
-**personality** | no |  | Small text files that are created on the new servers. _Personality_ is discussed in the [Rackspace Cloud Servers documentation](http://docs.rackspace.com/servers/api/v2/cs-devguide/content/Server_Personality-d1e2543.html)
+**personality** | no |  | Small text files that are created on the new servers. _Personality_ is discussed in the [Rackspace Cloud Servers documentation](http://docs.rackspace.com/servers/api/v2/cs-devguide/content/Server_Personality-d1e2543.html).
 **networks** | no |  | The networks to which you want to attach new servers. See the [Create Servers documentation](http://docs.rackspace.com/servers/api/v2/cs-devguide/content/CreateServers.html) for the required format.
 **load_balancers** | no |  | Either a  list of (id, port) tuples or a single such tuple, representing the loadbalancer(s) to add the new servers to.
 **scaling_policies** | no |  | You can define the scaling policies when you create the group, or add them later.
@@ -144,11 +144,11 @@ You can modify the settings for a scaling group by calling its `update()` method
 
     sg.update(cooldown=120,  max_entities=16)
 
-where `sg` is a reference to the scaling group. Similarly, you can make the call on the autoscale client itself, passing in the reference to the scaling group you wish to update:
+where `sg` is a reference to the scaling group. Similarly, you can make the call on the Auto Scale client itself, passing in the reference to the scaling group you wish to update:
 
     au.update(sg, cooldown=120,  max_entities=16)
 
-**Note**: If you pass any metadata values in this call, it must be the full set of metadata for the Scaling Group, since the underlying API call **overwrites** any existing metadata. If you simply wish to update an existing metadata key, or add a new key/value pair, you must call the `update_metadata(new_meta)` method instead. This call preserves your existing key/value pairs, and only updates it with your changes.
+**Note**: If you pass any metadata values in this call, it must be the full set of metadata for the scaling group, since the underlying API call **overwrites** any existing metadata. If you simply wish to update an existing metadata key, or add a new key/value pair, you must call the `update_metadata(new_meta)` method instead. This call preserves your existing key/value pairs, and only updates it with your changes.
 
 ### Deleting a Scaling Group
 To remove a scaling group, call its `delete()` method:
@@ -166,10 +166,10 @@ Note: you cannot delete a scaling group that has active servers in it. You must 
 Once the servers are deleted you can then delete the scaling group.
 
 
-## Launch Configurations
+## Launch Configurations <a id="launch_configuration"></a>
 Each scaling group has an associated **launch configuration**. This determines the properties of servers that are created in response to a scaling event.
 
-The `server_name` represents a base string to which Autoscale prepends a 10-character prefix. The prefix always begins with 'as' and is followed by 8 random hex digits. For example, if you set the `server_name` to 'testgroup', and the scaling group creates 3 servers, their names would look like these:
+The `server_name` represents a base string to which Auto Scale prepends a 10-character prefix. The prefix always begins with 'as' and is followed by 8 random hex digits and a dash (-). For example, if you set the `server_name` to 'testgroup', and the scaling group creates 3 servers, their names would look like these:
 
     as5defddd4-testgroup
     as92e512fe-testgroup
@@ -186,11 +186,11 @@ You can also modify the launch configuration for your scaling group by calling t
 
     sg.update_launch_config(image=new_image_id)
 
-You may also make the call on the autoscale client itself, passing in the scaling group you want to modify:
+You may also make the call on the Auto Scale client itself, passing in the scaling group you want to modify:
 
     au.update_launch_config(sg, image=new_image_id)
 
-**Note**: If you pass any metadata values in this call, it must be the full set of metadata for the Launch Configuration, since the underlying API call **overwrites** any existing metadata. If you simply wish to update an existing metadata key in your launch configuration, or add a new key/value pair, you must call the `update_launch_metadata()` method instead. This call preserves your existing key/value pairs, and only updates with your changes.
+**Note**: If you pass any metadata values in this call, it must be the full set of metadata for the launch configuration, since the underlying API call **overwrites** any existing metadata. If you simply wish to update an existing metadata key in your launch configuration, or add a new key/value pair, you must call the `update_launch_metadata()` method instead. This call preserves your existing key/value pairs, and only updates with your changes.
 
 
 ## Policies
@@ -217,7 +217,7 @@ To add a policy to a scaling group, call the `add_policy()` method:
 Parameter | Required | Default | Notes
 ---- | ---- | ---- | ----
 **name** | yes |  |
-**policy_type** | yes | | Only available type now is 'webhook'
+**policy_type** | yes | | Only available type now is 'webhook'.
 **cooldown** | yes |  | Period in seconds after a policy execution in which further events are ignored. This is separate from the overall cooldown for the scaling group.
 **change** | yes | | Can be positive or negative, which makes this a scale-up or scale-down policy, respectively.
 **is_percent** | no | False | Determines whether the value passed in the `change` parameter is interpreted an absolute number, or a percentage.
@@ -227,7 +227,7 @@ You may update a policy at any time, passing in any or all of the above paramete
 
     policy.update(cooldown=60, change=-3)
 
-You may also call the `update_policy()` method of either the scaling group for this policy, or the autoscale client itself. Either of the following two calls is equivalent to the call above:
+You may also call the `update_policy()` method of either the scaling group for this policy, or the Auto Scale client itself. Either of the following two calls is equivalent to the call above:
 
     sg.update_policy(policy, cooldown=60, change=-3)
     # or
@@ -286,7 +286,7 @@ You may update a webhook at any time to change either its name or its metadata:
     webhook.update(name="something_new",
             metadata={"owner": "webteam"})
 
-You may also call the `update_webhook()` method of either the policy for this webhook, or the scaling group for that policy, or the autoscale client itself. Any of the following calls is equivalent to the call above:
+You may also call the `update_webhook()` method of either the policy for this webhook, or the scaling group for that policy, or the Auto Scale client itself. Any of the following calls is equivalent to the call above:
 
     policy.update_webhook(webhook, name="something_new",
             metadata={"owner": "webteam"})
@@ -297,7 +297,7 @@ You may also call the `update_webhook()` method of either the policy for this we
     au.update_webhook(sg, policy, webhook, name="something_new",
             metadata={"owner": "webteam"})
 
-**Note**: If you pass any metadata values in this call, it must be the full set of metadata for the Webhook, since the underlying API call **overwrites** any existing metadata. If you simply wish to update an existing metadata key, or add a new key/value pair, you must call the `webhook.update_metadata(new_meta)` method instead (or the corresponding `au.update_webhook_metadata(sg, policy, webhook, new_meta)`). This call preserves your existing key/value pairs, and only updates it with your changes.
+**Note**: If you pass any metadata values in this call, it must be the full set of metadata for the webhook, since the underlying API call **overwrites** any existing metadata. If you simply wish to update an existing metadata key, or add a new key/value pair, you must call the `webhook.update_metadata(new_meta)` method instead (or the corresponding `au.update_webhook_metadata(sg, policy, webhook, new_meta)`). This call preserves your existing key/value pairs, and only updates it with your changes.
 
 ### Deleting a webhook
 When you wish to remove a webhook, call its `delete()` method:
@@ -311,11 +311,4 @@ You can also call the `delete_webhook()` method of the webhook's policy, or the 
     sg.delete_webhook(policy, webhook)
     # or
     au.delete_webhook(sg, policy, webhook)
-
-
-
-
-
-
-
 
