@@ -9,7 +9,7 @@ Once you have authenticated and connected to the load balancer service, you can 
 
 For the sake of brevity and convenience, it is common to define abbreviated aliases for the modules. All the code in the document assumes that at the top of your script, you have added the following lines:
 
-    clb = pyrax.cloudloadbalancers
+    clb = pyrax.cloud_loadbalancers
     cs = pyrax.cloudservers
 
 
@@ -149,7 +149,7 @@ DNS_TCP | This protocol works with IPv6 and allows your DNS server to receive tr
 DNS_UDP | This protocol works with IPv6 and allows your DNS server to receive traffic using UDP port 53.
 FTP | The File Transfer Protocol defines how files are transported over the Internet. It is typically used when downloading or uploading files to or from web servers.
 HTTP | The Hypertext Transfer Protocol defines how communications occur on the Internet between clients and web servers. For example, if you request a web page in your browser, HTTP defines how the web server fetches the page and returns it your browser.
-HTTPS | The Hypertext Transfer Protocol over Secure Socket Layer (SSL) provides encrypted communication over the Internet. It securely verifies the authenticity of the web server you are communicating with. 
+HTTPS | The Hypertext Transfer Protocol over Secure Socket Layer (SSL) provides encrypted communication over the Internet. It securely verifies the authenticity of the web server you are communicating with.
 IMAPS | The Internet Message Application Protocol over Secure Socket Layer (SSL) defines how an email client, such as Microsoft Outlook, retrieves and transfers email messages with a mail server.
 IMAPv2 | Version 2 of IMAPS.
 IMAPv3 | Version 3 of IMAPS.
@@ -163,7 +163,7 @@ SFTP | The SSH File Transfer Protocol is a secure file transfer and management p
 SMTP | The Simple Mail Transfer Protocol is used by electronic mail servers to send and receive email messages. Email clients use this protocol to relay messages to another computer or web server, but use IMAP or POP to send and receive messages.
 TCP | The Transmission Control Protocol is a part of the Transport Layer protocol and is one of the core protocols of the Internet Protocol Suite. It provides a reliable, ordered delivery of a stream of bytes from one program on a computer to another program on another computer. Applications that require an ordered and reliable delivery of packets use this protocol.
 TCP_CLIE (TCP_CLIENT_FIRST) | This protocol is similiar to TCP, but is more efficient when a client is expected to write the data first.
-UDP | The User Datagram Protocol provides a datagram service that emphasizes speed over reliability, It works well with applications that provide security through other measures. 
+UDP | The User Datagram Protocol provides a datagram service that emphasizes speed over reliability, It works well with applications that provide security through other measures.
 UDP_STRE (UDP_STREAM) | This protocol is designed to stream media over networks and is built on top of UDP.
 
 
