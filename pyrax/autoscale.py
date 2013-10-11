@@ -277,12 +277,6 @@ class ScalingGroup(BaseResource):
 
 
 class ScalingGroupManager(BaseManager):
-    def __init__(self, api, resource_class=None, response_key=None,
-            plural_response_key=None, uri_base=None):
-        super(ScalingGroupManager, self).__init__(api,
-                resource_class=resource_class, response_key=response_key,
-                plural_response_key=plural_response_key, uri_base=uri_base)
-
 
     def get_state(self, scaling_group):
         """
@@ -559,7 +553,7 @@ class ScalingGroupManager(BaseManager):
         body = [body]
         resp, resp_body = self.api.method_post(uri, body=body)
         data = resp_body.get("webhooks")[0]
-        return AutoScaleWebhook(self, data, policy)
+        return AutoScaleWebhook(self, data, policy, scaling_group)
 
 
     def list_webhooks(self, scaling_group, policy):
@@ -569,7 +563,7 @@ class ScalingGroupManager(BaseManager):
         uri = "/%s/%s/policies/%s/webhooks" % (self.uri_base,
                 utils.get_id(scaling_group), utils.get_id(policy))
         resp, resp_body = self.api.method_get(uri)
-        return [AutoScaleWebhook(self, data, policy)
+        return [AutoScaleWebhook(self, data, policy, scaling_group)
                 for data in resp_body.get("webhooks", [])]
 
 
@@ -582,7 +576,7 @@ class ScalingGroupManager(BaseManager):
                 utils.get_id(webhook))
         resp, resp_body = self.api.method_get(uri)
         data = resp_body.get("webhook")
-        return AutoScaleWebhook(self, data, policy)
+        return AutoScaleWebhook(self, data, policy, scaling_group)
 
 
     def update_webhook(self, scaling_group, policy, webhook, name=None,
@@ -814,10 +808,10 @@ class AutoScalePolicy(BaseResource):
 
 
 class AutoScaleWebhook(BaseResource):
-    def __init__(self, manager, info, policy, *args, **kwargs):
+    def __init__(self, manager, info, policy, scaling_group, *args, **kwargs):
         super(AutoScaleWebhook, self).__init__(manager, info, *args, **kwargs)
         if not isinstance(policy, AutoScalePolicy):
-            policy = manager.get_policy(policy)
+            policy = manager.get_policy(scaling_group, policy)
         self.policy = policy
         self._non_display = ["links", "policy"]
 
