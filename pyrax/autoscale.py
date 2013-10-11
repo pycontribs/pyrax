@@ -277,6 +277,12 @@ class ScalingGroup(BaseResource):
 
 
 class ScalingGroupManager(BaseManager):
+    def __init__(self, api, resource_class=None, response_key=None,
+            plural_response_key=None, uri_base=None):
+        super(ScalingGroupManager, self).__init__(api,
+                resource_class=resource_class, response_key=response_key,
+                plural_response_key=plural_response_key, uri_base=uri_base)
+
 
     def get_state(self, scaling_group):
         """
