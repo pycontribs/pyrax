@@ -752,7 +752,7 @@ class AutoscaleTest(unittest.TestCase):
         mgr = sg.manager
         pol = fakes.FakeAutoScalePolicy(mgr, {}, sg)
         hook = utils.random_name()
-        hook_obj = fakes.FakeAutoScaleWebhook(mgr, {}, pol)
+        hook_obj = fakes.FakeAutoScaleWebhook(mgr, {}, pol, sg)
         name = utils.random_name()
         metadata = utils.random_name()
         mgr.get_webhook = Mock(return_value=hook_obj)
@@ -768,7 +768,7 @@ class AutoscaleTest(unittest.TestCase):
         mgr = sg.manager
         pol = fakes.FakeAutoScalePolicy(mgr, {}, sg)
         hook = utils.random_name()
-        hook_obj = fakes.FakeAutoScaleWebhook(mgr, {}, pol)
+        hook_obj = fakes.FakeAutoScaleWebhook(mgr, {}, pol, sg)
         hook_obj.metadata = {"orig": "orig"}
         metadata = {"new": "new"}
         expected = hook_obj.metadata.copy()
@@ -786,7 +786,7 @@ class AutoscaleTest(unittest.TestCase):
         mgr = sg.manager
         pol = fakes.FakeAutoScalePolicy(mgr, {}, sg)
         hook = utils.random_name()
-        hook_obj = fakes.FakeAutoScaleWebhook(mgr, {}, pol)
+        hook_obj = fakes.FakeAutoScaleWebhook(mgr, {}, pol, sg)
         uri = "/%s/%s/policies/%s/webhooks/%s" % (mgr.uri_base, sg.id, pol.id,
                 hook)
         mgr.api.method_delete = Mock(return_value=(None, None))
@@ -996,7 +996,7 @@ class AutoscaleTest(unittest.TestCase):
         sg = self.scaling_group
         mgr = sg.manager
         pol = fakes.FakeAutoScalePolicy(mgr, {}, sg)
-        hook = fakes.FakeAutoScaleWebhook(mgr, {}, pol)
+        hook = fakes.FakeAutoScaleWebhook(mgr, {}, pol, sg)
         pol.get_webhook = Mock()
         hook.get()
         pol.get_webhook.assert_called_once_with(hook)
@@ -1005,7 +1005,7 @@ class AutoscaleTest(unittest.TestCase):
         sg = self.scaling_group
         mgr = sg.manager
         pol = fakes.FakeAutoScalePolicy(mgr, {}, sg)
-        hook = fakes.FakeAutoScaleWebhook(mgr, {}, pol)
+        hook = fakes.FakeAutoScaleWebhook(mgr, {}, pol, sg)
         name = utils.random_name()
         metadata = utils.random_name()
         pol.update_webhook = Mock()
@@ -1017,7 +1017,7 @@ class AutoscaleTest(unittest.TestCase):
         sg = self.scaling_group
         mgr = sg.manager
         pol = fakes.FakeAutoScalePolicy(mgr, {}, sg)
-        hook = fakes.FakeAutoScaleWebhook(mgr, {}, pol)
+        hook = fakes.FakeAutoScaleWebhook(mgr, {}, pol, sg)
         metadata = utils.random_name()
         pol.update_webhook_metadata = Mock()
         hook.update_metadata(metadata=metadata)
@@ -1028,7 +1028,7 @@ class AutoscaleTest(unittest.TestCase):
         sg = self.scaling_group
         mgr = sg.manager
         pol = fakes.FakeAutoScalePolicy(mgr, {}, sg)
-        hook = fakes.FakeAutoScaleWebhook(mgr, {}, pol)
+        hook = fakes.FakeAutoScaleWebhook(mgr, {}, pol, sg)
         pol.delete_webhook = Mock()
         hook.delete()
         pol.delete_webhook.assert_called_once_with(hook)
