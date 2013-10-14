@@ -414,7 +414,7 @@ class ScalingGroupManager(BaseManager):
                     "server": {
                         "name": server_name or srv_args.get("name"),
                         "imageRef": image or srv_args.get("imageRef"),
-                        "flavorRef": str(flavor) or srv_args.get("flavorRef"),
+                        "flavorRef": "%s" % flavor or srv_args.get("flavorRef"),
                         "OS-DCF:diskConfig": disk_config or
                                 srv_args.get("OS-DCF:diskConfig"),
                         "personality": personality or
@@ -686,7 +686,7 @@ class ScalingGroupManager(BaseManager):
         if scaling_policies is None:
             scaling_policies = []
         server_args = {
-            "flavorRef": str(flavor),
+            "flavorRef": "%s" % flavor,
             "name": server_name,
             "imageRef": utils.get_id(image),
         }
