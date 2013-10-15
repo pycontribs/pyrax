@@ -328,11 +328,25 @@ class ScalingGroupManager(BaseManager):
         return resp_body.get("groupConfiguration")
 
 
+    def replace(self, scaling_group, *args, **kwargs):
+        """
+        Replace an existing ScalingGroup. All of the attributes must be
+        specified; if any are left out, they will be deleted from the existing
+        group.
+        """
+        body = self._create_body(*args, **kwargs)
+        group_id = utils.get_id(scaling_group)
+        uri = "/%s/%s/config" % (self.uri_base, group_id)
+        resp, resp_body = self.api.method_put(uri, body=body)
+        return None
+
+
     def update(self, scaling_group, name=None, cooldown=None,
             min_entities=None, max_entities=None, metadata=None):
         """
         Updates an existing ScalingGroup. One or more of the attributes can
-        be specified.
+        be specified. This method has no way to delete an optional attribute
+        from a scaling group; use the replace method for that.
 
         NOTE: if you specify metadata, it will *replace* any existing metadata.
         If you want to add to it, you either need to pass the complete dict of
@@ -390,6 +404,19 @@ class ScalingGroupManager(BaseManager):
         ret["networks"] = srv.get("networks")
         ret["key_name"] = srv.get("key_name")
         return ret
+
+
+    def replace_launch_config(self, scaling_group, *args, **kwargs):
+        """
+        Replace an existing launch configuration. All of the attributes must be
+        specified; if any are left out, they will be deleted from the existing
+        launch config.
+        """
+        group_id = utils.get_id(scaling_group)
+        uri = "/%s/%s/launch" % (self.uri_base, group_id)
+        body = self._create_launch_config_body(*args, **kwargs)
+        resp, resp_body = self.api.method_put(uri, body=body)
+        return None
 
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
@@ -452,6 +479,15 @@ class ScalingGroupManager(BaseManager):
         'is_percent' is True, in which case it is treated as a percentage.
         """
         uri = "/%s/%s/policies" % (self.uri_base, utils.get_id(scaling_group))
+        body = self._create_policy_body(name, cooldown, policy_type)
+        # "body" needs to be a list
+        body = [body]
+        resp, resp_body = self.api.method_post(uri, body=body)
+        pol_info = resp_body.get("policies")[0]
+        return AutoScalePolicy(self, pol_info, scaling_group)
+
+
+    def _create_policy_body(self, )
         body = {"name": name, "cooldown": cooldown, "type": policy_type}
         if change is not None:
             if is_percent:
@@ -462,11 +498,7 @@ class ScalingGroupManager(BaseManager):
             body["desiredCapacity"] = desired_capacity
         if args is not None:
             body["args"] = args
-        # "body" needs to be a list
-        body = [body]
-        resp, resp_body = self.api.method_post(uri, body=body)
-        pol_info = resp_body.get("policies")[0]
-        return AutoScalePolicy(self, pol_info, scaling_group)
+
 
 
     def list_policies(self, scaling_group):
@@ -488,6 +520,15 @@ class ScalingGroupManager(BaseManager):
         resp, resp_body = self.api.method_get(uri)
         data = resp_body.get("policy")
         return AutoScalePolicy(self, data, scaling_group)
+
+
+    def replace_policy(self, scaling_group, policy, *args, **kwargs):
+        """
+        Replace an existing policy. All of the attributes must be
+        specified; if any are left out, they will be deleted from the existing
+        policy.
+        """
+
 
 
     def update_policy(self, scaling_group, policy, name=None, policy_type=None,
@@ -583,6 +624,10 @@ class ScalingGroupManager(BaseManager):
         resp, resp_body = self.api.method_get(uri)
         data = resp_body.get("webhook")
         return AutoScaleWebhook(self, data, policy, scaling_group)
+
+
+    def replace_webhook(self, **kwargs):
+        pass
 
 
     def update_webhook(self, scaling_group, policy, webhook, name=None,
@@ -681,10 +726,31 @@ class ScalingGroupManager(BaseManager):
         if networks is None:
             # Default to ServiceNet only
             networks = [{"uuid": SERVICE_NET_ID}]
-        if load_balancers is None:
-            load_balancers = []
         if scaling_policies is None:
             scaling_policies = []
+        launch_config = self._create_launch_config_body(
+            launch_config_type, server_name, image, flavor,
+            disk_config=disk_config, metadata=metadata,
+            personality=personality, networks=networks,
+            load_balancers=load_balancers, key_name=key_name)
+        body = {"groupConfiguration": {
+                    "name": name,
+                    "cooldown": cooldown,
+                    "minEntities": min_entities,
+                    "maxEntities": max_entities,
+                },
+                "launchConfiguration": launch_config,
+                "scalingPolicies": scaling_policies,
+            }
+        if group_metadata is not None:
+            body["groupConfiguration"]["metadata"] = group_metadata
+        return body
+
+
+    def _create_launch_config_body(self, launch_config_type,
+            server_name, image, flavor, disk_config=None, metadata=None,
+            personality=None, networks=None, load_balancers=None,
+            key_name=None):
         server_args = {
             "flavorRef": "%s" % flavor,
             "name": server_name,
@@ -700,25 +766,12 @@ class ScalingGroupManager(BaseManager):
             server_args["OS-DCF:diskConfig"] = disk_config
         if key_name is not None:
             server_args["key_name"] = key_name
+        if load_balancers is None:
+            load_balancers = []
         load_balancer_args = self._resolve_lbs(load_balancers)
-        body = {"groupConfiguration": {
-                    "name": name,
-                    "cooldown": cooldown,
-                    "minEntities": min_entities,
-                    "maxEntities": max_entities,
-                },
-                "launchConfiguration": {
-                    "type": launch_config_type,
-                    "args": {
-                        "server": server_args,
-                        "loadBalancers": load_balancer_args,
-                    },
-                },
-                "scalingPolicies": scaling_policies,
-            }
-        if group_metadata is not None:
-            body["groupConfiguration"]["metadata"] = group_metadata
-        return body
+        return {"type": launch_config_type,
+                "args": {"server": server_args,
+                         "loadBalancers": load_balancer_args}}
 
 
 
