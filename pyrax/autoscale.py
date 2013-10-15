@@ -328,13 +328,15 @@ class ScalingGroupManager(BaseManager):
         return resp_body.get("groupConfiguration")
 
 
-    def replace(self, scaling_group, *args, **kwargs):
+    def replace(self, scaling_group, name, cooldown, min_entities,
+            max_entities, metadata=None):
         """
         Replace an existing ScalingGroup. All of the attributes must be
         specified; if any are left out, they will be deleted from the existing
         group.
         """
-        body = self._create_body(*args, **kwargs)
+        body = self._create_group_config_body(name, cooldown, min_entities,
+                                              max_entities, metadata=metadata)
         group_id = utils.get_id(scaling_group)
         uri = "/%s/%s/config" % (self.uri_base, group_id)
         resp, resp_body = self.api.method_put(uri, body=body)
@@ -450,8 +452,9 @@ class ScalingGroupManager(BaseManager):
                     "loadBalancers": load_balancers or lb_args,
                 },
             }
-        if key_name is not None:
-            body["args"]["server"]["key_name"] = key_name
+        key = key_name or srv_args.get("key_name")
+        if key:
+            body["args"]["server"] = key
         resp, resp_body = self.api.method_put(uri, body=body)
         return None
 
@@ -567,6 +570,7 @@ class ScalingGroupManager(BaseManager):
                 body["change"] = policy.change
             elif getattr(policy, 'desiredCapacity', None) is not None:
                 body["desiredCapacity"] = policy.desiredCapacity
+        args = args or getattr(policy, 'args', None)
         if args is not None:
             body["args"] = args
         resp, resp_body = self.api.method_put(uri, body=body)
@@ -591,6 +595,11 @@ class ScalingGroupManager(BaseManager):
                 utils.get_id(scaling_group), utils.get_id(policy))
         resp, resp_body = self.api.method_delete(uri)
 
+    def _create_webhook_body(self, name, metadata=None):
+        body = {"name": name}
+        if metadata is not None:
+            body["metadata"] = metadata
+        return body
 
     def add_webhook(self, scaling_group, policy, name, metadata=None):
         """
@@ -598,9 +607,7 @@ class ScalingGroupManager(BaseManager):
         """
         uri = "/%s/%s/policies/%s/webhooks" % (self.uri_base,
                 utils.get_id(scaling_group), utils.get_id(policy))
-        body = {"name": name}
-        if metadata is not None:
-            body["metadata"] = metadata
+        body = self._create_webhook_body(name, metadata=metadata)
         # "body" needs to be a list
         body = [body]
         resp, resp_body = self.api.method_post(uri, body=body)
@@ -631,8 +638,20 @@ class ScalingGroupManager(BaseManager):
         return AutoScaleWebhook(self, data, policy, scaling_group)
 
 
-    def replace_webhook(self, **kwargs):
-        pass
+    def replace_webhook(self, scaling_group, policy, webhook, name,
+            metadata=None):
+        """
+        Replace an existing webhook. All of the attributes must be specified;
+        if any are left out, they will be deleted from the existing webhook.
+        """
+        uri = "/%s/%s/policies/%s/webhooks/%s" % (self.uri_base,
+                utils.get_id(scaling_group), utils.get_id(policy),
+                utils.get_id(webhook))
+        group_id = utils.get_id(scaling_group)
+        policy_id = utils.get_id(policy)
+        webhook_id = utils.get_id(webhook)
+        body = self._create_webhook_body(name, metadata=metadata)
+        resp, resp_body = self.api.method_put(uri, body=body)
 
 
     def update_webhook(self, scaling_group, policy, webhook, name=None,
@@ -733,22 +752,32 @@ class ScalingGroupManager(BaseManager):
             networks = [{"uuid": SERVICE_NET_ID}]
         if scaling_policies is None:
             scaling_policies = []
+        group_config = self._create_group_config_body(
+            name, cooldown, min_entities, max_entities,
+            metadata=group_metadata)
         launch_config = self._create_launch_config_body(
             launch_config_type, server_name, image, flavor,
             disk_config=disk_config, metadata=metadata,
             personality=personality, networks=networks,
             load_balancers=load_balancers, key_name=key_name)
-        body = {"groupConfiguration": {
-                    "name": name,
-                    "cooldown": cooldown,
-                    "minEntities": min_entities,
-                    "maxEntities": max_entities,
-                },
-                "launchConfiguration": launch_config,
-                "scalingPolicies": scaling_policies,
-            }
-        if group_metadata is not None:
-            body["groupConfiguration"]["metadata"] = group_metadata
+        body = {
+            "groupConfiguration": group_config,
+            "launchConfiguration": launch_config,
+            "scalingPolicies": scaling_policies
+        }
+        return body
+
+
+    def _create_group_config_body(self, name, cooldown, min_entities,
+            max_entities, metadata=None):
+        body = {
+            "name": name,
+            "cooldown": cooldown,
+            "minEntities": min_entities,
+            "maxEntities": max_entities,
+        }
+        if metadata is not None:
+            body["metadata"] = metadata
         return body
 
 
