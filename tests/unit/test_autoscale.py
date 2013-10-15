@@ -495,10 +495,10 @@ class AutoscaleTest(unittest.TestCase):
         ret_body = {"policies": [{}]}
         mgr.api.method_post = Mock(return_value=(None, ret_body))
         uri = "/%s/%s/policies" % (mgr.uri_base, sg.id)
-        name = utils.random_name()
-        ptype = utils.random_name()
-        cooldown = utils.random_name()
-        change = utils.random_name()
+        name = utils.random_name(ascii_only=True)
+        ptype = utils.random_name(ascii_only=True)
+        cooldown = utils.random_name(ascii_only=True)
+        change = utils.random_name(ascii_only=True)
         for is_percent in (True, False):
             post_body = {"name": name, "cooldown": cooldown, "type": ptype}
             if is_percent:

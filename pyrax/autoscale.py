@@ -338,7 +338,6 @@ class ScalingGroupManager(BaseManager):
         group_id = utils.get_id(scaling_group)
         uri = "/%s/%s/config" % (self.uri_base, group_id)
         resp, resp_body = self.api.method_put(uri, body=body)
-        return None
 
 
     def update(self, scaling_group, name=None, cooldown=None,
@@ -416,7 +415,6 @@ class ScalingGroupManager(BaseManager):
         uri = "/%s/%s/launch" % (self.uri_base, group_id)
         body = self._create_launch_config_body(*args, **kwargs)
         resp, resp_body = self.api.method_put(uri, body=body)
-        return None
 
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
@@ -479,7 +477,9 @@ class ScalingGroupManager(BaseManager):
         'is_percent' is True, in which case it is treated as a percentage.
         """
         uri = "/%s/%s/policies" % (self.uri_base, utils.get_id(scaling_group))
-        body = self._create_policy_body(name, cooldown, policy_type)
+        body = self._create_policy_body(name, policy_type, cooldown,
+            change=change, is_percent=is_percent,
+            desired_capacity=desired_capacity, args=args)
         # "body" needs to be a list
         body = [body]
         resp, resp_body = self.api.method_post(uri, body=body)
@@ -487,7 +487,8 @@ class ScalingGroupManager(BaseManager):
         return AutoScalePolicy(self, pol_info, scaling_group)
 
 
-    def _create_policy_body(self, )
+    def _create_policy_body(self, name, policy_type, cooldown, change=None,
+            is_percent=None, desired_capacity=None, args=None):
         body = {"name": name, "cooldown": cooldown, "type": policy_type}
         if change is not None:
             if is_percent:
@@ -498,7 +499,7 @@ class ScalingGroupManager(BaseManager):
             body["desiredCapacity"] = desired_capacity
         if args is not None:
             body["args"] = args
-
+        return body
 
 
     def list_policies(self, scaling_group):
@@ -528,7 +529,11 @@ class ScalingGroupManager(BaseManager):
         specified; if any are left out, they will be deleted from the existing
         policy.
         """
-
+        policy_id = utils.get_id(policy)
+        group_id = utils.get_id(scaling_group)
+        uri = "/%s/%s/policies/%s" % (self.uri_base, group_id, policy_id)
+        body = self._create_policy_body(*args, **kwargs)
+        resp, resp_body = self.api.method_put(uri, body=body)
 
 
     def update_policy(self, scaling_group, policy, name=None, policy_type=None,
