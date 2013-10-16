@@ -406,7 +406,10 @@ class ScalingGroupManager(BaseManager):
         return ret
 
 
-    def replace_launch_config(self, scaling_group, *args, **kwargs):
+    def replace_launch_config(self, scaling_group, launch_config_type,
+            server_name, image, flavor, disk_config=None, metadata=None,
+            personality=None, networks=None, load_balancers=None,
+            key_name=None):
         """
         Replace an existing launch configuration. All of the attributes must be
         specified; if any are left out, they will be deleted from the existing
@@ -415,7 +418,11 @@ class ScalingGroupManager(BaseManager):
         """
         group_id = utils.get_id(scaling_group)
         uri = "/%s/%s/launch" % (self.uri_base, group_id)
-        body = self._create_launch_config_body(*args, **kwargs)
+        body = self._create_launch_config_body(
+            launch_config_type=launch_config_type, server_name=server_name,
+            image=image, flavor=flavor, disk_config=disk_config,
+            metadata=metadata, personality=personality, networks=networks,
+            load_balancers=load_balancers, key_name=key_name)
         resp, resp_body = self.api.method_put(uri, body=body)
 
 
@@ -526,7 +533,9 @@ class ScalingGroupManager(BaseManager):
         return AutoScalePolicy(self, data, scaling_group)
 
 
-    def replace_policy(self, scaling_group, policy, *args, **kwargs):
+    def replace_policy(self, scaling_group, policy, name,
+            policy_type, cooldown, change=None, is_percent=False,
+            desired_capacity=None, args=None):
         """
         Replace an existing policy. All of the attributes must be
         specified; if any are left out, they will be deleted from the existing
@@ -535,7 +544,9 @@ class ScalingGroupManager(BaseManager):
         policy_id = utils.get_id(policy)
         group_id = utils.get_id(scaling_group)
         uri = "/%s/%s/policies/%s" % (self.uri_base, group_id, policy_id)
-        body = self._create_policy_body(*args, **kwargs)
+        body = self._create_policy_body(name=name, policy_type=policy_type,
+            cooldown=cooldown, change=change, is_percent=is_percent,
+            desired_capacity=desired_capacity, args=args)
         resp, resp_body = self.api.method_put(uri, body=body)
 
 
