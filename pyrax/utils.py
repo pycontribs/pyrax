@@ -152,7 +152,7 @@ def get_checksum(content, encoding="utf8", block_size=8192):
     return md.hexdigest()
 
 
-def random_name(length=20, ascii_only=True):
+def random_name(length=20, ascii_only=False):
     """
     Generates a random name; useful for testing.
 
