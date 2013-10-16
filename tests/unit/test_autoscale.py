@@ -402,6 +402,7 @@ class AutoscaleTest(unittest.TestCase):
             "cooldown": new_cooldown,
             "minEntities": new_min,
             "maxEntities": new_max,
+            "metadata": {}
         }
         mgr.replace(sg.id, new_name, new_cooldown, new_min, new_max)
         mgr.api.method_put.assert_called_once_with(uri, body=expected_body)
@@ -871,7 +872,7 @@ class AutoscaleTest(unittest.TestCase):
         mgr.api.method_put = Mock(return_value=(None, None))
         uri = "/%s/%s/policies/%s/webhooks/%s" % (mgr.uri_base, sg.id, pol.id,
                 hook)
-        expected = {"name": new_name}
+        expected = {"name": new_name, "metadata": {}}
         ret = mgr.replace_webhook(sg, pol, hook, name=new_name)
         mgr.api.method_put.assert_called_with(uri, body=expected)
 
