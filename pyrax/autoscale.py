@@ -331,9 +331,9 @@ class ScalingGroupManager(BaseManager):
     def replace(self, scaling_group, name, cooldown, min_entities,
             max_entities, metadata=None):
         """
-        Replace an existing ScalingGroup. All of the attributes must be
-        specified; if any are left out, they will be deleted from the existing
-        group.
+        Replace an existing ScalingGroup configuration. All of the attributes
+        must be specified; if any are left out, they will be deleted from the
+        existing group.
         """
         body = self._create_group_config_body(name, cooldown, min_entities,
                                               max_entities, metadata=metadata)
@@ -452,9 +452,9 @@ class ScalingGroupManager(BaseManager):
                     "loadBalancers": load_balancers or lb_args,
                 },
             }
-        key = key_name or srv_args.get("key_name")
-        if key:
-            body["args"]["server"] = key
+        key_name = key_name or srv_args.get("key_name")
+        if key_name:
+            body["args"]["server"] = key_name
         resp, resp_body = self.api.method_put(uri, body=body)
         return None
 
