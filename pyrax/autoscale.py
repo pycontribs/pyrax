@@ -333,7 +333,7 @@ class ScalingGroupManager(BaseManager):
         """
         Replace an existing ScalingGroup configuration. All of the attributes
         must be specified; if any are left out, they will be deleted from the
-        existing group.
+        existing group. This is useful if you need to delete optional attributes.
         """
         body = self._create_group_config_body(name, cooldown, min_entities,
                                               max_entities, metadata=metadata)
@@ -346,8 +346,7 @@ class ScalingGroupManager(BaseManager):
             min_entities=None, max_entities=None, metadata=None):
         """
         Updates an existing ScalingGroup. One or more of the attributes can
-        be specified. This method has no way to delete an optional attribute
-        from a scaling group; use the replace method for that.
+        be specified.
 
         NOTE: if you specify metadata, it will *replace* any existing metadata.
         If you want to add to it, you either need to pass the complete dict of
@@ -411,7 +410,8 @@ class ScalingGroupManager(BaseManager):
         """
         Replace an existing launch configuration. All of the attributes must be
         specified; if any are left out, they will be deleted from the existing
-        launch config.
+        launch config. This is useful if you need to delete optional
+        attributes.
         """
         group_id = utils.get_id(scaling_group)
         uri = "/%s/%s/launch" % (self.uri_base, group_id)
@@ -530,7 +530,7 @@ class ScalingGroupManager(BaseManager):
         """
         Replace an existing policy. All of the attributes must be
         specified; if any are left out, they will be deleted from the existing
-        policy.
+        policy. This is useful if you need to delete optional attributes.
         """
         policy_id = utils.get_id(policy)
         group_id = utils.get_id(scaling_group)
@@ -643,6 +643,7 @@ class ScalingGroupManager(BaseManager):
         """
         Replace an existing webhook. All of the attributes must be specified;
         if any are left out, they will be deleted from the existing webhook.
+        This is useful if you need to delete optional attributes.
         """
         uri = "/%s/%s/policies/%s/webhooks/%s" % (self.uri_base,
                 utils.get_id(scaling_group), utils.get_id(policy),
