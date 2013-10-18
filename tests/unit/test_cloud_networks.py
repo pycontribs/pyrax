@@ -78,9 +78,10 @@ class CloudNetworksTest(unittest.TestCase):
         self.assertTrue(isinstance(clt._manager, CloudNetworkManager))
 
     def test_create_body(self):
+        mgr = self.client._manager
         nm = utils.random_name()
         expected = {"network": {"label": nm, "cidr": example_cidr}}
-        returned = self.client._create_body(name=nm, cidr=example_cidr)
+        returned = mgr._create_body(name=nm, cidr=example_cidr)
         self.assertEqual(expected, returned)
 
     def test_create(self):
