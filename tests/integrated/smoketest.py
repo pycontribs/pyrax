@@ -30,6 +30,15 @@ class SmokeTester(object):
         self.clb = pyrax.cloud_loadbalancers
         self.dns = pyrax.cloud_dns
         self.cnw = pyrax.cloud_networks
+        self.cmn = pyrax.cloud_monitoring
+        self.au = pyrax.autoscale
+
+#        u'monitor',
+#        u'queues',
+#        u'object_cdn',
+#        u'autoscale',
+#        u'backup',
+
         self.services = ({"service": self.cs, "name": "Cloud Servers"},
                 {"service": self.cf, "name": "Cloud Files"},
                 {"service": self.cbs, "name": "Cloud Block Storage"},
@@ -37,6 +46,8 @@ class SmokeTester(object):
                 {"service": self.clb, "name": "Cloud Load Balancers"},
                 {"service": self.dns, "name": "Cloud DNS"},
                 {"service": self.cnw, "name": "Cloud Networks"},
+                {"service": self.cmn, "name": "Cloud Monitoring"},
+                {"service": self.au, "name": "Auto Scale"},
                 )
 
     def auth(self, region):
@@ -99,12 +110,23 @@ class SmokeTester(object):
 #            print "Running 'load_balancer' tests..."
 #            self.lb_list()
 #            self.lb_create()
+#
+#        if self.dns:
+#            print "Running 'DNS' tests..."
+#            self.dns_list()
+#            self.dns_create_domain()
+#            self.dns_create_record()
 
-        if self.dns:
-            print "Running 'DNS' tests..."
-            self.dns_list()
-            self.dns_create_domain()
-            self.dns_create_record()
+        if self.cmn:
+            print "Running 'Monitoring' tests..."
+            self.cmn_list_check_types()
+            self.cmn_list_entities()
+            self.cmn_list_metrics()
+            self.cmn_list_monitoring_zones()
+            self.cmn_list_notification_plans()
+            self.cmn_list_notification_types()
+            self.cmn_list_notifications()
+
 
 
     def cs_list_flavors(self):
@@ -380,6 +402,56 @@ class SmokeTester(object):
         except exc.DomainRecordAdditionFailed:
             print "FAIL!"
             self.failures.append("DNS RECORD CREATION")
+
+    def cmn_list_check_types(self):
+        print "Listing Monitoring Check Types..."
+        typs = self.cmn.list_check_types()
+        for typ in typs:
+            print " ", typ.id,
+            try:
+                print typ.description
+            except:
+                print
+
+    def cmn_list_entities(self):
+        print "Listing Monitoring Entities..."
+        ents = self.cmn.list_entities()
+        for ent in ents:
+            print ent.id, ent.name
+            print "  Alarms:",
+            alarms = self.cmn.list_alarms(ent)
+            if not alarms:
+                print " - None"
+                continue
+            print
+            for alarm in alarms:
+                print "    Alarm ID =", alarm.id, "Name =", alarm.name
+            print "  Checks:",
+            checks = self.cmn.list_checks(ent)
+            if not checks:
+                print " - None"
+                continue
+            print
+            for check in checks:
+                print "    Check ID =", check.id, "Name =", check.name,
+                print "Type =", check.type
+
+    def cmn_list_metrics(self):
+        pass
+
+    def cmn_list_monitoring_zones(self):
+        pass
+
+    def cmn_list_notification_plans(self):
+        pass
+
+    def cmn_list_notification_types(self):
+        pass
+
+    def cmn_list_notifications(self):
+        pass
+
+
 
 
     def cleanup(self):
