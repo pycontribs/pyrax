@@ -554,7 +554,7 @@ class CloudDNSManager(BaseManager):
         """
         if (len(kwargs) == 1) and ("name" in kwargs):
             # Filtering on name; use the more efficient method.
-            nm = kwargs["name"]
+            nm = kwargs["name"].lower()
             uri = "/%s?name=%s" % (self.uri_base, nm)
             matches = self._list(uri, list_all=True)
             return [match for match in matches
