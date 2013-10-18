@@ -61,8 +61,7 @@ class SmokeTester(object):
         print
 
     def run_tests(self):
-        services = pyrax.services
-        if "compute" in services:
+        if pyrax.cloudservers:
             print "Running 'compute' tests..."
             self.cs_list_flavors()
             self.cs_list_images()
@@ -76,14 +75,14 @@ class SmokeTester(object):
                 # Networking not supported
                 print " - Networking not supported"
 
-        if "database" in services:
+        if pyrax.cloud_databases:
             print "Running 'database' tests..."
             self.cdb_list_flavors()
             self.cdb_create_instance()
             self.cdb_create_db()
             self.cdb_create_user()
 
-        if "object_store" in services:
+        if pyrax.cloudfiles:
             print "Running 'object_store' tests..."
             self.cf_create_container()
             self.cf_list_containers()
@@ -91,7 +90,7 @@ class SmokeTester(object):
             self.cf_make_container_private()
             self.cf_upload_file()
 
-        if "load_balancer" in services:
+        if pyrax.cloud_loadbalancers:
             print "Running 'load_balancer' tests..."
             self.lb_list()
             self.lb_create()
