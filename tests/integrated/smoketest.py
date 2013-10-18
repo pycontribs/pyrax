@@ -61,39 +61,50 @@ class SmokeTester(object):
         print
 
     def run_tests(self):
-        if pyrax.cloudservers:
-            print "Running 'compute' tests..."
-            self.cs_list_flavors()
-            self.cs_list_images()
-            self.cs_create_server()
-            self.cs_reboot_server()
-            self.cs_list_servers()
-            try:
-                self.cnw_create_network()
-                self.cnw_list_networks()
-            except exc.NotFound:
-                # Networking not supported
-                print " - Networking not supported"
+#        if self.cs:
+#            print "Running 'compute' tests..."
+#            self.cs_list_flavors()
+#            self.cs_list_images()
+#            self.cs_create_server()
+#            self.cs_reboot_server()
+#            self.cs_list_servers()
+#
+#        if self.cnw:
+#            print "Running 'network' tests..."
+#            try:
+#                self.cnw_create_network()
+#                self.cnw_list_networks()
+#            except exc.NotFound:
+#                # Networking not supported
+#                print " - Networking not supported."
+#            except exc.NetworkCountExceeded:
+#                print " - Too many networks already exist."
+#
+#        if self.cdb:
+#            print "Running 'database' tests..."
+#            self.cdb_list_flavors()
+#            self.cdb_create_instance()
+#            self.cdb_create_db()
+#            self.cdb_create_user()
+#
+#        if self.cf:
+#            print "Running 'object_store' tests..."
+#            self.cf_create_container()
+#            self.cf_list_containers()
+#            self.cf_make_container_public()
+#            self.cf_make_container_private()
+#            self.cf_upload_file()
+#
+#        if self.clb:
+#            print "Running 'load_balancer' tests..."
+#            self.lb_list()
+#            self.lb_create()
 
-        if pyrax.cloud_databases:
-            print "Running 'database' tests..."
-            self.cdb_list_flavors()
-            self.cdb_create_instance()
-            self.cdb_create_db()
-            self.cdb_create_user()
-
-        if pyrax.cloudfiles:
-            print "Running 'object_store' tests..."
-            self.cf_create_container()
-            self.cf_list_containers()
-            self.cf_make_container_public()
-            self.cf_make_container_private()
-            self.cf_upload_file()
-
-        if pyrax.cloud_loadbalancers:
-            print "Running 'load_balancer' tests..."
-            self.lb_list()
-            self.lb_create()
+        if self.dns:
+            print "Running 'DNS' tests..."
+            self.dns_list()
+            self.dns_create_domain()
+            self.dns_create_record()
 
 
     def cs_list_flavors(self):
@@ -325,6 +336,50 @@ class SmokeTester(object):
         else:
             print "FAIL!"
             self.failures.append("LOAD_BALANCERS")
+
+    def dns_list(self):
+        print "Listing DNS Domains..."
+        doms = self.dns.list()
+        if not doms:
+            print " - No domains to list!"
+        else:
+            for dns in doms:
+                print " -", dns.name
+
+    def dns_create_domain(self):
+        print "Creating a DNS Domain..."
+        domain_name = "SMOKETEST.example.edu"
+        try:
+            dom = self.dns.create(name=domain_name,
+                    emailAddress="sample@example.edu", ttl=900,
+                    comment="SMOKETEST sample domain")
+            print "Success!"
+            self.cleanup_items.append(dom)
+        except exc.DomainCreationFailed:
+            print "FAIL!"
+            self.failures.append("DNS DOMAIN CREATION")
+
+    def dns_create_record(self):
+        print "Creating a DNS Record..."
+        domain_name = "SMOKETEST.example.edu"
+        try:
+            dom = self.dns.find(name=domain_name)
+        except exc.NotFound:
+            print "Smoketest domain not found; skipping record test."
+            self.failures.append("DNS RECORD CREATION")
+            return
+        a_rec = {"type": "A",
+                "name": domain_name,
+                "data": "1.2.3.4",
+                "ttl": 6000}
+        try:
+            recs = dom.add_records(a_rec)
+            print "Success!"
+            # No need to cleanup, since domain deletion also deletes the recs.
+            # self.cleanup_items.extend(recs)
+        except exc.DomainRecordAdditionFailed:
+            print "FAIL!"
+            self.failures.append("DNS RECORD CREATION")
 
 
     def cleanup(self):
