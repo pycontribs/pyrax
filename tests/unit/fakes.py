@@ -44,11 +44,6 @@ from pyrax.cloudmonitoring import CloudMonitorClient
 from pyrax.cloudmonitoring import CloudMonitorEntity
 from pyrax.cloudmonitoring import CloudMonitorCheck
 from pyrax.cloudmonitoring import CloudMonitorNotification
-from pyrax.queueing import Queue
-from pyrax.queueing import QueueClaim
-from pyrax.queueing import QueueMessage
-from pyrax.queueing import QueueClient
-from pyrax.queueing import QueueManager
 
 import pyrax.exceptions as exc
 from pyrax.identity.rax_identity import RaxIdentity
@@ -505,48 +500,6 @@ class FakeCloudMonitorNotification(CloudMonitorNotification):
         super(FakeCloudMonitorNotification, self).__init__(manager=None,
                 info=info, *args, **kwargs)
         self.id = uuid.uuid4()
-
-
-class FakeQueue(Queue):
-    def __init__(self, *args, **kwargs):
-        info = kwargs.pop("info", {"fake": "fake"})
-        info["name"] = utils.random_name()
-        mgr = kwargs.pop("manager", FakeQueueManager())
-        super(FakeQueue, self).__init__(manager=mgr, info=info, *args, **kwargs)
-
-
-class FakeQueueClaim(QueueClaim):
-    def __init__(self, *args, **kwargs):
-        info = kwargs.pop("info", {"fake": "fake"})
-        info["name"] = utils.random_name()
-        mgr = kwargs.pop("manager", FakeQueueManager())
-        super(FakeQueueClaim, self).__init__(manager=mgr, info=info, *args,
-                **kwargs)
-
-
-class FakeQueueMessage(QueueMessage):
-    def __init__(self, *args, **kwargs):
-        id_ = utils.random_name()
-        href = "http://example.com/%s" % id_
-        info = kwargs.pop("info", {"href": href})
-        info["name"] = utils.random_name()
-        mgr = kwargs.pop("manager", FakeQueueManager())
-        super(FakeQueueMessage, self).__init__(manager=mgr, info=info, *args,
-                **kwargs)
-
-
-class FakeQueueClient(QueueClient):
-    def __init__(self, *args, **kwargs):
-        super(FakeQueueClient, self).__init__("fakeuser",
-                "fakepassword", *args, **kwargs)
-
-
-class FakeQueueManager(QueueManager):
-    def __init__(self, api=None, *args, **kwargs):
-        if api is None:
-            api = FakeQueueClient()
-        super(FakeQueueManager, self).__init__(api, *args, **kwargs)
-        self.id = utils.random_name(ascii_only=True)
 
 
 class FakeIdentity(RaxIdentity):
