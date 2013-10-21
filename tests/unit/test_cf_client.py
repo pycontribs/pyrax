@@ -441,19 +441,22 @@ class CF_ClientTest(unittest.TestCase):
         obj = client.get_object(self.cont_name, "o1")
         self.assertEqual(obj.name, "o1")
 
+    def random_non_us_locale(self):
+        nonUS_locales = ("de_DE", "fr_FR", "hu_HU", "ja_JP", "nl_NL", "pl_PL",
+                         "pt_BR", "pt_PT", "ro_RO", "ru_RU", "zh_CN", "zh_HK", "zh_TW")
+        return random.choice(nonUS_locales)
+
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_object_locale(self):
         client = self.client
         orig_locale = locale.getlocale(locale.LC_TIME)
-        nonUS_locales = ("de_DE", "fr_FR", "hu_HU", "ja_JP", "nl_NL", "pl_PL",
-                "pt_BR", "pt_PT", "ro_RO", "ru_RU", "zh_CN", "zh_HK", "zh_TW")
-        new_locale = random.choice(nonUS_locales)
+        new_locale = self.random_non_us_locale()
         try:
             locale.setlocale(locale.LC_TIME, new_locale)
         except Exception:
             # Travis CI seems to have a problem with setting locale, so
             # just skip this.
-            return
+            self.skipTest("Could not set locale to %s" % new_locale)
         client.connection.head_container = Mock()
         client.connection.head_object = Mock(return_value=fake_attdict)
         obj = client.get_object(self.cont_name, "fake")
@@ -883,6 +886,49 @@ class CF_ClientTest(unittest.TestCase):
         objs = client.get_container_objects(self.cont_name)
         self.assertEqual(len(objs), 2)
         self.assertEqual(objs[0].container.name, self.cont_name)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_get_container_objects_locale(self):
+        client = self.client
+
+        orig_locale = locale.getlocale(locale.LC_TIME)
+        try:
+            # Set locale to Great Britain because we know that DST was active
+            # there at 2013-10-21T01:02:03.123456 UTC
+            locale.setlocale(locale.LC_TIME, 'en_GB')
+        except Exception:
+            # Travis CI seems to have a problem with setting locale, so
+            # just skip this.
+            self.skipTest("Could not set locale to en_GB")
+
+        client.connection.head_container = Mock()
+        dct = [
+            {
+                "name": "o1",
+                "bytes": 111,
+                "last_modified": "2013-01-01T01:02:03.123456",
+            },
+            {
+                "name": "o2",
+                "bytes": 2222,
+                "last_modified": "2013-10-21T01:02:03.123456",
+            },
+        ]
+        client.connection.get_container = Mock(return_value=({}, dct))
+        objs = client.get_container_objects(self.cont_name)
+
+        self.assertEqual(len(objs), 2)
+        self.assertEqual(objs[0].container.name, self.cont_name)
+        self.assertEqual(objs[0].name, "o1")
+        self.assertEqual(objs[0].last_modified, "2013-01-01T01:02:03")
+        self.assertEqual(objs[1].name, "o2")
+        # Note that hour here is 1 greater than the hour in the last_modified
+        # returned by the server.  This is because they are in different
+        # timezones - the server returns the time in UTC (no DST) but the local
+        # timezone of the client as of 2013-10-21 is BST (1 hour daylight savings).
+        self.assertEqual(objs[1].last_modified, "2013-10-21T02:02:03")
+
+        locale.setlocale(locale.LC_TIME, orig_locale)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_container_object_names(self):
