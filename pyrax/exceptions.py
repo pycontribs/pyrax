@@ -68,6 +68,9 @@ class DomainRecordUpdateFailed(PyraxException):
 class DomainUpdateFailed(PyraxException):
     pass
 
+class DuplicateQueue(PyraxException):
+    pass
+
 class DuplicateUser(PyraxException):
     pass
 
@@ -146,6 +149,9 @@ class InvalidNodeParameters(PyraxException):
 class InvalidPTRRecord(PyraxException):
     pass
 
+class InvalidQueueName(PyraxException):
+    pass
+
 class InvalidSessionPersistenceType(PyraxException):
     pass
 
@@ -171,6 +177,9 @@ class InvalidVolumeResize(PyraxException):
     pass
 
 class MissingAuthSettings(PyraxException):
+    pass
+
+class MissingClaimParameters(PyraxException):
     pass
 
 class MissingDNSSettings(PyraxException):
@@ -261,6 +270,9 @@ class PTRRecordDeletionFailed(PyraxException):
     pass
 
 class PTRRecordUpdateFailed(PyraxException):
+    pass
+
+class QueueClientIDNotDefined(PyraxException):
     pass
 
 class ServiceNotAvailable(PyraxException):

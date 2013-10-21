@@ -58,8 +58,16 @@ class BaseManager(object):
         self.uri_base = uri_base
 
 
-    def list(self, limit=None, marker=None):
-        """Gets a list of all items."""
+    def list(self, limit=None, marker=None, return_raw=False):
+        """
+        Returns a list of resource objects. Pagination is supported through the
+        optional 'marker' and 'limit' parameters.
+
+        Some APIs do not follow the typical pattern in their responses, and the
+        BaseManager subclasses will have to parse the raw response to get the
+        desired information. For those cases, pass 'return_raw=True', and the
+        response and response_body will be returned unprocessed.
+        """
         uri = "/%s" % self.uri_base
         pagination_items = []
         if limit is not None:
@@ -69,7 +77,7 @@ class BaseManager(object):
         pagination = "&".join(pagination_items)
         if pagination:
             uri = "%s?%s" % (uri, pagination)
-        return self._list(uri)
+        return self._list(uri, return_raw=return_raw)
 
 
     def head(self, item):
@@ -123,7 +131,7 @@ class BaseManager(object):
         return self._delete(uri)
 
 
-    def _list(self, uri, obj_class=None, body=None):
+    def _list(self, uri, obj_class=None, body=None, return_raw=False):
         """
         Handles the communication with the API when getting
         a full listing of the resources managed by this class.
@@ -132,7 +140,8 @@ class BaseManager(object):
             resp, resp_body = self.api.method_post(uri, body=body)
         else:
             resp, resp_body = self.api.method_get(uri)
-
+        if return_raw:
+            return (resp, resp_body)
         if obj_class is None:
             obj_class = self.resource_class
 
