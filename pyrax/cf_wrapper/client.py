@@ -1105,7 +1105,10 @@ class CFClient(object):
                 limit=limit, prefix=prefix, delimiter=delimiter,
                 full_listing=full_listing)
         cont = self.get_container(cname)
-        return [StorageObject(self, container=cont, attdict=_convert_list_last_modified_to_local(obj)) for obj in objs
+        return [StorageObject(self,
+                              container=cont,
+                              attdict=_convert_list_last_modified_to_local(obj))
+                for obj in objs
                 if "name" in obj]
 
 
