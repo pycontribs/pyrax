@@ -104,8 +104,10 @@ def _convert_head_object_last_modified_to_local(lm_str):
     # them as such, no matter what the locale setting may be.
     orig_locale = locale.getlocale(locale.LC_TIME)
     locale.setlocale(locale.LC_TIME, (None, None))
-    tm_tuple = time.strptime(lm_str, HEAD_DATE_FORMAT)
-    locale.setlocale(locale.LC_TIME, orig_locale)
+    try:
+        tm_tuple = time.strptime(lm_str, HEAD_DATE_FORMAT)
+    finally:
+        locale.setlocale(locale.LC_TIME, orig_locale)
     dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
     # Now convert it back to the format returned by GETting the object.
     dtstr = dttm.strftime(DATE_FORMAT)
