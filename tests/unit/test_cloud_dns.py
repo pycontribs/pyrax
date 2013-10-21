@@ -23,7 +23,7 @@ from pyrax.clouddns import RecordResultsIterator
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
-from tests.unit import fakes
+import fakes
 
 example_uri = "http://example.com"
 
@@ -671,7 +671,7 @@ class CloudDNSTest(unittest.TestCase):
         mgr = clt._manager
         device = fakes.FakeDNSDevice()
         typ = mgr._resolve_device_type(device)
-        self.assertEqual(typ, "server")
+        self.assertEqual(typ, "loadbalancer")
         device = fakes.FakeLoadBalancer()
         typ = mgr._resolve_device_type(device)
         self.assertEqual(typ, "loadbalancer")
@@ -682,19 +682,6 @@ class CloudDNSTest(unittest.TestCase):
         device = object()
         self.assertRaises(exc.InvalidDeviceType, mgr._resolve_device_type,
                 device)
-
-    def test_get_ptr_details_server(self):
-        clt = self.client
-        mgr = clt._manager
-        dvc = fakes.FakeDNSDevice()
-        dvc_type = "server"
-        sav = pyrax._get_service_endpoint
-        pyrax._get_service_endpoint = Mock(return_value=example_uri)
-        expected_href = "%s/servers/%s" % (example_uri, dvc.id)
-        href, svc_name = mgr._get_ptr_details(dvc, dvc_type)
-        self.assertEqual(svc_name, "cloudServersOpenStack")
-        self.assertEqual(href, expected_href)
-        pyrax._get_service_endpoint = sav
 
     def test_get_ptr_details_lb(self):
         clt = self.client

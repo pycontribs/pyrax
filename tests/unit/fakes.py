@@ -42,16 +42,13 @@ from pyrax.cloudnetworks import CloudNetwork
 from pyrax.cloudnetworks import CloudNetworkClient
 from pyrax.cloudmonitoring import CloudMonitorClient
 from pyrax.cloudmonitoring import CloudMonitorEntity
-from pyrax.cloudmonitoring import CloudMonitorNotificationManager
-from pyrax.cloudmonitoring import CloudMonitorNotificationPlanManager
-from pyrax.cloudmonitoring import CloudMonitorEntityManager
 from pyrax.cloudmonitoring import CloudMonitorCheck
-from pyrax.cloudmonitoring import CloudMonitorCheckType
-from pyrax.cloudmonitoring import CloudMonitorZone
 from pyrax.cloudmonitoring import CloudMonitorNotification
-from pyrax.cloudmonitoring import CloudMonitorNotificationType
-from pyrax.cloudmonitoring import CloudMonitorNotificationPlan
-from pyrax.cloudmonitoring import CloudMonitorAlarm
+from pyrax.queueing import Queue
+from pyrax.queueing import QueueClaim
+from pyrax.queueing import QueueMessage
+from pyrax.queueing import QueueClient
+from pyrax.queueing import QueueManager
 
 import pyrax.exceptions as exc
 from pyrax.identity.rax_identity import RaxIdentity
@@ -299,43 +296,6 @@ class FakeDatabaseClient(CloudDatabaseClient):
                 "fakepassword", *args, **kwargs)
 
 
-class FakeDNSClient(CloudDNSClient):
-    def __init__(self, *args, **kwargs):
-        super(FakeDNSClient, self).__init__("fakeuser",
-                "fakepassword", *args, **kwargs)
-
-
-class FakeDNSManager(CloudDNSManager):
-    def __init__(self, api=None, *args, **kwargs):
-        if api is None:
-            api = FakeDNSClient()
-        super(FakeDNSManager, self).__init__(api, *args, **kwargs)
-        self.resource_class = FakeDNSDomain
-        self.response_key = "domain"
-        self.plural_response_key = "domains"
-        self.uri_base = "domains"
-
-
-class FakeDNSDomain(CloudDNSDomain):
-    def __init__(self, *args, **kwargs):
-        self.id = utils.random_name(ascii_only=True)
-        self.name = utils.random_name()
-        self.manager = FakeDNSManager()
-
-
-class FakeDNSRecord(CloudDNSRecord):
-    def __init__(self, mgr, info, *args, **kwargs):
-        super(FakeDNSRecord, self).__init__(mgr, info, *args, **kwargs)
-
-
-class FakeDNSPTRRecord(CloudDNSPTRRecord):
-    pass
-
-class FakeDNSDevice(FakeEntity):
-    def __init__(self, *args, **kwargs):
-        self.id = utils.random_name()
-
-
 class FakeNovaVolumeClient(BaseClient):
     def __init__(self, *args, **kwargs):
         pass
@@ -424,6 +384,44 @@ class FakeStatusChanger(object):
         return "ready"
 
 
+class FakeDNSClient(CloudDNSClient):
+    def __init__(self, *args, **kwargs):
+        super(FakeDNSClient, self).__init__("fakeuser",
+                "fakepassword", *args, **kwargs)
+
+
+class FakeDNSManager(CloudDNSManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeDNSClient()
+        super(FakeDNSManager, self).__init__(api, *args, **kwargs)
+        self.resource_class = FakeDNSDomain
+        self.response_key = "domain"
+        self.plural_response_key = "domains"
+        self.uri_base = "domains"
+
+
+class FakeDNSDomain(CloudDNSDomain):
+    def __init__(self, *args, **kwargs):
+        self.id = utils.random_name(ascii_only=True)
+        self.name = utils.random_name()
+        self.manager = FakeDNSManager()
+
+
+class FakeDNSRecord(CloudDNSRecord):
+    def __init__(self, mgr, info, *args, **kwargs):
+        super(FakeDNSRecord, self).__init__(mgr, info, *args, **kwargs)
+
+
+class FakeDNSPTRRecord(CloudDNSPTRRecord):
+    pass
+
+
+class FakeDNSDevice(FakeLoadBalancer):
+    def __init__(self, *args, **kwargs):
+        self.id = utils.random_name()
+
+
 class FakeCloudNetworkClient(CloudNetworkClient):
     def __init__(self, *args, **kwargs):
         super(FakeCloudNetworkClient, self).__init__("fakeuser",
@@ -507,6 +505,48 @@ class FakeCloudMonitorNotification(CloudMonitorNotification):
         super(FakeCloudMonitorNotification, self).__init__(manager=None,
                 info=info, *args, **kwargs)
         self.id = uuid.uuid4()
+
+
+class FakeQueue(Queue):
+    def __init__(self, *args, **kwargs):
+        info = kwargs.pop("info", {"fake": "fake"})
+        info["name"] = utils.random_name()
+        mgr = kwargs.pop("manager", FakeQueueManager())
+        super(FakeQueue, self).__init__(manager=mgr, info=info, *args, **kwargs)
+
+
+class FakeQueueClaim(QueueClaim):
+    def __init__(self, *args, **kwargs):
+        info = kwargs.pop("info", {"fake": "fake"})
+        info["name"] = utils.random_name()
+        mgr = kwargs.pop("manager", FakeQueueManager())
+        super(FakeQueueClaim, self).__init__(manager=mgr, info=info, *args,
+                **kwargs)
+
+
+class FakeQueueMessage(QueueMessage):
+    def __init__(self, *args, **kwargs):
+        id_ = utils.random_name()
+        href = "http://example.com/%s" % id_
+        info = kwargs.pop("info", {"href": href})
+        info["name"] = utils.random_name()
+        mgr = kwargs.pop("manager", FakeQueueManager())
+        super(FakeQueueMessage, self).__init__(manager=mgr, info=info, *args,
+                **kwargs)
+
+
+class FakeQueueClient(QueueClient):
+    def __init__(self, *args, **kwargs):
+        super(FakeQueueClient, self).__init__("fakeuser",
+                "fakepassword", *args, **kwargs)
+
+
+class FakeQueueManager(QueueManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeQueueClient()
+        super(FakeQueueManager, self).__init__(api, *args, **kwargs)
+        self.id = utils.random_name(ascii_only=True)
 
 
 class FakeIdentity(RaxIdentity):
