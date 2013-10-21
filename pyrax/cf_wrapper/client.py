@@ -33,6 +33,11 @@ import pyrax.exceptions as exc
 EARLY_DATE_STR = "1900-01-01T00:00:00"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 HEAD_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %Z"
+# Format of last_modified in list responses, reverse engineered from sample
+# responses at
+# http://docs.rackspace.com/files/api/v1/cf-devguide/content/
+#   Serialized_List_Output-d1e1460.html
+LIST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
 AUTH_ATTEMPTS = 2
@@ -93,6 +98,34 @@ def handle_swiftclient_exception(fnc):
                 raise
     return _wrapped
 
+
+def _convert_head_object_last_modified_to_local(lm_str):
+    # Need to convert last modified time to a datetime object.
+    # Times are returned in default locale format, so we need to read
+    # them as such, no matter what the locale setting may be.
+    orig_locale = locale.getlocale(locale.LC_TIME)
+    locale.setlocale(locale.LC_TIME, (None, None))
+    try:
+        tm_tuple = time.strptime(lm_str, HEAD_DATE_FORMAT)
+    finally:
+        locale.setlocale(locale.LC_TIME, orig_locale)
+    dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
+    # Now convert it back to the format returned by GETting the object.
+    dtstr = dttm.strftime(DATE_FORMAT)
+    return dtstr
+
+
+def _convert_list_last_modified_to_local(attdict):
+    if 'last_modified' in attdict:
+        attdict = attdict.copy()
+        list_date_format_with_tz = LIST_DATE_FORMAT + ' %Z'
+        last_modified_utc = attdict['last_modified'] + ' UTC'
+        tm_tuple = time.strptime(last_modified_utc,
+                                 list_date_format_with_tz)
+        dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
+        attdict['last_modified'] = dttm.strftime(DATE_FORMAT)
+
+    return attdict
 
 
 class CFClient(object):
@@ -566,17 +599,8 @@ class CFClient(object):
         cname = self._resolve_name(container)
         oname = self._resolve_name(obj)
         obj_info = self.connection.head_object(cname, oname)
-        # Need to convert last modified time to a datetime object.
-        # Times are returned in default locale format, so we need to read
-        # them as such, no matter what the locale setting may be.
         lm_str = obj_info["last-modified"]
-        orig_locale = locale.getlocale(locale.LC_TIME)
-        locale.setlocale(locale.LC_TIME, (None, None))
-        tm_tuple = time.strptime(lm_str, HEAD_DATE_FORMAT)
-        locale.setlocale(locale.LC_TIME, orig_locale)
-        dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
-        # Now convert it back to the format returned by GETting the object.
-        dtstr = dttm.strftime(DATE_FORMAT)
+        dtstr = _convert_head_object_last_modified_to_local(lm_str)
         obj = StorageObject(self, self.get_container(container),
                 name=oname, content_type=obj_info["content-type"],
                 total_bytes=int(obj_info["content-length"]),
@@ -1082,7 +1106,10 @@ class CFClient(object):
                 limit=limit, prefix=prefix, delimiter=delimiter,
                 full_listing=full_listing)
         cont = self.get_container(cname)
-        return [StorageObject(self, container=cont, attdict=obj) for obj in objs
+        return [StorageObject(self,
+                              container=cont,
+                              attdict=_convert_list_last_modified_to_local(obj))
+                for obj in objs
                 if "name" in obj]
 
 
