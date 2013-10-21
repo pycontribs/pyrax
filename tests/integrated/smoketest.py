@@ -30,15 +30,6 @@ class SmokeTester(object):
         self.clb = pyrax.cloud_loadbalancers
         self.dns = pyrax.cloud_dns
         self.cnw = pyrax.cloud_networks
-        self.cmn = pyrax.cloud_monitoring
-        self.au = pyrax.autoscale
-
-#        u'monitor',
-#        u'queues',
-#        u'object_cdn',
-#        u'autoscale',
-#        u'backup',
-
         self.services = ({"service": self.cs, "name": "Cloud Servers"},
                 {"service": self.cf, "name": "Cloud Files"},
                 {"service": self.cbs, "name": "Cloud Block Storage"},
@@ -46,8 +37,6 @@ class SmokeTester(object):
                 {"service": self.clb, "name": "Cloud Load Balancers"},
                 {"service": self.dns, "name": "Cloud DNS"},
                 {"service": self.cnw, "name": "Cloud Networks"},
-                {"service": self.cmn, "name": "Cloud Monitoring"},
-                {"service": self.au, "name": "Auto Scale"},
                 )
 
     def auth(self, region):
@@ -72,61 +61,50 @@ class SmokeTester(object):
         print
 
     def run_tests(self):
-#        if self.cs:
-#            print "Running 'compute' tests..."
-#            self.cs_list_flavors()
-#            self.cs_list_images()
-#            self.cs_create_server()
-#            self.cs_reboot_server()
-#            self.cs_list_servers()
-#
-#        if self.cnw:
-#            print "Running 'network' tests..."
-#            try:
-#                self.cnw_create_network()
-#                self.cnw_list_networks()
-#            except exc.NotFound:
-#                # Networking not supported
-#                print " - Networking not supported."
-#            except exc.NetworkCountExceeded:
-#                print " - Too many networks already exist."
-#
-#        if self.cdb:
-#            print "Running 'database' tests..."
-#            self.cdb_list_flavors()
-#            self.cdb_create_instance()
-#            self.cdb_create_db()
-#            self.cdb_create_user()
-#
-#        if self.cf:
-#            print "Running 'object_store' tests..."
-#            self.cf_create_container()
-#            self.cf_list_containers()
-#            self.cf_make_container_public()
-#            self.cf_make_container_private()
-#            self.cf_upload_file()
-#
-#        if self.clb:
-#            print "Running 'load_balancer' tests..."
-#            self.lb_list()
-#            self.lb_create()
-#
-#        if self.dns:
-#            print "Running 'DNS' tests..."
-#            self.dns_list()
-#            self.dns_create_domain()
-#            self.dns_create_record()
+        if self.cs:
+            print "Running 'compute' tests..."
+            self.cs_list_flavors()
+            self.cs_list_images()
+            self.cs_create_server()
+            self.cs_reboot_server()
+            self.cs_list_servers()
 
-        if self.cmn:
-            print "Running 'Monitoring' tests..."
-            self.cmn_list_check_types()
-            self.cmn_list_entities()
-            self.cmn_list_metrics()
-            self.cmn_list_monitoring_zones()
-            self.cmn_list_notification_plans()
-            self.cmn_list_notification_types()
-            self.cmn_list_notifications()
+        if self.cnw:
+            print "Running 'network' tests..."
+            try:
+                self.cnw_create_network()
+                self.cnw_list_networks()
+            except exc.NotFound:
+                # Networking not supported
+                print " - Networking not supported."
+            except exc.NetworkCountExceeded:
+                print " - Too many networks already exist."
 
+        if self.cdb:
+            print "Running 'database' tests..."
+            self.cdb_list_flavors()
+            self.cdb_create_instance()
+            self.cdb_create_db()
+            self.cdb_create_user()
+
+        if self.cf:
+            print "Running 'object_store' tests..."
+            self.cf_create_container()
+            self.cf_list_containers()
+            self.cf_make_container_public()
+            self.cf_make_container_private()
+            self.cf_upload_file()
+
+        if self.clb:
+            print "Running 'load_balancer' tests..."
+            self.lb_list()
+            self.lb_create()
+
+        if self.dns:
+            print "Running 'DNS' tests..."
+            self.dns_list()
+            self.dns_create_domain()
+            self.dns_create_record()
 
 
     def cs_list_flavors(self):
@@ -226,7 +204,10 @@ class SmokeTester(object):
 
     def cdb_list_flavors(self):
         print "Listing Database Flavors:",
-        self.cdb_flavors = self.cdb.list_flavors()
+        try:
+            self.cdb_flavors = self.cdb.list_flavors()
+        except Exception as e:
+            self.cdb_flavors = None
         if self.cdb_flavors:
             print
             for flavor in self.cdb_flavors:
@@ -237,6 +218,11 @@ class SmokeTester(object):
         print
 
     def cdb_create_instance(self):
+        if not self.cdb_flavors:
+            # Skip this test
+            print "Skipping database instance creation..."
+            self.smoke_instance = None
+            return
         print "Creating database instance..."
         self.smoke_instance = self.cdb.create("SMOKETEST_DB_INSTANCE",
                 flavor=self.cdb_flavors[0], volume=1)
@@ -252,6 +238,10 @@ class SmokeTester(object):
         print
 
     def cdb_create_db(self):
+        if not self.smoke_instance:
+            # Skip this test
+            print "Skipping database creation..."
+            return
         print "Creating database..."
         self.smoke_db = self.smoke_instance.create_database("SMOKETEST_DB")
         self.cleanup_items.append(self.smoke_db)
@@ -264,6 +254,10 @@ class SmokeTester(object):
         print
 
     def cdb_create_user(self):
+        if not self.smoke_instance:
+            # Skip this test
+            print "Skipping database user creation..."
+            return
         print "Creating database user..."
         self.smoke_user = self.smoke_instance.create_user("SMOKETEST_USER",
                 "SMOKETEST_PW", database_names=[self.smoke_db])
@@ -402,56 +396,6 @@ class SmokeTester(object):
         except exc.DomainRecordAdditionFailed:
             print "FAIL!"
             self.failures.append("DNS RECORD CREATION")
-
-    def cmn_list_check_types(self):
-        print "Listing Monitoring Check Types..."
-        typs = self.cmn.list_check_types()
-        for typ in typs:
-            print " ", typ.id,
-            try:
-                print typ.description
-            except:
-                print
-
-    def cmn_list_entities(self):
-        print "Listing Monitoring Entities..."
-        ents = self.cmn.list_entities()
-        for ent in ents:
-            print ent.id, ent.name
-            print "  Alarms:",
-            alarms = self.cmn.list_alarms(ent)
-            if not alarms:
-                print " - None"
-                continue
-            print
-            for alarm in alarms:
-                print "    Alarm ID =", alarm.id, "Name =", alarm.name
-            print "  Checks:",
-            checks = self.cmn.list_checks(ent)
-            if not checks:
-                print " - None"
-                continue
-            print
-            for check in checks:
-                print "    Check ID =", check.id, "Name =", check.name,
-                print "Type =", check.type
-
-    def cmn_list_metrics(self):
-        pass
-
-    def cmn_list_monitoring_zones(self):
-        pass
-
-    def cmn_list_notification_plans(self):
-        pass
-
-    def cmn_list_notification_types(self):
-        pass
-
-    def cmn_list_notifications(self):
-        pass
-
-
 
 
     def cleanup(self):
