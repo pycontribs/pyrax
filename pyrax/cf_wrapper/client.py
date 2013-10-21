@@ -35,7 +35,8 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 HEAD_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %Z"
 # Format of last_modified in list responses, reverse engineered from sample
 # responses at
-# http://docs.rackspace.com/files/api/v1/cf-devguide/content/Serialized_List_Output-d1e1460.html
+# http://docs.rackspace.com/files/api/v1/cf-devguide/content/
+#   Serialized_List_Output-d1e1460.html
 LIST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5

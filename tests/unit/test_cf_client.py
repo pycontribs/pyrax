@@ -443,7 +443,8 @@ class CF_ClientTest(unittest.TestCase):
 
     def random_non_us_locale(self):
         nonUS_locales = ("de_DE", "fr_FR", "hu_HU", "ja_JP", "nl_NL", "pl_PL",
-                         "pt_BR", "pt_PT", "ro_RO", "ru_RU", "zh_CN", "zh_HK", "zh_TW")
+                         "pt_BR", "pt_PT", "ro_RO", "ru_RU", "zh_CN", "zh_HK",
+                         "zh_TW")
         return random.choice(nonUS_locales)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
