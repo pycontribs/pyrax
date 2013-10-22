@@ -30,6 +30,9 @@ class SmokeTester(object):
         self.clb = pyrax.cloud_loadbalancers
         self.dns = pyrax.cloud_dns
         self.cnw = pyrax.cloud_networks
+        self.cmn = pyrax.cloud_monitoring
+        self.au = pyrax.autoscale
+        self.pq = pyrax.queues
         self.services = ({"service": self.cs, "name": "Cloud Servers"},
                 {"service": self.cf, "name": "Cloud Files"},
                 {"service": self.cbs, "name": "Cloud Block Storage"},
@@ -37,6 +40,9 @@ class SmokeTester(object):
                 {"service": self.clb, "name": "Cloud Load Balancers"},
                 {"service": self.dns, "name": "Cloud DNS"},
                 {"service": self.cnw, "name": "Cloud Networks"},
+                {"service": self.cmn, "name": "Cloud Monitoring"},
+                {"service": self.au, "name": "Auto Scale"},
+                {"service": self.pq, "name": "Cloud Queues"},
                 )
 
     def auth(self, region):
@@ -106,7 +112,20 @@ class SmokeTester(object):
             self.dns_create_domain()
             self.dns_create_record()
 
+        if self.cmn:
+            if not self.smoke_server:
+                print "Server not available; skipping Monitoring tests."
+                return
+            self.cmn_create_entity()
+            self.cmn_list_check_types()
+            self.cmn_list_monitoring_zones()
+            self.cmn_create_check()
+            self.cmn_create_notification()
+            self.cmn_create_notification_plan()
+            self.cmn_create_alarm()
 
+
+    ## Specific tests start here ##
     def cs_list_flavors(self):
         print "Listing Flavors:",
         self.cs_flavors = self.cs.list_flavors()
@@ -397,6 +416,99 @@ class SmokeTester(object):
             print "FAIL!"
             self.failures.append("DNS RECORD CREATION")
 
+    def cmn_list_check_types(self):
+        print "Listing Monitoring Check Types..."
+        cts = self.cmn.list_check_types()
+        for ct in cts:
+            print " -", ct.id, ct.type
+        print
+
+    def cmn_list_monitoring_zones(self):
+        print "Listing Monitoring Zones..."
+        zones = self.cmn.list_monitoring_zones()
+        for zone in zones:
+            print " -", zone.id, zone.name
+        print
+
+    def cmn_create_entity(self):
+        print "Creating a Monitoring Entity..."
+        srv = self.smoke_server
+        ip = srv.networks["public"][0]
+        try:
+            self.smoke_entity = self.cmn.create_entity(name="SMOKETEST_entity",
+                    ip_addresses={"main": ip})
+            self.cleanup_items.append(self.smoke_entity)
+            print "Success!"
+        except Exception:
+            print "FAIL!"
+            self.smoke_entity = None
+            self.failures.append("MONITORING CREATE ENTITY")
+        print
+
+    def cmn_create_check(self):
+        print "Creating a Monitoring Check..."
+        ent = self.smoke_entity
+        alias = ent.ip_addresses.keys()[0]
+        try:
+            self.smoke_check = self.cmn.create_check(ent,
+                    label="SMOKETEST_check", check_type="remote.ping",
+                    details={"count": 5}, monitoring_zones_poll=["mzdfw"],
+                    period=60, timeout=20, target_alias=alias)
+            print "Success!"
+            self.cleanup_items.append(self.smoke_check)
+        except Exception:
+            print "FAIL!"
+            self.smoke_check = None
+            self.failures.append("MONITORING CREATE CHECK")
+        print
+
+    def cmn_create_notification(self):
+        print "Creating a Monitoring Notification..."
+        email = "smoketest@example.com"
+        try:
+            self.smoke_notification = self.cmn.create_notification("email",
+                    label="smoketest", details={"address": email})
+            print "Success!"
+            self.cleanup_items.append(self.smoke_notification)
+        except Exception:
+            print "FAIL!"
+            self.smoke_notification = None
+            self.failures.append("MONITORING CREATE NOTIFICATION")
+        print
+
+    def cmn_create_notification_plan(self):
+        if not self.smoke_notification:
+            print ("No monitoring notification found; skipping notification "
+                    "creation...")
+            return
+        print "Creating a Monitoring Notification Plan..."
+        try:
+            self.smoke_notification_plan = self.cmn.create_notification_plan(
+                    label="smoketest plan", ok_state=self.smoke_notification)
+            print "Success!"
+            self.cleanup_items.append(self.smoke_notification_plan)
+        except Exception as e:
+            print "FAIL!", e
+            self.smoke_notification_plan = None
+            self.failures.append("MONITORING CREATE NOTIFICATION PLAN")
+        print
+
+    def cmn_create_alarm(self):
+        if not self.smoke_notification_plan:
+            print "No monitoring plan found; skipping alarm creation..."
+            return
+        print "Creating a Monitoring Alarm..."
+        try:
+            self.smoke_alarm = self.cmn.create_alarm(self.smoke_entity,
+                    self.smoke_check, self.smoke_notification_plan,
+                    label="smoke alarm")
+            print "Success!"
+            self.cleanup_items.append(self.smoke_alarm)
+        except Exception:
+            print "FAIL!"
+            self.failures.append("MONITORING CREATE ALARM")
+        print
+
 
     def cleanup(self):
         print "Cleaning up..."
@@ -408,7 +520,10 @@ class SmokeTester(object):
                     print item.name
                 except AttributeError:
                     print item
-
+            except exc.NotFound:
+                # Some items are deleted along with others (e.g., DNS records
+                # when a domain is deleted), so don't complain.
+                pass
             except Exception as e:
                 print "Could not delete '%s': %s" % (item, e)
 
