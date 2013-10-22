@@ -332,11 +332,11 @@ class ScalingGroupManager(BaseManager):
             max_entities, metadata=None):
         """
         Replace an existing ScalingGroup configuration. All of the attributes
-        must be specified; if any are left out, they will be deleted from the
-        existing group. This is useful if you need to delete optional attributes.
+        must be specified If you wish to delete any of the optional attributes,
+        pass them in as None.
         """
         body = self._create_group_config_body(name, cooldown, min_entities,
-                                              max_entities, metadata=metadata)
+                max_entities, metadata=metadata)
         group_id = utils.get_id(scaling_group)
         uri = "/%s/%s/config" % (self.uri_base, group_id)
         resp, resp_body = self.api.method_put(uri, body=body)
@@ -412,17 +412,16 @@ class ScalingGroupManager(BaseManager):
             key_name=None):
         """
         Replace an existing launch configuration. All of the attributes must be
-        specified; if any are left out, they will be deleted from the existing
-        launch config. This is useful if you need to delete optional
-        attributes.
+        specified. If you wish to delete any of the optional attributes, pass
+        them in as None.
         """
         group_id = utils.get_id(scaling_group)
         uri = "/%s/%s/launch" % (self.uri_base, group_id)
         body = self._create_launch_config_body(
-            launch_config_type=launch_config_type, server_name=server_name,
-            image=image, flavor=flavor, disk_config=disk_config,
-            metadata=metadata, personality=personality, networks=networks,
-            load_balancers=load_balancers, key_name=key_name)
+                launch_config_type=launch_config_type, server_name=server_name,
+                image=image, flavor=flavor, disk_config=disk_config,
+                metadata=metadata, personality=personality, networks=networks,
+                load_balancers=load_balancers, key_name=key_name)
         resp, resp_body = self.api.method_put(uri, body=body)
 
 
@@ -488,8 +487,8 @@ class ScalingGroupManager(BaseManager):
         """
         uri = "/%s/%s/policies" % (self.uri_base, utils.get_id(scaling_group))
         body = self._create_policy_body(name, policy_type, cooldown,
-            change=change, is_percent=is_percent,
-            desired_capacity=desired_capacity, args=args)
+                change=change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
         # "body" needs to be a list
         body = [body]
         resp, resp_body = self.api.method_post(uri, body=body)
@@ -537,16 +536,16 @@ class ScalingGroupManager(BaseManager):
             policy_type, cooldown, change=None, is_percent=False,
             desired_capacity=None, args=None):
         """
-        Replace an existing policy. All of the attributes must be
-        specified; if any are left out, they will be deleted from the existing
-        policy. This is useful if you need to delete optional attributes.
+        Replace an existing policy. All of the attributes must be specified. If
+        you wish to delete any of the optional attributes, pass them in as
+        None.
         """
         policy_id = utils.get_id(policy)
         group_id = utils.get_id(scaling_group)
         uri = "/%s/%s/policies/%s" % (self.uri_base, group_id, policy_id)
         body = self._create_policy_body(name=name, policy_type=policy_type,
-            cooldown=cooldown, change=change, is_percent=is_percent,
-            desired_capacity=desired_capacity, args=args)
+                cooldown=cooldown, change=change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
         resp, resp_body = self.api.method_put(uri, body=body)
 
 
@@ -654,9 +653,9 @@ class ScalingGroupManager(BaseManager):
     def replace_webhook(self, scaling_group, policy, webhook, name,
             metadata=None):
         """
-        Replace an existing webhook. All of the attributes must be specified;
-        if any are left out, they will be deleted from the existing webhook.
-        This is useful if you need to delete optional attributes.
+        Replace an existing webhook. All of the attributes must be specified.
+        If you wish to delete any of the optional attributes, pass them in as
+        None.
         """
         uri = "/%s/%s/policies/%s/webhooks/%s" % (self.uri_base,
                 utils.get_id(scaling_group), utils.get_id(policy),
@@ -766,19 +765,17 @@ class ScalingGroupManager(BaseManager):
             networks = [{"uuid": SERVICE_NET_ID}]
         if scaling_policies is None:
             scaling_policies = []
-        group_config = self._create_group_config_body(
-            name, cooldown, min_entities, max_entities,
-            metadata=group_metadata)
-        launch_config = self._create_launch_config_body(
-            launch_config_type, server_name, image, flavor,
-            disk_config=disk_config, metadata=metadata,
-            personality=personality, networks=networks,
-            load_balancers=load_balancers, key_name=key_name)
+        group_config = self._create_group_config_body(name, cooldown,
+                min_entities, max_entities, metadata=group_metadata)
+        launch_config = self._create_launch_config_body(launch_config_type,
+                server_name, image, flavor, disk_config=disk_config,
+                metadata=metadata, personality=personality, networks=networks,
+                load_balancers=load_balancers, key_name=key_name)
         body = {
-            "groupConfiguration": group_config,
-            "launchConfiguration": launch_config,
-            "scalingPolicies": scaling_policies
-        }
+                "groupConfiguration": group_config,
+                "launchConfiguration": launch_config,
+                "scalingPolicies": scaling_policies,
+                }
         return body
 
 
@@ -789,12 +786,12 @@ class ScalingGroupManager(BaseManager):
             # passed. Leaving it out causes Otter to return 400.
             metadata = {}
         body = {
-            "name": name,
-            "cooldown": cooldown,
-            "minEntities": min_entities,
-            "maxEntities": max_entities,
-            "metadata": metadata,
-        }
+                "name": name,
+                "cooldown": cooldown,
+                "minEntities": min_entities,
+                "maxEntities": max_entities,
+                "metadata": metadata,
+                }
         return body
 
 
@@ -803,10 +800,10 @@ class ScalingGroupManager(BaseManager):
             personality=None, networks=None, load_balancers=None,
             key_name=None):
         server_args = {
-            "flavorRef": "%s" % flavor,
-            "name": server_name,
-            "imageRef": utils.get_id(image),
-        }
+                "flavorRef": "%s" % flavor,
+                "name": server_name,
+                "imageRef": utils.get_id(image),
+                }
         if metadata is not None:
             server_args["metadata"] = metadata
         if personality is not None:
@@ -997,18 +994,18 @@ class AutoScaleClient(BaseClient):
             max_entities, metadata=None):
         """
         Replace an existing ScalingGroup configuration. All of the attributes
-        must be specified; if any are left out, they will be deleted from the
-        existing group. This is useful if you need to delete optional attributes.
+        must be specified. If you wish to delete any of the optional
+        attributes, pass them in as None.
         """
-        return self._manager.replace(scaling_group, name,
-            cooldown, min_entities, max_entities, metadata=metadata)
+        return self._manager.replace(scaling_group, name, cooldown,
+                min_entities, max_entities, metadata=metadata)
 
 
-    def update(self, scaling_group, name=None, cooldown=None,
-            min_entities=None, max_entities=None, metadata=None):
+    def update(self, scaling_group, name=None, cooldown=None, min_entities=None,
+            max_entities=None, metadata=None):
         """
-        Updates an existing ScalingGroup. One or more of the attributes can
-        be specified.
+        Updates an existing ScalingGroup. One or more of the attributes can be
+        specified.
 
         NOTE: if you specify metadata, it will *replace* any existing metadata.
         If you want to add to it, you either need to pass the complete dict of
@@ -1047,15 +1044,14 @@ class AutoScaleClient(BaseClient):
             key_name=None):
         """
         Replace an existing launch configuration. All of the attributes must be
-        specified; if any are left out, they will be deleted from the existing
-        launch config. This is useful if you need to delete optional
-        attributes.
+        specified. If you wish to delete any of the optional attributes, pass
+        them in as None.
         """
-        return self._manager.replace_launch_config(
-            scaling_group, launch_config_type, server_name, image, flavor,
-            disk_config=disk_config, metadata=metadata,
-            personality=personality, networks=networks,
-            load_balancers=load_balancers, key_name=key_name)
+        return self._manager.replace_launch_config(scaling_group,
+                launch_config_type, server_name, image, flavor,
+                disk_config=disk_config, metadata=metadata,
+                personality=personality, networks=networks,
+                load_balancers=load_balancers, key_name=key_name)
 
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
@@ -1114,14 +1110,13 @@ class AutoScaleClient(BaseClient):
             policy_type, cooldown, change=None, is_percent=False,
             desired_capacity=None, args=None):
         """
-        Replace an existing policy. All of the attributes must be
-        specified; if any are left out, they will be deleted from the existing
-        policy. This is useful if you need to delete optional attributes.
+        Replace an existing policy. All of the attributes must be specified. If
+        you wish to delete any of the optional attributes, pass them in as
+        None.
         """
-        return self._manager.replace_policy(
-            scaling_group, policy, name, policy_type, cooldown, change=change,
-            is_percent=is_percent, desired_capacity=desired_capacity,
-            args=args)
+        return self._manager.replace_policy(scaling_group, policy, name,
+                policy_type, cooldown, change=change, is_percent=is_percent,
+                desired_capacity=desired_capacity, args=args)
 
 
     def update_policy(self, scaling_group, policy, name=None, policy_type=None,
@@ -1133,8 +1128,8 @@ class AutoScaleClient(BaseClient):
         """
         return self._manager.update_policy(scaling_group, policy, name=name,
                 policy_type=policy_type, cooldown=cooldown, change=change,
-                is_percent=is_percent,
-                desired_capacity=desired_capacity, args=args)
+                is_percent=is_percent, desired_capacity=desired_capacity,
+                args=args)
 
 
     def execute_policy(self, scaling_group, policy):
@@ -1178,12 +1173,12 @@ class AutoScaleClient(BaseClient):
     def replace_webhook(self, scaling_group, policy, webhook, name,
             metadata=None):
         """
-        Replace an existing webhook. All of the attributes must be specified;
-        if any are left out, they will be deleted from the existing webhook.
-        This is useful if you need to delete optional attributes.
+        Replace an existing webhook. All of the attributes must be specified.
+        If you wish to delete any of the optional attributes, pass them in as
+        None.
         """
         return self._manager.replace_webhook(scaling_group, policy, webhook,
-            name, metadata=metadata)
+                name, metadata=metadata)
 
 
     def update_webhook(self, scaling_group, policy, webhook, name=None,
