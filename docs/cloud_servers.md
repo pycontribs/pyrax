@@ -2,6 +2,8 @@
 
 ----
 
+*Note: pyrax works with OpenStack-based clouds. Rackspace's "First Generation" servers are based on a different API, and are not supported.*
+
 ## Listing Servers
 Start by listing all the servers in your account:
 

@@ -4,7 +4,7 @@
 
 
 ## Getting Started With pyrax
-**pyrax** is the Python language binding for **OpenStack** and the **Rackspace Cloud**. By installing pyrax, you have the ability to build on any OpenStack cloud using standard Python objects and code.
+**pyrax** is the Python language binding for **OpenStack** and the **Rackspace Cloud**. By installing pyrax, you have the ability to build on any OpenStack cloud using standard Python objects and code. *Note: since pyrax works with the OpenStack API, it does not support Rackspace's "First Generation" Cloud Servers, which are based on a different technology.*
 
 
 ## Prerequisites
