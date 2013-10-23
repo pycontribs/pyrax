@@ -234,8 +234,7 @@ class CF_StorageObjectTest(unittest.TestCase):
         secs = random.randint(1, 1000)
         obj.delete_in_seconds(seconds=secs)
         obj.client.connection.post_object.assert_called_with(obj.container.name,
-                obj.name, headers={'X-Delete-After': secs},
-                response_dict=None)
+                obj.name, {'X-Delete-After': "%s" % secs}, response_dict=None)
 
     def test_repr(self):
         obj = self.storage_object

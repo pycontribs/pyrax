@@ -246,7 +246,7 @@ class CFClient(object):
             curr_meta = self.get_account_metadata()
             for ckey in curr_meta:
                 new_meta[ckey] = ""
-        new_meta.update(massaged)
+        utils.case_insensitive_update(new_meta, massaged)
         self.connection.post_account(new_meta, response_dict=extra_info)
 
 
@@ -333,11 +333,12 @@ class CFClient(object):
         Sets the object in the specified container to be deleted after the
         specified number of seconds.
         """
-        cname = self._resolve_name(cont)
-        oname = self._resolve_name(obj)
-        headers = {"X-Delete-After": seconds}
-        self.connection.post_object(cname, oname, headers=headers,
-                response_dict=extra_info)
+        meta = {"X-Delete-After": str(seconds)}
+        self.set_object_metadata(cont, obj, meta, prefix="")
+#        cname = self._resolve_name(cont)
+#        oname = self._resolve_name(obj)
+#        self.connection.post_object(cname, oname, headers=headers,
+#                response_dict=extra_info)
 
 
     @handle_swiftclient_exception
@@ -384,7 +385,7 @@ class CFClient(object):
             curr_meta = self.get_container_metadata(cname)
             for ckey in curr_meta:
                 new_meta[ckey] = ""
-        new_meta.update(massaged)
+        utils.case_insensitive_update(new_meta, massaged)
         self.connection.post_container(cname, new_meta,
                 response_dict=extra_info)
 
@@ -492,7 +493,7 @@ class CFClient(object):
         if not clear:
             obj_meta = self.get_object_metadata(cname, oname)
             new_meta = self._massage_metakeys(obj_meta, self.object_meta_prefix)
-        new_meta.update(massaged)
+        utils.case_insensitive_update(new_meta, massaged)
         # Remove any empty values, since the object metadata API will
         # store them.
         to_pop = []

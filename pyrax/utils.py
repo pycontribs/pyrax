@@ -536,6 +536,19 @@ def update_exc(exc, msg, before=True, separator="\n"):
     return exc
 
 
+def case_insensitive_update(dct1, dct2):
+    """
+    Given two dicts, updates the first one with the second, but considers keys
+    that are identical except for case to be the same.
+
+    No return value; this function modified dct1 similar to the update() method.
+    """
+    lowkeys = dict([(key.lower(), key) for key in dct1])
+    for key, val in dct2.items():
+        d1_key = lowkeys.get(key.lower(), key)
+        dct1[d1_key] = val
+
+
 def env(*args, **kwargs):
     """
     Returns the first environment variable set

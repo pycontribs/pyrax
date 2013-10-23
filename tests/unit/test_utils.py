@@ -159,6 +159,17 @@ class UtilsTest(unittest.TestCase):
         self.assertTrue(hasattr(obj, "fake_method"))
         self.assertTrue(callable(obj.fake_method))
 
+    def test_case_insensitive_update(self):
+        k1 = utils.random_ascii()
+        k2 = utils.random_ascii()
+        k2up = k2.upper()
+        k3 = utils.random_ascii()
+        d1 = {k1: "fake", k2up: "fake"}
+        d2 = {k2: "NEW", k3: "NEW"}
+        expected = {k1: "fake", k2up: "NEW", k3: "NEW"}
+        utils.case_insensitive_update(d1, d2)
+        self.assertEqual(d1, expected)
+
     def test_env(self):
         args = ("foo", "bar")
         ret = utils.env(*args)

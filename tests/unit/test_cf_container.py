@@ -381,13 +381,12 @@ class CF_ContainerTest(unittest.TestCase):
 
     def test_delete_object_in_seconds(self):
         cont = self.container
-        cont.client.connection.post_object = Mock()
+        cont.client.delete_object_in_seconds = Mock()
         secs = random.randint(1, 1000)
         obj_name = utils.random_ascii()
-        cont.delete_object_in_seconds(obj_name, seconds=secs)
-        cont.client.connection.post_object.assert_called_with(cont.name,
-                obj_name, headers={'X-Delete-After': secs},
-                response_dict=None)
+        cont.delete_object_in_seconds(obj_name, secs)
+        cont.client.delete_object_in_seconds.assert_called_once_with(cont,
+                obj_name, secs)
 
         nm = utils.random_ascii()
         sav = cont.name
