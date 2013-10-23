@@ -62,7 +62,8 @@ class CloudDatabasesTest(unittest.TestCase):
         limit = utils.random_unicode()
         marker = utils.random_unicode()
         inst.list_databases(limit=limit, marker=marker)
-        inst._database_manager.list.assert_called_once_with(limit=limit, marker=marker)
+        inst._database_manager.list.assert_called_once_with(limit=limit,
+                marker=marker)
         inst._database_manager.list = sav
 
     def test_list_users(self):
@@ -492,7 +493,8 @@ class CloudDatabasesTest(unittest.TestCase):
         limit = utils.random_unicode()
         marker = utils.random_unicode()
         clt.list_flavors(limit=limit, marker=marker)
-        clt._flavor_manager.list.assert_called_once_with(limit=limit, marker=marker)
+        clt._flavor_manager.list.assert_called_once_with(limit=limit,
+                marker=marker)
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_get_flavor(self):
