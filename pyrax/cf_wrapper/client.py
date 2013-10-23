@@ -253,7 +253,7 @@ class CFClient(object):
     def get_temp_url_key(self, cached=True):
         """
         Returns the current TempURL key, or None if it has not been set.
-        
+ 
         By default the value returned is cached. To force an API call to get
         the current value on the server, pass `cached=False`.
         """
