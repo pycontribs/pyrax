@@ -840,6 +840,15 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.get_object.assert_called_with(ANY, ANY,
                 resp_chunk_size=ANY, response_dict=response)
 
+    def test_fetch_partial(self):
+        client = self.client
+        cont = utils.random_unicode()
+        obj = utils.random_unicode()
+        size = random.randint(1, 1000)
+        client.fetch_object = Mock()
+        client.fetch_partial(cont, obj, size)
+        client.fetch_object.assert_called_once_with(cont, obj, chunk_size=size)
+
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_download_object(self):
         client = self.client

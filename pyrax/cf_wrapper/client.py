@@ -49,23 +49,24 @@ etag_fail_pat = r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity"
 etag_failed_pattern = re.compile(etag_fail_pat)
 
 
+def _close_swiftclient_conn(conn):
+    """Swiftclient often leaves the connection open."""
+    try:
+        conn.http_conn[1].close()
+    except Exception:
+        pass
+
+
 def handle_swiftclient_exception(fnc):
     @wraps(fnc)
     def _wrapped(self, *args, **kwargs):
         attempts = 0
         clt_url = self.connection.url
 
-        def close_swiftclient_conn(conn):
-            """Swiftclient often leaves the connection open."""
-            try:
-                conn.http_conn[1].close()
-            except Exception:
-                pass
-
         while attempts < AUTH_ATTEMPTS:
             attempts += 1
             try:
-                close_swiftclient_conn(self.connection)
+                _close_swiftclient_conn(self.connection)
                 ret = fnc(self, *args, **kwargs)
                 return ret
             except _swift_client.ClientException as e:
@@ -1018,7 +1019,7 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def fetch_object(self, container, obj, include_meta=False,
-            chunk_size=None, extra_info=None):
+            chunk_size=None, size=None, extra_info=None):
         """
         Fetches the object from storage.
 
@@ -1027,6 +1028,10 @@ class CFClient(object):
 
         Note: if 'chunk_size' is defined, you must fully read the object's
         contents before making another request.
+
+        If 'size' is specified, only the first 'size' bytes of the object will
+        be returned. If the object if smaller than 'size', the entire object is
+        returned.
 
         When 'include_meta' is True, what is returned from this method is a
         2-tuple:
@@ -1045,6 +1050,18 @@ class CFClient(object):
             return (meta, data)
         else:
             return data
+
+
+    @handle_swiftclient_exception
+    def fetch_partial(self, container, obj, size):
+        """
+        Returns the first 'size' bytes of an object. If the object is smaller
+        than the specified 'size' value, the entire object is returned.
+        """
+        gen = self.fetch_object(container, obj, chunk_size=size)
+        ret = gen.next()
+        _close_swiftclient_conn(self.connection)
+        return ret
 
 
     @handle_swiftclient_exception
