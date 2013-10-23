@@ -79,7 +79,7 @@ class CloudNetworksTest(unittest.TestCase):
 
     def test_create_body(self):
         mgr = self.client._manager
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         expected = {"network": {"label": nm, "cidr": example_cidr}}
         returned = mgr._create_body(name=nm, cidr=example_cidr)
         self.assertEqual(expected, returned)
@@ -87,7 +87,7 @@ class CloudNetworksTest(unittest.TestCase):
     def test_create(self):
         clt = self.client
         clt._manager.create = Mock(return_value=fakes.FakeCloudNetwork())
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         new = clt.create(label=nm, cidr=example_cidr)
         clt._manager.create.assert_called_once_with(label=nm, name=None,
                 cidr=example_cidr)
@@ -97,7 +97,7 @@ class CloudNetworksTest(unittest.TestCase):
         err = exc.BadRequest(400)
         err.message = "Request failed: too many networks."
         clt._manager.create = Mock(side_effect=err)
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         self.assertRaises(exc.NetworkCountExceeded, clt.create, label=nm,
                 cidr=example_cidr)
 
@@ -106,7 +106,7 @@ class CloudNetworksTest(unittest.TestCase):
         err = exc.BadRequest(400)
         err.message = "CIDR does not contain enough addresses."
         clt._manager.create = Mock(side_effect=err)
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         self.assertRaises(exc.NetworkCIDRInvalid, clt.create, label=nm,
                 cidr=example_cidr)
 
@@ -115,7 +115,7 @@ class CloudNetworksTest(unittest.TestCase):
         err = exc.BadRequest(400)
         err.message = "CIDR is malformed."
         clt._manager.create = Mock(side_effect=err)
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         self.assertRaises(exc.NetworkCIDRMalformed, clt.create, label=nm,
                 cidr=example_cidr)
 
@@ -124,7 +124,7 @@ class CloudNetworksTest(unittest.TestCase):
         err = exc.BadRequest(400)
         err.message = "Something strange happened."
         clt._manager.create = Mock(side_effect=err)
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         self.assertRaises(exc.BadRequest, clt.create, label=nm,
                 cidr=example_cidr)
 

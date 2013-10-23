@@ -30,11 +30,11 @@ import fakes
 def _safe_id():
     """
     Remove characters that shouldn't be in IDs, etc., that are being parsed
-    from HREFs. This is a consequence of the random_name() function, which
+    from HREFs. This is a consequence of the random_unicode() function, which
     sometimes causes the urlparse function to return the wrong values when
     these characters are present.
     """
-    val = utils.random_name(ascii_only=True)
+    val = utils.random_ascii()
     for bad in "#;/?":
         val = val.replace(bad, "")
     return val
@@ -96,31 +96,31 @@ class QueuesTest(unittest.TestCase):
         clt = self.client
         mgr = clt._manager
         mgr.api.method_get = Mock(side_effect=exc.NotFound(""))
-        uri = utils.random_name()
+        uri = utils.random_unicode()
         ret = mgr.list(uri)
         self.assertEqual(ret, [])
 
     def test_queue_get_message(self):
         q = self.queue
         q._message_manager.get = Mock()
-        msgid = utils.random_name()
+        msgid = utils.random_unicode()
         q.get_message(msgid)
         q._message_manager.get.assert_called_once_with(msgid)
 
     def test_queue_delete_message(self):
         q = self.queue
         q._message_manager.delete = Mock()
-        msgid = utils.random_name()
+        msgid = utils.random_unicode()
         q.delete_message(msgid)
         q._message_manager.delete.assert_called_once_with(msgid)
 
     def test_queue_list(self):
         q = self.queue
         q._message_manager.list = Mock()
-        include_claimed = utils.random_name()
-        echo = utils.random_name()
-        marker = utils.random_name()
-        limit = utils.random_name()
+        include_claimed = utils.random_unicode()
+        echo = utils.random_unicode()
+        marker = utils.random_unicode()
+        limit = utils.random_unicode()
         q.list(include_claimed=include_claimed, echo=echo, marker=marker,
                 limit=limit)
         q._message_manager.list.assert_called_once_with(
@@ -130,14 +130,14 @@ class QueuesTest(unittest.TestCase):
     def test_queue_list_by_ids(self):
         q = self.queue
         q._message_manager.list_by_ids = Mock()
-        ids = utils.random_name()
+        ids = utils.random_unicode()
         q.list_by_ids(ids)
         q._message_manager.list_by_ids.assert_called_once_with(ids)
 
     def test_queue_delete_by_ids(self):
         q = self.queue
         q._message_manager.delete_by_ids = Mock()
-        ids = utils.random_name()
+        ids = utils.random_unicode()
         q.delete_by_ids(ids)
         q._message_manager.delete_by_ids.assert_called_once_with(ids)
 
@@ -145,23 +145,23 @@ class QueuesTest(unittest.TestCase):
         q = self.queue
         qclaim = fakes.FakeQueueClaim()
         q._claim_manager.get = Mock(return_value=qclaim)
-        claim_id = utils.random_name()
+        claim_id = utils.random_unicode()
         ret = q.list_by_claim(claim_id)
         self.assertEqual(ret, qclaim.messages)
 
     def test_queue_post_message(self):
         q = self.queue
         q._message_manager.create = Mock()
-        body = utils.random_name()
-        ttl = utils.random_name()
+        body = utils.random_unicode()
+        ttl = utils.random_unicode()
         q.post_message(body, ttl=ttl)
         q._message_manager.create.assert_called_once_with(body, ttl=ttl)
 
     def test_queue_claim_messages(self):
         q = self.queue
         q._claim_manager.claim = Mock()
-        ttl = utils.random_name()
-        grace = utils.random_name()
+        ttl = utils.random_unicode()
+        grace = utils.random_unicode()
         count = random.randint(1, 9)
         q.claim_messages(ttl, grace, count=count)
         q._claim_manager.claim.assert_called_once_with(ttl, grace, count=count)
@@ -169,16 +169,16 @@ class QueuesTest(unittest.TestCase):
     def test_queue_get_claim(self):
         q = self.queue
         q._claim_manager.get = Mock()
-        claim = utils.random_name()
+        claim = utils.random_unicode()
         q.get_claim(claim)
         q._claim_manager.get.assert_called_once_with(claim)
 
     def test_queue_update_claim(self):
         q = self.queue
         q._claim_manager.update = Mock()
-        claim = utils.random_name()
-        ttl = utils.random_name()
-        grace = utils.random_name()
+        claim = utils.random_unicode()
+        ttl = utils.random_unicode()
+        grace = utils.random_unicode()
         q.update_claim(claim, ttl=ttl, grace=grace)
         q._claim_manager.update.assert_called_once_with(claim, ttl=ttl,
                 grace=grace)
@@ -186,25 +186,25 @@ class QueuesTest(unittest.TestCase):
     def test_queue_release_claim(self):
         q = self.queue
         q._claim_manager.delete = Mock()
-        claim = utils.random_name()
+        claim = utils.random_unicode()
         q.release_claim(claim)
         q._claim_manager.delete.assert_called_once_with(claim)
 
     def test_queue_id_property(self):
         q = self.queue
-        val = utils.random_name()
+        val = utils.random_unicode()
         q.name = val
         self.assertEqual(q.id, val)
-        val = utils.random_name()
+        val = utils.random_unicode()
         q.id = val
         self.assertEqual(q.name, val)
 
     def test_msg_add_details(self):
         id_ = _safe_id()
-        claim_id = utils.random_name()
-        age = utils.random_name()
-        body = utils.random_name()
-        ttl = utils.random_name()
+        claim_id = utils.random_unicode()
+        age = utils.random_unicode()
+        body = utils.random_unicode()
+        ttl = utils.random_unicode()
         href = "http://example.com/%s" % id_
         info = {"href": href,
                 "age": age,
@@ -222,9 +222,9 @@ class QueuesTest(unittest.TestCase):
     def test_msg_add_details_claim(self):
         id_ = _safe_id()
         claim_id = _safe_id()
-        age = utils.random_name()
-        body = utils.random_name()
-        ttl = utils.random_name()
+        age = utils.random_unicode()
+        body = utils.random_unicode()
+        ttl = utils.random_unicode()
         href = "http://example.com/%s?claim_id=%s" % (id_, claim_id)
         info = {"href": href,
                 "age": age,
@@ -236,11 +236,11 @@ class QueuesTest(unittest.TestCase):
         self.assertEqual(msg.claim_id, claim_id)
 
     def test_msg_add_details_no_href(self):
-        id_ = utils.random_name()
-        claim_id = utils.random_name()
-        age = utils.random_name()
-        body = utils.random_name()
-        ttl = utils.random_name()
+        id_ = utils.random_unicode()
+        claim_id = utils.random_unicode()
+        age = utils.random_unicode()
+        body = utils.random_unicode()
+        ttl = utils.random_unicode()
         href = None
         info = {"href": href,
                 "age": age,
@@ -255,11 +255,11 @@ class QueuesTest(unittest.TestCase):
         msgs = []
         num = random.randint(1, 9)
         for ii in range(num):
-            msg_id = utils.random_name()
-            claim_id = utils.random_name()
-            age = utils.random_name()
-            body = utils.random_name()
-            ttl = utils.random_name()
+            msg_id = utils.random_unicode()
+            claim_id = utils.random_unicode()
+            age = utils.random_unicode()
+            body = utils.random_unicode()
+            ttl = utils.random_unicode()
             href = "http://example.com/%s" % msg_id
             info = {"href": href,
                     "age": age,
@@ -281,7 +281,7 @@ class QueuesTest(unittest.TestCase):
     def test_queue_msg_mgr_create_body(self):
         q = self.queue
         mgr = q._message_manager
-        msg = utils.random_name()
+        msg = utils.random_unicode()
         ret = mgr._create_body(msg)
         self.assertTrue(isinstance(ret, list))
         self.assertEqual(len(ret), 1)
@@ -295,7 +295,7 @@ class QueuesTest(unittest.TestCase):
         mgr = q._message_manager
         include_claimed = random.choice((True, False))
         echo = random.choice((True, False))
-        marker = utils.random_name()
+        marker = utils.random_unicode()
         limit = random.randint(15, 35)
         rbody = {"links": [], "messages": [{"href": "fake"}]}
         pyrax.queueing._parse_marker = Mock(return_value="fake")
@@ -308,7 +308,7 @@ class QueuesTest(unittest.TestCase):
         mgr = q._message_manager
         include_claimed = random.choice((True, False))
         echo = random.choice((True, False))
-        marker = utils.random_name()
+        marker = utils.random_unicode()
         pyrax.queueing._parse_marker = Mock(return_value="fake")
         mgr._list = Mock(return_value=(None, None))
         msgs = mgr.list(include_claimed=include_claimed, echo=echo,
@@ -318,8 +318,8 @@ class QueuesTest(unittest.TestCase):
         q = self.queue
         mgr = q._message_manager
         mgr._list = Mock()
-        id1 = utils.random_name()
-        id2 = utils.random_name()
+        id1 = utils.random_unicode()
+        id2 = utils.random_unicode()
         mgr.list_by_ids([id1, id2])
         expected = "/%s?ids=%s" % (mgr.uri_base, ",".join([id1, id2]))
         mgr._list.assert_called_once_with(expected)
@@ -328,8 +328,8 @@ class QueuesTest(unittest.TestCase):
         q = self.queue
         mgr = q._message_manager
         mgr.api.method_delete = Mock()
-        id1 = utils.random_name()
-        id2 = utils.random_name()
+        id1 = utils.random_unicode()
+        id2 = utils.random_unicode()
         mgr.delete_by_ids([id1, id2])
         expected = "/%s?ids=%s" % (mgr.uri_base, ",".join([id1, id2]))
         mgr.api.method_delete.assert_called_once_with(expected)
@@ -337,10 +337,10 @@ class QueuesTest(unittest.TestCase):
     def test_queue_claim_mgr_claim(self):
         q = self.queue
         mgr = q._claim_manager
-        ttl = utils.random_name()
-        grace = utils.random_name()
-        count = utils.random_name()
-        claim_id = utils.random_name()
+        ttl = utils.random_unicode()
+        grace = utils.random_unicode()
+        count = utils.random_unicode()
+        claim_id = utils.random_unicode()
         rbody = [{"href": "http://example.com/foo?claim_id=%s" % claim_id}]
         mgr.api.method_post = Mock(return_value=(fakes.FakeResponse(), rbody))
         mgr.get = Mock()
@@ -353,9 +353,9 @@ class QueuesTest(unittest.TestCase):
     def test_queue_claim_mgr_claim_no_count(self):
         q = self.queue
         mgr = q._claim_manager
-        ttl = utils.random_name()
-        grace = utils.random_name()
-        claim_id = utils.random_name()
+        ttl = utils.random_unicode()
+        grace = utils.random_unicode()
+        claim_id = utils.random_unicode()
         rbody = [{"href": "http://example.com/foo?claim_id=%s" % claim_id}]
         mgr.api.method_post = Mock(return_value=(fakes.FakeResponse(), rbody))
         mgr.get = Mock()
@@ -368,9 +368,9 @@ class QueuesTest(unittest.TestCase):
     def test_queue_claim_mgr_claim_empty(self):
         q = self.queue
         mgr = q._claim_manager
-        ttl = utils.random_name()
-        grace = utils.random_name()
-        claim_id = utils.random_name()
+        ttl = utils.random_unicode()
+        grace = utils.random_unicode()
+        claim_id = utils.random_unicode()
         rbody = [{"href": "http://example.com/foo?claim_id=%s" % claim_id}]
         resp = fakes.FakeResponse()
         resp.status = 204
@@ -384,9 +384,9 @@ class QueuesTest(unittest.TestCase):
     def test_queue_claim_mgr_update(self):
         q = self.queue
         mgr = q._claim_manager
-        claim = utils.random_name()
-        ttl = utils.random_name()
-        grace = utils.random_name()
+        claim = utils.random_unicode()
+        ttl = utils.random_unicode()
+        grace = utils.random_unicode()
         mgr.api.method_patch = Mock(return_value=(None, None))
         exp_uri = "/%s/%s" % (mgr.uri_base, claim)
         exp_body = {"ttl": ttl, "grace": grace}
@@ -396,28 +396,28 @@ class QueuesTest(unittest.TestCase):
     def test_queue_claim_mgr_update_missing(self):
         q = self.queue
         mgr = q._claim_manager
-        claim = utils.random_name()
+        claim = utils.random_unicode()
         self.assertRaises(exc.MissingClaimParameters, mgr.update, claim)
 
     def test_queue_mgr_create_body(self):
         clt = self.client
         mgr = clt._manager
-        name = utils.random_name()
-        metadata = utils.random_name()
+        name = utils.random_unicode()
+        metadata = utils.random_unicode()
         ret = mgr._create_body(name, metadata=metadata)
         self.assertEqual(ret, {"metadata": metadata})
 
     def test_queue_mgr_create_body_no_meta(self):
         clt = self.client
         mgr = clt._manager
-        name = utils.random_name()
+        name = utils.random_unicode()
         ret = mgr._create_body(name)
         self.assertEqual(ret, {})
 
     def test_queue_mgr_get(self):
         clt = self.client
         mgr = clt._manager
-        id_ = utils.random_name()
+        id_ = utils.random_unicode()
         mgr.api.queue_exists = Mock(return_value=True)
         q = mgr.get(id_)
         self.assertTrue(isinstance(q, Queue))
@@ -426,14 +426,14 @@ class QueuesTest(unittest.TestCase):
     def test_queue_mgr_get_not_found(self):
         clt = self.client
         mgr = clt._manager
-        id_ = utils.random_name()
+        id_ = utils.random_unicode()
         mgr.api.queue_exists = Mock(return_value=False)
         self.assertRaises(exc.NotFound, mgr.get, id_)
 
     def test_queue_mgr_create(self):
         clt = self.client
         mgr = clt._manager
-        name = utils.random_name()
+        name = utils.random_unicode()
         exp_uri = "/%s/%s" % (mgr.uri_base, name)
         resp = fakes.FakeResponse()
         resp.status = 201
@@ -445,7 +445,7 @@ class QueuesTest(unittest.TestCase):
     def test_queue_mgr_create_invalid(self):
         clt = self.client
         mgr = clt._manager
-        name = utils.random_name()
+        name = utils.random_unicode()
         exp_uri = "/%s/%s" % (mgr.uri_base, name)
         resp = fakes.FakeResponse()
         resp.status = 400
@@ -455,9 +455,9 @@ class QueuesTest(unittest.TestCase):
     def test_queue_mgr_get_stats(self):
         clt = self.client
         mgr = clt._manager
-        q = utils.random_name()
+        q = utils.random_unicode()
         exp_uri = "/%s/%s/stats" % (mgr.uri_base, q)
-        msgs = utils.random_name()
+        msgs = utils.random_unicode()
         rbody = {"messages": msgs}
         mgr.api.method_get = Mock(return_value=(None, rbody))
         ret = mgr.get_stats(q)
@@ -467,9 +467,9 @@ class QueuesTest(unittest.TestCase):
     def test_queue_mgr_get_metadata(self):
         clt = self.client
         mgr = clt._manager
-        q = utils.random_name()
+        q = utils.random_unicode()
         exp_uri = "/%s/%s/metadata" % (mgr.uri_base, q)
-        rbody = utils.random_name()
+        rbody = utils.random_unicode()
         mgr.api.method_get = Mock(return_value=(None, rbody))
         ret = mgr.get_metadata(q)
         self.assertEqual(ret, rbody)
@@ -478,9 +478,9 @@ class QueuesTest(unittest.TestCase):
     def test_queue_mgr_set_metadata_clear(self):
         clt = self.client
         mgr = clt._manager
-        q = utils.random_name()
+        q = utils.random_unicode()
         exp_uri = "/%s/%s/metadata" % (mgr.uri_base, q)
-        val = utils.random_name()
+        val = utils.random_unicode()
         metadata = {"new": val}
         mgr.api.method_put = Mock(return_value=(None, None))
         ret = mgr.set_metadata(q, metadata, clear=True)
@@ -489,11 +489,11 @@ class QueuesTest(unittest.TestCase):
     def test_queue_mgr_set_metadata_no_clear(self):
         clt = self.client
         mgr = clt._manager
-        q = utils.random_name()
+        q = utils.random_unicode()
         exp_uri = "/%s/%s/metadata" % (mgr.uri_base, q)
-        val = utils.random_name()
+        val = utils.random_unicode()
         metadata = {"new": val}
-        old_val = utils.random_name()
+        old_val = utils.random_unicode()
         old_metadata = {"old": val}
         exp_body = old_metadata
         exp_body.update(metadata)
@@ -505,7 +505,7 @@ class QueuesTest(unittest.TestCase):
     def test_clt_add_custom_headers(self):
         clt = self.client
         dct = {}
-        client_id = utils.random_name()
+        client_id = utils.random_unicode()
         sav = os.environ.get
         os.environ.get = Mock(return_value=client_id)
         clt._add_custom_headers(dct)
@@ -533,7 +533,7 @@ class QueuesTest(unittest.TestCase):
     def test_clt_queue_exists(self):
         clt = self.client
         clt._manager.head = Mock()
-        name = utils.random_name()
+        name = utils.random_unicode()
         ret = clt.queue_exists(name)
         self.assertTrue(ret)
         clt._manager.head.assert_called_once_with(name)
@@ -541,7 +541,7 @@ class QueuesTest(unittest.TestCase):
     def test_clt_queue_not_exists(self):
         clt = self.client
         clt._manager.head = Mock(side_effect=exc.NotFound(""))
-        name = utils.random_name()
+        name = utils.random_unicode()
         ret = clt.queue_exists(name)
         self.assertFalse(ret)
         clt._manager.head.assert_called_once_with(name)
@@ -550,35 +550,35 @@ class QueuesTest(unittest.TestCase):
         clt = self.client
         clt.queue_exists = Mock(return_value=False)
         clt._manager.create = Mock()
-        name = utils.random_name()
+        name = utils.random_unicode()
         clt.create(name)
         clt._manager.create.assert_called_once_with(name)
 
     def test_clt_create_dupe(self):
         clt = self.client
         clt.queue_exists = Mock(return_value=True)
-        name = utils.random_name()
+        name = utils.random_unicode()
         self.assertRaises(exc.DuplicateQueue, clt.create, name)
 
     def test_clt_get_stats(self):
         clt = self.client
         clt._manager.get_stats = Mock()
-        q = utils.random_name()
+        q = utils.random_unicode()
         clt.get_stats(q)
         clt._manager.get_stats.assert_called_once_with(q)
 
     def test_clt_get_metadata(self):
         clt = self.client
         clt._manager.get_metadata = Mock()
-        q = utils.random_name()
+        q = utils.random_unicode()
         clt.get_metadata(q)
         clt._manager.get_metadata.assert_called_once_with(q)
 
     def test_clt_set_metadata(self):
         clt = self.client
         clt._manager.set_metadata = Mock()
-        q = utils.random_name()
-        metadata = utils.random_name()
+        q = utils.random_unicode()
+        metadata = utils.random_unicode()
         clear = random.choice((True, False))
         clt.set_metadata(q, metadata, clear=clear)
         clt._manager.set_metadata.assert_called_once_with(q, metadata,
@@ -587,7 +587,7 @@ class QueuesTest(unittest.TestCase):
     def test_clt_get_message(self):
         clt = self.client
         q = self.queue
-        msg_id = utils.random_name()
+        msg_id = utils.random_unicode()
         q.get_message = Mock()
         clt.get_message(q, msg_id)
         q.get_message.assert_called_once_with(msg_id)
@@ -595,7 +595,7 @@ class QueuesTest(unittest.TestCase):
     def test_clt_delete_message(self):
         clt = self.client
         q = self.queue
-        msg_id = utils.random_name()
+        msg_id = utils.random_unicode()
         q.delete_message = Mock()
         clt.delete_message(q, msg_id)
         q.delete_message.assert_called_once_with(msg_id)
@@ -603,10 +603,10 @@ class QueuesTest(unittest.TestCase):
     def test_clt_list_messages(self):
         clt = self.client
         q = self.queue
-        include_claimed = utils.random_name()
-        echo = utils.random_name()
-        marker = utils.random_name()
-        limit = utils.random_name()
+        include_claimed = utils.random_unicode()
+        echo = utils.random_unicode()
+        marker = utils.random_unicode()
+        limit = utils.random_unicode()
         q.list = Mock()
         clt.list_messages(q, include_claimed=include_claimed, echo=echo,
                 marker=marker, limit=limit)
@@ -616,7 +616,7 @@ class QueuesTest(unittest.TestCase):
     def test_clt_list_messages_by_ids(self):
         clt = self.client
         q = self.queue
-        ids = utils.random_name()
+        ids = utils.random_unicode()
         q.list_by_ids = Mock()
         clt.list_messages_by_ids(q, ids)
         q.list_by_ids.assert_called_once_with(ids)
@@ -624,7 +624,7 @@ class QueuesTest(unittest.TestCase):
     def test_clt_delete_messages_by_ids(self):
         clt = self.client
         q = self.queue
-        ids = utils.random_name()
+        ids = utils.random_unicode()
         q.delete_by_ids = Mock()
         clt.delete_messages_by_ids(q, ids)
         q.delete_by_ids.assert_called_once_with(ids)
@@ -632,7 +632,7 @@ class QueuesTest(unittest.TestCase):
     def test_clt_list_messages_by_claim(self):
         clt = self.client
         q = self.queue
-        claim = utils.random_name()
+        claim = utils.random_unicode()
         q.list_by_claim = Mock()
         clt.list_messages_by_claim(q, claim)
         q.list_by_claim.assert_called_once_with(claim)
@@ -640,8 +640,8 @@ class QueuesTest(unittest.TestCase):
     def test_clt_post_message(self):
         clt = self.client
         q = self.queue
-        body = utils.random_name()
-        ttl = utils.random_name()
+        body = utils.random_unicode()
+        ttl = utils.random_unicode()
         q.post_message = Mock()
         clt.post_message(q, body, ttl=ttl)
         q.post_message.assert_called_once_with(body, ttl=ttl)
@@ -649,9 +649,9 @@ class QueuesTest(unittest.TestCase):
     def test_clt_claim_messages(self):
         clt = self.client
         q = self.queue
-        ttl = utils.random_name()
-        grace = utils.random_name()
-        count = utils.random_name()
+        ttl = utils.random_unicode()
+        grace = utils.random_unicode()
+        count = utils.random_unicode()
         q.claim_messages = Mock()
         clt.claim_messages(q, ttl, grace, count=count)
         q.claim_messages.assert_called_once_with(ttl, grace, count=count)
@@ -659,7 +659,7 @@ class QueuesTest(unittest.TestCase):
     def test_clt_get_claim(self):
         clt = self.client
         q = self.queue
-        claim = utils.random_name()
+        claim = utils.random_unicode()
         q.get_claim = Mock()
         clt.get_claim(q, claim)
         q.get_claim.assert_called_once_with(claim)
@@ -667,9 +667,9 @@ class QueuesTest(unittest.TestCase):
     def test_clt_update_claim(self):
         clt = self.client
         q = self.queue
-        claim = utils.random_name()
-        ttl = utils.random_name()
-        grace = utils.random_name()
+        claim = utils.random_unicode()
+        ttl = utils.random_unicode()
+        grace = utils.random_unicode()
         q.update_claim = Mock()
         clt.update_claim(q, claim, ttl=ttl, grace=grace)
         q.update_claim.assert_called_once_with(claim, ttl=ttl, grace=grace)
@@ -677,7 +677,7 @@ class QueuesTest(unittest.TestCase):
     def test_clt_release_claim(self):
         clt = self.client
         q = self.queue
-        claim = utils.random_name()
+        claim = utils.random_unicode()
         q.release_claim = Mock()
         clt.release_claim(q, claim)
         q.release_claim.assert_called_once_with(claim)

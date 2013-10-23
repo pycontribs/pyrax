@@ -45,8 +45,8 @@ class CF_ClientTest(unittest.TestCase):
         pyrax.connect_to_cloudfiles(region="FAKE")
         self.client = pyrax.cloudfiles
         self.client._container_cache = {}
-        self.cont_name = utils.random_name(ascii_only=True)
-        self.obj_name = utils.random_name(ascii_only=True)
+        self.cont_name = utils.random_ascii()
+        self.obj_name = utils.random_ascii()
         self.fake_object = FakeStorageObject(self.client, self.cont_name,
                 self.obj_name)
 
@@ -81,7 +81,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_set_account_metadata_prefix(self):
         client = self.client
         client.connection.post_account = Mock()
-        prefix = utils.random_name()
+        prefix = utils.random_unicode()
         client.set_account_metadata({"newkey": "newval"}, prefix=prefix)
         client.connection.post_account.assert_called_with(
                 {"%snewkey" % prefix: "newval"}, response_dict=None)
@@ -114,7 +114,7 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         sav = client.set_account_metadata
         client.set_account_metadata = Mock()
-        key = utils.random_name()
+        key = utils.random_unicode()
         exp = {"Temp-Url-Key": key}
         client.set_temp_url_key(key)
         client.set_account_metadata.assert_called_once_with(exp)
@@ -127,7 +127,7 @@ class CF_ClientTest(unittest.TestCase):
                 "x-account-meta-foo": "yes", "some-other-key": "no"}
         meta = client.get_temp_url_key()
         self.assertIsNone(meta)
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         client.connection.head_account.return_value = {
                 "x-account-meta-temp-url-key": nm, "some-other-key": "no"}
         meta = client.get_temp_url_key()
@@ -135,9 +135,9 @@ class CF_ClientTest(unittest.TestCase):
 
     def test_get_temp_url(self):
         client = self.client
-        nm = utils.random_name(ascii_only=True)
-        cname = utils.random_name(ascii_only=True)
-        oname = utils.random_name(ascii_only=True)
+        nm = utils.random_ascii()
+        cname = utils.random_ascii()
+        oname = utils.random_ascii()
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {
                 "x-account-meta-temp-url-key": nm, "some-other-key": "no"}
@@ -149,9 +149,9 @@ class CF_ClientTest(unittest.TestCase):
 
     def test_get_temp_url_windows(self):
         client = self.client
-        nm = "%s\\" % utils.random_name(ascii_only=True)
-        cname = "\\%s\\" % utils.random_name(ascii_only=True)
-        oname = utils.random_name(ascii_only=True)
+        nm = "%s\\" % utils.random_ascii()
+        cname = "\\%s\\" % utils.random_ascii()
+        oname = utils.random_ascii()
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {
                 "x-account-meta-temp-url-key": nm, "some-other-key": "no"}
@@ -160,9 +160,9 @@ class CF_ClientTest(unittest.TestCase):
 
     def test_get_temp_url_unicode(self):
         client = self.client
-        nm = utils.random_name(ascii_only=False)
-        cname = utils.random_name(ascii_only=True)
-        oname = utils.random_name(ascii_only=True)
+        nm = utils.random_unicode()
+        cname = utils.random_ascii()
+        oname = utils.random_ascii()
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {
                 "x-account-meta-temp-url-key": nm, "some-other-key": "no"}
@@ -172,8 +172,8 @@ class CF_ClientTest(unittest.TestCase):
 
     def test_get_temp_url_missing_key(self):
         client = self.client
-        cname = utils.random_name(ascii_only=True)
-        oname = utils.random_name(ascii_only=True)
+        cname = utils.random_ascii()
+        oname = utils.random_ascii()
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {"some-other-key": "no"}
         self.assertRaises(exc.MissingTemporaryURLKey, client.get_temp_url,
@@ -207,7 +207,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_set_container_metadata_prefix(self):
         client = self.client
         client.connection.post_container = Mock()
-        prefix = utils.random_name()
+        prefix = utils.random_unicode()
         client.set_container_metadata(self.cont_name, {"newkey": "newval"},
                 prefix=prefix)
         client.connection.post_container.assert_called_with(self.cont_name,
@@ -261,7 +261,7 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.head_object.return_value = {
                 "X-Object-Meta-Foo": "yes", "Some-Other-Key": "no"}
         client.connection.post_object = Mock()
-        prefix = utils.random_name()
+        prefix = utils.random_unicode()
         client.set_object_metadata(self.cont_name, self.obj_name,
                 {"newkey": "newval", "emptykey": ""}, prefix=prefix)
         client.connection.post_object.assert_called_with(self.cont_name,
@@ -376,7 +376,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_remove_object_from_cache(self):
         client = self.client
         client.connection.head_container = Mock()
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         client._container_cache = {nm: object()}
         client.remove_container_from_cache(nm)
         self.assertEqual(client._container_cache, {})
@@ -415,7 +415,7 @@ class CF_ClientTest(unittest.TestCase):
         sav = client.bulk_delete_interval
         client.bulk_delete_interval = 0.001
         container = self.cont_name
-        obj_names = [utils.random_name()]
+        obj_names = [utils.random_unicode()]
         ret = client.bulk_delete(container, obj_names, async=False)
         self.assertTrue(isinstance(ret, dict))
         client.bulk_delete_interval = sav
@@ -425,7 +425,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_bulk_delete_async(self):
         client = self.client
         container = self.cont_name
-        obj_names = [utils.random_name()]
+        obj_names = [utils.random_unicode()]
         ret = client.bulk_delete(container, obj_names, async=True)
         self.assertTrue(isinstance(ret, FakeBulkDeleter))
 
@@ -618,7 +618,7 @@ class CF_ClientTest(unittest.TestCase):
         client.upload_file = Mock()
         client.connection.head_container = Mock()
         client.connection.put_container = Mock()
-        cont_name = utils.random_name()
+        cont_name = utils.random_unicode()
         cont = client.create_container(cont_name)
         gobj = client.get_object
         client.get_object = Mock(return_value=self.fake_object)
@@ -660,7 +660,7 @@ class CF_ClientTest(unittest.TestCase):
         clt.connection.put_container = Mock()
         clt.connection.head_object = Mock(return_value=fake_attdict)
         clt.get_container_objects = Mock(return_value=[])
-        cont_name = utils.random_name(8)
+        cont_name = utils.random_unicode(8)
         cont = clt.create_container(cont_name)
         num_files = 7
         with utils.SelfDeletingTempDirectory() as tmpdir:
@@ -681,7 +681,7 @@ class CF_ClientTest(unittest.TestCase):
         clt.connection.put_container = Mock()
         clt.connection.head_object = Mock(return_value=fake_attdict)
         clt.get_container_objects = Mock(return_value=[])
-        cont_name = utils.random_name(8)
+        cont_name = utils.random_unicode(8)
         cont = clt.create_container(cont_name)
         num_vis_files = 4
         num_hid_files = 4
@@ -708,7 +708,7 @@ class CF_ClientTest(unittest.TestCase):
         clt.connection.put_container = Mock()
         clt.connection.head_object = Mock(return_value=fake_attdict)
         clt.get_container_objects = Mock(return_value=[])
-        cont_name = utils.random_name(8)
+        cont_name = utils.random_unicode(8)
         cont = clt.create_container(cont_name)
         num_files = 3
         num_nested_files = 6
@@ -811,8 +811,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_download_object(self):
         client = self.client
         sav_fetch = client.fetch_object
-        client.fetch_object = Mock(return_value=utils.random_name(
-                ascii_only=True))
+        client.fetch_object = Mock(return_value=utils.random_ascii())
         sav_isdir = os.path.isdir
         os.path.isdir = Mock(return_value=True)
         nm = "one/two/three/four.txt"
@@ -1187,7 +1186,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_bulk_deleter(self):
         client = self.client
         container = self.cont_name
-        object_names = utils.random_name()
+        object_names = utils.random_unicode()
         bd = FakeBulkDeleter(client, container, object_names)
         self.assertEqual(bd.client, client)
         self.assertEqual(bd.container, container)
@@ -1196,29 +1195,29 @@ class CF_ClientTest(unittest.TestCase):
     def test_bulk_deleter_run(self):
         client = self.client
         container = self.cont_name
-        object_names = utils.random_name()
+        object_names = utils.random_unicode()
         bd = FakeBulkDeleter(client, container, object_names)
 
         class FakeConn(object):
             pass
 
         class FakePath(object):
-            path = utils.random_name()
+            path = utils.random_unicode()
 
         class FakeResp(object):
-            status = utils.random_name()
-            reason = utils.random_name()
+            status = utils.random_unicode()
+            reason = utils.random_unicode()
 
         fpath = FakePath()
         conn = FakeConn()
         resp = FakeResp()
         # Need to make these ASCII, since some characters will confuse the
         # splitlines() call.
-        num_del = utils.random_name(ascii_only=True)
-        num_not_found = utils.random_name(ascii_only=True)
-        status = utils.random_name(ascii_only=True)
-        errors = utils.random_name(ascii_only=True)
-        useless = utils.random_name(ascii_only=True)
+        num_del = utils.random_ascii()
+        num_not_found = utils.random_ascii()
+        status = utils.random_ascii()
+        errors = utils.random_ascii()
+        useless = utils.random_ascii()
         fake_read = """Number Deleted: %s
 Number Not Found: %s
 Response Status: %s

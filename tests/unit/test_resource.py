@@ -22,7 +22,7 @@ class ResourceTest(unittest.TestCase):
         mgr = fakes.FakeManager()
         info = {"name": "test_resource",
                 "size": 42,
-                "id": utils.random_name()}
+                "id": utils.random_unicode()}
         return resource.BaseResource(mgr, info)
 
     def setUp(self):
@@ -92,7 +92,7 @@ class ResourceTest(unittest.TestCase):
         rsc.__getattr__ = Mock()
         sav_mgr = rsc.manager.get
         ent = fakes.FakeEntity
-        new_att = utils.random_name(ascii_only=True)
+        new_att = utils.random_ascii()
         ent._info = {new_att: None}
         rsc.manager.get = Mock(return_value=ent)
         rsc.get()

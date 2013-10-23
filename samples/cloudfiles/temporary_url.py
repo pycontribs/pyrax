@@ -28,9 +28,9 @@ creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cf = pyrax.cloudfiles
 
-cont_name = pyrax.utils.random_name(8, ascii_only=True)
+cont_name = pyrax.utils.random_ascii(8)
 cont = cf.create_container(cont_name)
-oname = pyrax.utils.random_name(8, ascii_only=True)
+oname = pyrax.utils.random_ascii(8)
 ipsum = """Import integration functools test dunder object explicit. Method
 integration mercurial unit import. Future integration decorator pypy method
 tuple unit pycon. Django raspberrypi mercurial 2to3 cython scipy. Cython
