@@ -241,14 +241,14 @@ class CloudDatabaseInstance(BaseResource):
         self.volume = CloudDatabaseVolume(self, self.volume)
 
 
-    def list_databases(self):
+    def list_databases(self, limit=None, marker=None):
         """Returns a list of the names of all databases for this instance."""
-        return self._database_manager.list()
+        return self._database_manager.list(limit=limit, marker=marker)
 
 
-    def list_users(self):
+    def list_users(self, limit=None, marker=None):
         """Returns a list of the names of all users for this instance."""
-        return self._user_manager.list()
+        return self._user_manager.list(limit=limit, marker=marker)
 
 
     def get_user(self, name):
@@ -521,9 +521,9 @@ class CloudDatabaseClient(BaseClient):
 
 
     @assure_instance
-    def list_databases(self, instance):
+    def list_databases(self, instance, limit=None, marker=None):
         """Returns all databases for the specified instance."""
-        return instance.list_databases()
+        return instance.list_databases(limit=limit, marker=marker)
 
 
     @assure_instance
@@ -551,9 +551,9 @@ class CloudDatabaseClient(BaseClient):
 
 
     @assure_instance
-    def list_users(self, instance):
+    def list_users(self, instance, limit=None, marker=None):
         """Returns all users for the specified instance."""
-        return instance.list_users()
+        return instance.list_users(limit=limit, marker=marker)
 
 
     @assure_instance
@@ -653,9 +653,9 @@ class CloudDatabaseClient(BaseClient):
         raise NotImplementedError("Limits are not available for Cloud Databases")
 
 
-    def list_flavors(self):
+    def list_flavors(self, limit=None, marker=None):
         """Returns a list of all available Flavors."""
-        return self._flavor_manager.list()
+        return self._flavor_manager.list(limit=limit, marker=marker)
 
 
     def get_flavor(self, flavor_id):

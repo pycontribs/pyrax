@@ -16,7 +16,7 @@ from pyrax.clouddatabases import CloudDatabaseUserManager
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
-from tests.unit import fakes
+import fakes
 
 example_uri = "http://example.com"
 
@@ -59,16 +59,20 @@ class CloudDatabasesTest(unittest.TestCase):
         inst = self.instance
         sav = inst._database_manager.list
         inst._database_manager.list = Mock()
-        inst.list_databases()
-        inst._database_manager.list.assert_called_once_with()
+        limit = utils.random_name()
+        marker = utils.random_name()
+        inst.list_databases(limit=limit, marker=marker)
+        inst._database_manager.list.assert_called_once_with(limit=limit, marker=marker)
         inst._database_manager.list = sav
 
     def test_list_users(self):
         inst = self.instance
         sav = inst._user_manager.list
         inst._user_manager.list = Mock()
-        inst.list_users()
-        inst._user_manager.list.assert_called_once_with()
+        limit = utils.random_name()
+        marker = utils.random_name()
+        inst.list_users(limit=limit, marker=marker)
+        inst._user_manager.list.assert_called_once_with(limit=limit, marker=marker)
         inst._user_manager.list = sav
 
     def test_get_database(self):
@@ -227,10 +231,12 @@ class CloudDatabasesTest(unittest.TestCase):
         clt = self.client
         inst = self.instance
         sav = inst.list_databases
+        limit = utils.random_name()
+        marker = utils.random_name()
         inst.list_databases = Mock(return_value=["db"])
-        ret = clt.list_databases(inst)
+        ret = clt.list_databases(inst, limit=limit, marker=marker)
         self.assertEqual(ret, ["db"])
-        inst.list_databases.assert_called_once_with()
+        inst.list_databases.assert_called_once_with(limit=limit, marker=marker)
         inst.list_databases = sav
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
@@ -245,6 +251,14 @@ class CloudDatabasesTest(unittest.TestCase):
         inst.create_database.assert_called_once_with(nm,
                 character_set=None, collate=None)
         inst.create_database = sav
+
+    def test_clt_get_database(self):
+        clt = self.client
+        inst = self.instance
+        inst.get_database = Mock()
+        nm = utils.random_name()
+        clt.get_database(inst, nm)
+        inst.get_database.assert_called_once_with(nm)
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_delete_database_for_instance(self):
@@ -262,10 +276,12 @@ class CloudDatabasesTest(unittest.TestCase):
         clt = self.client
         inst = self.instance
         sav = inst.list_users
+        limit = utils.random_name()
+        marker = utils.random_name()
         inst.list_users = Mock(return_value=["user"])
-        ret = clt.list_users(inst)
+        ret = clt.list_users(inst, limit=limit, marker=marker)
         self.assertEqual(ret, ["user"])
-        inst.list_users.assert_called_once_with()
+        inst.list_users.assert_called_once_with(limit=limit, marker=marker)
         inst.list_users = sav
 
     def test_create_user_for_instance(self):
@@ -411,6 +427,51 @@ class CloudDatabasesTest(unittest.TestCase):
         inst._user_manager.api.method_delete.assert_called_once_with(
                 "/None/%s/databases/%s" % (fakeuser, dbname1))
 
+    def test_clt_change_user_password(self):
+        clt = self.client
+        inst = self.instance
+        inst.change_user_password = Mock()
+        user = utils.random_name()
+        pw = utils.random_name()
+        clt.change_user_password(inst, user, pw)
+        inst.change_user_password.assert_called_once_with(user, pw)
+
+    def test_clt_list_user_access(self):
+        clt = self.client
+        inst = self.instance
+        inst.list_user_access = Mock()
+        user = utils.random_name()
+        clt.list_user_access(inst, user)
+        inst.list_user_access.assert_called_once_with(user)
+
+    def test_clt_grant_user_access(self):
+        clt = self.client
+        inst = self.instance
+        inst.grant_user_access = Mock()
+        user = utils.random_name()
+        db_names = utils.random_name()
+        clt.grant_user_access(inst, user, db_names)
+        inst.grant_user_access.assert_called_once_with(user, db_names,
+                strict=True)
+
+    def test_clt_revoke_user_access(self):
+        clt = self.client
+        inst = self.instance
+        inst.revoke_user_access = Mock()
+        user = utils.random_name()
+        db_names = utils.random_name()
+        clt.revoke_user_access(inst, user, db_names)
+        inst.revoke_user_access.assert_called_once_with(user, db_names,
+                strict=True)
+
+    def test_clt_restart(self):
+        clt = self.client
+        inst = self.instance
+        inst.restart = Mock()
+        clt.restart(inst)
+        inst.restart.assert_called_once_with()
+
+
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_resize_for_instance(self):
         clt = self.client
@@ -421,12 +482,17 @@ class CloudDatabasesTest(unittest.TestCase):
         inst.resize.assert_called_once_with("flavor")
         inst.resize = sav
 
+    def test_get_limits(self):
+        self.assertRaises(NotImplementedError, self.client.get_limits)
+
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_list_flavors(self):
         clt = self.client
         clt._flavor_manager.list = Mock()
-        clt.list_flavors()
-        clt._flavor_manager.list.assert_called_once_with()
+        limit = utils.random_name()
+        marker = utils.random_name()
+        clt.list_flavors(limit=limit, marker=marker)
+        clt._flavor_manager.list.assert_called_once_with(limit=limit, marker=marker)
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_get_flavor(self):
