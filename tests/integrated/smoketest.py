@@ -336,7 +336,7 @@ class SmokeTester(object):
     def cf_upload_file(self):
         print "Uploading a Cloud Files object..."
         cont = self.smoke_cont
-        text = pyrax.utils.random_name(1024)
+        text = pyrax.utils.random_unicode(1024)
         obj = cont.store_object("SMOKETEST_OBJECT", text)
         # Make sure it is deleted before the container
         self.cleanup_items.insert(0, obj)

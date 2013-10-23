@@ -5,6 +5,7 @@ import locale
 import os
 import random
 import unittest
+import uuid
 
 from mock import ANY, patch
 from mock import MagicMock as Mock
@@ -120,6 +121,23 @@ class CF_ClientTest(unittest.TestCase):
         client.set_account_metadata.assert_called_once_with(exp)
         client.set_account_metadata = sav
 
+    def test_set_temp_url_key_generated(self):
+        client = self.client
+        sav = client.set_account_metadata
+        client.set_account_metadata = Mock()
+        key = utils.random_ascii()
+        sav_uu = uuid.uuid4
+
+        class FakeUUID(object):
+            hex = key
+
+        uuid.uuid4 = Mock(return_value=FakeUUID())
+        exp = {"Temp-Url-Key": key}
+        client.set_temp_url_key()
+        client.set_account_metadata.assert_called_once_with(exp)
+        client.set_account_metadata = sav
+        uuid.uuid4 = sav_uu
+
     def test_get_temp_url_key(self):
         client = self.client
         client.connection.head_account = Mock()
@@ -132,6 +150,13 @@ class CF_ClientTest(unittest.TestCase):
                 "x-account-meta-temp-url-key": nm, "some-other-key": "no"}
         meta = client.get_temp_url_key()
         self.assertEqual(meta, nm)
+
+    def test_get_temp_url_key_cached(self):
+        client = self.client
+        key = utils.random_unicode()
+        client._cached_temp_url_key = key
+        meta = client.get_temp_url_key()
+        self.assertEqual(meta, key)
 
     def test_get_temp_url(self):
         client = self.client
@@ -146,6 +171,14 @@ class CF_ClientTest(unittest.TestCase):
         self.assert_(oname in ret)
         self.assert_("?temp_url_sig=" in ret)
         self.assert_("&temp_url_expires=" in ret)
+
+    def test_get_temp_url_bad_method(self):
+        client = self.client
+        nm = utils.random_ascii()
+        cname = utils.random_ascii()
+        oname = utils.random_ascii()
+        self.assertRaises(exc.InvalidTemporaryURLMethod, client.get_temp_url,
+                cname, oname, seconds=120, method="INVALID")
 
     def test_get_temp_url_windows(self):
         client = self.client

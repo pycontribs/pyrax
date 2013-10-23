@@ -145,6 +145,7 @@ class CFClient(object):
     cdn_enabled = False
     default_cdn_ttl = 86400
     _container_cache = {}
+    _cached_temp_url_key = ""
     # Upload size limit
     max_file_size = 5368709119  # 5GB - 1
     # Folder upload status dict. Each upload will generate its own UUID key.
@@ -249,12 +250,18 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def get_temp_url_key(self):
+    def get_temp_url_key(self, cached=True):
         """
         Returns the current TempURL key, or None if it has not been set.
+        
+        By default the value returned is cached. To force an API call to get
+        the current value on the server, pass `cached=False`.
         """
-        key = "%stemp-url-key" % self.account_meta_prefix.lower()
-        meta = self.get_account_metadata().get(key)
+        meta = self._cached_temp_url_key
+        if not cached or not meta:
+            key = "%stemp-url-key" % self.account_meta_prefix.lower()
+            meta = self.get_account_metadata().get(key)
+            self._cached_temp_url_key = meta
         return meta
 
 
@@ -271,15 +278,21 @@ class CFClient(object):
             key = uuid.uuid4().hex
         meta = {"Temp-Url-Key": key}
         self.set_account_metadata(meta)
+        self._cached_temp_url_key = key
 
 
-    def get_temp_url(self, container, obj, seconds, method="GET"):
+    def get_temp_url(self, container, obj, seconds, method="GET", key=None,
+            cached=True):
         """
         Given a storage object in a container, returns a URL that can be used
         to access that object. The URL will expire after `seconds` seconds.
 
         The only methods supported are GET and PUT. Anything else will raise
         an InvalidTemporaryURLMethod exception.
+
+        If you have your Temporary URL key, you can pass it in directly and
+        potentially save an API call to retrieve it. If you don't pass in the
+        key, and don't wish to use any cached value, pass `cached=False`.
         """
         cname = self._resolve_name(container)
         oname = self._resolve_name(obj)
@@ -287,7 +300,8 @@ class CFClient(object):
         if mod_method not in ("GET", "PUT"):
             raise exc.InvalidTemporaryURLMethod("Method must be either 'GET' "
                     "or 'PUT'; received '%s'." % method)
-        key = self.get_temp_url_key()
+        if not key:
+            key = self.get_temp_url_key(cached=cached)
         if not key:
             raise exc.MissingTemporaryURLKey("You must set the key for "
                     "Temporary URLs before you can generate them. This is "
