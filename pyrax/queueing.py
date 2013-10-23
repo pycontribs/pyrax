@@ -21,6 +21,7 @@ from functools import wraps
 import json
 import os
 import re
+import urlparse
 
 import pyrax
 from pyrax.client import BaseClient
@@ -243,19 +244,13 @@ class QueueMessage(BaseResource):
         included as part of the 'href' value.
         """
         super(QueueMessage, self)._add_details(info)
-        try:
-            id_parts = self.href.split("/")[-1]
-        except AttributeError:
+        if self.href is None:
             return
-        # See if it's claimed
-        self.claim_id = None
-        try:
-            self.id, claim_id = id_parts.split("?")
-        except ValueError:
-            # No claim
-            self.id = id_parts
-            return
-        self.claim_id = claim_id.split("=")[-1]
+        parsed = urlparse.urlparse(self.href)
+        self.id = parsed.path.lstrip("/")
+        query = parsed.query
+        if query:
+            self.claim_id = query.split("claim_id=")[-1]
 
 
 
@@ -275,7 +270,8 @@ class QueueClaim(BaseResource):
         """
         msg_dicts = info.pop("messages", [])
         super(QueueClaim, self)._add_details(info)
-        self.id = self.href.split("/")[-1]
+        parsed = urlparse.urlparse(self.href)
+        self.id = parsed.path.lstrip("/")
         self.messages = [QueueMessage(self.manager._message_manager, item)
                 for item in msg_dicts]
 

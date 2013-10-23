@@ -27,6 +27,18 @@ import pyrax.utils as utils
 import fakes
 
 
+def _safe_id():
+    """
+    Remove characters that shouldn't be in IDs, etc., that are being parsed
+    from HREFs. This is a consequence of the random_name() function, which
+    sometimes causes the urlparse function to return the wrong values when
+    these characters are present.
+    """
+    val = utils.random_name(ascii_only=True)
+    for bad in "#;/?":
+        val = val.replace(bad, "")
+    return val
+
 
 class QueuesTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -188,7 +200,7 @@ class QueuesTest(unittest.TestCase):
         self.assertEqual(q.name, val)
 
     def test_msg_add_details(self):
-        id_ = utils.random_name()
+        id_ = _safe_id()
         claim_id = utils.random_name()
         age = utils.random_name()
         body = utils.random_name()
@@ -208,8 +220,8 @@ class QueuesTest(unittest.TestCase):
         self.assertEqual(msg.href, href)
 
     def test_msg_add_details_claim(self):
-        id_ = utils.random_name()
-        claim_id = utils.random_name()
+        id_ = _safe_id()
+        claim_id = _safe_id()
         age = utils.random_name()
         body = utils.random_name()
         ttl = utils.random_name()
@@ -255,7 +267,7 @@ class QueuesTest(unittest.TestCase):
                     "ttl": ttl,
                     }
             msgs.append(info)
-        id_ = utils.random_name()
+        id_ = _safe_id()
         href = "http://example.com/%s" % id_
         info = {"href": href,
                 "messages": msgs,
@@ -511,7 +523,7 @@ class QueuesTest(unittest.TestCase):
 
     def test_clt_get_home_document(self):
         clt = self.client
-        parts = [utils.random_name() for ii in range(4)]
+        parts = [_safe_id() for ii in range(4)]
         clt.management_url = "/".join(parts)
         exp_uri = "/".join(parts[:-1])
         clt.method_get = Mock()
