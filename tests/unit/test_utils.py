@@ -79,7 +79,7 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(expected, received)
 
     def test_get_checksum_from_binary(self):
-#        test = utils.random_name()
+#        test = utils.random_unicode()
 #        test = open("tests/unit/python-logo.png", "rb").read()
         test = fakes.png_file
         md = hashlib.md5()
@@ -101,9 +101,9 @@ class UtilsTest(unittest.TestCase):
                 received = utils.get_checksum(testfile)
         self.assertEqual(expected, received)
 
-    def test_random_name(self):
+    def test_random_unicode(self):
         testlen = random.randint(50, 500)
-        nm = utils.random_name(testlen)
+        nm = utils.random_unicode(testlen)
         self.assertEqual(len(nm), testlen)
 
     def test_folder_size_bad_folder(self):
@@ -158,6 +158,17 @@ class UtilsTest(unittest.TestCase):
         utils.add_method(obj, fake_method)
         self.assertTrue(hasattr(obj, "fake_method"))
         self.assertTrue(callable(obj.fake_method))
+
+    def test_case_insensitive_update(self):
+        k1 = utils.random_ascii()
+        k2 = utils.random_ascii()
+        k2up = k2.upper()
+        k3 = utils.random_ascii()
+        d1 = {k1: "fake", k2up: "fake"}
+        d2 = {k2: "NEW", k3: "NEW"}
+        expected = {k1: "fake", k2up: "NEW", k3: "NEW"}
+        utils.case_insensitive_update(d1, d2)
+        self.assertEqual(d1, expected)
 
     def test_env(self):
         args = ("foo", "bar")
@@ -238,13 +249,13 @@ class UtilsTest(unittest.TestCase):
         sav = utils.wait_until
         utils.wait_until = Mock()
         obj = fakes.FakeEntity()
-        att = utils.random_name()
-        desired = utils.random_name()
-        callback = utils.random_name()
-        interval = utils.random_name()
-        attempts = utils.random_name()
-        verbose = utils.random_name()
-        verbose_atts = utils.random_name()
+        att = utils.random_unicode()
+        desired = utils.random_unicode()
+        callback = utils.random_unicode()
+        interval = utils.random_unicode()
+        attempts = utils.random_unicode()
+        verbose = utils.random_unicode()
+        verbose_atts = utils.random_unicode()
         utils.wait_for_build(obj, att, desired, callback, interval, attempts,
                 verbose, verbose_atts)
         utils.wait_until.assert_called_once_with(obj, att, desired,
@@ -305,7 +316,7 @@ class UtilsTest(unittest.TestCase):
         self.assertFalse(utils.match_pattern("some.good", ignore_pat))
 
     def test_get_id(self):
-        target = utils.random_name()
+        target = utils.random_unicode()
 
         class ObjWithID(object):
             id = target
@@ -317,7 +328,7 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(utils.get_id(plain), plain)
 
     def test_get_name(self):
-        nm = utils.random_name()
+        nm = utils.random_unicode()
 
         class ObjWithName(object):
             name = nm
@@ -333,8 +344,8 @@ class UtilsTest(unittest.TestCase):
         self.assertTrue(ret is fakes.FakeManager)
 
     def test_update_exc(self):
-        msg1 = utils.random_name()
-        msg2 = utils.random_name()
+        msg1 = utils.random_unicode()
+        msg2 = utils.random_unicode()
         err = exc.PyraxException(400)
         err.message = msg1
         sep = random.choice(("!", "@", "#", "$"))

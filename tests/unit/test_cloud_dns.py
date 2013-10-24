@@ -23,7 +23,7 @@ from pyrax.clouddns import RecordResultsIterator
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
-from tests.unit import fakes
+import fakes
 
 example_uri = "http://example.com"
 
@@ -107,9 +107,9 @@ class CloudDNSTest(unittest.TestCase):
         mgr._paging["domain"]["total_entries"] = 99
         mgr._paging["domain"]["next_uri"] = "FAKE"
         exp_entries = random.randint(100, 200)
-        uri_string_next = utils.random_name()
+        uri_string_next = utils.random_unicode()
         next_uri = "%s/domains/%s" % (example_uri, uri_string_next)
-        uri_string_prev = utils.random_name()
+        uri_string_prev = utils.random_unicode()
         prev_uri = "%s/domains/%s" % (example_uri, uri_string_prev)
         body = {"totalEntries": exp_entries,
                 "links": [
@@ -135,7 +135,7 @@ class CloudDNSTest(unittest.TestCase):
     def test_manager_list(self):
         clt = self.client
         mgr = clt._manager
-        fake_name = utils.random_name()
+        fake_name = utils.random_unicode()
         ret_body = {"domains": [{"name": fake_name}]}
         clt.method_get = Mock(return_value=({}, ret_body))
         ret = clt.list()
@@ -144,9 +144,9 @@ class CloudDNSTest(unittest.TestCase):
     def test_manager_list_all(self):
         clt = self.client
         mgr = clt._manager
-        fake_name = utils.random_name()
+        fake_name = utils.random_unicode()
         ret_body = {"domains": [{"name": fake_name}]}
-        uri_string_next = utils.random_name()
+        uri_string_next = utils.random_unicode()
         next_uri = "%s/domains/%s" % (example_uri, uri_string_next)
         mgr.count = 0
 
@@ -308,7 +308,7 @@ class CloudDNSTest(unittest.TestCase):
 
     def test_create_body(self):
         mgr = self.client._manager
-        fake_name = utils.random_name()
+        fake_name = utils.random_unicode()
         body = mgr._create_body(fake_name, "fake@fake.com")
         self.assertEqual(body["domains"][0]["name"], fake_name)
 
@@ -430,7 +430,7 @@ class CloudDNSTest(unittest.TestCase):
     def test_export_domain(self):
         clt = self.client
         dom = self.domain
-        export = utils.random_name()
+        export = utils.random_unicode()
         clt._manager._async_call = Mock(return_value=({}, {"contents": export}))
         ret = clt.export_domain(dom)
         uri = "/domains/%s/export" % dom.id
@@ -441,7 +441,7 @@ class CloudDNSTest(unittest.TestCase):
     def test_import_domain(self):
         clt = self.client
         mgr = clt._manager
-        data = utils.random_name()
+        data = utils.random_unicode()
         mgr._async_call = Mock(return_value=({}, "fake"))
         req_body = {"domains": [{
                 "contentType": "BIND_9",
@@ -461,7 +461,7 @@ class CloudDNSTest(unittest.TestCase):
         dom = self.domain
         mgr = clt._manager
         emailAddress = None
-        comment = utils.random_name()
+        comment = utils.random_unicode()
         ttl = 666
         mgr._async_call = Mock(return_value=({}, "fake"))
         uri = "/domains/%s" % utils.get_id(dom)
@@ -542,7 +542,7 @@ class CloudDNSTest(unittest.TestCase):
         mgr = clt._manager
         dom = self.domain
         typ = "A"
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         data = "0.0.0.0"
         clt.method_get = Mock(return_value=({}, {}))
         uri = "/domains/%s/records?type=%s&name=%s&data=%s" % (
@@ -555,7 +555,7 @@ class CloudDNSTest(unittest.TestCase):
         mgr = clt._manager
         dom = self.domain
         typ = "A"
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         data = "0.0.0.0"
         ret_body = {"records": [{
                 "accountId": "728829",
@@ -576,7 +576,7 @@ class CloudDNSTest(unittest.TestCase):
         mgr = clt._manager
         dom = self.domain
         typ = "A"
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         data = "0.0.0.0"
         ret_body = {"records": []}
         clt.method_get = Mock(return_value=({}, ret_body))
@@ -590,7 +590,7 @@ class CloudDNSTest(unittest.TestCase):
         mgr = clt._manager
         dom = self.domain
         typ = "A"
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         data = "0.0.0.0"
         ret_body = {"records": [{
                 "accountId": "728829",
@@ -629,8 +629,8 @@ class CloudDNSTest(unittest.TestCase):
         clt = self.client
         mgr = clt._manager
         dom = self.domain
-        nm = utils.random_name()
-        rec_id = utils.random_name()
+        nm = utils.random_unicode()
+        rec_id = utils.random_unicode()
         rec_dict = {"id": rec_id, "name": nm}
         mgr.api.method_get = Mock(return_value=(None, rec_dict))
         ret = clt.get_record(dom, rec_id)
@@ -641,8 +641,8 @@ class CloudDNSTest(unittest.TestCase):
         clt = self.client
         mgr = clt._manager
         dom = self.domain
-        nm = utils.random_name()
-        rec = fakes.FakeDNSRecord(mgr, {"id": utils.random_name(),
+        nm = utils.random_unicode()
+        rec = fakes.FakeDNSRecord(mgr, {"id": utils.random_unicode(),
                 "name": nm})
         ttl = 9999
         data = "0.0.0.0"
@@ -658,7 +658,7 @@ class CloudDNSTest(unittest.TestCase):
         clt = self.client
         mgr = clt._manager
         dom = self.domain
-        rec = CloudDNSRecord(mgr, {"id": utils.random_name()})
+        rec = CloudDNSRecord(mgr, {"id": utils.random_unicode()})
         mgr._async_call = Mock(return_value=({}, {}))
         uri = "/domains/%s/records/%s" % (utils.get_id(dom), utils.get_id(rec))
         clt.delete_record(dom, rec)
@@ -671,7 +671,7 @@ class CloudDNSTest(unittest.TestCase):
         mgr = clt._manager
         device = fakes.FakeDNSDevice()
         typ = mgr._resolve_device_type(device)
-        self.assertEqual(typ, "server")
+        self.assertEqual(typ, "loadbalancer")
         device = fakes.FakeLoadBalancer()
         typ = mgr._resolve_device_type(device)
         self.assertEqual(typ, "loadbalancer")
@@ -682,19 +682,6 @@ class CloudDNSTest(unittest.TestCase):
         device = object()
         self.assertRaises(exc.InvalidDeviceType, mgr._resolve_device_type,
                 device)
-
-    def test_get_ptr_details_server(self):
-        clt = self.client
-        mgr = clt._manager
-        dvc = fakes.FakeDNSDevice()
-        dvc_type = "server"
-        sav = pyrax._get_service_endpoint
-        pyrax._get_service_endpoint = Mock(return_value=example_uri)
-        expected_href = "%s/servers/%s" % (example_uri, dvc.id)
-        href, svc_name = mgr._get_ptr_details(dvc, dvc_type)
-        self.assertEqual(svc_name, "cloudServersOpenStack")
-        self.assertEqual(href, expected_href)
-        pyrax._get_service_endpoint = sav
 
     def test_get_ptr_details_lb(self):
         clt = self.client
@@ -757,7 +744,7 @@ class CloudDNSTest(unittest.TestCase):
         dvc = fakes.FakeDNSDevice()
         href = "%s/%s" % (example_uri, dvc.id)
         svc_name = "cloudServersOpenStack"
-        ptr_record = fakes.FakeDNSPTRRecord({"id": utils.random_name()})
+        ptr_record = fakes.FakeDNSPTRRecord({"id": utils.random_unicode()})
         ttl = 9999
         data = "0.0.0.0"
         long_comment = "x" * 200
@@ -793,7 +780,7 @@ class CloudDNSTest(unittest.TestCase):
 
     def test_get_absolute_limits(self):
         clt = self.client
-        rand_limit = utils.random_name()
+        rand_limit = utils.random_unicode()
         resp = {"limits": {"absolute": rand_limit}}
         clt.method_get = Mock(return_value=({}, resp))
         ret = clt.get_absolute_limits()
@@ -832,7 +819,7 @@ class CloudDNSTest(unittest.TestCase):
     def test_iter_items_first_fetch(self):
         clt = self.client
         mgr = clt._manager
-        fake_name = utils.random_name()
+        fake_name = utils.random_unicode()
         ret_body = {"domains": [{"name": fake_name}]}
         clt.method_get = Mock(return_value=({}, ret_body))
         res_iter = DomainResultsIterator(mgr)
@@ -843,7 +830,7 @@ class CloudDNSTest(unittest.TestCase):
     def test_iter_items_next_fetch(self):
         clt = self.client
         mgr = clt._manager
-        fake_name = utils.random_name()
+        fake_name = utils.random_unicode()
         ret_body = {"domains": [{"name": fake_name}]}
         clt.method_get = Mock(return_value=({}, ret_body))
         res_iter = DomainResultsIterator(mgr)

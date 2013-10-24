@@ -48,9 +48,9 @@ class CF_ContainerTest(unittest.TestCase):
         pyrax.connect_to_cloudfiles()
         self.client = pyrax.cloudfiles
         self.client.connection.head_container = Mock()
-        self.cont_name = utils.random_name(ascii_only=True)
+        self.cont_name = utils.random_ascii()
         self.container = self.client.get_container(self.cont_name)
-        self.obj_name = utils.random_name(ascii_only=True)
+        self.obj_name = utils.random_ascii()
         self.fake_object = FakeStorageObject(self.client, self.cont_name,
                 self.obj_name)
         self.client._container_cache = {}
@@ -170,11 +170,11 @@ class CF_ContainerTest(unittest.TestCase):
         cont = self.container
         clt = cont.client
         clt.list_container_subdirs = Mock()
-        marker = utils.random_name()
-        limit = utils.random_name()
-        prefix = utils.random_name()
-        delimiter = utils.random_name()
-        full_listing = utils.random_name()
+        marker = utils.random_unicode()
+        limit = utils.random_unicode()
+        prefix = utils.random_unicode()
+        delimiter = utils.random_unicode()
+        full_listing = utils.random_unicode()
         cont.list_subdirs(marker=marker, limit=limit, prefix=prefix,
                 delimiter=delimiter, full_listing=full_listing)
         clt.list_container_subdirs.assert_called_once_with(cont.name,
@@ -246,7 +246,7 @@ class CF_ContainerTest(unittest.TestCase):
     def test_fetch_object(self):
         cont = self.container
         cont.client.fetch_object = Mock()
-        oname = utils.random_name(ascii_only=True)
+        oname = utils.random_ascii()
         incmeta = random.choice((True, False))
         csize = random.randint(0, 1000)
         cont.fetch_object(oname, include_meta=incmeta, chunk_size=csize)
@@ -256,8 +256,8 @@ class CF_ContainerTest(unittest.TestCase):
     def test_download_object(self):
         cont = self.container
         cont.client.download_object = Mock()
-        oname = utils.random_name(ascii_only=True)
-        dname = utils.random_name(ascii_only=True)
+        oname = utils.random_ascii()
+        dname = utils.random_ascii()
         stru = random.choice((True, False))
         cont.download_object(oname, dname, structure=stru)
         cont.client.download_object.assert_called_once_with(cont, oname,
@@ -282,7 +282,7 @@ class CF_ContainerTest(unittest.TestCase):
     def test_set_metadata_prefix(self):
         cont = self.container
         cont.client.connection.post_container = Mock()
-        prefix = utils.random_name()
+        prefix = utils.random_unicode()
         cont.set_metadata({"newkey": "newval"}, prefix=prefix)
         cont.client.connection.post_container.assert_called_with(cont.name,
                 {"%snewkey" % prefix: "newval"}, response_dict=None)
@@ -290,7 +290,7 @@ class CF_ContainerTest(unittest.TestCase):
     def test_remove_metadata_key(self):
         cont = self.container
         cont.client.remove_container_metadata_key = Mock()
-        key = utils.random_name()
+        key = utils.random_unicode()
         cont.remove_metadata_key(key)
         cont.client.remove_container_metadata_key.assert_called_once_with(cont,
                 key)
@@ -339,10 +339,10 @@ class CF_ContainerTest(unittest.TestCase):
     def test_copy_object(self):
         cont = self.container
         cont.client.copy_object = Mock()
-        obj = utils.random_name()
-        new_cont = utils.random_name()
-        new_name = utils.random_name()
-        extra_info = utils.random_name()
+        obj = utils.random_unicode()
+        new_cont = utils.random_unicode()
+        new_name = utils.random_unicode()
+        extra_info = utils.random_unicode()
         cont.copy_object(obj, new_cont, new_obj_name=new_name,
                 extra_info=extra_info)
         cont.client.copy_object.assert_called_once_with(cont, obj, new_cont,
@@ -351,10 +351,10 @@ class CF_ContainerTest(unittest.TestCase):
     def test_move_object(self):
         cont = self.container
         cont.client.move_object = Mock()
-        obj = utils.random_name()
-        new_cont = utils.random_name()
-        new_name = utils.random_name()
-        extra_info = utils.random_name()
+        obj = utils.random_unicode()
+        new_cont = utils.random_unicode()
+        new_name = utils.random_unicode()
+        extra_info = utils.random_unicode()
         cont.move_object(obj, new_cont, new_obj_name=new_name,
                 extra_info=extra_info)
         cont.client.move_object.assert_called_once_with(cont, obj, new_cont,
@@ -369,9 +369,9 @@ class CF_ContainerTest(unittest.TestCase):
 
     def test_get_temp_url(self):
         cont = self.container
-        nm = utils.random_name(ascii_only=True)
+        nm = utils.random_ascii()
         sav = cont.name
-        cont.name = utils.random_name(ascii_only=True)
+        cont.name = utils.random_ascii()
         cont.client.get_temp_url = Mock()
         secs = random.randint(1, 1000)
         cont.get_temp_url(nm, seconds=secs)
@@ -381,17 +381,16 @@ class CF_ContainerTest(unittest.TestCase):
 
     def test_delete_object_in_seconds(self):
         cont = self.container
-        cont.client.connection.post_object = Mock()
+        cont.client.delete_object_in_seconds = Mock()
         secs = random.randint(1, 1000)
-        obj_name = utils.random_name(ascii_only=True)
-        cont.delete_object_in_seconds(obj_name, seconds=secs)
-        cont.client.connection.post_object.assert_called_with(cont.name,
-                obj_name, headers={'X-Delete-After': secs},
-                response_dict=None)
+        obj_name = utils.random_ascii()
+        cont.delete_object_in_seconds(obj_name, secs)
+        cont.client.delete_object_in_seconds.assert_called_once_with(cont,
+                obj_name, secs)
 
-        nm = utils.random_name(ascii_only=True)
+        nm = utils.random_ascii()
         sav = cont.name
-        cont.name = utils.random_name(ascii_only=True)
+        cont.name = utils.random_ascii()
         cont.client.get_temp_url = Mock()
         secs = random.randint(1, 1000)
         cont.get_temp_url(nm, seconds=secs)

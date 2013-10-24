@@ -152,24 +152,35 @@ def get_checksum(content, encoding="utf8", block_size=8192):
     return md.hexdigest()
 
 
-def random_name(length=20, ascii_only=False):
+def _join_chars(chars, length):
+    """
+    Used by the random character functions.
+    """
+    mult = (length / len(chars)) + 1
+    mult_chars = chars * mult
+    return "".join(random.sample(mult_chars, length))
+
+
+def random_unicode(length=20):
     """
     Generates a random name; useful for testing.
 
-    By default it will return an encoded string containing
-    unicode values up to code point 1000. If you only
-    need or want ASCII values, pass True to the
-    ascii_only parameter.
+    Returns an encoded string of the specified length containing unicode values
+    up to code point 1000.
     """
-    if ascii_only:
-        base_chars = string.ascii_letters
-    else:
-        def get_char():
-            return unichr(random.randint(32, 1000))
-        base_chars = u"".join([get_char() for ii in xrange(length)])
-    mult = (length / len(base_chars)) + 1
-    chars = base_chars * mult
-    return "".join(random.sample(chars, length))
+    def get_char():
+        return unichr(random.randint(32, 1000))
+    chars = u"".join([get_char() for ii in xrange(length)])
+    return _join_chars(chars, length)
+
+
+def random_ascii(length=20, ascii_only=False):
+    """
+    Generates a random name; useful for testing.
+
+    Returns a string of the specified length containing only ASCII characters.
+    """
+    return _join_chars(string.ascii_letters, length)
 
 
 def coerce_string_to_list(val):
@@ -523,6 +534,19 @@ def update_exc(exc, msg, before=True, separator="\n"):
     exc.message = new_msg
     exc.args = new_args
     return exc
+
+
+def case_insensitive_update(dct1, dct2):
+    """
+    Given two dicts, updates the first one with the second, but considers keys
+    that are identical except for case to be the same.
+
+    No return value; this function modified dct1 similar to the update() method.
+    """
+    lowkeys = dict([(key.lower(), key) for key in dct1])
+    for key, val in dct2.items():
+        d1_key = lowkeys.get(key.lower(), key)
+        dct1[d1_key] = val
 
 
 def env(*args, **kwargs):

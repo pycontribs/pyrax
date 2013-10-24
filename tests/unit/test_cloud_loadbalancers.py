@@ -134,9 +134,9 @@ class CloudLoadBalancerTest(unittest.TestCase):
         lb = self.loadbalancer
         mgr = clt._manager
         mgr.update = Mock()
-        name = utils.random_name()
-        algorithm = utils.random_name()
-        timeout = utils.random_name()
+        name = utils.random_unicode()
+        algorithm = utils.random_unicode()
+        timeout = utils.random_unicode()
         clt.update(lb, name=name, algorithm=algorithm, timeout=timeout)
         mgr.update.assert_called_once_with(lb, name=name, algorithm=algorithm,
                 protocol=None, halfClosed=None, port=None, timeout=timeout)
@@ -145,9 +145,9 @@ class CloudLoadBalancerTest(unittest.TestCase):
         lb = self.loadbalancer
         mgr = lb.manager
         mgr.update = Mock()
-        name = utils.random_name()
-        algorithm = utils.random_name()
-        timeout = utils.random_name()
+        name = utils.random_unicode()
+        algorithm = utils.random_unicode()
+        timeout = utils.random_unicode()
         lb.update(name=name, algorithm=algorithm, timeout=timeout)
         mgr.update.assert_called_once_with(lb, name=name, algorithm=algorithm,
                 protocol=None, halfClosed=None, port=None, timeout=timeout)
@@ -156,9 +156,9 @@ class CloudLoadBalancerTest(unittest.TestCase):
         lb = self.loadbalancer
         mgr = lb.manager
         mgr.api.method_put = Mock(return_value=(None, None))
-        name = utils.random_name()
-        algorithm = utils.random_name()
-        timeout = utils.random_name()
+        name = utils.random_unicode()
+        algorithm = utils.random_unicode()
+        timeout = utils.random_unicode()
         mgr.update(lb, name=name, algorithm=algorithm, timeout=timeout)
         exp_uri = "/loadbalancers/%s" % lb.id
         exp_body = {"loadBalancer": {"name": name, "algorithm": algorithm,
@@ -1164,7 +1164,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
         fake_connectionLogging = True
         fake_connectionThrottle = True
         fake_healthMonitor = object()
-        fake_metadata = {"fake": utils.random_name()}
+        fake_metadata = {"fake": utils.random_unicode()}
         fake_timeout = 42
         fake_sessionPersistence = True
         expected = {"loadBalancer": {
@@ -1211,7 +1211,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
         fake_connectionLogging = True
         fake_connectionThrottle = True
         fake_healthMonitor = object()
-        fake_metadata = {"fake": utils.random_name()}
+        fake_metadata = {"fake": utils.random_unicode()}
         fake_timeout = 42
         fake_sessionPersistence = True
         self.assertRaises(exc.InvalidNodeCondition, mgr._create_body,
@@ -1240,7 +1240,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
         fake_connectionLogging = True
         fake_connectionThrottle = True
         fake_healthMonitor = object()
-        fake_metadata = {"fake": utils.random_name()}
+        fake_metadata = {"fake": utils.random_unicode()}
         fake_timeout = 42
         fake_sessionPersistence = True
         self.assertRaises(exc.MissingLoadBalancerParameters, mgr._create_body,
@@ -1264,7 +1264,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
 
     def test_client_allowed_domains(self):
         clt = self.client
-        fake_name = utils.random_name()
+        fake_name = utils.random_unicode()
         fake_body = {"allowedDomains": [{"allowedDomain":
                 {"name": fake_name}}]}
         clt.method_get = Mock(return_value=({}, fake_body))
@@ -1278,7 +1278,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
 
     def test_client_algorithms(self):
         clt = self.client
-        fake_name = utils.random_name()
+        fake_name = utils.random_unicode()
         fake_body = {"algorithms": [{"name": fake_name}]}
         clt.method_get = Mock(return_value=({}, fake_body))
         ret = clt.algorithms
@@ -1291,7 +1291,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
 
     def test_client_protocols(self):
         clt = self.client
-        fake_name = utils.random_name()
+        fake_name = utils.random_unicode()
         fake_body = {"protocols": [{"name": fake_name}]}
         clt.method_get = Mock(return_value=({}, fake_body))
         ret = clt.protocols

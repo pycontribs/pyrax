@@ -1,5 +1,35 @@
 # Release Notes for pyrax
 
+###2013.10.24 - Version 1.6.0
+ - New:
+    - Added support for **Cloud Queues** (Marconi).
+ - Cloud Files:
+    - Fixed an issue where the `last_modified` datetime values for Cloud Files
+      storage_objects were returned inconsistently.
+    - Added ability to cache `temp_url_key`. GitHub #221
+    - Added ability to do partial downloads. GitHub #150
+    - Fixed an issue where calling `delete_object_in_seconds()` deleted existing
+      metadata. GitHub #135
+ - Cloud Databases:
+    - Added missing pagination parameters to several methods. GitHub #226
+ - Cloud DNS:
+    - Changed the `findall()` method to be case-insensitive.
+    - Fixed some error-handling issues. GitHub #219
+ - Auto Scale:
+    - Added code to force 'flavor' arguments to `str` type.
+    - Fixed creation/retrieval of webhooks with policy ID.
+    - Added several replacement methods for configurations.
+ - Load Balancers:
+    - Removed requirement that nodes be passed when creating a load balancer.
+      GitHub #222
+ - Testing:
+    - Improved the smoketest.py integrated test script by adding more services.
+    - Fixed the smoketest to work when running in multiple regions that don't
+      all offer the same services.
+ - General:
+    - Refactored the `_create_body()` method from the `BaseClient` class to the
+      `BaseManager` class.
+
 ###2013.10.04 - Version 1.5.1
  - Pyrax in general:
      - Moved the `get_limits()` behavior to the base client (Nate House)

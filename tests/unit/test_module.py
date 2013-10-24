@@ -92,8 +92,8 @@ class PyraxInitTest(unittest.TestCase):
     def test_settings_get_from_env(self):
         pyrax.settings._settings = {"default": {}}
         pyrax.settings.env_dct = {"identity_type": "fake"}
-        typ = utils.random_name()
-        ident = utils.random_name()
+        typ = utils.random_unicode()
+        ident = utils.random_unicode()
         sav_env = os.environ
         sav_imp = pyrax._import_identity
         pyrax._import_identity = Mock(return_value=ident)
@@ -190,8 +190,8 @@ class PyraxInitTest(unittest.TestCase):
 
     def test_auth_with_token(self):
         pyrax.authenticated = False
-        tok = utils.random_name()
-        tname = utils.random_name()
+        tok = utils.random_unicode()
+        tname = utils.random_unicode()
         pyrax.auth_with_token(tok, tenant_name=tname)
         self.assertTrue(pyrax.identity.authenticated)
         self.assertEqual(pyrax.identity.token, tok)
@@ -262,19 +262,19 @@ class PyraxInitTest(unittest.TestCase):
 
     def test_safe_region(self):
         # Pass direct
-        reg = utils.random_name()
+        reg = utils.random_unicode()
         ret = pyrax._safe_region(reg)
         self.assertEqual(reg, ret)
         # From config setting
         orig_reg = pyrax.get_setting("region")
-        reg = utils.random_name()
+        reg = utils.random_unicode()
         pyrax.set_setting("region", reg)
         ret = pyrax._safe_region()
         self.assertEqual(reg, ret)
         # Identity default
         pyrax.set_setting("region", None)
         orig_defreg = pyrax.identity.get_default_region
-        reg = utils.random_name()
+        reg = utils.random_unicode()
         pyrax.identity.get_default_region = Mock(return_value=reg)
         ret = pyrax._safe_region()
         self.assertEqual(reg, ret)

@@ -33,6 +33,11 @@ import pyrax.exceptions as exc
 EARLY_DATE_STR = "1900-01-01T00:00:00"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 HEAD_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %Z"
+# Format of last_modified in list responses, reverse engineered from sample
+# responses at
+# http://docs.rackspace.com/files/api/v1/cf-devguide/content/
+#   Serialized_List_Output-d1e1460.html
+LIST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
 AUTH_ATTEMPTS = 2
@@ -44,23 +49,24 @@ etag_fail_pat = r"Object PUT failed: .+/([^/]+)/(\S+) 422 Unprocessable Entity"
 etag_failed_pattern = re.compile(etag_fail_pat)
 
 
+def _close_swiftclient_conn(conn):
+    """Swiftclient often leaves the connection open."""
+    try:
+        conn.http_conn[1].close()
+    except Exception:
+        pass
+
+
 def handle_swiftclient_exception(fnc):
     @wraps(fnc)
     def _wrapped(self, *args, **kwargs):
         attempts = 0
         clt_url = self.connection.url
 
-        def close_swiftclient_conn(conn):
-            """Swiftclient often leaves the connection open."""
-            try:
-                conn.http_conn[1].close()
-            except Exception:
-                pass
-
         while attempts < AUTH_ATTEMPTS:
             attempts += 1
             try:
-                close_swiftclient_conn(self.connection)
+                _close_swiftclient_conn(self.connection)
                 ret = fnc(self, *args, **kwargs)
                 return ret
             except _swift_client.ClientException as e:
@@ -94,6 +100,34 @@ def handle_swiftclient_exception(fnc):
     return _wrapped
 
 
+def _convert_head_object_last_modified_to_local(lm_str):
+    # Need to convert last modified time to a datetime object.
+    # Times are returned in default locale format, so we need to read
+    # them as such, no matter what the locale setting may be.
+    orig_locale = locale.getlocale(locale.LC_TIME)
+    locale.setlocale(locale.LC_TIME, (None, None))
+    try:
+        tm_tuple = time.strptime(lm_str, HEAD_DATE_FORMAT)
+    finally:
+        locale.setlocale(locale.LC_TIME, orig_locale)
+    dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
+    # Now convert it back to the format returned by GETting the object.
+    dtstr = dttm.strftime(DATE_FORMAT)
+    return dtstr
+
+
+def _convert_list_last_modified_to_local(attdict):
+    if 'last_modified' in attdict:
+        attdict = attdict.copy()
+        list_date_format_with_tz = LIST_DATE_FORMAT + ' %Z'
+        last_modified_utc = attdict['last_modified'] + ' UTC'
+        tm_tuple = time.strptime(last_modified_utc,
+                                 list_date_format_with_tz)
+        dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
+        attdict['last_modified'] = dttm.strftime(DATE_FORMAT)
+
+    return attdict
+
 
 class CFClient(object):
     """
@@ -112,6 +146,7 @@ class CFClient(object):
     cdn_enabled = False
     default_cdn_ttl = 86400
     _container_cache = {}
+    _cached_temp_url_key = ""
     # Upload size limit
     max_file_size = 5368709119  # 5GB - 1
     # Folder upload status dict. Each upload will generate its own UUID key.
@@ -211,17 +246,23 @@ class CFClient(object):
             curr_meta = self.get_account_metadata()
             for ckey in curr_meta:
                 new_meta[ckey] = ""
-        new_meta.update(massaged)
+        utils.case_insensitive_update(new_meta, massaged)
         self.connection.post_account(new_meta, response_dict=extra_info)
 
 
     @handle_swiftclient_exception
-    def get_temp_url_key(self):
+    def get_temp_url_key(self, cached=True):
         """
         Returns the current TempURL key, or None if it has not been set.
+
+        By default the value returned is cached. To force an API call to get
+        the current value on the server, pass `cached=False`.
         """
-        key = "%stemp-url-key" % self.account_meta_prefix.lower()
-        meta = self.get_account_metadata().get(key)
+        meta = self._cached_temp_url_key
+        if not cached or not meta:
+            key = "%stemp-url-key" % self.account_meta_prefix.lower()
+            meta = self.get_account_metadata().get(key)
+            self._cached_temp_url_key = meta
         return meta
 
 
@@ -238,15 +279,21 @@ class CFClient(object):
             key = uuid.uuid4().hex
         meta = {"Temp-Url-Key": key}
         self.set_account_metadata(meta)
+        self._cached_temp_url_key = key
 
 
-    def get_temp_url(self, container, obj, seconds, method="GET"):
+    def get_temp_url(self, container, obj, seconds, method="GET", key=None,
+            cached=True):
         """
         Given a storage object in a container, returns a URL that can be used
         to access that object. The URL will expire after `seconds` seconds.
 
         The only methods supported are GET and PUT. Anything else will raise
         an InvalidTemporaryURLMethod exception.
+
+        If you have your Temporary URL key, you can pass it in directly and
+        potentially save an API call to retrieve it. If you don't pass in the
+        key, and don't wish to use any cached value, pass `cached=False`.
         """
         cname = self._resolve_name(container)
         oname = self._resolve_name(obj)
@@ -254,7 +301,8 @@ class CFClient(object):
         if mod_method not in ("GET", "PUT"):
             raise exc.InvalidTemporaryURLMethod("Method must be either 'GET' "
                     "or 'PUT'; received '%s'." % method)
-        key = self.get_temp_url_key()
+        if not key:
+            key = self.get_temp_url_key(cached=cached)
         if not key:
             raise exc.MissingTemporaryURLKey("You must set the key for "
                     "Temporary URLs before you can generate them. This is "
@@ -285,11 +333,12 @@ class CFClient(object):
         Sets the object in the specified container to be deleted after the
         specified number of seconds.
         """
-        cname = self._resolve_name(cont)
-        oname = self._resolve_name(obj)
-        headers = {"X-Delete-After": seconds}
-        self.connection.post_object(cname, oname, headers=headers,
-                response_dict=extra_info)
+        meta = {"X-Delete-After": str(seconds)}
+        self.set_object_metadata(cont, obj, meta, prefix="")
+#        cname = self._resolve_name(cont)
+#        oname = self._resolve_name(obj)
+#        self.connection.post_object(cname, oname, headers=headers,
+#                response_dict=extra_info)
 
 
     @handle_swiftclient_exception
@@ -336,7 +385,7 @@ class CFClient(object):
             curr_meta = self.get_container_metadata(cname)
             for ckey in curr_meta:
                 new_meta[ckey] = ""
-        new_meta.update(massaged)
+        utils.case_insensitive_update(new_meta, massaged)
         self.connection.post_container(cname, new_meta,
                 response_dict=extra_info)
 
@@ -444,7 +493,7 @@ class CFClient(object):
         if not clear:
             obj_meta = self.get_object_metadata(cname, oname)
             new_meta = self._massage_metakeys(obj_meta, self.object_meta_prefix)
-        new_meta.update(massaged)
+        utils.case_insensitive_update(new_meta, massaged)
         # Remove any empty values, since the object metadata API will
         # store them.
         to_pop = []
@@ -566,17 +615,8 @@ class CFClient(object):
         cname = self._resolve_name(container)
         oname = self._resolve_name(obj)
         obj_info = self.connection.head_object(cname, oname)
-        # Need to convert last modified time to a datetime object.
-        # Times are returned in default locale format, so we need to read
-        # them as such, no matter what the locale setting may be.
         lm_str = obj_info["last-modified"]
-        orig_locale = locale.getlocale(locale.LC_TIME)
-        locale.setlocale(locale.LC_TIME, (None, None))
-        tm_tuple = time.strptime(lm_str, HEAD_DATE_FORMAT)
-        locale.setlocale(locale.LC_TIME, orig_locale)
-        dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
-        # Now convert it back to the format returned by GETting the object.
-        dtstr = dttm.strftime(DATE_FORMAT)
+        dtstr = _convert_head_object_last_modified_to_local(lm_str)
         obj = StorageObject(self, self.get_container(container),
                 name=oname, content_type=obj_info["content-type"],
                 total_bytes=int(obj_info["content-length"]),
@@ -980,7 +1020,7 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def fetch_object(self, container, obj, include_meta=False,
-            chunk_size=None, extra_info=None):
+            chunk_size=None, size=None, extra_info=None):
         """
         Fetches the object from storage.
 
@@ -989,6 +1029,10 @@ class CFClient(object):
 
         Note: if 'chunk_size' is defined, you must fully read the object's
         contents before making another request.
+
+        If 'size' is specified, only the first 'size' bytes of the object will
+        be returned. If the object if smaller than 'size', the entire object is
+        returned.
 
         When 'include_meta' is True, what is returned from this method is a
         2-tuple:
@@ -1007,6 +1051,18 @@ class CFClient(object):
             return (meta, data)
         else:
             return data
+
+
+    @handle_swiftclient_exception
+    def fetch_partial(self, container, obj, size):
+        """
+        Returns the first 'size' bytes of an object. If the object is smaller
+        than the specified 'size' value, the entire object is returned.
+        """
+        gen = self.fetch_object(container, obj, chunk_size=size)
+        ret = gen.next()
+        _close_swiftclient_conn(self.connection)
+        return ret
 
 
     @handle_swiftclient_exception
@@ -1082,7 +1138,10 @@ class CFClient(object):
                 limit=limit, prefix=prefix, delimiter=delimiter,
                 full_listing=full_listing)
         cont = self.get_container(cname)
-        return [StorageObject(self, container=cont, attdict=obj) for obj in objs
+        return [StorageObject(self,
+                              container=cont,
+                              attdict=_convert_list_last_modified_to_local(obj))
+                for obj in objs
                 if "name" in obj]
 
 

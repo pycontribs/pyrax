@@ -133,7 +133,7 @@ class ClientTest(unittest.TestCase):
 
     def test_get_limits(self):
         clt = self.client
-        data = utils.random_name()
+        data = utils.random_unicode()
         clt.method_get = Mock(return_value=(None, data))
         ret = clt.get_limits()
         self.assertEqual(ret, data)

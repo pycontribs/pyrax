@@ -483,15 +483,15 @@ class CloudDNSManager(BaseManager):
         """
         def _fmt_error(err):
             # Remove the cumbersome Java-esque message
-            details = err["details"].replace("\n", " ")
+            details = err.get("details", "").replace("\n", " ")
             if not details:
-                details = err["message"]
-            return "%s (%s)" % (details, err["code"])
+                details = err.get("message", "")
+            return "%s (%s)" % (details, err.get("code", ""))
 
-        error = resp_body["error"]
+        error = resp_body.get("error", "")
         if "failedItems" in error:
             # Multi-error response
-            faults = error["failedItems"]["faults"]
+            faults = error.get("failedItems", {}).get("faults", [])
             msgs = [_fmt_error(fault) for fault in faults]
             msg = "\n".join(msgs)
         else:
@@ -554,11 +554,11 @@ class CloudDNSManager(BaseManager):
         """
         if (len(kwargs) == 1) and ("name" in kwargs):
             # Filtering on name; use the more efficient method.
-            nm = kwargs["name"]
+            nm = kwargs["name"].lower()
             uri = "/%s?name=%s" % (self.uri_base, nm)
             matches = self._list(uri, list_all=True)
             return [match for match in matches
-                if match.name == nm]
+                if match.name.lower() == nm]
         else:
             return super(CloudDNSManager, self).findall(**kwargs)
 
@@ -871,9 +871,9 @@ class CloudDNSManager(BaseManager):
         """
         try:
             from tests.unit import fakes
-            server_types = (pyrax.CloudServer, fakes.FakeServer,
-                fakes.FakeDNSDevice)
-            lb_types = (CloudLoadBalancer, fakes.FakeLoadBalancer)
+            server_types = (pyrax.CloudServer, fakes.FakeServer)
+            lb_types = (CloudLoadBalancer, fakes.FakeLoadBalancer,
+                    fakes.FakeDNSDevice)
         except ImportError:
             # Not running with tests
             server_types = (pyrax.CloudServer, )

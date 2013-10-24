@@ -103,7 +103,7 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_attach_to_instance(self):
         vol = self.volume
         inst = fakes.FakeServer()
-        mp = utils.random_name()
+        mp = utils.random_unicode()
         vol._nova_volumes.create_server_volume = Mock(return_value=vol)
         vol.attach_to_instance(inst, mp)
         vol._nova_volumes.create_server_volume.assert_called_once_with(inst.id,
@@ -112,7 +112,7 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_attach_to_instance_fail(self):
         vol = self.volume
         inst = fakes.FakeServer()
-        mp = utils.random_name()
+        mp = utils.random_unicode()
         vol._nova_volumes.create_server_volume = Mock(
                 side_effect=Exception("test"))
         self.assertRaises(exc.VolumeAttachmentFailed, vol.attach_to_instance,
@@ -120,8 +120,8 @@ class CloudBlockStorageTest(unittest.TestCase):
 
     def test_detach_from_instance(self):
         vol = self.volume
-        srv_id = utils.random_name()
-        att_id = utils.random_name()
+        srv_id = utils.random_unicode()
+        att_id = utils.random_unicode()
         vol.attachments = [{"server_id": srv_id, "id": att_id}]
         vol._nova_volumes.delete_server_volume = Mock()
         vol.detach()
@@ -130,8 +130,8 @@ class CloudBlockStorageTest(unittest.TestCase):
 
     def test_detach_from_instance_fail(self):
         vol = self.volume
-        srv_id = utils.random_name()
-        att_id = utils.random_name()
+        srv_id = utils.random_unicode()
+        att_id = utils.random_unicode()
         vol.attachments = [{"server_id": srv_id, "id": att_id}]
         vol._nova_volumes.delete_server_volume = Mock(
                 side_effect=Exception("test"))
@@ -140,8 +140,8 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_create_snapshot(self):
         vol = self.volume
         vol.manager.create_snapshot = Mock()
-        name = utils.random_name()
-        desc = utils.random_name()
+        name = utils.random_unicode()
+        desc = utils.random_unicode()
         vol.create_snapshot(name=name, description=desc, force=False)
         vol.manager.create_snapshot.assert_called_once_with(volume=vol,
                 name=name, description=desc, force=False)
@@ -151,8 +151,8 @@ class CloudBlockStorageTest(unittest.TestCase):
         sav = BaseManager.create
         BaseManager.create = Mock(side_effect=exc.BadRequest(
                 "Invalid volume: must be available"))
-        name = utils.random_name()
-        desc = utils.random_name()
+        name = utils.random_unicode()
+        desc = utils.random_unicode()
         self.assertRaises(exc.VolumeNotAvailable, vol.create_snapshot,
                 name=name, description=desc, force=False)
         BaseManager.create = sav
@@ -161,8 +161,8 @@ class CloudBlockStorageTest(unittest.TestCase):
         vol = self.volume
         vol.manager.api.create_snapshot = Mock(side_effect=exc.BadRequest(
                 "Some other message"))
-        name = utils.random_name()
-        desc = utils.random_name()
+        name = utils.random_unicode()
+        desc = utils.random_unicode()
         self.assertRaises(exc.BadRequest, vol.create_snapshot, name=name,
                 description=desc, force=False)
 
@@ -195,12 +195,12 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_create_body_volume(self):
         mgr = self.client._manager
         size = random.randint(MIN_SIZE, MAX_SIZE)
-        name = utils.random_name()
-        snapshot_id = utils.random_name()
+        name = utils.random_unicode()
+        snapshot_id = utils.random_unicode()
         display_description = None
         volume_type = None
         metadata = None
-        availability_zone = utils.random_name()
+        availability_zone = utils.random_unicode()
         fake_body = {"volume": {
                 "size": size,
                 "snapshot_id": snapshot_id,
@@ -218,12 +218,12 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_create_body_volume_defaults(self):
         mgr = self.client._manager
         size = random.randint(MIN_SIZE, MAX_SIZE)
-        name = utils.random_name()
-        snapshot_id = utils.random_name()
-        display_description = utils.random_name()
-        volume_type = utils.random_name()
+        name = utils.random_unicode()
+        snapshot_id = utils.random_unicode()
+        display_description = utils.random_unicode()
+        volume_type = utils.random_unicode()
         metadata = {}
-        availability_zone = utils.random_name()
+        availability_zone = utils.random_unicode()
         fake_body = {"volume": {
                 "size": size,
                 "snapshot_id": snapshot_id,
@@ -241,8 +241,8 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_create_body_snapshot(self):
         mgr = self.client._snapshot_manager
         vol = self.volume
-        name = utils.random_name()
-        display_description = utils.random_name()
+        name = utils.random_unicode()
+        display_description = utils.random_unicode()
         force = True
         fake_body = {"snapshot": {
                 "display_name": name,
@@ -258,7 +258,7 @@ class CloudBlockStorageTest(unittest.TestCase):
         clt = self.client
         vol = self.volume
         inst = fakes.FakeServer()
-        mp = utils.random_name()
+        mp = utils.random_unicode()
         vol.attach_to_instance = Mock()
         clt.attach_to_instance(vol, inst, mp)
         vol.attach_to_instance.assert_called_once_with(inst, mp)
@@ -297,8 +297,8 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_client_create_snapshot(self):
         clt = self.client
         vol = self.volume
-        name = utils.random_name()
-        description = utils.random_name()
+        name = utils.random_unicode()
+        description = utils.random_unicode()
         clt._snapshot_manager.create = Mock()
         clt.create_snapshot(vol, name=name, description=description,
                 force=True)
@@ -308,8 +308,8 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_client_create_snapshot_not_available(self):
         clt = self.client
         vol = self.volume
-        name = utils.random_name()
-        description = utils.random_name()
+        name = utils.random_unicode()
+        description = utils.random_unicode()
         cli_exc = exc.ClientException(409, "Request conflicts with in-progress")
         sav = BaseManager.create
         BaseManager.create = Mock(side_effect=cli_exc)
@@ -344,37 +344,37 @@ class CloudBlockStorageTest(unittest.TestCase):
 
     def test_volume_name_property(self):
         vol = self.volume
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         vol.display_name = nm
         self.assertEqual(vol.name, vol.display_name)
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         vol.name = nm
         self.assertEqual(vol.name, vol.display_name)
 
     def test_volume_description_property(self):
         vol = self.volume
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         vol.display_description = nm
         self.assertEqual(vol.description, vol.display_description)
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         vol.description = nm
         self.assertEqual(vol.description, vol.display_description)
 
     def test_snapshot_name_property(self):
         snap = self.snapshot
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         snap.display_name = nm
         self.assertEqual(snap.name, snap.display_name)
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         snap.name = nm
         self.assertEqual(snap.name, snap.display_name)
 
     def test_snapshot_description_property(self):
         snap = self.snapshot
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         snap.display_description = nm
         self.assertEqual(snap.description, snap.display_description)
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         snap.description = nm
         self.assertEqual(snap.description, snap.display_description)
 

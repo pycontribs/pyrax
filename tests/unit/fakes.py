@@ -42,16 +42,13 @@ from pyrax.cloudnetworks import CloudNetwork
 from pyrax.cloudnetworks import CloudNetworkClient
 from pyrax.cloudmonitoring import CloudMonitorClient
 from pyrax.cloudmonitoring import CloudMonitorEntity
-from pyrax.cloudmonitoring import CloudMonitorNotificationManager
-from pyrax.cloudmonitoring import CloudMonitorNotificationPlanManager
-from pyrax.cloudmonitoring import CloudMonitorEntityManager
 from pyrax.cloudmonitoring import CloudMonitorCheck
-from pyrax.cloudmonitoring import CloudMonitorCheckType
-from pyrax.cloudmonitoring import CloudMonitorZone
 from pyrax.cloudmonitoring import CloudMonitorNotification
-from pyrax.cloudmonitoring import CloudMonitorNotificationType
-from pyrax.cloudmonitoring import CloudMonitorNotificationPlan
-from pyrax.cloudmonitoring import CloudMonitorAlarm
+from pyrax.queueing import Queue
+from pyrax.queueing import QueueClaim
+from pyrax.queueing import QueueMessage
+from pyrax.queueing import QueueClient
+from pyrax.queueing import QueueManager
 
 import pyrax.exceptions as exc
 from pyrax.identity.rax_identity import RaxIdentity
@@ -120,7 +117,7 @@ fake_attdict = {"name": "fake",
 
 
 class FakeServer(object):
-    id = utils.random_name()
+    id = utils.random_unicode()
 
 
 class FakeService(object):
@@ -132,7 +129,7 @@ class FakeService(object):
         self.Node = FakeNode
         self.VirtualIP = FakeVirtualIP
         self.loadbalancers = FakeLoadBalancer()
-        self.id = utils.random_name()
+        self.id = utils.random_unicode()
 
     def authenticate(self):
         pass
@@ -256,7 +253,7 @@ class FakeKeyring(object):
 
 class FakeEntity(object):
     def __init__(self, *args, **kwargs):
-        self.id = utils.random_name()
+        self.id = utils.random_unicode()
 
     def get(self, *args, **kwargs):
         pass
@@ -275,7 +272,7 @@ class FakeDatabaseVolume(CloudDatabaseVolume):
 
 class FakeDatabaseInstance(CloudDatabaseInstance):
     def __init__(self, *args, **kwargs):
-        self.id = utils.random_name()
+        self.id = utils.random_unicode()
         self.manager = FakeManager()
         self.manager.api = FakeDatabaseClient()
         self._database_manager = CloudDatabaseDatabaseManager(
@@ -299,43 +296,6 @@ class FakeDatabaseClient(CloudDatabaseClient):
                 "fakepassword", *args, **kwargs)
 
 
-class FakeDNSClient(CloudDNSClient):
-    def __init__(self, *args, **kwargs):
-        super(FakeDNSClient, self).__init__("fakeuser",
-                "fakepassword", *args, **kwargs)
-
-
-class FakeDNSManager(CloudDNSManager):
-    def __init__(self, api=None, *args, **kwargs):
-        if api is None:
-            api = FakeDNSClient()
-        super(FakeDNSManager, self).__init__(api, *args, **kwargs)
-        self.resource_class = FakeDNSDomain
-        self.response_key = "domain"
-        self.plural_response_key = "domains"
-        self.uri_base = "domains"
-
-
-class FakeDNSDomain(CloudDNSDomain):
-    def __init__(self, *args, **kwargs):
-        self.id = utils.random_name(ascii_only=True)
-        self.name = utils.random_name()
-        self.manager = FakeDNSManager()
-
-
-class FakeDNSRecord(CloudDNSRecord):
-    def __init__(self, mgr, info, *args, **kwargs):
-        super(FakeDNSRecord, self).__init__(mgr, info, *args, **kwargs)
-
-
-class FakeDNSPTRRecord(CloudDNSPTRRecord):
-    pass
-
-class FakeDNSDevice(FakeEntity):
-    def __init__(self, *args, **kwargs):
-        self.id = utils.random_name()
-
-
 class FakeNovaVolumeClient(BaseClient):
     def __init__(self, *args, **kwargs):
         pass
@@ -350,15 +310,15 @@ class FakeBlockStorageManager(CloudBlockStorageManager):
 
 class FakeBlockStorageVolume(CloudBlockStorageVolume):
     def __init__(self, *args, **kwargs):
-        volname = utils.random_name(8)
-        self.id = utils.random_name()
+        volname = utils.random_unicode(8)
+        self.id = utils.random_unicode()
         self.manager = FakeBlockStorageManager()
         self._nova_volumes = FakeNovaVolumeClient()
 
 
 class FakeBlockStorageSnapshot(CloudBlockStorageSnapshot):
     def __init__(self, *args, **kwargs):
-        self.id = utils.random_name()
+        self.id = utils.random_unicode()
         self.manager = FakeManager()
         self.status = "available"
 
@@ -386,10 +346,10 @@ class FakeLoadBalancerManager(CloudLoadBalancerManager):
 
 class FakeLoadBalancer(CloudLoadBalancer):
     def __init__(self, name=None, info=None, *args, **kwargs):
-        name = name or utils.random_name(ascii_only=True)
+        name = name or utils.random_ascii()
         info = info or {"fake": "fake"}
         super(FakeLoadBalancer, self).__init__(name, info, *args, **kwargs)
-        self.id = utils.random_name(ascii_only=True)
+        self.id = utils.random_ascii()
         self.port = random.randint(1, 256)
         self.manager = FakeLoadBalancerManager()
 
@@ -402,7 +362,7 @@ class FakeNode(Node):
         if port is None:
             port = 80
         if id is None:
-            id = utils.random_name()
+            id = utils.random_unicode()
         super(FakeNode, self).__init__(address=address, port=port,
                 condition=condition, weight=weight, status=status,
                 parent=parent, type=type, id=id)
@@ -414,7 +374,7 @@ class FakeVirtualIP(VirtualIP):
 
 class FakeStatusChanger(object):
     check_count = 0
-    id = utils.random_name()
+    id = utils.random_unicode()
 
     @property
     def status(self):
@@ -422,6 +382,44 @@ class FakeStatusChanger(object):
             self.check_count += 1
             return "changing"
         return "ready"
+
+
+class FakeDNSClient(CloudDNSClient):
+    def __init__(self, *args, **kwargs):
+        super(FakeDNSClient, self).__init__("fakeuser",
+                "fakepassword", *args, **kwargs)
+
+
+class FakeDNSManager(CloudDNSManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeDNSClient()
+        super(FakeDNSManager, self).__init__(api, *args, **kwargs)
+        self.resource_class = FakeDNSDomain
+        self.response_key = "domain"
+        self.plural_response_key = "domains"
+        self.uri_base = "domains"
+
+
+class FakeDNSDomain(CloudDNSDomain):
+    def __init__(self, *args, **kwargs):
+        self.id = utils.random_ascii()
+        self.name = utils.random_unicode()
+        self.manager = FakeDNSManager()
+
+
+class FakeDNSRecord(CloudDNSRecord):
+    def __init__(self, mgr, info, *args, **kwargs):
+        super(FakeDNSRecord, self).__init__(mgr, info, *args, **kwargs)
+
+
+class FakeDNSPTRRecord(CloudDNSPTRRecord):
+    pass
+
+
+class FakeDNSDevice(FakeLoadBalancer):
+    def __init__(self, *args, **kwargs):
+        self.id = utils.random_unicode()
 
 
 class FakeCloudNetworkClient(CloudNetworkClient):
@@ -433,7 +431,7 @@ class FakeCloudNetworkClient(CloudNetworkClient):
 class FakeCloudNetwork(CloudNetwork):
     def __init__(self, *args, **kwargs):
         info = kwargs.pop("info", {"fake": "fake"})
-        label = kwargs.pop("label", kwargs.pop("name", utils.random_name()))
+        label = kwargs.pop("label", kwargs.pop("name", utils.random_unicode()))
         info["label"] = label
         super(FakeCloudNetwork, self).__init__(manager=None, info=info, *args,
                 **kwargs)
@@ -449,13 +447,13 @@ class FakeAutoScaleClient(AutoScaleClient):
 class FakeAutoScalePolicy(AutoScalePolicy):
     def __init__(self, *args, **kwargs):
         super(FakeAutoScalePolicy, self).__init__(*args, **kwargs)
-        self.id = utils.random_name(ascii_only=True)
+        self.id = utils.random_ascii()
 
 
 class FakeAutoScaleWebhook(AutoScaleWebhook):
     def __init__(self, *args, **kwargs):
         super(FakeAutoScaleWebhook, self).__init__(*args, **kwargs)
-        self.id = utils.random_name(ascii_only=True)
+        self.id = utils.random_ascii()
 
 
 class FakeScalingGroupManager(ScalingGroupManager):
@@ -463,16 +461,16 @@ class FakeScalingGroupManager(ScalingGroupManager):
         if api is None:
             api = FakeAutoScaleClient()
         super(FakeScalingGroupManager, self).__init__(api, *args, **kwargs)
-        self.id = utils.random_name(ascii_only=True)
+        self.id = utils.random_ascii()
 
 
 class FakeScalingGroup(ScalingGroup):
     def __init__(self, name=None, info=None, *args, **kwargs):
-        name = name or utils.random_name(ascii_only=True)
+        name = name or utils.random_ascii()
         info = info or {"fake": "fake", "scalingPolicies": []}
         self.groupConfiguration = {}
         super(FakeScalingGroup, self).__init__(name, info, *args, **kwargs)
-        self.id = utils.random_name(ascii_only=True)
+        self.id = utils.random_ascii()
         self.name = name
         self.manager = FakeScalingGroupManager()
 
@@ -489,7 +487,7 @@ class FakeCloudMonitorEntity(CloudMonitorEntity):
         super(FakeCloudMonitorEntity, self).__init__(FakeManager(), info=info,
                 *args, **kwargs)
         self.manager.api = FakeCloudMonitorClient()
-        self.id = utils.random_name()
+        self.id = utils.random_unicode()
 
 
 class FakeCloudMonitorCheck(CloudMonitorCheck):
@@ -507,6 +505,48 @@ class FakeCloudMonitorNotification(CloudMonitorNotification):
         super(FakeCloudMonitorNotification, self).__init__(manager=None,
                 info=info, *args, **kwargs)
         self.id = uuid.uuid4()
+
+
+class FakeQueue(Queue):
+    def __init__(self, *args, **kwargs):
+        info = kwargs.pop("info", {"fake": "fake"})
+        info["name"] = utils.random_unicode()
+        mgr = kwargs.pop("manager", FakeQueueManager())
+        super(FakeQueue, self).__init__(manager=mgr, info=info, *args, **kwargs)
+
+
+class FakeQueueClaim(QueueClaim):
+    def __init__(self, *args, **kwargs):
+        info = kwargs.pop("info", {"fake": "fake"})
+        info["name"] = utils.random_unicode()
+        mgr = kwargs.pop("manager", FakeQueueManager())
+        super(FakeQueueClaim, self).__init__(manager=mgr, info=info, *args,
+                **kwargs)
+
+
+class FakeQueueMessage(QueueMessage):
+    def __init__(self, *args, **kwargs):
+        id_ = utils.random_unicode()
+        href = "http://example.com/%s" % id_
+        info = kwargs.pop("info", {"href": href})
+        info["name"] = utils.random_unicode()
+        mgr = kwargs.pop("manager", FakeQueueManager())
+        super(FakeQueueMessage, self).__init__(manager=mgr, info=info, *args,
+                **kwargs)
+
+
+class FakeQueueClient(QueueClient):
+    def __init__(self, *args, **kwargs):
+        super(FakeQueueClient, self).__init__("fakeuser",
+                "fakepassword", *args, **kwargs)
+
+
+class FakeQueueManager(QueueManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeQueueClient()
+        super(FakeQueueManager, self).__init__(api, *args, **kwargs)
+        self.id = utils.random_ascii()
 
 
 class FakeIdentity(RaxIdentity):

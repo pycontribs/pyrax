@@ -5,6 +5,7 @@ import locale
 import os
 import random
 import unittest
+import uuid
 
 from mock import ANY, patch
 from mock import MagicMock as Mock
@@ -45,8 +46,8 @@ class CF_ClientTest(unittest.TestCase):
         pyrax.connect_to_cloudfiles(region="FAKE")
         self.client = pyrax.cloudfiles
         self.client._container_cache = {}
-        self.cont_name = utils.random_name(ascii_only=True)
-        self.obj_name = utils.random_name(ascii_only=True)
+        self.cont_name = utils.random_ascii()
+        self.obj_name = utils.random_ascii()
         self.fake_object = FakeStorageObject(self.client, self.cont_name,
                 self.obj_name)
 
@@ -81,7 +82,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_set_account_metadata_prefix(self):
         client = self.client
         client.connection.post_account = Mock()
-        prefix = utils.random_name()
+        prefix = utils.random_unicode()
         client.set_account_metadata({"newkey": "newval"}, prefix=prefix)
         client.connection.post_account.assert_called_with(
                 {"%snewkey" % prefix: "newval"}, response_dict=None)
@@ -114,11 +115,28 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         sav = client.set_account_metadata
         client.set_account_metadata = Mock()
-        key = utils.random_name()
+        key = utils.random_unicode()
         exp = {"Temp-Url-Key": key}
         client.set_temp_url_key(key)
         client.set_account_metadata.assert_called_once_with(exp)
         client.set_account_metadata = sav
+
+    def test_set_temp_url_key_generated(self):
+        client = self.client
+        sav = client.set_account_metadata
+        client.set_account_metadata = Mock()
+        key = utils.random_ascii()
+        sav_uu = uuid.uuid4
+
+        class FakeUUID(object):
+            hex = key
+
+        uuid.uuid4 = Mock(return_value=FakeUUID())
+        exp = {"Temp-Url-Key": key}
+        client.set_temp_url_key()
+        client.set_account_metadata.assert_called_once_with(exp)
+        client.set_account_metadata = sav
+        uuid.uuid4 = sav_uu
 
     def test_get_temp_url_key(self):
         client = self.client
@@ -127,17 +145,24 @@ class CF_ClientTest(unittest.TestCase):
                 "x-account-meta-foo": "yes", "some-other-key": "no"}
         meta = client.get_temp_url_key()
         self.assertIsNone(meta)
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         client.connection.head_account.return_value = {
                 "x-account-meta-temp-url-key": nm, "some-other-key": "no"}
         meta = client.get_temp_url_key()
         self.assertEqual(meta, nm)
 
+    def test_get_temp_url_key_cached(self):
+        client = self.client
+        key = utils.random_unicode()
+        client._cached_temp_url_key = key
+        meta = client.get_temp_url_key()
+        self.assertEqual(meta, key)
+
     def test_get_temp_url(self):
         client = self.client
-        nm = utils.random_name(ascii_only=True)
-        cname = utils.random_name(ascii_only=True)
-        oname = utils.random_name(ascii_only=True)
+        nm = utils.random_ascii()
+        cname = utils.random_ascii()
+        oname = utils.random_ascii()
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {
                 "x-account-meta-temp-url-key": nm, "some-other-key": "no"}
@@ -147,11 +172,19 @@ class CF_ClientTest(unittest.TestCase):
         self.assert_("?temp_url_sig=" in ret)
         self.assert_("&temp_url_expires=" in ret)
 
+    def test_get_temp_url_bad_method(self):
+        client = self.client
+        nm = utils.random_ascii()
+        cname = utils.random_ascii()
+        oname = utils.random_ascii()
+        self.assertRaises(exc.InvalidTemporaryURLMethod, client.get_temp_url,
+                cname, oname, seconds=120, method="INVALID")
+
     def test_get_temp_url_windows(self):
         client = self.client
-        nm = "%s\\" % utils.random_name(ascii_only=True)
-        cname = "\\%s\\" % utils.random_name(ascii_only=True)
-        oname = utils.random_name(ascii_only=True)
+        nm = "%s\\" % utils.random_ascii()
+        cname = "\\%s\\" % utils.random_ascii()
+        oname = utils.random_ascii()
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {
                 "x-account-meta-temp-url-key": nm, "some-other-key": "no"}
@@ -160,9 +193,9 @@ class CF_ClientTest(unittest.TestCase):
 
     def test_get_temp_url_unicode(self):
         client = self.client
-        nm = utils.random_name(ascii_only=False)
-        cname = utils.random_name(ascii_only=True)
-        oname = utils.random_name(ascii_only=True)
+        nm = utils.random_unicode()
+        cname = utils.random_ascii()
+        oname = utils.random_ascii()
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {
                 "x-account-meta-temp-url-key": nm, "some-other-key": "no"}
@@ -172,8 +205,8 @@ class CF_ClientTest(unittest.TestCase):
 
     def test_get_temp_url_missing_key(self):
         client = self.client
-        cname = utils.random_name(ascii_only=True)
-        oname = utils.random_name(ascii_only=True)
+        cname = utils.random_ascii()
+        oname = utils.random_ascii()
         client.connection.head_account = Mock()
         client.connection.head_account.return_value = {"some-other-key": "no"}
         self.assertRaises(exc.MissingTemporaryURLKey, client.get_temp_url,
@@ -207,7 +240,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_set_container_metadata_prefix(self):
         client = self.client
         client.connection.post_container = Mock()
-        prefix = utils.random_name()
+        prefix = utils.random_unicode()
         client.set_container_metadata(self.cont_name, {"newkey": "newval"},
                 prefix=prefix)
         client.connection.post_container.assert_called_with(self.cont_name,
@@ -261,7 +294,7 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.head_object.return_value = {
                 "X-Object-Meta-Foo": "yes", "Some-Other-Key": "no"}
         client.connection.post_object = Mock()
-        prefix = utils.random_name()
+        prefix = utils.random_unicode()
         client.set_object_metadata(self.cont_name, self.obj_name,
                 {"newkey": "newval", "emptykey": ""}, prefix=prefix)
         client.connection.post_object.assert_called_with(self.cont_name,
@@ -376,7 +409,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_remove_object_from_cache(self):
         client = self.client
         client.connection.head_container = Mock()
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         client._container_cache = {nm: object()}
         client.remove_container_from_cache(nm)
         self.assertEqual(client._container_cache, {})
@@ -415,7 +448,7 @@ class CF_ClientTest(unittest.TestCase):
         sav = client.bulk_delete_interval
         client.bulk_delete_interval = 0.001
         container = self.cont_name
-        obj_names = [utils.random_name()]
+        obj_names = [utils.random_unicode()]
         ret = client.bulk_delete(container, obj_names, async=False)
         self.assertTrue(isinstance(ret, dict))
         client.bulk_delete_interval = sav
@@ -425,7 +458,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_bulk_delete_async(self):
         client = self.client
         container = self.cont_name
-        obj_names = [utils.random_name()]
+        obj_names = [utils.random_unicode()]
         ret = client.bulk_delete(container, obj_names, async=True)
         self.assertTrue(isinstance(ret, FakeBulkDeleter))
 
@@ -441,19 +474,23 @@ class CF_ClientTest(unittest.TestCase):
         obj = client.get_object(self.cont_name, "o1")
         self.assertEqual(obj.name, "o1")
 
+    def random_non_us_locale(self):
+        nonUS_locales = ("de_DE", "fr_FR", "hu_HU", "ja_JP", "nl_NL", "pl_PL",
+                         "pt_BR", "pt_PT", "ro_RO", "ru_RU", "zh_CN", "zh_HK",
+                         "zh_TW")
+        return random.choice(nonUS_locales)
+
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_object_locale(self):
         client = self.client
         orig_locale = locale.getlocale(locale.LC_TIME)
-        nonUS_locales = ("de_DE", "fr_FR", "hu_HU", "ja_JP", "nl_NL", "pl_PL",
-                "pt_BR", "pt_PT", "ro_RO", "ru_RU", "zh_CN", "zh_HK", "zh_TW")
-        new_locale = random.choice(nonUS_locales)
+        new_locale = self.random_non_us_locale()
         try:
             locale.setlocale(locale.LC_TIME, new_locale)
         except Exception:
             # Travis CI seems to have a problem with setting locale, so
             # just skip this.
-            return
+            self.skipTest("Could not set locale to %s" % new_locale)
         client.connection.head_container = Mock()
         client.connection.head_object = Mock(return_value=fake_attdict)
         obj = client.get_object(self.cont_name, "fake")
@@ -614,7 +651,7 @@ class CF_ClientTest(unittest.TestCase):
         client.upload_file = Mock()
         client.connection.head_container = Mock()
         client.connection.put_container = Mock()
-        cont_name = utils.random_name()
+        cont_name = utils.random_unicode()
         cont = client.create_container(cont_name)
         gobj = client.get_object
         client.get_object = Mock(return_value=self.fake_object)
@@ -656,7 +693,7 @@ class CF_ClientTest(unittest.TestCase):
         clt.connection.put_container = Mock()
         clt.connection.head_object = Mock(return_value=fake_attdict)
         clt.get_container_objects = Mock(return_value=[])
-        cont_name = utils.random_name(8)
+        cont_name = utils.random_unicode(8)
         cont = clt.create_container(cont_name)
         num_files = 7
         with utils.SelfDeletingTempDirectory() as tmpdir:
@@ -677,7 +714,7 @@ class CF_ClientTest(unittest.TestCase):
         clt.connection.put_container = Mock()
         clt.connection.head_object = Mock(return_value=fake_attdict)
         clt.get_container_objects = Mock(return_value=[])
-        cont_name = utils.random_name(8)
+        cont_name = utils.random_unicode(8)
         cont = clt.create_container(cont_name)
         num_vis_files = 4
         num_hid_files = 4
@@ -704,7 +741,7 @@ class CF_ClientTest(unittest.TestCase):
         clt.connection.put_container = Mock()
         clt.connection.head_object = Mock(return_value=fake_attdict)
         clt.get_container_objects = Mock(return_value=[])
-        cont_name = utils.random_name(8)
+        cont_name = utils.random_unicode(8)
         cont = clt.create_container(cont_name)
         num_files = 3
         num_nested_files = 6
@@ -803,12 +840,20 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.get_object.assert_called_with(ANY, ANY,
                 resp_chunk_size=ANY, response_dict=response)
 
+    def test_fetch_partial(self):
+        client = self.client
+        cont = utils.random_unicode()
+        obj = utils.random_unicode()
+        size = random.randint(1, 1000)
+        client.fetch_object = Mock()
+        client.fetch_partial(cont, obj, size)
+        client.fetch_object.assert_called_once_with(cont, obj, chunk_size=size)
+
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_download_object(self):
         client = self.client
         sav_fetch = client.fetch_object
-        client.fetch_object = Mock(return_value=utils.random_name(
-                ascii_only=True))
+        client.fetch_object = Mock(return_value=utils.random_ascii())
         sav_isdir = os.path.isdir
         os.path.isdir = Mock(return_value=True)
         nm = "one/two/three/four.txt"
@@ -883,6 +928,49 @@ class CF_ClientTest(unittest.TestCase):
         objs = client.get_container_objects(self.cont_name)
         self.assertEqual(len(objs), 2)
         self.assertEqual(objs[0].container.name, self.cont_name)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_get_container_objects_locale(self):
+        client = self.client
+
+        orig_locale = locale.getlocale(locale.LC_TIME)
+        try:
+            # Set locale to Great Britain because we know that DST was active
+            # there at 2013-10-21T01:02:03.123456 UTC
+            locale.setlocale(locale.LC_TIME, 'en_GB')
+        except Exception:
+            # Travis CI seems to have a problem with setting locale, so
+            # just skip this.
+            self.skipTest("Could not set locale to en_GB")
+
+        client.connection.head_container = Mock()
+        dct = [
+            {
+                "name": "o1",
+                "bytes": 111,
+                "last_modified": "2013-01-01T01:02:03.123456",
+            },
+            {
+                "name": "o2",
+                "bytes": 2222,
+                "last_modified": "2013-10-21T01:02:03.123456",
+            },
+        ]
+        client.connection.get_container = Mock(return_value=({}, dct))
+        objs = client.get_container_objects(self.cont_name)
+
+        self.assertEqual(len(objs), 2)
+        self.assertEqual(objs[0].container.name, self.cont_name)
+        self.assertEqual(objs[0].name, "o1")
+        self.assertEqual(objs[0].last_modified, "2013-01-01T01:02:03")
+        self.assertEqual(objs[1].name, "o2")
+        # Note that hour here is 1 greater than the hour in the last_modified
+        # returned by the server.  This is because they are in different
+        # timezones - the server returns the time in UTC (no DST) but the local
+        # timezone of the client as of 2013-10-21 is BST (1 hour daylight savings).
+        self.assertEqual(objs[1].last_modified, "2013-10-21T02:02:03")
+
+        locale.setlocale(locale.LC_TIME, orig_locale)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_container_object_names(self):
@@ -1140,7 +1228,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_bulk_deleter(self):
         client = self.client
         container = self.cont_name
-        object_names = utils.random_name()
+        object_names = utils.random_unicode()
         bd = FakeBulkDeleter(client, container, object_names)
         self.assertEqual(bd.client, client)
         self.assertEqual(bd.container, container)
@@ -1149,29 +1237,29 @@ class CF_ClientTest(unittest.TestCase):
     def test_bulk_deleter_run(self):
         client = self.client
         container = self.cont_name
-        object_names = utils.random_name()
+        object_names = utils.random_unicode()
         bd = FakeBulkDeleter(client, container, object_names)
 
         class FakeConn(object):
             pass
 
         class FakePath(object):
-            path = utils.random_name()
+            path = utils.random_unicode()
 
         class FakeResp(object):
-            status = utils.random_name()
-            reason = utils.random_name()
+            status = utils.random_unicode()
+            reason = utils.random_unicode()
 
         fpath = FakePath()
         conn = FakeConn()
         resp = FakeResp()
         # Need to make these ASCII, since some characters will confuse the
         # splitlines() call.
-        num_del = utils.random_name(ascii_only=True)
-        num_not_found = utils.random_name(ascii_only=True)
-        status = utils.random_name(ascii_only=True)
-        errors = utils.random_name(ascii_only=True)
-        useless = utils.random_name(ascii_only=True)
+        num_del = utils.random_ascii()
+        num_not_found = utils.random_ascii()
+        status = utils.random_ascii()
+        errors = utils.random_ascii()
+        useless = utils.random_ascii()
         fake_read = """Number Deleted: %s
 Number Not Found: %s
 Response Status: %s

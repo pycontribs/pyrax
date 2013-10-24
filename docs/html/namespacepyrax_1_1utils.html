@@ -119,8 +119,10 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience method for executing operating system commands.  <a href="#a246bab6cd0c9c356c323014ce9724a72"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a9e1881e14792f2c07dd799fd7b9d53d1">get_checksum</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the MD5 checksum in hex for the given content.  <a href="#a9e1881e14792f2c07dd799fd7b9d53d1"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a15ae8eb19e0cbaf0281e950aebca0962">random_name</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a random name; useful for testing.  <a href="#a15ae8eb19e0cbaf0281e950aebca0962"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a22d977f9099b32cca29ae8f2bf85c738">random_unicode</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a random name; useful for testing.  <a href="#a22d977f9099b32cca29ae8f2bf85c738"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#ad1dd5f67ceaa944c1f0bae698488632f">random_ascii</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a random name; useful for testing.  <a href="#ad1dd5f67ceaa944c1f0bae698488632f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a399c6b9652f5150282c3edb32d4d05f3">coerce_string_to_list</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">For parameters that can take either a single string or a list of strings, this function will ensure that the result is a list containing the passed values.  <a href="#a399c6b9652f5150282c3edb32d4d05f3"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a44e6cd242f9d12705e157706a6caddfe">folder_size</a></td></tr>
@@ -147,6 +149,8 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares `nm` with the supplied patterns, and returns True if it matches at least one.  <a href="#ab32790e8c29f35cd0c810dd86dedba2c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#aa76e326dca328bf4b12f55a0b94be973">update_exc</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds additional text to an exception's error message.  <a href="#aa76e326dca328bf4b12f55a0b94be973"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#af3249b7bd46bd8a85fda01ce6a90304e">case_insensitive_update</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Given two dicts, updates the first one with the second, but considers keys that are identical except for case to be the same.  <a href="#af3249b7bd46bd8a85fda01ce6a90304e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a9790d3a239a8e290bffbeef17c48f017">env</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the first environment variable set if none are non-empty, defaults to "" or keyword arg default.  <a href="#a9790d3a239a8e290bffbeef17c48f017"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a662924ed2118b3ba66f1d1521a7c2b40">unauthenticated</a></td></tr>
@@ -196,6 +200,36 @@ Variables</h2></td></tr>
 <div class="memdoc">
 
 <p>Adds an instance method to an object. </p>
+
+</div>
+</div>
+<a class="anchor" id="af3249b7bd46bd8a85fda01ce6a90304e"></a><!-- doxytag: member="pyrax::utils::case_insensitive_update" ref="af3249b7bd46bd8a85fda01ce6a90304e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1utils.html#af3249b7bd46bd8a85fda01ce6a90304e">pyrax.utils.case_insensitive_update</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>dct1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>dct2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Given two dicts, updates the first one with the second, but considers keys that are identical except for case to be the same. </p>
+<p>No return value; this function modified dct1 similar to the update() method. </p>
 
 </div>
 </div>
@@ -485,12 +519,12 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a15ae8eb19e0cbaf0281e950aebca0962"></a><!-- doxytag: member="pyrax::utils::random_name" ref="a15ae8eb19e0cbaf0281e950aebca0962" args="" -->
+<a class="anchor" id="ad1dd5f67ceaa944c1f0bae698488632f"></a><!-- doxytag: member="pyrax::utils::random_ascii" ref="ad1dd5f67ceaa944c1f0bae698488632f" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def <a class="el" href="namespacepyrax_1_1utils.html#a15ae8eb19e0cbaf0281e950aebca0962">pyrax.utils.random_name</a> </td>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1utils.html#ad1dd5f67ceaa944c1f0bae698488632f">pyrax.utils.random_ascii</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>length</em> = <code>20</code>, </td>
@@ -511,7 +545,27 @@ Variables</h2></td></tr>
 <div class="memdoc">
 
 <p>Generates a random name; useful for testing. </p>
-<p>By default it will return an encoded string containing unicode values up to code point 1000. If you only need or want ASCII values, pass True to the ascii_only parameter. </p>
+<p>Returns a string of the specified length containing only ASCII characters. </p>
+
+</div>
+</div>
+<a class="anchor" id="a22d977f9099b32cca29ae8f2bf85c738"></a><!-- doxytag: member="pyrax::utils::random_unicode" ref="a22d977f9099b32cca29ae8f2bf85c738" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1utils.html#a22d977f9099b32cca29ae8f2bf85c738">pyrax.utils.random_unicode</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>length</em> = <code>20</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Generates a random name; useful for testing. </p>
+<p>Returns an encoded string of the specified length containing unicode values up to code point 1000. </p>
 
 </div>
 </div>
@@ -846,7 +900,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 4 2013 13:36:40 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 24 2013 09:26:06 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

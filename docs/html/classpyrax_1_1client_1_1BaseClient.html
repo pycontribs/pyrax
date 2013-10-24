@@ -116,13 +116,14 @@ Inheritance diagram for BaseClient:</div>
  <div class="center">
   <img src="classpyrax_1_1client_1_1BaseClient.png" usemap="#BaseClient_map" alt=""/>
   <map id="BaseClient_map" name="BaseClient_map">
-<area href="classpyrax_1_1autoscale_1_1AutoScaleClient.html" title="This is the primary class for interacting with AutoScale." alt="AutoScaleClient" shape="rect" coords="0,56,156,80"/>
-<area href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html" title="This is the primary class for interacting with Cloud Block Storage." alt="CloudBlockStorageClient" shape="rect" coords="166,56,322,80"/>
-<area href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html" title="This is the primary class for interacting with Cloud Databases." alt="CloudDatabaseClient" shape="rect" coords="332,56,488,80"/>
-<area href="classpyrax_1_1clouddns_1_1CloudDNSClient.html" title="This is the primary class for interacting with Cloud DNS." alt="CloudDNSClient" shape="rect" coords="498,56,654,80"/>
-<area href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html" title="This is the primary class for interacting with Cloud Load Balancers." alt="CloudLoadBalancerClient" shape="rect" coords="664,56,820,80"/>
-<area href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html" title="This is the base client for creating and managing Cloud Monitoring." alt="CloudMonitorClient" shape="rect" coords="830,56,986,80"/>
-<area href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html" title="This is the base client for creating and managing Cloud Networks." alt="CloudNetworkClient" shape="rect" coords="996,56,1152,80"/>
+<area href="classpyrax_1_1autoscale_1_1AutoScaleClient.html" title="This is the primary class for interacting with AutoScale." alt="AutoScaleClient" shape="rect" coords="166,56,322,80"/>
+<area href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html" title="This is the primary class for interacting with Cloud Block Storage." alt="CloudBlockStorageClient" shape="rect" coords="166,112,322,136"/>
+<area href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html" title="This is the primary class for interacting with Cloud Databases." alt="CloudDatabaseClient" shape="rect" coords="166,168,322,192"/>
+<area href="classpyrax_1_1clouddns_1_1CloudDNSClient.html" title="This is the primary class for interacting with Cloud DNS." alt="CloudDNSClient" shape="rect" coords="166,224,322,248"/>
+<area href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html" title="This is the primary class for interacting with Cloud Load Balancers." alt="CloudLoadBalancerClient" shape="rect" coords="166,280,322,304"/>
+<area href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html" title="This is the base client for creating and managing Cloud Monitoring." alt="CloudMonitorClient" shape="rect" coords="166,336,322,360"/>
+<area href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html" title="This is the base client for creating and managing Cloud Networks." alt="CloudNetworkClient" shape="rect" coords="166,392,322,416"/>
+<area href="classpyrax_1_1queueing_1_1QueueClient.html" title="This is the primary class for interacting with Cloud Queues." alt="QueueClient" shape="rect" coords="166,448,322,472"/>
 </map>
  </div></div>
 
@@ -132,7 +133,7 @@ Inheritance diagram for BaseClient:</div>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all resources.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of resource objects.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a specific resource.  <a href="#a444a1328efb32d5d9d2dcb2efe855d3b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#a5b7ef0221e471e99fa7f0a87a28ba1ea">create</a></td></tr>
@@ -167,6 +168,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Method used to make PUT requests.  <a href="#a49de945eec86f955f4ac7d1487dcf286"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#a1132703a22def73f131d037165a971aa">method_delete</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Method used to make DELETE requests.  <a href="#a1132703a22def73f131d037165a971aa"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#a8212f8a94b29f7c39e38a9b6d8741322">method_patch</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Method used to make PATCH requests.  <a href="#a8212f8a94b29f7c39e38a9b6d8741322"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#ac0665028c611e61881f7e9fd0e752b99">authenticate</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles all aspects of authentication against the cloud provider.  <a href="#ac0665028c611e61881f7e9fd0e752b99"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1client_1_1BaseClient.html#af6e68e7b4a48c30549646fd3d5ed1aae">projectid</a></td></tr>
@@ -593,7 +596,8 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Returns a list of all resources. </p>
+<p>Returns a list of resource objects. </p>
+<p>Pagination is supported through the optional 'marker' and 'limit' parameters. </p>
 
 <p>Reimplemented in <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a9b522b4ef7526bfa60b78fe735caa55c">CloudMonitorClient</a>, and <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a9b522b4ef7526bfa60b78fe735caa55c">CloudDNSClient</a>.</p>
 
@@ -701,6 +705,41 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Method used to make HEAD requests. </p>
+
+</div>
+</div>
+<a class="anchor" id="a8212f8a94b29f7c39e38a9b6d8741322"></a><!-- doxytag: member="pyrax::client::BaseClient::method_patch" ref="a8212f8a94b29f7c39e38a9b6d8741322" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1client_1_1BaseClient.html#a8212f8a94b29f7c39e38a9b6d8741322">method_patch</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>uri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>kwargs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Method used to make PATCH requests. </p>
 
 </div>
 </div>
@@ -943,7 +982,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudLoadBalancerClient</a>, <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudDNSClient</a>, <a class="el" href="classpyrax_1_1autoscale_1_1AutoScaleClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">AutoScaleClient</a>, <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#ab74e6bf80237ddc4109968cedc58c151">CloudMonitorClient</a>, <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudDatabaseClient</a>, <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudBlockStorageClient</a>, and <a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html#ab74e6bf80237ddc4109968cedc58c151">CloudNetworkClient</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudLoadBalancerClient</a>, <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudDNSClient</a>, <a class="el" href="classpyrax_1_1autoscale_1_1AutoScaleClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">AutoScaleClient</a>, <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#ab74e6bf80237ddc4109968cedc58c151">CloudMonitorClient</a>, <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudDatabaseClient</a>, <a class="el" href="classpyrax_1_1queueing_1_1QueueClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">QueueClient</a>, <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">CloudBlockStorageClient</a>, and <a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html#ab74e6bf80237ddc4109968cedc58c151">CloudNetworkClient</a>.</p>
 
 </div>
 </div>
@@ -1072,7 +1111,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 4 2013 13:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 24 2013 09:26:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

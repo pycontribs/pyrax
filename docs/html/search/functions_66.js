@@ -1,6 +1,7 @@
 var searchData=
 [
   ['fetch_5fobject',['fetch_object',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1c274968ef395c2b88a4d67c24f30f8e',1,'pyrax::cf_wrapper::client::CFClient.fetch_object()'],['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a1c274968ef395c2b88a4d67c24f30f8e',1,'pyrax::cf_wrapper::container::Container.fetch_object()']]],
+  ['fetch_5fpartial',['fetch_partial',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ad1e7a72f5953d9a66e17bbe53b38fdc2',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['field_5fnames',['field_names',['../classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheckType.html#a0b9c1a726225d02b85a31d2fc7508352',1,'pyrax::cloudmonitoring::CloudMonitorCheckType']]],
   ['find',['find',['../classpyrax_1_1client_1_1BaseClient.html#a01f90f57b7acd55e177611f5d0f7df23',1,'pyrax::client::BaseClient.find()'],['../classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a01f90f57b7acd55e177611f5d0f7df23',1,'pyrax::cloudmonitoring::CloudMonitorClient.find()'],['../classpyrax_1_1manager_1_1BaseManager.html#a01f90f57b7acd55e177611f5d0f7df23',1,'pyrax::manager::BaseManager.find()']]],
   ['find_5fall_5fchecks',['find_all_checks',['../classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntityManager.html#a85522a4725d32d0924f3196f59f91d92',1,'pyrax::cloudmonitoring::CloudMonitorEntityManager.find_all_checks()'],['../classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a85522a4725d32d0924f3196f59f91d92',1,'pyrax::cloudmonitoring::CloudMonitorClient.find_all_checks()']]],

@@ -17,6 +17,7 @@ var searchData=
   ['keystone_5fidentity',['keystone_identity',['../namespacepyrax_1_1identity_1_1keystone__identity.html',1,'pyrax::identity']]],
   ['manager',['manager',['../namespacepyrax_1_1manager.html',1,'pyrax']]],
   ['pyrax',['pyrax',['../namespacepyrax.html',1,'']]],
+  ['queueing',['queueing',['../namespacepyrax_1_1queueing.html',1,'pyrax']]],
   ['rax_5fidentity',['rax_identity',['../namespacepyrax_1_1identity_1_1rax__identity.html',1,'pyrax::identity']]],
   ['resource',['resource',['../namespacepyrax_1_1resource.html',1,'pyrax']]],
   ['service_5fcatalog',['service_catalog',['../namespacepyrax_1_1service__catalog.html',1,'pyrax']]],

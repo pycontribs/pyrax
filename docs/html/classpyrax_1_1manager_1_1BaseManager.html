@@ -128,6 +128,7 @@ Inheritance diagram for BaseManager:</div>
 <area href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationManager.html" title="Handles all of the requests dealing with notifications." alt="CloudMonitorNotificationManager" shape="rect" coords="237,560,464,584"/>
 <area href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationPlanManager.html" title="Handles all of the requests dealing with Notification Plans." alt="CloudMonitorNotificationPlanManager" shape="rect" coords="237,616,464,640"/>
 <area href="classpyrax_1_1cloudnetworks_1_1CloudNetworkManager.html" title="Does nothing special, but is used in testing." alt="CloudNetworkManager" shape="rect" coords="237,672,464,696"/>
+<area href="classpyrax_1_1queueing_1_1BaseQueueManager.html" title="This class attempts to add in all the common deviations from the API standards that the regular base ..." alt="BaseQueueManager" shape="rect" coords="237,728,464,752"/>
 </map>
  </div></div>
 
@@ -137,7 +138,7 @@ Inheritance diagram for BaseManager:</div>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a list of all items.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of resource objects.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a6ffb8c9775dd06f2a95c5be870862051">head</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a HEAD request on a specific item.  <a href="#a6ffb8c9775dd06f2a95c5be870862051"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
@@ -458,7 +459,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>Gets a specific item. </p>
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html#a444a1328efb32d5d9d2dcb2efe855d3b">CloudDatabaseManager</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1queueing_1_1QueueManager.html#a444a1328efb32d5d9d2dcb2efe855d3b">QueueManager</a>, and <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html#a444a1328efb32d5d9d2dcb2efe855d3b">CloudDatabaseManager</a>.</p>
 
 </div>
 </div>
@@ -511,7 +512,13 @@ Static Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>marker</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>marker</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>return_raw</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -522,9 +529,9 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Gets a list of all items. </p>
-
-<p>Reimplemented in <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSManager.html#a9b522b4ef7526bfa60b78fe735caa55c">CloudDNSManager</a>.</p>
+<p>Returns a list of resource objects. </p>
+<p>Pagination is supported through the optional 'marker' and 'limit' parameters.</p>
+<p>Some APIs do not follow the typical pattern in their responses, and the <a class="el" href="classpyrax_1_1manager_1_1BaseManager.html" title="Managers interact with a particular type of API (servers, databases, dns, etc.) and provide CRUD oper...">BaseManager</a> subclasses will have to parse the raw response to get the desired information. For those cases, pass 'return_raw=True', and the response and response_body will be returned unprocessed. </p>
 
 </div>
 </div>
@@ -592,6 +599,8 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Reimplemented in <a class="el" href="classpyrax_1_1queueing_1_1QueueMessageManager.html#a692be54e20855ad7f41d446719f26491">QueueMessageManager</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="ad9ec49f2ad20e5d29aaaedf6da36c880"></a><!-- doxytag: member="pyrax::manager::BaseManager::resource_class" ref="ad9ec49f2ad20e5d29aaaedf6da36c880" args="" -->
@@ -654,7 +663,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 4 2013 13:36:39 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 24 2013 09:26:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

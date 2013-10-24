@@ -1,6 +1,7 @@
 var searchData=
 [
   ['missingauthsettings',['MissingAuthSettings',['../classpyrax_1_1exceptions_1_1MissingAuthSettings.html',1,'pyrax::exceptions']]],
+  ['missingclaimparameters',['MissingClaimParameters',['../classpyrax_1_1exceptions_1_1MissingClaimParameters.html',1,'pyrax::exceptions']]],
   ['missingdnssettings',['MissingDNSSettings',['../classpyrax_1_1exceptions_1_1MissingDNSSettings.html',1,'pyrax::exceptions']]],
   ['missinghealthmonitorsettings',['MissingHealthMonitorSettings',['../classpyrax_1_1exceptions_1_1MissingHealthMonitorSettings.html',1,'pyrax::exceptions']]],
   ['missingloadbalancerparameters',['MissingLoadBalancerParameters',['../classpyrax_1_1exceptions_1_1MissingLoadBalancerParameters.html',1,'pyrax::exceptions']]],

@@ -33,7 +33,7 @@ class ManagerTest(unittest.TestCase):
         mgr._list = Mock()
         mgr.uri_base = "test"
         mgr.list()
-        mgr._list.assert_called_once_with("/test")
+        mgr._list.assert_called_once_with("/test", return_raw=False)
         mgr._list = sav
 
     def test_list_paged(self):
@@ -45,7 +45,7 @@ class ManagerTest(unittest.TestCase):
         fake_marker = random.randint(100, 200)
         mgr.list(limit=fake_limit, marker=fake_marker)
         expected_uri = "/test?limit=%s&marker=%s" % (fake_limit, fake_marker)
-        mgr._list.assert_called_once_with(expected_uri)
+        mgr._list.assert_called_once_with(expected_uri, return_raw=False)
         mgr._list = sav
 
     def test_head(self):
@@ -86,7 +86,7 @@ class ManagerTest(unittest.TestCase):
         mgr._create = Mock()
         mgr.uri_base = "test"
         mgr._create_body = Mock(return_value="body")
-        nm = utils.random_name()
+        nm = utils.random_unicode()
         mgr.create(nm)
         mgr._create.assert_called_once_with("/test", "body", return_none=False,
                 return_raw=False, return_response=False)

@@ -20,6 +20,7 @@ var searchData=
   ['assure_5finstance',['assure_instance',['../namespacepyrax_1_1clouddatabases.html#a8f8b217553a66a79f0135899e14964b4',1,'pyrax::clouddatabases']]],
   ['assure_5floadbalancer',['assure_loadbalancer',['../namespacepyrax_1_1cloudloadbalancers.html#ac1fa7d34dba3d7cf4a26fdab6afe2d22',1,'pyrax::cloudloadbalancers']]],
   ['assure_5fparent',['assure_parent',['../namespacepyrax_1_1cloudloadbalancers.html#ae8088c141e57bdabed8a13866eed8cdf',1,'pyrax::cloudloadbalancers']]],
+  ['assure_5fqueue',['assure_queue',['../namespacepyrax_1_1queueing.html#acc3d3bba9230fe3dd67e9f470b0b445a',1,'pyrax::queueing']]],
   ['assure_5fsnapshot',['assure_snapshot',['../namespacepyrax_1_1cloudblockstorage.html#a8a930b1066981115404f992adb243aa2',1,'pyrax::cloudblockstorage']]],
   ['assure_5fvolume',['assure_volume',['../namespacepyrax_1_1cloudblockstorage.html#a68a6bb754146fc1cdfe07a97456d71e9',1,'pyrax::cloudblockstorage']]],
   ['attach_5fto_5finstance',['attach_to_instance',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html#a7a946d1fbbaba8aa5fbad457498e2db4',1,'pyrax::cloudblockstorage::CloudBlockStorageVolume.attach_to_instance()'],['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a7a946d1fbbaba8aa5fbad457498e2db4',1,'pyrax::cloudblockstorage::CloudBlockStorageClient.attach_to_instance()']]],

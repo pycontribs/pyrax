@@ -2,8 +2,11 @@ var searchData=
 [
   ['management_5furl',['management_url',['../classpyrax_1_1client_1_1BaseClient.html#a0e7003a466834b21ae00b9640955da9f',1,'pyrax::client::BaseClient']]],
   ['manager',['manager',['../classpyrax_1_1clouddns_1_1ResultsIterator.html#a23416379944e641a8ad6bdbc95ef1859',1,'pyrax::clouddns::ResultsIterator::manager()'],['../classpyrax_1_1resource_1_1BaseResource.html#a23416379944e641a8ad6bdbc95ef1859',1,'pyrax::resource::BaseResource.manager()']]],
+  ['marker_5fpat',['marker_pat',['../namespacepyrax_1_1queueing.html#a4ee1e020cf80b7e79c3f93360c95c811',1,'pyrax::queueing']]],
   ['max_5ffile_5fsize',['max_file_size',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a38c5b8bfe2405c63c56e3dec85a057bc',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['max_5fsize',['MAX_SIZE',['../namespacepyrax_1_1cloudblockstorage.html#a395b0fb68a5628e06819cb4aa43631fe',1,'pyrax::cloudblockstorage']]],
   ['message',['message',['../classpyrax_1_1exceptions_1_1ClientException.html#ab8140947611504abcb64a4c277effcf5',1,'pyrax::exceptions::ClientException.message()'],['../classpyrax_1_1exceptions_1_1BadRequest.html#ae1ed0d7a6f352c7ee3ad978429822c6f',1,'pyrax::exceptions::BadRequest.message()'],['../classpyrax_1_1exceptions_1_1Unauthorized.html#ae1ed0d7a6f352c7ee3ad978429822c6f',1,'pyrax::exceptions::Unauthorized.message()'],['../classpyrax_1_1exceptions_1_1Forbidden.html#ae1ed0d7a6f352c7ee3ad978429822c6f',1,'pyrax::exceptions::Forbidden.message()'],['../classpyrax_1_1exceptions_1_1NotFound.html#ae1ed0d7a6f352c7ee3ad978429822c6f',1,'pyrax::exceptions::NotFound.message()'],['../classpyrax_1_1exceptions_1_1NoUniqueMatch.html#ae1ed0d7a6f352c7ee3ad978429822c6f',1,'pyrax::exceptions::NoUniqueMatch.message()'],['../classpyrax_1_1exceptions_1_1OverLimit.html#ae1ed0d7a6f352c7ee3ad978429822c6f',1,'pyrax::exceptions::OverLimit.message()'],['../classpyrax_1_1exceptions_1_1HTTPNotImplemented.html#ae1ed0d7a6f352c7ee3ad978429822c6f',1,'pyrax::exceptions::HTTPNotImplemented.message()']]],
-  ['min_5fsize',['MIN_SIZE',['../namespacepyrax_1_1cloudblockstorage.html#aaba5e7c5484ccde364fadc3e6a496b1f',1,'pyrax::cloudblockstorage']]]
+  ['messages',['messages',['../classpyrax_1_1queueing_1_1QueueClaim.html#a7048605d09bb21159ccaab63402dc4e5',1,'pyrax::queueing::QueueClaim']]],
+  ['min_5fsize',['MIN_SIZE',['../namespacepyrax_1_1cloudblockstorage.html#aaba5e7c5484ccde364fadc3e6a496b1f',1,'pyrax::cloudblockstorage']]],
+  ['msg_5flimit',['MSG_LIMIT',['../namespacepyrax_1_1queueing.html#ae9142e29cab13b8a9c7b02ea91ba9695',1,'pyrax::queueing']]]
 ];
