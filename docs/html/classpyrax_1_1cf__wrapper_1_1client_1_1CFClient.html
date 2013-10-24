@@ -177,6 +177,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels any folder upload happening in the background.  <a href="#a621a0e61fdb17290b5e9f5dec5eb12fc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1c274968ef395c2b88a4d67c24f30f8e">fetch_object</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the object from storage.  <a href="#a1c274968ef395c2b88a4d67c24f30f8e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ad1e7a72f5953d9a66e17bbe53b38fdc2">fetch_partial</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the first 'size' bytes of an object.  <a href="#ad1e7a72f5953d9a66e17bbe53b38fdc2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a4d536318080f1745a14922224b2a28b5">download_object</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the object from storage, and writes it to the specified directory.  <a href="#a4d536318080f1745a14922224b2a28b5"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ae413c04282e2a1f584d7b99bbea09b54">get_all_containers</a></td></tr>
@@ -762,6 +764,12 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>size</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
           <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
@@ -776,8 +784,51 @@ Properties</h2></td></tr>
 <p>Fetches the object from storage. </p>
 <p>If 'include_meta' is False, only the bytes representing the file is returned.</p>
 <p>Note: if 'chunk_size' is defined, you must fully read the object's contents before making another request.</p>
+<p>If 'size' is specified, only the first 'size' bytes of the object will be returned. If the object if smaller than 'size', the entire object is returned.</p>
 <p>When 'include_meta' is True, what is returned from this method is a 2-tuple: Element 0: a dictionary containing metadata about the file. Element 1: a stream of bytes representing the object's contents.</p>
 <p>'extra_info' is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
+
+</div>
+</div>
+<a class="anchor" id="ad1e7a72f5953d9a66e17bbe53b38fdc2"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::fetch_partial" ref="ad1e7a72f5953d9a66e17bbe53b38fdc2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ad1e7a72f5953d9a66e17bbe53b38fdc2">fetch_partial</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the first 'size' bytes of an object. </p>
+<p>If the object is smaller than the specified 'size' value, the entire object is returned. </p>
 
 </div>
 </div>
@@ -1233,7 +1284,19 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>method</em> = <code>&quot;GET&quot;</code>&#160;</td>
+          <td class="paramname"><em>method</em> = <code>&quot;GET&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>key</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>cached</em> = <code>True</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1246,7 +1309,8 @@ Properties</h2></td></tr>
 
 <p>Given a storage object in a container, returns a URL that can be used to access that object. </p>
 <p>The URL will expire after `seconds` seconds.</p>
-<p>The only methods supported are GET and PUT. Anything else will raise an InvalidTemporaryURLMethod exception. </p>
+<p>The only methods supported are GET and PUT. Anything else will raise an InvalidTemporaryURLMethod exception.</p>
+<p>If you have your Temporary URL key, you can pass it in directly and potentially save an API call to retrieve it. If you don't pass in the key, and don't wish to use any cached value, pass `cached=False`. </p>
 
 </div>
 </div>
@@ -1258,14 +1322,25 @@ Properties</h2></td></tr>
           <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a80f3fd33724985de91d7930036344668">get_temp_url_key</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>cached</em> = <code>True</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>Returns the current TempURL key, or None if it has not been set. </p>
+<p>By default the value returned is cached. To force an API call to get the current value on the server, pass `cached=False`. </p>
 
 </div>
 </div>
@@ -2593,7 +2668,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 4 2013 13:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 24 2013 09:26:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
