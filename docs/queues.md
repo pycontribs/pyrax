@@ -56,11 +56,11 @@ Messages can be any type of data, as long as they do not exceed 256 KB in length
 
 You need to specify the queue you wish to post to. This can be either the name of the queue, or a `Queue` object. If you already have a `Queue` object reference, you can call its `post_message()` method directly. The call is:
 
-    msg = pq.post_message(queue, body[, ttl])
+    msg = pq.post_message(queue, body, ttl)
     # or
-    msg = queue.post_message(body[, ttl])
+    msg = queue.post_message(body, ttl)
 
-Note that there is an optional `ttl` parameter, for specifying the **TTL**, or **Time To Live** for the message. If specified, the value of ttl must be between 60 and 1209600 seconds (14 days). If not specified, a default of 14 days is used.
+You must supply both a body and a value for `ttl`. The value of `ttl` must be between 60 and 1209600 seconds (one minute to 14 days).
 
 
 ## Listing Messages in a Queue
