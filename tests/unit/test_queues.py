@@ -282,13 +282,14 @@ class QueuesTest(unittest.TestCase):
         q = self.queue
         mgr = q._message_manager
         msg = utils.random_unicode()
-        ret = mgr._create_body(msg)
+        ttl = utils.random_unicode()
+        ret = mgr._create_body(msg, ttl)
         self.assertTrue(isinstance(ret, list))
         self.assertEqual(len(ret), 1)
         dct = ret[0]
         self.assertTrue(isinstance(dct, dict))
         self.assertEqual(dct["body"], msg)
-        self.assertEqual(dct["ttl"], pyrax.queueing.DAYS_14)
+        self.assertEqual(dct["ttl"], ttl)
 
     def test_queue_msg_mgr_list(self):
         q = self.queue

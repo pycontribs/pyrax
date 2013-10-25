@@ -30,8 +30,6 @@ from pyrax.manager import BaseManager
 from pyrax.resource import BaseResource
 import pyrax.utils as utils
 
-# The default for TTL for messages is 14 days, in seconds.
-DAYS_14 = 1209600
 # The hard-coded maximum number of messages returned in a single call.
 MSG_LIMIT = 10
 # Pattern for extracting the marker value from an href link.
@@ -281,14 +279,13 @@ class QueueMessageManager(BaseQueueManager):
     """
     Manager class for a Queue Message.
     """
-    def _create_body(self, msg, ttl=None):
+    def _create_body(self, msg, ttl):
         """
         Used to create the dict required to create a new message.
         """
-        if ttl is None:
-            ttl = DAYS_14
-        body = [{"ttl": ttl,
+        body = [{
                 "body": msg,
+                "ttl": ttl,
                 }]
         return body
 
