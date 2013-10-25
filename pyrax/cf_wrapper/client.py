@@ -795,7 +795,7 @@ class CFClient(object):
             fname = os.path.basename(file_or_path)
         else:
             try:
-                fname = file_or_path.name
+                fname = os.path.basename(file_or_path.name)
             except AttributeError:
                 fname = None
         if not obj_name:
