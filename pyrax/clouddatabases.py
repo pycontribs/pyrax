@@ -96,6 +96,54 @@ class CloudDatabaseManager(BaseManager):
         return body
 
 
+    def create_backup(self, instance, name, description=None):
+        """
+        Creates a backup of the specified instance, giving it the specified
+        name along with an optional description.
+        """
+        body = {"backup": {
+                "instance": utils.get_id(instance),
+                "name": name,
+                }}
+        if description is not None:
+            body["backup"]["description"] = description
+        uri = "/backups"
+        resp, resp_body = self.api.method_post(uri, body=body)
+        mgr = self.api._backup_manager
+        return CloudDatabaseBackup(mgr, body.get("backup"))
+
+
+    def restore_backup(self, backup, name, flavor, volume):
+        """
+        Restores a backup to a new database instance. You must supply a backup
+        (either the ID or a CloudDatabaseBackup object), a name for the new
+        instance, as well as a flavor and volume size (in GB) for the instance.
+        """
+        flavor_ref = self.api._get_flavor_ref(flavor)
+        body = {"instance": {
+                "name": name,
+                "flavorRef": flavor_ref,
+                "volume": {"size": volume},
+                "restorePoint": {"backupRef": utils.get_id(backup)},
+                }}
+        uri = "/%s" % self.uri_base
+        resp, resp_body = self.api.method_post(uri, body=body)
+        return CloudDatabaseInstance(self, resp_body.get("instance", {}))
+
+
+    def list_backups(self, instance=None):
+        return self.api._backup_manager.list(instance=instance)
+
+
+    def _list_backups_for_instance(self, instance):
+        uri = "/%s/%s/backups" % (self.uri_base, utils.get_id(instance))
+        resp, resp_body = self.api.method_get(uri)
+        mgr = self.api._backup_manager
+        return [CloudDatabaseBackup(mgr, backup)
+                for backup in resp_body.get("backups")]
+
+
+
 class CloudDatabaseDatabaseManager(BaseManager):
     """
     This class manages communication with databases on Cloud Database instances.
@@ -115,12 +163,14 @@ class CloudDatabaseUserManager(BaseManager):
     This class handles operations on the users in a database on a Cloud
     Database instance.
     """
-    def _create_body(self, name, password, databases=None, database_names=None):
+    def _create_body(self, name, password, databases=None, database_names=None,
+            host=None):
         db_dicts = [{"name": db} for db in database_names]
         body = {"users": [
                 {"name": name,
                 "password": password,
                 "databases": db_dicts,
+                "host": host,
                 }]}
         return body
 
@@ -152,13 +202,34 @@ class CloudDatabaseUserManager(BaseManager):
         Returns None upon success; raises PasswordChangeFailed if the call
         does not complete successfully.
         """
-        user = utils.get_name(user)
-        body = {"users": [{"name": user, "password": new_pass}]}
-        uri = "/%s" % self.uri_base
+        return self.update(user, password=new_pass)
+
+
+    def update(self, user, name=None, password=None, host=None):
+        """
+        Allows you to change one or more of the user's username, password, or
+        host.
+        """
+        if not any((name, password, host)):
+            raise exc.MissingDBUserParameters("You must supply at least one of "
+                    "the following: new username, new password, or new host "
+                    "specification.")
+        if not isinstance(user, CloudDatabaseUser):
+            # Must be the ID/name
+            user = self.get(user)
+        dct = {}
+        if name and (name != user.name):
+            dct["name"] = name
+        if host and (host != user.host):
+            dct["host"] = host
+        if password:
+            dct["password"] = password
+        if not dct:
+            raise exc.DBUpdateUnchanged("You must supply at least one changed "
+                    "value when updating a user.")
+        uri = "/%s/%s" % (self.uri_base, user.name)
+        body = {"user": dct}
         resp, resp_body = self.api.method_put(uri, body=body)
-        if resp.status > 299:
-            raise exc.PasswordChangeFailed("Password for '%s' was not changed"
-                    % user)
         return None
 
 
@@ -209,6 +280,27 @@ class CloudDatabaseUserManager(BaseManager):
         for db_name in db_names:
             uri = "/%s/%s/databases/%s" % (self.uri_base, user, db_name)
             resp, resp_body = self.api.method_delete(uri)
+
+
+
+class CloudDatabaseBackupManager(BaseManager):
+    """
+    This class handles operations on backups for a Cloud Database instance.
+    """
+    def _create_body(self, name, instance, description=None):
+        body = {"backup": {
+                "instance": utils.get_id(instance),
+                "name": name,
+                }}
+        if description is not None:
+            body["backup"]["description"] = description
+        return body
+
+
+    def list(self, instance=None):
+        if instance is None:
+            return super(CloudDatabaseBackupManager, self).list()
+        return self.api._manager._list_backups_for_instance(instance)
 
 
 
@@ -335,6 +427,15 @@ class CloudDatabaseInstance(BaseResource):
         return self._user_manager.change_user_password(user, new_pass)
 
 
+    def update_user(self, user, name=None, password=None, host=None):
+        """
+        Allows you to change one or more of the user's username, password, or
+        host.
+        """
+        return self._user_manager.update(user, name=name, password=password,
+                host=host)
+
+
     def list_user_access(self, user):
         """
         Returns a list of all database names for which the specified user
@@ -412,6 +513,21 @@ class CloudDatabaseInstance(BaseResource):
         self.manager.action(self, "resize", body=body)
 
 
+    def list_backups(self):
+        """
+        Return a list of all backups for this instance.
+        """
+        return self.manager._list_backups_for_instance(self)
+
+
+    def create_backup(self, name, description=None):
+        """
+        Creates a backup of this instance, giving it the specified name along
+        with an optional description.
+        """
+        return self.manager.create_backup(self, name, description=description)
+
+
     def _get_flavor(self):
         try:
             ret = self._flavor
@@ -451,6 +567,8 @@ class CloudDatabaseUser(BaseResource):
     for instances.
     """
     get_details = False
+    name = None
+    host = None
 
     def delete(self):
         """This class doesn't have an 'id', so pass the name."""
@@ -465,6 +583,15 @@ class CloudDatabaseUser(BaseResource):
         does not complete successfully.
         """
         self.manager.change_user_password(self, new_pass)
+
+
+    def update(self, name=None, password=None, host=None):
+        """
+        Allows you to change one or more of the user's username, password, or
+        host.
+        """
+        return self.manager.update(self, name=name, password=password,
+                host=host)
 
 
     def list_user_access(self):
@@ -501,6 +628,15 @@ class CloudDatabaseFlavor(BaseResource):
 
 
 
+class CloudDatabaseBackup(BaseResource):
+    """
+    This class represents a database backup.
+    """
+    get_details = True
+    _non_display = ["locationRef"]
+
+
+
 class CloudDatabaseClient(BaseClient):
     """
     This is the primary class for interacting with Cloud Databases.
@@ -518,6 +654,9 @@ class CloudDatabaseClient(BaseClient):
         self._flavor_manager = BaseManager(self,
                 resource_class=CloudDatabaseFlavor, response_key="flavor",
                 uri_base="flavors")
+        self._backup_manager = CloudDatabaseBackupManager(self,
+                resource_class=CloudDatabaseBackup, response_key="backup",
+                uri_base="backups")
 
 
     @assure_instance
@@ -592,6 +731,16 @@ class CloudDatabaseClient(BaseClient):
         does not complete successfully.
         """
         return instance.change_user_password(user, new_pass)
+
+
+    @assure_instance
+    def update_user(self, instance, user, name=None, password=None, host=None):
+        """
+        Allows you to change one or more of the user's username, password, or
+        host.
+        """
+        return instance.update_user(user, name=name, password=password,
+                host=host)
 
 
     @assure_instance
@@ -699,3 +848,29 @@ class CloudDatabaseClient(BaseClient):
         href = [link["href"] for link in flavor_obj.links
                 if link["rel"] == "self"][0]
         return href
+
+
+    def list_backups(self, instance=None):
+        return self._backup_manager.list(instance=instance)
+
+
+    def get_backup(self, backup):
+        return self._backup_manager.get(backup)
+
+
+    def delete_backup(self, backup):
+        return self._backup_manager.delete(backup)
+
+
+    @assure_instance
+    def create_backup(self, instance, name, description=None):
+        return instance.create_backup(name, description=description)
+
+
+    def restore_backup(self, backup, name, flavor, volume):
+        """
+        Restores a backup to a new database instance. You must supply a backup
+        (either the ID or a CloudDatabaseBackup object), a name for the new
+        instance, as well as a flavor and size (in GB) for the instance.
+        """
+        return self._manager.restore_backup(backup, name, flavor, volume)

@@ -258,6 +258,9 @@ class FakeEntity(object):
     def get(self, *args, **kwargs):
         pass
 
+    def list(self, *args, **kwargs):
+        pass
+
 
 class FakeDatabaseUser(CloudDatabaseUser):
     pass
@@ -273,7 +276,7 @@ class FakeDatabaseVolume(CloudDatabaseVolume):
 class FakeDatabaseInstance(CloudDatabaseInstance):
     def __init__(self, *args, **kwargs):
         self.id = utils.random_unicode()
-        self.manager = FakeManager()
+        self.manager = FakeDatabaseManager()
         self.manager.api = FakeDatabaseClient()
         self._database_manager = CloudDatabaseDatabaseManager(
                 FakeDatabaseClient())
@@ -281,11 +284,12 @@ class FakeDatabaseInstance(CloudDatabaseInstance):
         self.volume = FakeDatabaseVolume(self)
 
 
-class FakeDatabaseManager(CloudDNSManager):
+class FakeDatabaseManager(CloudDatabaseManager):
     def __init__(self, api=None, *args, **kwargs):
         if api is None:
             api = FakeDatabaseClient()
         super(FakeDatabaseManager, self).__init__(api, *args, **kwargs)
+        self.uri_base = "instances"
 
 
 class FakeDatabaseClient(CloudDatabaseClient):

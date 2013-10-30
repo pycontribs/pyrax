@@ -25,7 +25,7 @@ To get a list of all your instances, just run:
 This returns a list of `CloudDatabaseInstance` objects. Assuming that you are just starting out and have not yet created any instances, you get back an empty list. A good first step, then, would be to create an instance.
 
 
-## Create the Instance
+## Create an Instance
 To create an instance, you need to specify the flavor and volume size for that instance. 'Flavor' refers to the amount of RAM allocated to your instance. Volume size is the disk space available to your instance for storing its data. The volume size is in GB, and must be a whole number between 1 and 50.
 
 
@@ -129,6 +129,68 @@ which outputs:
 
     DB: <CloudDatabaseDatabase name=db_name>
     User: <CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>
+
+
+## Backups
+You can create a backup of your instance that can be used to re-create that instance at a later date. The backup is created asynchronously. During the backup process, database writes on MyISAM Databases will be disabled. InnoDB Databases will continue to allow all operations.
+
+While the instance is being backed up you will not be able to add/delete databases, add/delete users, or delete/stop/reboot the instance. Users can only run one backup at a time. Duplicate requests will receive a 422 error.
+
+Backups are not deleted when the instance is deleted. You must remove any backups created if you no longer wish to retain them. See the section below on [Deleting a Backup](#deleting-a-backup).
+
+During backup the files will be streamed to your Cloud Files account. The process creates a container called z_CLOUDDB_BACKUPS and places all the files in it. In order for the restore and deletion of backups to work properly, you should not move, rename, or delete any of the files from this container. You will be charged the normal Cloud Files rate for storage of these files.
+
+In the unlikely event that the backup fails to perform correctly and is in the state FAILED, there may be some files that were placed in the container. Deleting the failed backup will remove any such files. See the section below on [Deleting a Backup](#deleting-a-backup).
+
+### Create a Backup
+To create a backup, you must specify the instance and a name for the backup. You may optionally supply a text description. The name is limited to 64 characters. If you have a `CloudDatabaseInstance` object, you can make the call directly to its `create_backup()` method. The calls are:
+
+    backup = cdb.create_backup(instance, name[, description=None])
+    # - or -
+    backup = instance.create_backup(name[, description=None])
+
+Both of these calls return a `CloudDatabaseBackup` object that represents the backup. You can query its status attribute to determine its progress:
+
+Status | Description
+---- | ----
+NEW | A new backup task was created.
+RUNNING | The backup task is currently running.
+COMPLETED | The backup task was successfully completed.
+FAILED | The backup task failed to complete successfully.
+
+Like other objects that take time to finish being created, you can also use the `utils.wait_for_build(backup)` method call to either block until the build completes, or pass a callback to be triggered upon completion.
+
+
+## List Backups
+There are two ways to list backups: you can either list all the backups, or list just those backups for a particular instance. To get a list of all your backups, call:
+
+    cdb.list_backups()
+
+To only list the backups for a particular instance, call:
+
+    cdb.list_backups(instance)
+
+If you have a `CloudDatabaseInstance` object, you can also call its `list_backups()` method to get a listing of all backups for that instance:
+
+    instance.list_backups()
+
+
+## Deleting a Backup
+If you no longer wish to keep a backup, you can delete it. This will remove it from your list of available backups, and remove the files from your Cloud Files account. You will need either the backup's ID or the `CloudDatabaseBackup` object for the backup you wish to delete. The call is:
+
+    cdb.delete_backup(backup)
+    # - or -
+    backup.delete()
+
+
+## Restoring From a Backup
+If you need to create a new instance from one of your backups, you can call the `restore_backup()` method. The call is:
+
+    cdb.restore_backup(backup, name, flavor, volume)
+
+The parameters are the same as the call to `create()`, with the exception of the `backup` parameter, which must be either a `CloudDatabaseBackup` object, or the ID of one of your backups. See the [Create an Instance](#create-an-instance) section above for the specifics of the other parameters.
+
+All users/passwords/access that were on the instance at the time of the backup will be restored along with the databases. You can create new users or databases if you want, but they cannot be the same as the ones from the instance that was backed up.
 
 
 ## Working with `CloudDatabaseDatabase` and `CloudDatabaseUser` Objects
