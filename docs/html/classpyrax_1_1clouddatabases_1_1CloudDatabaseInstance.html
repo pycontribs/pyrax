@@ -143,6 +143,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the specified database.  <a href="#a55a252283f51314fe80a1f74f4ebf46f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a3d7d0bcb779f81d9803cb5afffed69a3">change_user_password</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the password for the user to the supplied value.  <a href="#a3d7d0bcb779f81d9803cb5afffed69a3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a1a7d86495f2e95ce37b02894a6fe85df">update_user</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows you to change one or more of the user's username, password, or host.  <a href="#a1a7d86495f2e95ce37b02894a6fe85df"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a2fb19d440ebd8bffa91bb9245530953f">list_user_access</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all database names for which the specified user has access rights.  <a href="#a2fb19d440ebd8bffa91bb9245530953f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a5f0d96262a0ff5432f3f9f0552a1e13f">grant_user_access</a></td></tr>
@@ -161,6 +163,10 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the size of this instance to a different flavor.  <a href="#a8f82cbc9bffef6b720c446024ddf35f9"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a184e71e943f21eaf224c511df2b58262">resize_volume</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the size of the volume for this instance.  <a href="#a184e71e943f21eaf224c511df2b58262"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a0ed9ce14a6eafbfe306e55f0b1c8b218">list_backups</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all backups for this instance.  <a href="#a0ed9ce14a6eafbfe306e55f0b1c8b218"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a02e9656d9c78c0834d17bfced831845d">create_backup</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a backup of this instance, giving it the specified name along with an optional description.  <a href="#a02e9656d9c78c0834d17bfced831845d"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a9bc498ccac8db41438f855f5dd3f4c05">volume</a></td></tr>
@@ -238,6 +244,41 @@ Properties</h2></td></tr>
 
 <p>Changes the password for the user to the supplied value. </p>
 <p>Returns None upon success; raises PasswordChangeFailed if the call does not complete successfully. </p>
+
+</div>
+</div>
+<a class="anchor" id="a02e9656d9c78c0834d17bfced831845d"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::create_backup" ref="a02e9656d9c78c0834d17bfced831845d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a02e9656d9c78c0834d17bfced831845d">create_backup</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>description</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Creates a backup of this instance, giving it the specified name along with an optional description. </p>
 
 </div>
 </div>
@@ -526,6 +567,25 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a0ed9ce14a6eafbfe306e55f0b1c8b218"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::list_backups" ref="a0ed9ce14a6eafbfe306e55f0b1c8b218" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a0ed9ce14a6eafbfe306e55f0b1c8b218">list_backups</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a list of all backups for this instance. </p>
+
+</div>
+</div>
 <a class="anchor" id="ae180be633edf68a4a6599e8c64310c5f"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::list_databases" ref="ae180be633edf68a4a6599e8c64310c5f" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -762,6 +822,53 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a1a7d86495f2e95ce37b02894a6fe85df"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::update_user" ref="a1a7d86495f2e95ce37b02894a6fe85df" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a1a7d86495f2e95ce37b02894a6fe85df">update_user</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>user</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>password</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>host</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Allows you to change one or more of the user's username, password, or host. </p>
+
+</div>
+</div>
 <hr/><h2>Member Data Documentation</h2>
 <a class="anchor" id="a9bc498ccac8db41438f855f5dd3f4c05"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseInstance::volume" ref="a9bc498ccac8db41438f855f5dd3f4c05" args="" -->
 <div class="memitem">
@@ -811,7 +918,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 24 2013 09:26:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 31 2013 10:46:49 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

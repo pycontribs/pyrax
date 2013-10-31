@@ -9,6 +9,8 @@ var searchData=
   ['cloudblockstoragesnapshotmanager',['CloudBlockStorageSnapshotManager',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageSnapshotManager.html',1,'pyrax::cloudblockstorage']]],
   ['cloudblockstoragevolume',['CloudBlockStorageVolume',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolume.html',1,'pyrax::cloudblockstorage']]],
   ['cloudblockstoragevolumetype',['CloudBlockStorageVolumeType',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageVolumeType.html',1,'pyrax::cloudblockstorage']]],
+  ['clouddatabasebackup',['CloudDatabaseBackup',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseBackup.html',1,'pyrax::clouddatabases']]],
+  ['clouddatabasebackupmanager',['CloudDatabaseBackupManager',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseBackupManager.html',1,'pyrax::clouddatabases']]],
   ['clouddatabaseclient',['CloudDatabaseClient',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html',1,'pyrax::clouddatabases']]],
   ['clouddatabasedatabase',['CloudDatabaseDatabase',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseDatabase.html',1,'pyrax::clouddatabases']]],
   ['clouddatabasedatabasemanager',['CloudDatabaseDatabaseManager',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseDatabaseManager.html',1,'pyrax::clouddatabases']]],

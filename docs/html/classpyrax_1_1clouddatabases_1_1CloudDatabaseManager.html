@@ -124,10 +124,57 @@ Inheritance diagram for CloudDatabaseManager:</div>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This additional code is necessary to properly return the 'volume' attribute of the instance as a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html">CloudDatabaseVolume</a> object instead of a raw dict.  <a href="#a444a1328efb32d5d9d2dcb2efe855d3b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html#a02e9656d9c78c0834d17bfced831845d">create_backup</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a backup of the specified instance, giving it the specified name along with an optional description.  <a href="#a02e9656d9c78c0834d17bfced831845d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html#a5e6eb469a8e9a84757cddf7d4846dda4">restore_backup</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores a backup to a new database instance.  <a href="#a5e6eb469a8e9a84757cddf7d4846dda4"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html#a0ed9ce14a6eafbfe306e55f0b1c8b218">list_backups</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all backups by default, or just for a particular instance.  <a href="#a0ed9ce14a6eafbfe306e55f0b1c8b218"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>This class manages communication with Cloud Database instances. </p>
 </div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a02e9656d9c78c0834d17bfced831845d"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseManager::create_backup" ref="a02e9656d9c78c0834d17bfced831845d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html#a02e9656d9c78c0834d17bfced831845d">create_backup</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>description</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Creates a backup of the specified instance, giving it the specified name along with an optional description. </p>
+
+</div>
+</div>
 <a class="anchor" id="a444a1328efb32d5d9d2dcb2efe855d3b"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseManager::get" ref="a444a1328efb32d5d9d2dcb2efe855d3b" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -159,6 +206,83 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a0ed9ce14a6eafbfe306e55f0b1c8b218"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseManager::list_backups" ref="a0ed9ce14a6eafbfe306e55f0b1c8b218" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html#a0ed9ce14a6eafbfe306e55f0b1c8b218">list_backups</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>instance</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a list of all backups by default, or just for a particular instance. </p>
+
+</div>
+</div>
+<a class="anchor" id="a5e6eb469a8e9a84757cddf7d4846dda4"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseManager::restore_backup" ref="a5e6eb469a8e9a84757cddf7d4846dda4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseManager.html#a5e6eb469a8e9a84757cddf7d4846dda4">restore_backup</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>backup</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>flavor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>volume</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Restores a backup to a new database instance. </p>
+<p>You must supply a backup (either the ID or a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackup.html" title="This class represents a database backup.">CloudDatabaseBackup</a> object), a name for the new instance, as well as a flavor and volume size (in GB) for the instance. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>pyrax/<a class="el" href="clouddatabases_8py.html">clouddatabases.py</a></li>
 </ul>
@@ -180,7 +304,7 @@ Public Member Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 4 2013 13:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 31 2013 10:46:49 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['dbupdateunchanged',['DBUpdateUnchanged',['../classpyrax_1_1exceptions_1_1DBUpdateUnchanged.html',1,'pyrax::exceptions']]],
   ['dnscalltimedout',['DNSCallTimedOut',['../classpyrax_1_1exceptions_1_1DNSCallTimedOut.html',1,'pyrax::exceptions']]],
   ['domaincreationfailed',['DomainCreationFailed',['../classpyrax_1_1exceptions_1_1DomainCreationFailed.html',1,'pyrax::exceptions']]],
   ['domaindeletionfailed',['DomainDeletionFailed',['../classpyrax_1_1exceptions_1_1DomainDeletionFailed.html',1,'pyrax::exceptions']]],
