@@ -47,12 +47,19 @@ class CloudDatabaseVolume(object):
         for key, val in info.items():
             setattr(self, key, val)
 
+
     def resize(self, size):
+        """
+        Resize the volume to the specified size (in GB).
+        """
         self.instance.resize_volume(size)
         self.size = size
 
+
     def get(self, att):
-        # For backwards compatibility
+        """
+        For compatibility with regular resource objects.
+        """
         return getattr(self, att)
 
 
@@ -132,10 +139,18 @@ class CloudDatabaseManager(BaseManager):
 
 
     def list_backups(self, instance=None):
+        """
+        Returns a list of all backups by default, or just for a particular
+        instance.
+        """
         return self.api._backup_manager.list(instance=instance)
 
 
     def _list_backups_for_instance(self, instance):
+        """
+        Instance-specific backups are handled through the instance manager,
+        not the backup manager.
+        """
         uri = "/%s/%s/backups" % (self.uri_base, utils.get_id(instance))
         resp, resp_body = self.api.method_get(uri)
         mgr = self.api._backup_manager
@@ -298,6 +313,10 @@ class CloudDatabaseBackupManager(BaseManager):
 
 
     def list(self, instance=None):
+        """
+        Return a list of all backups by default, or just for a particular
+        instance.
+        """
         if instance is None:
             return super(CloudDatabaseBackupManager, self).list()
         return self.api._manager._list_backups_for_instance(instance)
@@ -515,7 +534,7 @@ class CloudDatabaseInstance(BaseResource):
 
     def list_backups(self):
         """
-        Return a list of all backups for this instance.
+        Returns a list of all backups for this instance.
         """
         return self.manager._list_backups_for_instance(self)
 
@@ -851,19 +870,33 @@ class CloudDatabaseClient(BaseClient):
 
 
     def list_backups(self, instance=None):
+        """
+        Returns a list of all backups by default, or just for a particular
+        instance.
+        """
         return self._backup_manager.list(instance=instance)
 
 
     def get_backup(self, backup):
+        """
+        Returns the CloudDatabaseBackup instance for a given ID.
+        """
         return self._backup_manager.get(backup)
 
 
     def delete_backup(self, backup):
+        """
+        Deletes the CloudDatabaseBackup instance for a given ID.
+        """
         return self._backup_manager.delete(backup)
 
 
     @assure_instance
     def create_backup(self, instance, name, description=None):
+        """
+        Creates a backup of the specified instance, giving it the specified
+        name along with an optional description.
+        """
         return instance.create_backup(name, description=description)
 
 
