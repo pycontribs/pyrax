@@ -769,7 +769,7 @@ class CFClient(object):
             # async design.
             for segment in xrange(num_segments):
                 sequence = str(segment + 1).zfill(digits)
-                seg_name = "%s.%s" % (fname, sequence)
+                seg_name = "%s.%s" % (obj_name, sequence)
                 with utils.SelfDeletingTempfile() as tmpname:
                     with open(tmpname, "wb") as tmp:
                         tmp.write(fileobj.read(self.max_file_size))
@@ -781,8 +781,8 @@ class CFClient(object):
                                 etag=etag, headers=headers,
                                 response_dict=extra_info)
             # Upload the manifest
-            headers["X-Object-Meta-Manifest"] = "%s." % fname
-            return self.connection.put_object(cont.name, fname,
+            headers["X-Object-Meta-Manifest"] = "%s." % obj_name
+            return self.connection.put_object(cont.name, obj_name,
                     contents=None, headers=headers,
                     response_dict=extra_info)
 
@@ -795,7 +795,7 @@ class CFClient(object):
             fname = os.path.basename(file_or_path)
         else:
             try:
-                fname = file_or_path.name
+                fname = os.path.basename(file_or_path.name)
             except AttributeError:
                 fname = None
         if not obj_name:

@@ -141,6 +141,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the user by name on the given instance.  <a href="#a254d42e584df57805c2a190b073d28a4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a3d7d0bcb779f81d9803cb5afffed69a3">change_user_password</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the password for the user of the specified instance to the supplied value.  <a href="#a3d7d0bcb779f81d9803cb5afffed69a3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a1a7d86495f2e95ce37b02894a6fe85df">update_user</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows you to change one or more of the user's username, password, or host.  <a href="#a1a7d86495f2e95ce37b02894a6fe85df"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a2fb19d440ebd8bffa91bb9245530953f">list_user_access</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all database names for which the specified user has access rights on the specified instance.  <a href="#a2fb19d440ebd8bffa91bb9245530953f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a5f0d96262a0ff5432f3f9f0552a1e13f">grant_user_access</a></td></tr>
@@ -161,6 +163,16 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all available Flavors.  <a href="#ad54dc84b9febeac129b211c63c636612"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a5ef10110fd842db8ecae2798b08bdd5b">get_flavor</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a specific Flavor object by ID.  <a href="#a5ef10110fd842db8ecae2798b08bdd5b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a0ed9ce14a6eafbfe306e55f0b1c8b218">list_backups</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all backups by default, or just for a particular instance.  <a href="#a0ed9ce14a6eafbfe306e55f0b1c8b218"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a3a01f4e15e08d87606f2886455804879">get_backup</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackup.html" title="This class represents a database backup.">CloudDatabaseBackup</a> instance for a given ID.  <a href="#a3a01f4e15e08d87606f2886455804879"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a75e968bbf5e6ff6c377c3bf0f8f56694">delete_backup</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackup.html" title="This class represents a database backup.">CloudDatabaseBackup</a> instance for a given ID.  <a href="#a75e968bbf5e6ff6c377c3bf0f8f56694"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a02e9656d9c78c0834d17bfced831845d">create_backup</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a backup of the specified instance, giving it the specified name along with an optional description.  <a href="#a02e9656d9c78c0834d17bfced831845d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a5e6eb469a8e9a84757cddf7d4846dda4">restore_backup</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores a backup to a new database instance.  <a href="#a5e6eb469a8e9a84757cddf7d4846dda4"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">name</a> = &quot;Cloud Databases&quot;</td></tr>
@@ -207,6 +219,47 @@ Static Public Attributes</h2></td></tr>
 
 <p>Changes the password for the user of the specified instance to the supplied value. </p>
 <p>Returns None upon success; raises PasswordChangeFailed if the call does not complete successfully. </p>
+
+</div>
+</div>
+<a class="anchor" id="a02e9656d9c78c0834d17bfced831845d"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseClient::create_backup" ref="a02e9656d9c78c0834d17bfced831845d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a02e9656d9c78c0834d17bfced831845d">create_backup</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>description</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Creates a backup of the specified instance, giving it the specified name along with an optional description. </p>
 
 </div>
 </div>
@@ -301,6 +354,35 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Creates a user with the specified name and password, and gives that user access to the specified database(s). </p>
+
+</div>
+</div>
+<a class="anchor" id="a75e968bbf5e6ff6c377c3bf0f8f56694"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseClient::delete_backup" ref="a75e968bbf5e6ff6c377c3bf0f8f56694" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a75e968bbf5e6ff6c377c3bf0f8f56694">delete_backup</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>backup</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Deletes the <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackup.html" title="This class represents a database backup.">CloudDatabaseBackup</a> instance for a given ID. </p>
 
 </div>
 </div>
@@ -400,6 +482,35 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>This enables login from any host for the root user and provides the user with a generated root password. </p>
+
+</div>
+</div>
+<a class="anchor" id="a3a01f4e15e08d87606f2886455804879"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseClient::get_backup" ref="a3a01f4e15e08d87606f2886455804879" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a3a01f4e15e08d87606f2886455804879">get_backup</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>backup</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackup.html" title="This class represents a database backup.">CloudDatabaseBackup</a> instance for a given ID. </p>
 
 </div>
 </div>
@@ -569,6 +680,35 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Gives access to the databases listed in `db_names` to the user on the specified instance. </p>
+
+</div>
+</div>
+<a class="anchor" id="a0ed9ce14a6eafbfe306e55f0b1c8b218"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseClient::list_backups" ref="a0ed9ce14a6eafbfe306e55f0b1c8b218" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a0ed9ce14a6eafbfe306e55f0b1c8b218">list_backups</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>instance</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a list of all backups by default, or just for a particular instance. </p>
 
 </div>
 </div>
@@ -788,6 +928,54 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a5e6eb469a8e9a84757cddf7d4846dda4"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseClient::restore_backup" ref="a5e6eb469a8e9a84757cddf7d4846dda4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a5e6eb469a8e9a84757cddf7d4846dda4">restore_backup</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>backup</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>flavor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>volume</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Restores a backup to a new database instance. </p>
+<p>You must supply a backup (either the ID or a <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackup.html" title="This class represents a database backup.">CloudDatabaseBackup</a> object), a name for the new instance, as well as a flavor and size (in GB) for the instance. </p>
+
+</div>
+</div>
 <a class="anchor" id="a37c095a57f86b13406baed47d9cc1dd2"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseClient::revoke_user_access" ref="a37c095a57f86b13406baed47d9cc1dd2" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -864,6 +1052,59 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a1a7d86495f2e95ce37b02894a6fe85df"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseClient::update_user" ref="a1a7d86495f2e95ce37b02894a6fe85df" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a1a7d86495f2e95ce37b02894a6fe85df">update_user</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>user</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>password</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>host</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Allows you to change one or more of the user's username, password, or host. </p>
+
+</div>
+</div>
 <hr/><h2>Member Data Documentation</h2>
 <a class="anchor" id="a8ccf841cb59e451791bcb2e1ac4f1edc"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseClient::name" ref="a8ccf841cb59e451791bcb2e1ac4f1edc" args="" -->
 <div class="memitem">
@@ -901,7 +1142,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 24 2013 09:26:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Oct 31 2013 10:46:49 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

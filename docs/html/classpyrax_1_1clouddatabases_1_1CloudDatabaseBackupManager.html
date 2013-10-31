@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>pyrax: CloudDatabaseVolume Class Reference</title>
+<title>pyrax: CloudDatabaseBackupManager Class Reference</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -94,41 +94,46 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul>
       <li class="navelem"><a class="el" href="namespacepyrax.html">pyrax</a>      </li>
       <li class="navelem"><a class="el" href="namespacepyrax_1_1clouddatabases.html">clouddatabases</a>      </li>
-      <li class="navelem"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html">CloudDatabaseVolume</a>      </li>
+      <li class="navelem"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackupManager.html">CloudDatabaseBackupManager</a>      </li>
     </ul>
   </div>
 </div>
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a>  </div>
+<a href="#pub-methods">Public Member Functions</a>  </div>
   <div class="headertitle">
-<div class="title">CloudDatabaseVolume Class Reference</div>  </div>
+<div class="title">CloudDatabaseBackupManager Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<!-- doxytag: class="pyrax::clouddatabases::CloudDatabaseVolume" -->
-<p><a href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume-members.html">List of all members.</a></p>
+<!-- doxytag: class="pyrax::clouddatabases::CloudDatabaseBackupManager" --><!-- doxytag: inherits="pyrax::manager::BaseManager" -->
+<p>This class handles operations on backups for a Cloud Database instance.  
+ <a href="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackupManager.html#details">More...</a></p>
+<div class="dynheader">
+Inheritance diagram for CloudDatabaseBackupManager:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackupManager.png" usemap="#CloudDatabaseBackupManager_map" alt=""/>
+  <map id="CloudDatabaseBackupManager_map" name="CloudDatabaseBackupManager_map">
+<area href="classpyrax_1_1manager_1_1BaseManager.html" title="Managers interact with a particular type of API (servers, databases, dns, etc.) and provide CRUD oper..." alt="BaseManager" shape="rect" coords="0,0,191,24"/>
+</map>
+ </div></div>
+
+<p><a href="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackupManager-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a8f82cbc9bffef6b720c446024ddf35f9">resize</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the volume to the specified size (in GB).  <a href="#a8f82cbc9bffef6b720c446024ddf35f9"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">For compatibility with regular resource objects.  <a href="#a444a1328efb32d5d9d2dcb2efe855d3b"></a><br/></td></tr>
-<tr><td colspan="2"><h2><a name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a5ffaf17e178b3a6fa2012fe3050ede22">instance</a> = None</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#aa3d6656320f1a7278c0c2c7fdf07617c">size</a> = None</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#ab896e794c7918f3e8a6ca0f8339f1add">used</a> = None</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackupManager.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all backups by default, or just for a particular instance.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
 </table>
-<hr/><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="ac775ee34451fdfa742b318538164070e"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::__init__" ref="ac775ee34451fdfa742b318538164070e" args="" -->
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>This class handles operations on backups for a Cloud Database instance. </p>
+</div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a9b522b4ef7526bfa60b78fe735caa55c"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseBackupManager::list" ref="a9b522b4ef7526bfa60b78fe735caa55c" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#ac775ee34451fdfa742b318538164070e">__init__</a> </td>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseBackupManager.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -137,13 +142,7 @@ Static Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>instance</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>info</em>&#160;</td>
+          <td class="paramname"><em>instance</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -154,104 +153,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-</div>
-</div>
-<hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="a444a1328efb32d5d9d2dcb2efe855d3b"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::get" ref="a444a1328efb32d5d9d2dcb2efe855d3b" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a> </td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>att</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>For compatibility with regular resource objects. </p>
-
-</div>
-</div>
-<a class="anchor" id="a8f82cbc9bffef6b720c446024ddf35f9"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::resize" ref="a8f82cbc9bffef6b720c446024ddf35f9" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a8f82cbc9bffef6b720c446024ddf35f9">resize</a> </td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>size</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Resize the volume to the specified size (in GB). </p>
-
-</div>
-</div>
-<hr/><h2>Member Data Documentation</h2>
-<a class="anchor" id="a5ffaf17e178b3a6fa2012fe3050ede22"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::instance" ref="a5ffaf17e178b3a6fa2012fe3050ede22" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a5ffaf17e178b3a6fa2012fe3050ede22">instance</a> = None<code> [static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="aa3d6656320f1a7278c0c2c7fdf07617c"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::size" ref="aa3d6656320f1a7278c0c2c7fdf07617c" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#aa3d6656320f1a7278c0c2c7fdf07617c">size</a> = None<code> [static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="ab896e794c7918f3e8a6ca0f8339f1add"></a><!-- doxytag: member="pyrax::clouddatabases::CloudDatabaseVolume::used" ref="ab896e794c7918f3e8a6ca0f8339f1add" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#ab896e794c7918f3e8a6ca0f8339f1add">used</a> = None<code> [static]</code></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
+<p>Return a list of all backups by default, or just for a particular instance. </p>
 
 </div>
 </div>

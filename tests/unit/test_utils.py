@@ -310,6 +310,22 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(utils.iso_time_string(dt, show_tzinfo=False),
                 "1999-12-31T23:59:59")
 
+    def test_rfc2822_format(self):
+        now = datetime.datetime.now()
+        now_year = str(now.year)
+        fmtd = utils.rfc2822_format(now)
+        self.assertTrue(now_year in fmtd)
+
+    def test_rfc2822_format_str(self):
+        now = str(datetime.datetime.now())
+        fmtd = utils.rfc2822_format(now)
+        self.assertEqual(fmtd, now)
+
+    def test_rfc2822_format_fail(self):
+        now = {}
+        fmtd = utils.rfc2822_format(now)
+        self.assertEqual(fmtd, now)
+
     def test_match_pattern(self):
         ignore_pat = "*.bad"
         self.assertTrue(utils.match_pattern("some.bad", ignore_pat))
@@ -337,6 +353,21 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(utils.get_name(obj), nm)
         self.assertEqual(utils.get_name(obj.name), nm)
         self.assertRaises(exc.MissingName, utils.get_name, object())
+
+    def test_params_to_dict(self):
+        dct = {}
+        k1 = utils.random_unicode()
+        k2 = utils.random_unicode()
+        k3 = utils.random_unicode()
+        k4 = utils.random_unicode()
+        v1 = utils.random_unicode()
+        v2 = utils.random_unicode()
+        v3 = utils.random_unicode()
+        local = {k1: v1, k2: v2, k3: v3}
+        params = [k2, k3, k4]
+        expected = {k2: v2, k3: v3}
+        utils.params_to_dict(params, dct, local)
+        self.assertEqual(dct, expected)
 
     def test_import_class(self):
         cls_string = "tests.unit.fakes.FakeManager"

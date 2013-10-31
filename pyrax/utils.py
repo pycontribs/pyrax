@@ -329,21 +329,16 @@ def _wait_until(obj, att, desired, callback, interval, attempts, verbose,
     start = time.time()
     while infinite or (attempt < attempts):
         try:
-            obj.reload()
+            # For servers:
+            obj.get()
         except AttributeError:
-            # This will happen with cloudservers and cloudfiles, which
-            # use different client/resource classes.
             try:
-                # For servers:
-                obj.get()
+                # For other objects that don't support .get()
+                obj = obj.manager.get(obj.id)
             except AttributeError:
-                try:
-                    # For other objects that don't support .get() or .reload()
-                    obj = obj.manager.get(obj.id)
-                except AttributeError:
-                    # punt
-                    raise exc.NoReloadError("The 'wait_until' method is not "
-                            "supported for '%s' objects." % obj.__class__)
+                # punt
+                raise exc.NoReloadError("The 'wait_until' method is not "
+                        "supported for '%s' objects." % obj.__class__)
         attval = getattr(obj, att)
         if verbose:
             elapsed = time.time() - start
@@ -370,7 +365,7 @@ def wait_for_build(obj, att=None, desired=None, callback=None, interval=None,
     to avoid excess polling.
     """
     att = att or "status"
-    desired = desired or ["ACTIVE", "ERROR", "available"]
+    desired = desired or ["ACTIVE", "ERROR", "available", "COMPLETED"]
     interval = interval or 20
     attempts = attempts or 0
     verbose_atts = verbose_atts or "progress"

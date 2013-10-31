@@ -25,6 +25,7 @@ var searchData=
   ['min_5fsize',['MIN_SIZE',['../namespacepyrax_1_1cloudblockstorage.html#aaba5e7c5484ccde364fadc3e6a496b1f',1,'pyrax::cloudblockstorage']]],
   ['missingauthsettings',['MissingAuthSettings',['../classpyrax_1_1exceptions_1_1MissingAuthSettings.html',1,'pyrax::exceptions']]],
   ['missingclaimparameters',['MissingClaimParameters',['../classpyrax_1_1exceptions_1_1MissingClaimParameters.html',1,'pyrax::exceptions']]],
+  ['missingdbuserparameters',['MissingDBUserParameters',['../classpyrax_1_1exceptions_1_1MissingDBUserParameters.html',1,'pyrax::exceptions']]],
   ['missingdnssettings',['MissingDNSSettings',['../classpyrax_1_1exceptions_1_1MissingDNSSettings.html',1,'pyrax::exceptions']]],
   ['missinghealthmonitorsettings',['MissingHealthMonitorSettings',['../classpyrax_1_1exceptions_1_1MissingHealthMonitorSettings.html',1,'pyrax::exceptions']]],
   ['missingloadbalancerparameters',['MissingLoadBalancerParameters',['../classpyrax_1_1exceptions_1_1MissingLoadBalancerParameters.html',1,'pyrax::exceptions']]],
