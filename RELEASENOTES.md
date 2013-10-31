@@ -1,5 +1,16 @@
 # Release Notes for pyrax
 
+###2013.10.31 - Version 1.6.1
+ - Cloud Databases:
+    - Added support for Backups. GitHub #216
+    - Added ability to specify 'host' parameter for users. GitHub #229
+    - Added ability to update users.
+ - Queues:
+    - Removed default TTL for messages. GitHub #234
+ - Cloud Files:
+    - Fixed large file upload bug. GitHub #231
+    - Fixed file naming bug. GitHub #232
+
 ###2013.10.24 - Version 1.6.0
  - New:
     - Added support for **Cloud Queues** (Marconi).
