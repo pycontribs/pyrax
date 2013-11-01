@@ -454,16 +454,19 @@ class CloudDNSManager(BaseManager):
         start = time.time()
         timed_out = False
         while (resp_body["status"] == "RUNNING") and not timed_out:
-            resp, resp_body = self.api.method_get(massagedURL)
-            if self._timeout:
-                timed_out = ((time.time() - start) > self._timeout)
-                time.sleep(self._delay)
-        if error_class and (resp_body["status"] == "ERROR"):
-            # This call will handle raising the error.
-            self._process_async_error(resp_body, error_class)
+            resp_body = None
+            while resp_body is None and not timed_out:
+                resp, resp_body = self.api.method_get(massagedURL)
+                if self._timeout:
+                    timed_out = ((time.time() - start) > self._timeout)
+                    time.sleep(self._delay)
+
         if timed_out:
             raise exc.DNSCallTimedOut("The API call to '%s' did not complete "
                     "after %s seconds." % (uri, self._timeout))
+        if error_class and (resp_body["status"] == "ERROR"):
+            # This call will handle raising the error.
+            self._process_async_error(resp_body, error_class)
         if has_response:
             ret = resp, resp_body["response"]
         else:
