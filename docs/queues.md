@@ -85,9 +85,11 @@ Parameter | Default | Effect
 ## Claiming Messages in a Queue
 Claiming messages is how workers processing a queue mark messages as being handled by that worker, avoiding having two workers process the same message.
 
-To claim messages you need the queue name or a `Queue` object reference. If you have a `Queue` object, you can call its `claim()` method directly. When claiming messages you must not only specify the queue, but also give a TTL and a Grace Period. You many also specify a limit to the number of messages to claim. The call is:
+To claim messages you need the queue name or a `Queue` object reference. If you have a `Queue` object, you can call its `claim_messages()` method directly. When claiming messages you must not only specify the queue, but also give a TTL and a Grace Period. You may also specify a limit to the number of messages to claim. The call is:
 
-    pq.claim_messages(queue, ttl, grace_period[, limit])
+    queue_claim = pq.claim_messages(queue, ttl, grace[, count])
+    
+    queue_claim = queue.claim_messages(ttl, grace[, count])
 
 An explanation of the parameters of this call follows:
 
@@ -95,8 +97,8 @@ Parameter | Default | Notes
 ---- | ---- | ----
 **queue** |  | Either the name of the queue to claim messages from, or the corresponding `Queue` object.
 **ttl** |  | The ttl attribute specifies how long the server waits before releasing the claim. The ttl value must be between 60 and 43200 seconds (12 hours).
-**grace_period** |  | The grace_period attribute specifies the message grace period in seconds. The value of the grace period must be between 60 and 43200 seconds (12 hours). To deal with workers that have stopped responding (for up to 1209600 seconds or 14 days, including claim lifetime), the server extends the lifetime of claimed messages to be at least as long as the lifetime of the claim itself, plus the specified grace period. If a claimed message would normally live longer than the grace period, its expiration is not adjusted.
-**limit** | 10 | The number of messages to claim. The maximum number of messages you may claim at once is 20.
+**grace** |  | The grace attribute specifies the message grace period in seconds. The value of the grace period must be between 60 and 43200 seconds (12 hours). To deal with workers that have stopped responding (for up to 1209600 seconds or 14 days, including claim lifetime), the server extends the lifetime of claimed messages to be at least as long as the lifetime of the claim itself, plus the specified grace period. If a claimed message would normally live longer than the grace period, its expiration is not adjusted.
+**count** | 10 | The number of messages to claim. The maximum number of messages you may claim at once is 20.
 
 If there are no messages to claim, the method returns `None`. When you create a successful claim, a `QueueClaim` object is returned that has a `messages` attribute. This is a list of `QueueMessage` objects representing the claimed messages. You can iterate through this list to process the messages, and once the message has been processed, call its `delete()` method to remove it from the queue to ensure that it is not processed more than once.
 
