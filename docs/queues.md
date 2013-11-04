@@ -106,9 +106,9 @@ If there are no messages to claim, the method returns `None`. When you create a 
 ## Renewing a Claim
 Once a claim has been made, if the TTL and grace period expire, the claim is automatically released and the messages are made available for others to claim. If you have a long-running process and want to ensure that this does not happen in the middle of the process, you should update the claim with one or both of a TTL or grace period. Updating resets the age of the claim, restarting the TTL for the claim. To update a claim, call:
 
-    pq.update_claim(queue, claim[, ttl=None][, grace_period=None])
+    pq.update_claim(queue, claim[, ttl=None][, grace=None])
     # or
-    queue.update_claim(claim[, ttl=None][, grace_period=None])
+    queue.update_claim(claim[, ttl=None][, grace=None])
 
 
 ## Refreshing a Claim
