@@ -245,7 +245,7 @@ class QueueMessage(BaseResource):
         if self.href is None:
             return
         parsed = urlparse.urlparse(self.href)
-        self.id = parsed.path.lstrip("/")
+        self.id = parsed.path.rsplit("/", 1)[-1]
         query = parsed.query
         if query:
             self.claim_id = query.split("claim_id=")[-1]
@@ -269,7 +269,7 @@ class QueueClaim(BaseResource):
         msg_dicts = info.pop("messages", [])
         super(QueueClaim, self)._add_details(info)
         parsed = urlparse.urlparse(self.href)
-        self.id = parsed.path.lstrip("/")
+        self.id = parsed.path.rsplit("/", 1)[-1]
         self.messages = [QueueMessage(self.manager._message_manager, item)
                 for item in msg_dicts]
 
