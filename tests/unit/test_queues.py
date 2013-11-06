@@ -110,9 +110,11 @@ class QueuesTest(unittest.TestCase):
     def test_queue_delete_message(self):
         q = self.queue
         q._message_manager.delete = Mock()
-        msgid = utils.random_unicode()
-        q.delete_message(msgid)
-        q._message_manager.delete.assert_called_once_with(msgid)
+        msg_id = utils.random_unicode()
+        claim_id = utils.random_unicode()
+        q.delete_message(msg_id, claim_id=claim_id)
+        q._message_manager.delete.assert_called_once_with(msg_id,
+                claim_id=claim_id)
 
     def test_queue_list(self):
         q = self.queue
@@ -251,6 +253,15 @@ class QueuesTest(unittest.TestCase):
         self.assertIsNone(msg.id)
         self.assertIsNone(msg.claim_id)
 
+    def test_msg_delete(self):
+        q = self.queue
+        mgr = q._message_manager
+        claim_id = utils.random_unicode()
+        mgr.delete = Mock()
+        msg = QueueMessage(manager=mgr, info={})
+        msg.delete(claim_id=claim_id)
+        mgr.delete.assert_called_once_with(msg, claim_id=claim_id)
+        
     def test_claim(self):
         msgs = []
         num = random.randint(1, 9)
@@ -314,6 +325,26 @@ class QueuesTest(unittest.TestCase):
         mgr._list = Mock(return_value=(None, None))
         msgs = mgr.list(include_claimed=include_claimed, echo=echo,
                 marker=marker)
+
+    def test_queue_msg_mgr_delete_claim(self):
+        q = self.queue
+        mgr = q._message_manager
+        msg = utils.random_unicode()
+        claim_id = utils.random_unicode()
+        mgr._delete = Mock()
+        expected_uri = "/%s/%s?claim_id=%s" % (mgr.uri_base, msg, claim_id)
+        mgr.delete(msg, claim_id=claim_id)
+        mgr._delete.assert_called_once_with(expected_uri)
+
+    def test_queue_msg_mgr_delete_no_claim(self):
+        q = self.queue
+        mgr = q._message_manager
+        msg = utils.random_unicode()
+        claim_id = None
+        mgr._delete = Mock()
+        expected_uri = "/%s/%s" % (mgr.uri_base, msg)
+        mgr.delete(msg, claim_id=claim_id)
+        mgr._delete.assert_called_once_with(expected_uri)
 
     def test_queue_msg_mgr_list_by_ids(self):
         q = self.queue
@@ -597,9 +628,10 @@ class QueuesTest(unittest.TestCase):
         clt = self.client
         q = self.queue
         msg_id = utils.random_unicode()
+        claim_id = utils.random_unicode()
         q.delete_message = Mock()
-        clt.delete_message(q, msg_id)
-        q.delete_message.assert_called_once_with(msg_id)
+        clt.delete_message(q, msg_id, claim_id=claim_id)
+        q.delete_message.assert_called_once_with(msg_id, claim_id=claim_id)
 
     def test_clt_list_messages(self):
         clt = self.client

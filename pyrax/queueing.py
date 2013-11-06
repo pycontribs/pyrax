@@ -107,12 +107,13 @@ class Queue(BaseResource):
         return self._message_manager.get(msg_id)
 
 
-    def delete_message(self, msg_id):
+    def delete_message(self, msg_id, claim_id=None):
         """
-        Deletes the message whose ID matches the supplied msg_id from this
-        queue.
+        Deletes the message whose ID matches the supplied msg_id from the
+        specified queue. If the message has been claimed, the ID of that claim
+        must be passed as the 'claim_id' parameter.
         """
-        return self._message_manager.delete(msg_id)
+        return self._message_manager.delete(msg_id, claim_id=claim_id)
 
 
     def list(self, include_claimed=False, echo=False, marker=None, limit=None):
@@ -251,6 +252,14 @@ class QueueMessage(BaseResource):
             self.claim_id = query.split("claim_id=")[-1]
 
 
+    def delete(self, claim_id=None):
+        """
+        Deletes this message from its queue. If the message has been claimed,
+        the ID of that claim must be passed as the 'claim_id' parameter.
+        """
+        return self.manager.delete(self, claim_id=claim_id)
+
+
 
 class QueueClaim(BaseResource):
     """
@@ -328,6 +337,20 @@ class QueueMessageManager(BaseQueueManager):
             loop += 1
             ret.extend(self._iterate_list(include_claimed, echo, marker, limit))
         return ret
+
+
+    def delete(self, msg, claim_id=None):
+        """
+        Deletes the specified message from its queue. If the message has been
+        claimed, the ID of that claim must be passed as the 'claim_id'
+        parameter.
+        """
+        msg_id = utils.get_id(msg)
+        if claim_id:
+            uri = "/%s/%s?claim_id=%s" % (self.uri_base, msg_id, claim_id)
+        else:
+            uri = "/%s/%s" % (self.uri_base, msg_id)
+        return self._delete(uri)
 
 
     def list_by_ids(self, ids):
@@ -600,12 +623,13 @@ class QueueClient(BaseClient):
 
 
     @assure_queue
-    def delete_message(self, queue, msg_id):
+    def delete_message(self, queue, msg_id, claim_id=None):
         """
         Deletes the message whose ID matches the supplied msg_id from the
-        specified queue.
+        specified queue. If the message has been claimed, the ID of that claim
+        must be passed as the 'claim_id' parameter.
         """
-        return queue.delete_message(msg_id)
+        return queue.delete_message(msg_id, claim_id=claim_id)
 
 
     @assure_queue
