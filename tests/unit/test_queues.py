@@ -261,7 +261,7 @@ class QueuesTest(unittest.TestCase):
         msg = QueueMessage(manager=mgr, info={})
         msg.delete(claim_id=claim_id)
         mgr.delete.assert_called_once_with(msg, claim_id=claim_id)
-        
+
     def test_claim(self):
         msgs = []
         num = random.randint(1, 9)
