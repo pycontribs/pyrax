@@ -519,6 +519,7 @@ class QueueClient(BaseClient):
     name = "Cloud Queues"
     client_id = None
 
+
     def _configure_manager(self):
         """
         Create the manager to handle queues.
@@ -534,10 +535,25 @@ class QueueClient(BaseClient):
         """
         if self.client_id is None:
             self.client_id = os.environ.get("CLOUD_QUEUES_ID")
-        if not self.client_id:
-            raise exc.QueueClientIDNotDefined("You must supply a client ID to "
-                    "work with Queues.")
-        dct["Client-ID"] = self.client_id
+        if self.client_id:
+            dct["Client-ID"] = self.client_id
+
+
+    def _api_request(self, uri, method, **kwargs):
+        """
+        Any request that involves messages must define the client ID. This
+        handles all failures due to lack of client ID and raises the
+        appropriate exception.
+        """
+        try:
+            return super(QueueClient, self)._api_request(uri, method, **kwargs)
+        except exc.BadRequest as e:
+            if ((e.code == "400") and
+                    (e.message == 'The "Client-ID" header is required.')):
+                raise exc.QueueClientIDNotDefined("You must supply a client ID "
+                        "to work with Queue messages.")
+            else:
+                raise
 
 
     def get_home_document(self):

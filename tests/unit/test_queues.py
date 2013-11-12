@@ -544,14 +544,60 @@ class QueuesTest(unittest.TestCase):
         self.assertEqual(dct, {"Client-ID": client_id})
         os.environ.get = sav
 
-    def test_clt_add_custom_headers_fail(self):
+    def test_clt_add_custom_headers_no_clt_id(self):
         clt = self.client
         dct = {}
         sav = os.environ.get
         os.environ.get = Mock(return_value=None)
-        self.assertRaises(exc.QueueClientIDNotDefined, clt._add_custom_headers,
-                dct)
+        clt._add_custom_headers(dct)
+        self.assertEqual(dct, {})
         os.environ.get = sav
+
+    def test_api_request(self):
+        clt = self.client
+        uri = utils.random_ascii()
+        method = utils.random_ascii()
+        kwargs = {"fake": utils.random_ascii()}
+        fake_resp = utils.random_ascii()
+        fake_body = utils.random_ascii()
+        clt._time_request = Mock(return_value=(fake_resp, fake_body))
+        clt.management_url = utils.random_unicode()
+        id_svc = pyrax.identity
+        sav = id_svc.authenticate
+        id_svc.authenticate = Mock()
+        ret = clt._api_request(uri, method, **kwargs)
+        self.assertEqual(ret, (fake_resp, fake_body))
+        id_svc.authenticate = sav
+
+    def test_api_request_missing_clt_id(self):
+        clt = self.client
+        uri = utils.random_ascii()
+        method = utils.random_ascii()
+        kwargs = {"fake": utils.random_ascii()}
+        err = exc.BadRequest("400", 'The "Client-ID" header is required.')
+        clt._time_request = Mock(side_effect=err)
+        clt.management_url = utils.random_unicode()
+        id_svc = pyrax.identity
+        sav = id_svc.authenticate
+        id_svc.authenticate = Mock()
+        self.assertRaises(exc.QueueClientIDNotDefined, clt._api_request, uri,
+                method, **kwargs)
+        id_svc.authenticate = sav
+
+    def test_api_request_other_error(self):
+        clt = self.client
+        uri = utils.random_ascii()
+        method = utils.random_ascii()
+        kwargs = {"fake": utils.random_ascii()}
+        err = exc.BadRequest("400", "Some other message")
+        clt._time_request = Mock(side_effect=err)
+        clt.management_url = utils.random_unicode()
+        id_svc = pyrax.identity
+        sav = id_svc.authenticate
+        id_svc.authenticate = Mock()
+        self.assertRaises(exc.BadRequest, clt._api_request, uri,
+                method, **kwargs)
+        id_svc.authenticate = sav
 
     def test_clt_get_home_document(self):
         clt = self.client
