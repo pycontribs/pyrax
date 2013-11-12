@@ -185,8 +185,9 @@ class CloudDatabaseUserManager(BaseManager):
                 {"name": name,
                 "password": password,
                 "databases": db_dicts,
-                "host": host,
                 }]}
+        if host:
+            body["users"][0]["host"] = host
         return body
 
 

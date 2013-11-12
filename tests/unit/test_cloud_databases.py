@@ -905,6 +905,20 @@ class CloudDatabasesTest(unittest.TestCase):
         inst = self.instance
         mgr = inst._user_manager
         nm = utils.random_unicode()
+        pw = utils.random_unicode()
+        dbnames = [utils.random_unicode(), utils.random_unicode()]
+        ret = mgr._create_body(nm, password=pw, database_names=dbnames)
+        expected = {"users": [
+                {"name": nm,
+                "password": pw,
+                "databases": [{"name": dbnames[0]}, {"name": dbnames[1]}]}]}
+        self.assertEqual(ret, expected)
+
+    @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
+    def test_create_body_user_host(self):
+        inst = self.instance
+        mgr = inst._user_manager
+        nm = utils.random_unicode()
         host = utils.random_unicode()
         pw = utils.random_unicode()
         dbnames = [utils.random_unicode(), utils.random_unicode()]
