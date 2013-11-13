@@ -407,7 +407,7 @@ class CloudDatabaseInstance(BaseResource):
         return self._database_manager.find(name=name)
 
 
-    def create_user(self, name, password, database_names):
+    def create_user(self, name, password, database_names, host=None):
         """
         Creates a user with the specified name and password, and gives that
         user access to the specified database(s).
@@ -421,7 +421,7 @@ class CloudDatabaseInstance(BaseResource):
         database_names = [db if isinstance(db, basestring) else db.name
                 for db in database_names]
         self._user_manager.create(name=name, password=password,
-                database_names=database_names, return_none=True)
+                database_names=database_names, host=host, return_none=True)
         # Since the API doesn't return the info for creating the user object,
         # we have to do it manually.
         return self._user_manager.find(name=name)
@@ -716,13 +716,13 @@ class CloudDatabaseClient(BaseClient):
 
 
     @assure_instance
-    def create_user(self, instance, name, password, database_names):
+    def create_user(self, instance, name, password, database_names, host=None):
         """
         Creates a user with the specified name and password, and gives that
         user access to the specified database(s).
         """
         return instance.create_user(name=name, password=password,
-                database_names=database_names)
+                database_names=database_names, host=host)
 
 
     @assure_instance
