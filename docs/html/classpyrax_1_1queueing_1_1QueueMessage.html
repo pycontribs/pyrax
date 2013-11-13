@@ -100,6 +100,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a>  </div>
   <div class="headertitle">
 <div class="title">QueueMessage Class Reference</div>  </div>
@@ -120,6 +121,10 @@ Inheritance diagram for QueueMessage:</div>
 
 <p><a href="classpyrax_1_1queueing_1_1QueueMessage-members.html">List of all members.</a></p>
 <table class="memberdecls">
+<tr><td colspan="2"><h2><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1queueing_1_1QueueMessage.html#ab48bde70a0927a83d62464cb0627c34b">delete</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes this message from its queue.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1queueing_1_1QueueMessage.html#acf2488b95c97e0378c9bf49de3b50f28">id</a> = None</td></tr>
@@ -131,7 +136,38 @@ Static Public Attributes</h2></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>This class represents a Message posted to a <a class="el" href="classpyrax_1_1queueing_1_1Queue.html" title="This class represents a Queue.">Queue</a>. </p>
-</div><hr/><h2>Member Data Documentation</h2>
+</div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="ab48bde70a0927a83d62464cb0627c34b"></a><!-- doxytag: member="pyrax::queueing::QueueMessage::delete" ref="ab48bde70a0927a83d62464cb0627c34b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1queueing_1_1QueueMessage.html#ab48bde70a0927a83d62464cb0627c34b">delete</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>claim_id</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Deletes this message from its queue. </p>
+<p>If the message has been claimed, the ID of that claim must be passed as the 'claim_id' parameter. </p>
+
+</div>
+</div>
+<hr/><h2>Member Data Documentation</h2>
 <a class="anchor" id="a043a7693e1d2d30988a0f821e0ab5f94"></a><!-- doxytag: member="pyrax::queueing::QueueMessage::age" ref="a043a7693e1d2d30988a0f821e0ab5f94" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -233,7 +269,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 24 2013 09:26:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 13 2013 15:09:38 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
