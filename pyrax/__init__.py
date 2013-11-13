@@ -674,9 +674,9 @@ def connect_to_cloudfiles(region=None, public=True):
 
 
 @_require_auth
-def _create_client(ep_name, service_type, region):
+def _create_client(ep_name, service_type, region, public=True):
     region = _safe_region(region)
-    ep = _get_service_endpoint(ep_name.split(":")[0], region)
+    ep = _get_service_endpoint(ep_name.split(":")[0], region, public=public)
     if not ep:
         return
     verify_ssl = get_setting("verify_ssl")
@@ -724,14 +724,14 @@ def connect_to_cloud_monitoring(region=None):
 
 def connect_to_autoscale(region=None):
     """Creates a client for working with AutoScale."""
-    return _create_client(ep_name="autoscale",
-            service_type="autoscale", region=region)
+    return _create_client(ep_name="autoscale", service_type="autoscale",
+            region=region)
 
 
-def connect_to_queues(region=None):
+def connect_to_queues(region=None, public=True):
     """Creates a client for working with Queues."""
-    return _create_client(ep_name="queues",
-            service_type="queues", region=region)
+    return _create_client(ep_name="queues", service_type="queues",
+            region=region, public=public)
 
 
 def get_http_debug():
