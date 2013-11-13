@@ -776,6 +776,6 @@ class FakeIdentityResponse(FakeResponse):
 
 _module_pth = os.path.dirname(pyrax.__file__)
 _img_path = os.path.join(_module_pth, "..", "tests", "unit", "python-logo.png")
-png_file = None
+png_content = None
 with open(_img_path, "rb") as pfile:
-    png_file = pfile.read()
+    png_content = pfile.read()

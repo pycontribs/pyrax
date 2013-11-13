@@ -15,7 +15,7 @@ from mock import MagicMock as Mock
 
 import pyrax.utils as utils
 import pyrax.exceptions as exc
-from tests.unit import fakes
+import fakes
 
 FAKE_CONTENT = "x" * 100
 
@@ -53,7 +53,7 @@ class UtilsTest(unittest.TestCase):
         self.assertFalse(os.path.exists(tmp))
 
     def test_get_checksum_from_string(self):
-        test = "some random text"
+        test = utils.random_ascii()
         md = hashlib.md5()
         md.update(test)
         expected = md.hexdigest()
@@ -61,7 +61,7 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(expected, received)
 
     def test_get_checksum_from_unicode(self):
-        test = u"some ñøñåßçîî text"
+        test = utils.random_unicode()
         md = hashlib.md5()
         enc = "utf8"
         md.update(test.encode(enc))
@@ -79,9 +79,7 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(expected, received)
 
     def test_get_checksum_from_binary(self):
-#        test = utils.random_unicode()
-#        test = open("tests/unit/python-logo.png", "rb").read()
-        test = fakes.png_file
+        test = fakes.png_content
         md = hashlib.md5()
         enc = "utf8"
         md.update(test)
@@ -370,9 +368,9 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(dct, expected)
 
     def test_import_class(self):
-        cls_string = "tests.unit.fakes.FakeManager"
+        cls_string = "pyrax.utils.SelfDeletingTempfile"
         ret = utils.import_class(cls_string)
-        self.assertTrue(ret is fakes.FakeManager)
+        self.assertTrue(ret is utils.SelfDeletingTempfile)
 
     def test_update_exc(self):
         msg1 = utils.random_unicode()
