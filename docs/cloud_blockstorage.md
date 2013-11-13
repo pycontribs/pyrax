@@ -55,6 +55,7 @@ Parameter | Description | Required
 
 When you create a volume from a snapshot, the new volume is a copy of the volume from which the snapshot was created. The new volume must be the same size as the original volume used to create the snapshot. If you create a new volume from scratch, it is the equivalent of an unformatted disk drive.
 
+There are additional parameters in the response that are not described in the request parameter table above. **`status`** is typically available although it can be creating if the volume is from a snapshot operation. **`availability_zone`** is always "nova". **`bootable`** is currently always False. **`source_volid`** is currently not used by CBS.
 
 Here is an example of the call to create a new 500 GB volume that uses SSD for high performance:
 
