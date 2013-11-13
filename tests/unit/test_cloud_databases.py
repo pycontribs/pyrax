@@ -55,31 +55,28 @@ class CloudDatabasesTest(unittest.TestCase):
         inst = CloudDatabaseInstance(fakes.FakeManager(), {"id": 42,
                 "volume": {"size": 1, "used": 0.2}})
         self.assertTrue(isinstance(inst, CloudDatabaseInstance))
+        self.assertTrue(isinstance(inst.volume, CloudDatabaseVolume))
 
     def test_list_databases(self):
         inst = self.instance
-        sav = inst._database_manager.list
         inst._database_manager.list = Mock()
         limit = utils.random_unicode()
         marker = utils.random_unicode()
         inst.list_databases(limit=limit, marker=marker)
         inst._database_manager.list.assert_called_once_with(limit=limit,
                 marker=marker)
-        inst._database_manager.list = sav
 
     def test_list_users(self):
         inst = self.instance
-        sav = inst._user_manager.list
         inst._user_manager.list = Mock()
         limit = utils.random_unicode()
         marker = utils.random_unicode()
         inst.list_users(limit=limit, marker=marker)
-        inst._user_manager.list.assert_called_once_with(limit=limit, marker=marker)
-        inst._user_manager.list = sav
+        inst._user_manager.list.assert_called_once_with(limit=limit,
+                marker=marker)
 
     def test_get_database(self):
         inst = self.instance
-        sav = inst.list_databases
         db1 = fakes.FakeEntity()
         db1.name = "a"
         db2 = fakes.FakeEntity()
@@ -87,18 +84,15 @@ class CloudDatabasesTest(unittest.TestCase):
         inst.list_databases = Mock(return_value=[db1, db2])
         ret = inst.get_database("a")
         self.assertEqual(ret, db1)
-        inst.list_databases = sav
 
     def test_get_database_bad(self):
         inst = self.instance
-        sav = inst.list_databases
         db1 = fakes.FakeEntity()
         db1.name = "a"
         db2 = fakes.FakeEntity()
         db2.name = "b"
         inst.list_databases = Mock(return_value=[db1, db2])
         self.assertRaises(exc.NoSuchDatabase, inst.get_database, "z")
-        inst.list_databases = sav
 
     def test_dbmgr_get(self):
         mgr = fakes.FakeDatabaseManager()
@@ -159,42 +153,38 @@ class CloudDatabasesTest(unittest.TestCase):
 
     def test_create_database(self):
         inst = self.instance
-        sav = inst._database_manager.create
         inst._database_manager.create = Mock()
         inst._database_manager.find = Mock()
         db = inst.create_database(name="test")
         inst._database_manager.create.assert_called_once_with(name="test",
                 character_set="utf8", collate="utf8_general_ci",
                 return_none=True)
-        inst._database_manager.create = sav
 
     def test_create_user(self):
         inst = self.instance
-        sav = inst._user_manager.create
         inst._user_manager.create = Mock()
         inst._user_manager.find = Mock()
-        inst.create_user(name="test", password="testpw",
-                database_names="testdb")
-        inst._user_manager.create.assert_called_once_with(name="test",
-                password="testpw",
-        database_names=["testdb"], return_none=True)
-        inst._user_manager.create = sav
+        name = utils.random_unicode()
+        password = utils.random_unicode()
+        database_names = utils.random_unicode()
+        host = utils.random_unicode()
+        inst.create_user(name=name, password=password,
+                database_names=database_names, host=host)
+        inst._user_manager.create.assert_called_once_with(name=name,
+                password=password, database_names=[database_names], host=host,
+                return_none=True)
 
     def test_delete_database(self):
         inst = self.instance
-        sav = inst._database_manager.delete
         inst._database_manager.delete = Mock()
         inst.delete_database("dbname")
         inst._database_manager.delete.assert_called_once_with("dbname")
-        inst._database_manager.delete = sav
 
     def test_delete_user(self):
         inst = self.instance
-        sav = inst._user_manager.delete
         inst._user_manager.delete = Mock()
         inst.delete_user("username")
         inst._user_manager.delete.assert_called_once_with("username")
-        inst._user_manager.delete = sav
 
     def test_delete_database_direct(self):
         inst = self.instance
@@ -324,27 +314,23 @@ class CloudDatabasesTest(unittest.TestCase):
     def test_list_databases_for_instance(self):
         clt = self.client
         inst = self.instance
-        sav = inst.list_databases
         limit = utils.random_unicode()
         marker = utils.random_unicode()
         inst.list_databases = Mock(return_value=["db"])
         ret = clt.list_databases(inst, limit=limit, marker=marker)
         self.assertEqual(ret, ["db"])
         inst.list_databases.assert_called_once_with(limit=limit, marker=marker)
-        inst.list_databases = sav
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_create_database_for_instance(self):
         clt = self.client
         inst = self.instance
-        sav = inst.create_database
         inst.create_database = Mock(return_value=["db"])
         nm = utils.random_unicode()
         ret = clt.create_database(inst, nm)
         self.assertEqual(ret, ["db"])
         inst.create_database.assert_called_once_with(nm,
                 character_set=None, collate=None)
-        inst.create_database = sav
 
     def test_clt_get_database(self):
         clt = self.client
@@ -358,79 +344,66 @@ class CloudDatabasesTest(unittest.TestCase):
     def test_delete_database_for_instance(self):
         clt = self.client
         inst = self.instance
-        sav = inst.delete_database
         inst.delete_database = Mock()
         nm = utils.random_unicode()
         clt.delete_database(inst, nm)
         inst.delete_database.assert_called_once_with(nm)
-        inst.delete_database = sav
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_list_users_for_instance(self):
         clt = self.client
         inst = self.instance
-        sav = inst.list_users
         limit = utils.random_unicode()
         marker = utils.random_unicode()
         inst.list_users = Mock(return_value=["user"])
         ret = clt.list_users(inst, limit=limit, marker=marker)
         self.assertEqual(ret, ["user"])
         inst.list_users.assert_called_once_with(limit=limit, marker=marker)
-        inst.list_users = sav
 
     def test_create_user_for_instance(self):
         clt = self.client
         inst = self.instance
-        sav = inst.create_user
         inst.create_user = Mock()
         nm = utils.random_unicode()
         pw = utils.random_unicode()
-        ret = clt.create_user(inst, nm, pw, ["db"])
+        host = utils.random_unicode()
+        ret = clt.create_user(inst, nm, pw, ["db"], host=host)
         inst.create_user.assert_called_once_with(name=nm, password=pw,
-                database_names=["db"])
-        inst.create_user = sav
+                database_names=["db"], host=host)
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_delete_user_for_instance(self):
         clt = self.client
         inst = self.instance
-        sav = inst.delete_user
         inst.delete_user = Mock()
         nm = utils.random_unicode()
         clt.delete_user(inst, nm)
         inst.delete_user.assert_called_once_with(nm)
-        inst.delete_user = sav
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_enable_root_user_for_instance(self):
         clt = self.client
         inst = self.instance
-        sav = inst.enable_root_user
         inst.enable_root_user = Mock()
         clt.enable_root_user(inst)
         inst.enable_root_user.assert_called_once_with()
-        inst.enable_root_user = sav
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_root_user_status_for_instance(self):
         clt = self.client
         inst = self.instance
-        sav = inst.root_user_status
         inst.root_user_status = Mock()
         clt.root_user_status(inst)
         inst.root_user_status.assert_called_once_with()
-        inst.root_user_status = sav
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_get_user_by_client(self):
         clt = self.client
         inst = self.instance
-        sav = inst.get_user
         inst.get_user = Mock()
         fakeuser = utils.random_unicode()
         clt.get_user(inst, fakeuser)
         inst.get_user.assert_called_once_with(fakeuser)
-        inst.get_user = sav
 
     def test_get_user(self):
         inst = self.instance
@@ -452,11 +425,9 @@ class CloudDatabasesTest(unittest.TestCase):
         mgr.instance = inst
         dbname1 = utils.random_ascii()
         dbname2 = utils.random_ascii()
-        sav = inst.list_databases
         inst.list_databases = Mock(return_value=((dbname1, dbname2)))
         resp = mgr._get_db_names(dbname1)
         self.assertEqual(resp, [dbname1])
-        inst.list_databases = sav
 
     def test_get_db_names_not_strict(self):
         inst = self.instance
@@ -464,11 +435,9 @@ class CloudDatabasesTest(unittest.TestCase):
         mgr.instance = inst
         dbname1 = utils.random_ascii()
         dbname2 = utils.random_ascii()
-        sav = inst.list_databases
         inst.list_databases = Mock(return_value=((dbname1, dbname2)))
         resp = mgr._get_db_names("BAD", strict=False)
         self.assertEqual(resp, ["BAD"])
-        inst.list_databases = sav
 
     def test_get_db_names_fail(self):
         inst = self.instance
@@ -476,10 +445,8 @@ class CloudDatabasesTest(unittest.TestCase):
         mgr.instance = inst
         dbname1 = utils.random_ascii()
         dbname2 = utils.random_ascii()
-        sav = inst.list_databases
         inst.list_databases = Mock(return_value=((dbname1, dbname2)))
         self.assertRaises(exc.NoSuchDatabase, mgr._get_db_names, "BAD")
-        inst.list_databases = sav
 
     def test_change_user_password(self):
         inst = self.instance
@@ -721,16 +688,13 @@ class CloudDatabasesTest(unittest.TestCase):
         clt.restart(inst)
         inst.restart.assert_called_once_with()
 
-
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_inst_resize(self):
         clt = self.client
         inst = self.instance
-        sav = inst.resize
         inst.resize = Mock()
         clt.resize(inst, "flavor")
         inst.resize.assert_called_once_with("flavor")
-        inst.resize = sav
 
     def test_get_limits(self):
         self.assertRaises(NotImplementedError, self.client.get_limits)
@@ -775,11 +739,9 @@ class CloudDatabasesTest(unittest.TestCase):
                     "href": example_uri,
                     "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
-        sav = clt.get_flavor
         clt.get_flavor = Mock(return_value=flavor_obj)
         ret = clt._get_flavor_ref(1)
         self.assertEqual(ret, example_uri)
-        clt.get_flavor = sav
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_get_flavor_ref_for_name(self):
@@ -791,14 +753,10 @@ class CloudDatabasesTest(unittest.TestCase):
                     "href": example_uri,
                     "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
-        sav_get = clt.get_flavor
-        sav_list = clt.list_flavors
         clt.get_flavor = Mock(side_effect=exc.NotFound(""))
         clt.list_flavors = Mock(return_value=[flavor_obj])
         ret = clt._get_flavor_ref("test_flavor")
         self.assertEqual(ret, example_uri)
-        clt.get_flavor = sav_get
-        clt.list_flavors = sav_list
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_get_flavor_ref_for_ram(self):
@@ -810,14 +768,10 @@ class CloudDatabasesTest(unittest.TestCase):
                     "href": example_uri,
                     "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
-        sav_get = clt.get_flavor
-        sav_list = clt.list_flavors
         clt.get_flavor = Mock(side_effect=exc.NotFound(""))
         clt.list_flavors = Mock(return_value=[flavor_obj])
         ret = clt._get_flavor_ref(42)
         self.assertEqual(ret, example_uri)
-        clt.get_flavor = sav_get
-        clt.list_flavors = sav_list
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_get_flavor_ref_not_found(self):
@@ -829,13 +783,9 @@ class CloudDatabasesTest(unittest.TestCase):
                     "href": example_uri,
                     "rel": "self"}]}
         flavor_obj = CloudDatabaseFlavor(clt._manager, info)
-        sav_get = clt.get_flavor
-        sav_list = clt.list_flavors
         clt.get_flavor = Mock(side_effect=exc.NotFound(""))
         clt.list_flavors = Mock(return_value=[flavor_obj])
         self.assertRaises(exc.FlavorNotFound, clt._get_flavor_ref, "nonsense")
-        clt.get_flavor = sav_get
-        clt.list_flavors = sav_list
 
     def test_clt_list_backups(self):
         clt = self.client
@@ -905,6 +855,20 @@ class CloudDatabasesTest(unittest.TestCase):
         inst = self.instance
         mgr = inst._user_manager
         nm = utils.random_unicode()
+        pw = utils.random_unicode()
+        dbnames = [utils.random_unicode(), utils.random_unicode()]
+        ret = mgr._create_body(nm, password=pw, database_names=dbnames)
+        expected = {"users": [
+                {"name": nm,
+                "password": pw,
+                "databases": [{"name": dbnames[0]}, {"name": dbnames[1]}]}]}
+        self.assertEqual(ret, expected)
+
+    @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
+    def test_create_body_user_host(self):
+        inst = self.instance
+        mgr = inst._user_manager
+        nm = utils.random_unicode()
         host = utils.random_unicode()
         pw = utils.random_unicode()
         dbnames = [utils.random_unicode(), utils.random_unicode()]
@@ -921,7 +885,6 @@ class CloudDatabasesTest(unittest.TestCase):
     def test_create_body_flavor(self):
         clt = self.client
         nm = utils.random_unicode()
-        sav = clt._get_flavor_ref
         clt._get_flavor_ref = Mock(return_value=example_uri)
         ret = clt._manager._create_body(nm)
         expected = {"instance": {
@@ -931,7 +894,6 @@ class CloudDatabasesTest(unittest.TestCase):
                 "databases": [],
                 "users": []}}
         self.assertEqual(ret, expected)
-        clt._get_flavor_ref = sav
 
 
 if __name__ == "__main__":

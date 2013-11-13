@@ -126,6 +126,8 @@ Inheritance diagram for QueueMessageManager:</div>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1queueing_1_1QueueMessageManager.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Need to form the URI differently, so we can't use the default <a class="el" href="classpyrax_1_1queueing_1_1QueueMessageManager.html#a9b522b4ef7526bfa60b78fe735caa55c" title="Need to form the URI differently, so we can&#39;t use the default list().">list()</a>.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1queueing_1_1QueueMessageManager.html#ab48bde70a0927a83d62464cb0627c34b">delete</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the specified message from its queue.  <a href="#ab48bde70a0927a83d62464cb0627c34b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1queueing_1_1QueueMessageManager.html#ae6ec4aa7bb7da740187a3039da271f47">list_by_ids</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">If you wish to retrieve a list of messages from this queue and know the IDs of those messages, you can pass in a list of those IDs, and only the matching messages will be returned.  <a href="#ae6ec4aa7bb7da740187a3039da271f47"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1queueing_1_1QueueMessageManager.html#ab3f3c42b68d285259934117c1a8f65e5">delete_by_ids</a></td></tr>
@@ -137,6 +139,42 @@ Public Attributes</h2></td></tr>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>Manager class for a <a class="el" href="classpyrax_1_1queueing_1_1Queue.html" title="This class represents a Queue.">Queue</a> Message. </p>
 </div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="ab48bde70a0927a83d62464cb0627c34b"></a><!-- doxytag: member="pyrax::queueing::QueueMessageManager::delete" ref="ab48bde70a0927a83d62464cb0627c34b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1queueing_1_1QueueMessageManager.html#ab48bde70a0927a83d62464cb0627c34b">delete</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>msg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>claim_id</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Deletes the specified message from its queue. </p>
+<p>If the message has been claimed, the ID of that claim must be passed as the 'claim_id' parameter. </p>
+
+</div>
+</div>
 <a class="anchor" id="ab3f3c42b68d285259934117c1a8f65e5"></a><!-- doxytag: member="pyrax::queueing::QueueMessageManager::delete_by_ids" ref="ab3f3c42b68d285259934117c1a8f65e5" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -280,7 +318,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 24 2013 09:26:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 13 2013 15:09:38 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

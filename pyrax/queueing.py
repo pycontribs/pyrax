@@ -107,12 +107,13 @@ class Queue(BaseResource):
         return self._message_manager.get(msg_id)
 
 
-    def delete_message(self, msg_id):
+    def delete_message(self, msg_id, claim_id=None):
         """
-        Deletes the message whose ID matches the supplied msg_id from this
-        queue.
+        Deletes the message whose ID matches the supplied msg_id from the
+        specified queue. If the message has been claimed, the ID of that claim
+        must be passed as the 'claim_id' parameter.
         """
-        return self._message_manager.delete(msg_id)
+        return self._message_manager.delete(msg_id, claim_id=claim_id)
 
 
     def list(self, include_claimed=False, echo=False, marker=None, limit=None):
@@ -245,10 +246,18 @@ class QueueMessage(BaseResource):
         if self.href is None:
             return
         parsed = urlparse.urlparse(self.href)
-        self.id = parsed.path.lstrip("/")
+        self.id = parsed.path.rsplit("/", 1)[-1]
         query = parsed.query
         if query:
             self.claim_id = query.split("claim_id=")[-1]
+
+
+    def delete(self, claim_id=None):
+        """
+        Deletes this message from its queue. If the message has been claimed,
+        the ID of that claim must be passed as the 'claim_id' parameter.
+        """
+        return self.manager.delete(self, claim_id=claim_id)
 
 
 
@@ -269,7 +278,7 @@ class QueueClaim(BaseResource):
         msg_dicts = info.pop("messages", [])
         super(QueueClaim, self)._add_details(info)
         parsed = urlparse.urlparse(self.href)
-        self.id = parsed.path.lstrip("/")
+        self.id = parsed.path.rsplit("/", 1)[-1]
         self.messages = [QueueMessage(self.manager._message_manager, item)
                 for item in msg_dicts]
 
@@ -328,6 +337,20 @@ class QueueMessageManager(BaseQueueManager):
             loop += 1
             ret.extend(self._iterate_list(include_claimed, echo, marker, limit))
         return ret
+
+
+    def delete(self, msg, claim_id=None):
+        """
+        Deletes the specified message from its queue. If the message has been
+        claimed, the ID of that claim must be passed as the 'claim_id'
+        parameter.
+        """
+        msg_id = utils.get_id(msg)
+        if claim_id:
+            uri = "/%s/%s?claim_id=%s" % (self.uri_base, msg_id, claim_id)
+        else:
+            uri = "/%s/%s" % (self.uri_base, msg_id)
+        return self._delete(uri)
 
 
     def list_by_ids(self, ids):
@@ -496,6 +519,7 @@ class QueueClient(BaseClient):
     name = "Cloud Queues"
     client_id = None
 
+
     def _configure_manager(self):
         """
         Create the manager to handle queues.
@@ -511,10 +535,25 @@ class QueueClient(BaseClient):
         """
         if self.client_id is None:
             self.client_id = os.environ.get("CLOUD_QUEUES_ID")
-        if not self.client_id:
-            raise exc.QueueClientIDNotDefined("You must supply a client ID to "
-                    "work with Queues.")
-        dct["Client-ID"] = self.client_id
+        if self.client_id:
+            dct["Client-ID"] = self.client_id
+
+
+    def _api_request(self, uri, method, **kwargs):
+        """
+        Any request that involves messages must define the client ID. This
+        handles all failures due to lack of client ID and raises the
+        appropriate exception.
+        """
+        try:
+            return super(QueueClient, self)._api_request(uri, method, **kwargs)
+        except exc.BadRequest as e:
+            if ((e.code == "400") and
+                    (e.message == 'The "Client-ID" header is required.')):
+                raise exc.QueueClientIDNotDefined("You must supply a client ID "
+                        "to work with Queue messages.")
+            else:
+                raise
 
 
     def get_home_document(self):
@@ -600,12 +639,13 @@ class QueueClient(BaseClient):
 
 
     @assure_queue
-    def delete_message(self, queue, msg_id):
+    def delete_message(self, queue, msg_id, claim_id=None):
         """
         Deletes the message whose ID matches the supplied msg_id from the
-        specified queue.
+        specified queue. If the message has been claimed, the ID of that claim
+        must be passed as the 'claim_id' parameter.
         """
-        return queue.delete_message(msg_id)
+        return queue.delete_message(msg_id, claim_id=claim_id)
 
 
     @assure_queue

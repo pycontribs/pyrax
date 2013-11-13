@@ -91,16 +91,16 @@ Both calls return an object representing the newly-created database:
 
 
 ## Create a User
-You can create a user on an instance with its own username/password credentials, with access to one or more databases on that instance. Similar to database creation, you can call `create_user()` either on the instance object, or on the module. To simplify these examples, only the call on the instance is displayed.
+You can create a user on an instance with its own username/password credentials, with access to one or more databases on that instance, and optionally restricted to connecting from particular host addresses. Similar to database creation, you can call `create_user()` either on the instance object, or on the module. To simplify these examples, only the call on the instance is displayed.
 
 Assuming that you have the references `inst` and `db` from the previous examples, you can create a user like this:
 
-    user = inst.create_user(name="groucho", password="top secret", database_names=[db])
+    user = inst.create_user(name="groucho", password="top secret", database_names=[db], host="%")
     print "User:", user
 
 This prints out:
 
-    User: <CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>
+    User: <CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho, host="%">
 
 
 ## List Databases or Users in an Instance
@@ -114,7 +114,7 @@ Instances have a `list_databases()` and a `list_users()` method:
 which outputs:
 
     DBs: [<CloudDatabaseDatabase name=db_name>]
-    Users: [<CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>]
+    Users: [<CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>, host="%"]
 
 
 ## Get a `CloudDatabaseDatabase` or `CloudDatabaseUser` Object
@@ -128,7 +128,7 @@ You can get a `CloudDatabaseDatabase` or `CloudDatabaseUser` object from an `Clo
 which outputs:
 
     DB: <CloudDatabaseDatabase name=db_name>
-    User: <CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho>
+    User: <CloudDatabaseUser databases=[{u'name': u'db_name'}], name=groucho, host="%">
 
 
 ## Backups

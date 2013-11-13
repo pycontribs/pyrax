@@ -1,5 +1,21 @@
 # Release Notes for pyrax
 
+###2013.11.13 - Version 1.6.2
+ - Cloud Databases:
+  - Added missing 'host' parameter. GitHub #246
+ - Cloud Queues:
+  - Removed requirement for Client ID for non-message requests. GitHub #244
+  - Added support for ServiceNet queues. GitHub #240
+  - Added the `claim_id` parameter to message deletion calls. GitHub #243
+  - Fixed a bug when parsing message and claim IDs.
+  - Made several corrections in the docs. - Cloud DNS:
+  - Added handling for an occasional empty body when polling a running request.
+    GitHub #237
+ - General:
+  - Added support for Python Wheel distribution
+  - Fixed missing file spec in MANIFEST.in
+  - Removed unneeded files
+
 ###2013.10.31 - Version 1.6.1
  - Cloud Databases:
     - Added support for Backups. GitHub #216

@@ -110,9 +110,11 @@ class QueuesTest(unittest.TestCase):
     def test_queue_delete_message(self):
         q = self.queue
         q._message_manager.delete = Mock()
-        msgid = utils.random_unicode()
-        q.delete_message(msgid)
-        q._message_manager.delete.assert_called_once_with(msgid)
+        msg_id = utils.random_unicode()
+        claim_id = utils.random_unicode()
+        q.delete_message(msg_id, claim_id=claim_id)
+        q._message_manager.delete.assert_called_once_with(msg_id,
+                claim_id=claim_id)
 
     def test_queue_list(self):
         q = self.queue
@@ -251,6 +253,15 @@ class QueuesTest(unittest.TestCase):
         self.assertIsNone(msg.id)
         self.assertIsNone(msg.claim_id)
 
+    def test_msg_delete(self):
+        q = self.queue
+        mgr = q._message_manager
+        claim_id = utils.random_unicode()
+        mgr.delete = Mock()
+        msg = QueueMessage(manager=mgr, info={})
+        msg.delete(claim_id=claim_id)
+        mgr.delete.assert_called_once_with(msg, claim_id=claim_id)
+
     def test_claim(self):
         msgs = []
         num = random.randint(1, 9)
@@ -314,6 +325,26 @@ class QueuesTest(unittest.TestCase):
         mgr._list = Mock(return_value=(None, None))
         msgs = mgr.list(include_claimed=include_claimed, echo=echo,
                 marker=marker)
+
+    def test_queue_msg_mgr_delete_claim(self):
+        q = self.queue
+        mgr = q._message_manager
+        msg = utils.random_unicode()
+        claim_id = utils.random_unicode()
+        mgr._delete = Mock()
+        expected_uri = "/%s/%s?claim_id=%s" % (mgr.uri_base, msg, claim_id)
+        mgr.delete(msg, claim_id=claim_id)
+        mgr._delete.assert_called_once_with(expected_uri)
+
+    def test_queue_msg_mgr_delete_no_claim(self):
+        q = self.queue
+        mgr = q._message_manager
+        msg = utils.random_unicode()
+        claim_id = None
+        mgr._delete = Mock()
+        expected_uri = "/%s/%s" % (mgr.uri_base, msg)
+        mgr.delete(msg, claim_id=claim_id)
+        mgr._delete.assert_called_once_with(expected_uri)
 
     def test_queue_msg_mgr_list_by_ids(self):
         q = self.queue
@@ -513,14 +544,60 @@ class QueuesTest(unittest.TestCase):
         self.assertEqual(dct, {"Client-ID": client_id})
         os.environ.get = sav
 
-    def test_clt_add_custom_headers_fail(self):
+    def test_clt_add_custom_headers_no_clt_id(self):
         clt = self.client
         dct = {}
         sav = os.environ.get
         os.environ.get = Mock(return_value=None)
-        self.assertRaises(exc.QueueClientIDNotDefined, clt._add_custom_headers,
-                dct)
+        clt._add_custom_headers(dct)
+        self.assertEqual(dct, {})
         os.environ.get = sav
+
+    def test_api_request(self):
+        clt = self.client
+        uri = utils.random_ascii()
+        method = utils.random_ascii()
+        kwargs = {"fake": utils.random_ascii()}
+        fake_resp = utils.random_ascii()
+        fake_body = utils.random_ascii()
+        clt._time_request = Mock(return_value=(fake_resp, fake_body))
+        clt.management_url = utils.random_unicode()
+        id_svc = pyrax.identity
+        sav = id_svc.authenticate
+        id_svc.authenticate = Mock()
+        ret = clt._api_request(uri, method, **kwargs)
+        self.assertEqual(ret, (fake_resp, fake_body))
+        id_svc.authenticate = sav
+
+    def test_api_request_missing_clt_id(self):
+        clt = self.client
+        uri = utils.random_ascii()
+        method = utils.random_ascii()
+        kwargs = {"fake": utils.random_ascii()}
+        err = exc.BadRequest("400", 'The "Client-ID" header is required.')
+        clt._time_request = Mock(side_effect=err)
+        clt.management_url = utils.random_unicode()
+        id_svc = pyrax.identity
+        sav = id_svc.authenticate
+        id_svc.authenticate = Mock()
+        self.assertRaises(exc.QueueClientIDNotDefined, clt._api_request, uri,
+                method, **kwargs)
+        id_svc.authenticate = sav
+
+    def test_api_request_other_error(self):
+        clt = self.client
+        uri = utils.random_ascii()
+        method = utils.random_ascii()
+        kwargs = {"fake": utils.random_ascii()}
+        err = exc.BadRequest("400", "Some other message")
+        clt._time_request = Mock(side_effect=err)
+        clt.management_url = utils.random_unicode()
+        id_svc = pyrax.identity
+        sav = id_svc.authenticate
+        id_svc.authenticate = Mock()
+        self.assertRaises(exc.BadRequest, clt._api_request, uri,
+                method, **kwargs)
+        id_svc.authenticate = sav
 
     def test_clt_get_home_document(self):
         clt = self.client
@@ -597,9 +674,10 @@ class QueuesTest(unittest.TestCase):
         clt = self.client
         q = self.queue
         msg_id = utils.random_unicode()
+        claim_id = utils.random_unicode()
         q.delete_message = Mock()
-        clt.delete_message(q, msg_id)
-        q.delete_message.assert_called_once_with(msg_id)
+        clt.delete_message(q, msg_id, claim_id=claim_id)
+        q.delete_message.assert_called_once_with(msg_id, claim_id=claim_id)
 
     def test_clt_list_messages(self):
         clt = self.client

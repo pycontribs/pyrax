@@ -127,7 +127,7 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1queueing_1_1Queue.html#a56468e8bf0910ac8be0def8886f1feae">get_message</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the message whose ID matches the supplied msg_id from this queue.  <a href="#a56468e8bf0910ac8be0def8886f1feae"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1queueing_1_1Queue.html#acff825cd612230881431faa0b8f1ba64">delete_message</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the message whose ID matches the supplied msg_id from this queue.  <a href="#acff825cd612230881431faa0b8f1ba64"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the message whose ID matches the supplied msg_id from the specified queue.  <a href="#acff825cd612230881431faa0b8f1ba64"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1queueing_1_1Queue.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of messages for this queue.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1queueing_1_1Queue.html#ae6ec4aa7bb7da740187a3039da271f47">list_by_ids</a></td></tr>
@@ -291,7 +291,13 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>msg_id</em>&#160;</td>
+          <td class="paramname"><em>msg_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>claim_id</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -302,7 +308,8 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Deletes the message whose ID matches the supplied msg_id from this queue. </p>
+<p>Deletes the message whose ID matches the supplied msg_id from the specified queue. </p>
+<p>If the message has been claimed, the ID of that claim must be passed as the 'claim_id' parameter. </p>
 
 </div>
 </div>
@@ -659,7 +666,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 24 2013 09:26:05 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 13 2013 15:09:38 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
