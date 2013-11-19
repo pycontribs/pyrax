@@ -722,7 +722,10 @@ class ScalingGroupManager(BaseManager):
         balancer.
         """
         lb_args = []
-        lbs = utils.coerce_string_to_list(load_balancers)
+        if not isinstance(load_balancers, list):
+            lbs = [load_balancers]
+        else:
+            lbs = load_balancers
         for lb in lbs:
             if isinstance(lb, dict):
                 lb_args.append(lb)
@@ -731,6 +734,9 @@ class ScalingGroupManager(BaseManager):
                         "loadBalancerId": lb.id,
                         "port": lb.port,
                         })
+            elif isinstance(lb, tuple):
+                lb_args.append({"loadBalancerId": lb[0],
+                        "port": lb[1]})
             else:
                 # See if it's an ID for a Load Balancer
                 try:
