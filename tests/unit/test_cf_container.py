@@ -5,6 +5,7 @@ import os
 import random
 import unittest
 
+from mock import call
 from mock import patch
 from mock import MagicMock as Mock
 
@@ -12,6 +13,7 @@ import pyrax
 from pyrax.cf_wrapper.client import _swift_client
 from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.container import Fault
+from pyrax.cf_wrapper.container import FAULT
 import pyrax.utils as utils
 import pyrax.exceptions as exc
 from tests.unit.fakes import fake_attdict
@@ -48,6 +50,7 @@ class CF_ContainerTest(unittest.TestCase):
         pyrax.connect_to_cloudfiles()
         self.client = pyrax.cloudfiles
         self.client.connection.head_container = Mock()
+        self.client.cdn_connection = Mock()
         self.cont_name = utils.random_ascii()
         self.container = self.client.get_container(self.cont_name)
         self.obj_name = utils.random_ascii()
@@ -87,9 +90,14 @@ class CF_ContainerTest(unittest.TestCase):
                 ("x-cdn-ios-uri", test_ios_uri),
                 ("x-log-retention", test_log_retention)]
         self.client.connection.cdn_request.return_value = resp
-        # We need an actual container
+
         cont = Container(self.client, "realcontainer", 0, 0)
-        self.assertEqual(cont.cdn_uri, test_uri)
+        cdn_uri = cont.cdn_uri
+
+        self.assertEqual(cdn_uri, test_uri)
+        self.assertEqual(self.client.connection.cdn_request.call_count, 1)
+        self.assertEqual(self.client.connection.cdn_request.call_args_list[0],
+                         call("HEAD", ["realcontainer"]))
 
     def test_fetch_cdn_not_found(self):
         self.client.connection.cdn_request = Mock()
@@ -104,8 +112,21 @@ class CF_ContainerTest(unittest.TestCase):
         test_log_retention = True
         resp.getheaders.return_value = []
         self.client.connection.cdn_request.return_value = resp
-        # We need an actual container
+
         cont = Container(self.client, "realcontainer", 0, 0)
+        cdn_uri = cont.cdn_uri
+
+        self.assertIsNone(cdn_uri)
+        self.assertEqual(self.client.connection.cdn_request.call_count, 1)
+        self.assertEqual(self.client.connection.cdn_request.call_args_list[0],
+                         call("HEAD", ["realcontainer"]))
+
+    def test_default_cdn_when_no_cdn_connection(self):
+        self.client.cdn_connection = None
+
+        cont = Container(self.client, "realcontainer", 0, 0)
+
+        self.assertIsNone(cont._cdn_uri)
         self.assertIsNone(cont.cdn_uri)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
