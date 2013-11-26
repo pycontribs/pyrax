@@ -61,6 +61,11 @@ class CloudLoadBalancer(BaseResource):
         super(CloudLoadBalancer, self).__init__(*args, **kwargs)
 
 
+    def set_timeout(self, timeout):
+        """Sets the LoadBalancer Timeout value."""
+        return self.manager.set_timeout(self, timeout)
+
+
     def add_nodes(self, nodes):
         """Adds the nodes to this load balancer."""
         return self.manager.add_nodes(self, nodes)
@@ -422,6 +427,14 @@ class CloudLoadBalancer(BaseResource):
 
 
 class CloudLoadBalancerManager(BaseManager):
+    def set_timeout(self, lb, timeout):
+        if not (10 <= timeout <= 120):
+            timeout=60
+        resp, body = self.api.method_put("/loadbalancers/%s" % (lb.id),
+                body={'loadBalancer': {'timeout': timeout}})
+        return resp, body
+
+
     def update(self, lb, name=None, algorithm=None, protocol=None,
             halfClosed=None, port=None, timeout=None):
         """
