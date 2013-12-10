@@ -610,7 +610,7 @@ class CF_ClientTest(unittest.TestCase):
             self.assertEqual(put_calls[1][1][1], '%s.2' % obj_name)
             self.assertEqual(put_calls[2][1][1], obj_name)
             self.assertEqual(put_calls[2][2]["headers"]["X-Object-Manifest"],
-                             obj_name + ".")
+                             self.cont_name + "/" + obj_name + ".")
 
             # get_object() should be called with the same name that was passed
             # to the final put_object() call (to get the object to return)

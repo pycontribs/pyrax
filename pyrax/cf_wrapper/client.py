@@ -781,7 +781,7 @@ class CFClient(object):
                                 etag=etag, headers=headers,
                                 response_dict=extra_info)
             # Upload the manifest
-            headers["X-Object-Manifest"] = "%s." % obj_name
+            headers["X-Object-Manifest"] = "%s/%s." % (cont.name, obj_name)
             return self.connection.put_object(cont.name, obj_name,
                     contents=None, headers=headers,
                     response_dict=extra_info)
