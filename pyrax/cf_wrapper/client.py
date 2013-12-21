@@ -756,7 +756,7 @@ class CFClient(object):
                     fsize = get_file_size(fileobj)
                 else:
                     fsize = content_length
-            if fsize < self.max_file_size:
+            if fsize <= self.max_file_size:
                 # We can just upload it as-is.
                 return self.connection.put_object(cont.name, obj_name,
                         contents=fileobj, content_type=content_type,
