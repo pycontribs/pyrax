@@ -29,8 +29,8 @@ cs = pyrax.cloudservers
 
 def create_server():
     print "Creating the sacrificial server..."
-    img = cs.images.list()[0]
-    flv = cs.flavors.list()[0]
+    img = cs.list_images()[0]
+    flv = cs.list_flavors()[0]
     srv = cs.servers.create("sacrifice", img.id, flv.id)
     print "Server '%s' created; ID=%s" % (srv.name, srv.id)
     return srv

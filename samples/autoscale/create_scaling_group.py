@@ -84,7 +84,7 @@ image = imgs[answer]
 print "You selected: %s." % image.name
 
 # Use a small flavor
-flavor = 2
+flavor = "performance1-1"
 # Set the disk configuration to 'MANUAL'
 disk_config = "MANUAL"
 # Let's give the servers some metadata

@@ -25,7 +25,7 @@ This returns a list of `LoadBalancer` objects. You can then interact with the in
 [Working with Cloud Servers](cloud_servers.md) explains how to get the image and flavor IDs necessary to create a server, but for the sake of brevity the code below uses the IDs previously obtained. *Note*: these ID values are not constants, so make sure you get the actual IDs for when your system is running.
 
     img_id = "5cebb13a-f783-4f8c-8058-c4182c724ccd"
-    flavor_id = 2
+    flavor_id = "performance1-2"
 
     server1 = cs.servers.create("server1", img_id, flavor_id)
     s1_id = server1.id

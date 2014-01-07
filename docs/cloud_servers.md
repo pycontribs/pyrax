@@ -84,61 +84,71 @@ There are two types of images: the base images supplied by your cloud provider, 
 ## Listing Flavors
 Let's do the same for flavors:
 
-    flvs = cs.flavors.list()
-    for flv in flvs:
-        print "Name:", flv.name
-        print "  ID:", flv.id
-        print "  RAM:", flv.ram
-        print "  Disk:", flv.disk
-        print "  VCPUs:", flv.vcpus
+flvs = cs.list_flavors()
+for flv in flvs:
+    print "Name:", flv.name
+    print "  ID:", flv.id
+    print "  RAM:", flv.ram
+    print "  Disk:", flv.disk
+    print "  VCPUs:", flv.vcpus
 
 This returns:
 
-    Name: 512MB Standard Instance
-      ID: 2
-      RAM: 512
+    Name: 1 GB Performance
+      ID: performance1-1
+      RAM: 1024
       Disk: 20
       VCPUs: 1
-    Name: 1GB Standard Instance
-      ID: 3
-      RAM: 1024
-      Disk: 40
-      VCPUs: 1
-    Name: 2GB Standard Instance
-      ID: 4
+    Name: 2 GB Performance
+      ID: performance1-2
       RAM: 2048
-      Disk: 80
+      Disk: 40
       VCPUs: 2
-    Name: 4GB Standard Instance
-      ID: 5
+    Name: 4 GB Performance
+      ID: performance1-4
       RAM: 4096
-      Disk: 160
-      VCPUs: 2
-    Name: 8GB Standard Instance
-      ID: 6
-      RAM: 8192
-      Disk: 320
+      Disk: 40
       VCPUs: 4
-    Name: 15GB Standard Instance
-      ID: 7
-      RAM: 15360
-      Disk: 620
-      VCPUs: 6
-    Name: 30GB Standard Instance
-      ID: 8
-      RAM: 30720
-      Disk: 1200
+    Name: 8 GB Performance
+      ID: performance1-8
+      RAM: 8192
+      Disk: 40
       VCPUs: 8
+    Name: 120 GB Performance
+      ID: performance2-120
+      RAM: 122880
+      Disk: 40
+      VCPUs: 32
+    Name: 15 GB Performance
+      ID: performance2-15
+      RAM: 15360
+      Disk: 40
+      VCPUs: 4
+    Name: 30 GB Performance
+      ID: performance2-30
+      RAM: 30720
+      Disk: 40
+      VCPUs: 8
+    Name: 60 GB Performance
+      ID: performance2-60
+      RAM: 61440
+      Disk: 40
+      VCPUs: 16
+    Name: 90 GB Performance
+      ID: performance2-90
+      RAM: 92160
+      Disk: 40
+      VCPUs: 24
 
-So you now have the available images and flavors. Suppose you want to create a **512MB Ubuntu 12.04** server; to do this, you can use the `find()` method and the exact name of the image. This is difficult, since the exact name is 'Ubuntu 12.04 LTS (Precise Pangolin)', which you probably would not have guessed. So the easiest way to do this is to check in a less restrictive manner:
+So you now have the available images and flavors. Suppose you want to create a **1GB Performance-1 Ubuntu 12.04** server: to do this, you can use the `find()` method and the exact name of the image. This is difficult, since the exact name is 'Ubuntu 12.04 LTS (Precise Pangolin)', which you probably would not have guessed. So the easiest way to do this is to check in a less restrictive manner:
 
     ubu_image = [img for img in cs.images.list()
             if "Ubuntu 12.04" in img.name][0]
 
-You can do something similar to get the 512MB flavor:
+You can do something similar to get the 1GB Performance-1 flavor:
 
-    flavor_512 = [flavor for flavor in cs.flavors.list()
-            if flavor.ram == 512][0]
+    flavor_1GB = [flavor for flavor in cs.flavors.list()
+            if flavor.ram == 1024][0]
 
 Note that these calls are somewhat inefficient, so if you are going to be working with images and flavors a lot, it is best to make the listing call once and store the results locally. Images and flavors typically do not change very often.
 
@@ -155,11 +165,11 @@ The first line above assumes that your public key is named "**id_rsa.pub**", and
 ## Creating a Server
 Now that you have the image and flavor objects you want (actually, it's their `id` attributes you really need), you are ready to create your new cloud server! To do this, call the `create()` method, passing in the name you want to give to the new server, along with the IDs for the desired image and flavor.
 
-    server = cs.servers.create("first_server", ubu_image.id, flavor_512.id)
+    server = cs.servers.create("first_server", ubu_image.id, flavor_1GB.id)
 
 If you wanted to create the server with your SSH key as described in the preceeding section, add it using the `key_name` parameter:
 
-    server = cs.servers.create("first_server", ubu_image.id, flavor_512.id,
+    server = cs.servers.create("first_server", ubu_image.id, flavor_1GB.id,
             key_name="my_key")
 
 
@@ -252,7 +262,7 @@ Now create a server using the `meta` and `files` options. The setup code is the 
     And it even has a blank line."""
 
     files = {"/root/testfile": content}
-    server = cs.servers.create("meta_server", ubuid, flavor_512.id,
+    server = cs.servers.create("meta_server", ubuid, flavor_1GB.id,
             meta=meta, files=files)
 
 Run that code, and then wait for the server to finish building. When it does, use the admin password to ssh into the server, and then do a directory listing of the home root directory (`ls /root`). You should see a file named `testfile`; run `cat testfile` to verify that the content of the file matches what you had in the script.
@@ -302,6 +312,9 @@ You need to wait for the imaging to finish before you are able to clone it.
 ## Resizing a Server
 Resizing a server is the process of changing the amount of resources allocated to the server. In Cloud Servers terms, it means changing the Flavor of the server: that is, changing the RAM and disk space allocated to that server.
 
+**NOTE**: Resizing is only available for servers built with older technologies and flavors. To resize any of the current Performance servers, you need to take a snapshot image of the server, and then use that image to create a new server of the desired size. Once you are certain that the new server is working correctly, the old server can be deleted. If you're familiar with the old resizing method, one difference is that the new server has new IP addresses, whereas in the previous process the IP addresses were transferred to the new server.
+
+### Resizing Old Flavors
 Resizing is a multi-step process. First, determine the desired `Flavor` to which the server is to be resized. Then call the `resize()` method on the server, passing in the ID of the desired `Flavor`. The server's status is then set to "RESIZE".
 
     cs = pyrax.cloudservers

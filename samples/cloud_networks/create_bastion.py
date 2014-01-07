@@ -33,7 +33,7 @@ new_network_cidr = "192.168.0.0/24"
 
 # These are the IDs for the image and flavor to be used
 img_id = "5cebb13a-f783-4f8c-8058-c4182c724ccd"
-flavor_id = 2
+flavor_id = "performance1-1"
 
 # Create the new network
 new_net = cnw.create(new_network_name, cidr=new_network_cidr)

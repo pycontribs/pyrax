@@ -26,8 +26,8 @@ cs = pyrax.cloudservers
 
 ubu_image = [img for img in cs.images.list()
         if "12.04" in img.name][0]
-flavor_512 = [flavor for flavor in cs.flavors.list()
-        if flavor.ram == 512][0]
+flavor_1GB = [flavor for flavor in cs.flavors.list()
+        if flavor.ram == 1024][0]
 
 meta = {"test_key": "test_value",
         "meaning_of_life": "42",
@@ -40,7 +40,7 @@ And it even has a blank line."""
 
 files = {"/root/testfile": content}
 
-server = cs.servers.create("meta_server", ubu_image.id, flavor_512.id,
+server = cs.servers.create("meta_server", ubu_image.id, flavor_1GB.id,
         meta=meta, files=files)
 print "Name:", server.name
 print "ID:", server.id
