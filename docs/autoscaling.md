@@ -59,7 +59,7 @@ To see the [launch configuration](#launch_configuration) for a group, call the `
 This returns a dict with the current values for its launch configuration:
 
     {'disk_config': u'AUTO',
-     'flavor': 2,
+     'flavor': 'performance1-2',
      'image': u'7789e8ca-b9df-495f-b47d-736a5f7b885a',
      'load_balancers': [{u'loadBalancerId': 175295, u'port': 80}],
      'metadata': {u'somekey': u'somevalue'},
@@ -109,7 +109,7 @@ To create a scaling group, you call the `create()` method of the client with the
 
     sg = au.create("MyScalingGroup", cooldown=120, min_entities=2,
             max_entities=16, launch_config_type="launch_server",
-            server_name="sg_test", flavor=3, image=my_image_id,
+            server_name="sg_test", flavor=my_flavor_id, image=my_image_id,
             disk_config="AUTO", metadata={"mykey": "myvalue"},
             load_balancers=(1234, 80))
 
@@ -129,7 +129,7 @@ Parameter | Required | Default | Notes
 **min_entities** | yes |  |
 **max_entities** | yes |  |
 **launch_config_type** | yes |  | Only option currently is `launch_server`.
-**flavor** | yes |  | Flavor to use for each server that is launched.
+**flavor** | yes |  | ID of the flavor to use for each server that is launched.
 **server_name** | yes |  | The base name for servers created by Autoscale.
 **image** | yes |  | Either a Cloud Servers Image object, or its ID. This is the image that all new servers are created from.
 **disk_config** | no | MANUAL | Determines if the server's disk is partitioned to the full size of the flavor ('AUTO') or just to the size of the image ('MANUAL').

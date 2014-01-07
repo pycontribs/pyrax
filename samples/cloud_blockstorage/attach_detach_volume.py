@@ -37,10 +37,10 @@ except cs.exceptions.NotFound as e:
     if answer.lower().startswith("y"):
         ubu_image = [img for img in cs.images.list()
                 if "Ubuntu" in img.name][0]
-        flavor_512 = [flavor for flavor in cs.flavors.list()
-                if flavor.ram == 512][0]
+        flavor_1GB = [flavor for flavor in cs.flavors.list()
+                if flavor.ram == 1024][0]
         print "Creating the server..."
-        server = cs.servers.create("sample_server", ubu_image.id, flavor_512.id)
+        server = cs.servers.create("sample_server", ubu_image.id, flavor_1GB.id)
         print "Server created; waiting for it to become active..."
         pyrax.utils.wait_until(server, "status", "ACTIVE", attempts=0,
                 verbose=True)
