@@ -655,10 +655,10 @@ def connect_to_cloudfiles(region=None, public=None):
     to the public URL; if you need to work with the ServiceNet connection, pass
     False to the 'public' parameter or set the "use_servicenet" setting to True.
     """
-    if public is not None:
-        is_public = public
-    else:
+    if public is None:
         is_public = not bool(get_setting("use_servicenet"))
+    else:
+        is_public = public
 
     region = _safe_region(region)
     cf_url = _get_service_endpoint("object_store", region, public=is_public)
