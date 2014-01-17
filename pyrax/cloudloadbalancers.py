@@ -99,7 +99,7 @@ class CloudLoadBalancer(BaseResource):
 
 
     def update(self, name=None, algorithm=None, protocol=None, halfClosed=None,
-            port=None, timeout=None):
+            port=None, timeout=None, httpsRedirect=None):
         """
         Provides a way to modify the following attributes of a load balancer:
             - name
@@ -108,10 +108,11 @@ class CloudLoadBalancer(BaseResource):
             - halfClosed
             - port
             - timeout
+            - httpsRedirect
         """
         return self.manager.update(self, name=name, algorithm=algorithm,
                 protocol=protocol, halfClosed=halfClosed, port=port,
-                timeout=timeout)
+                timeout=timeout, httpsRedirect=httpsRedirect)
 
 
     def delete_node(self, node):
@@ -423,7 +424,7 @@ class CloudLoadBalancer(BaseResource):
 
 class CloudLoadBalancerManager(BaseManager):
     def update(self, lb, name=None, algorithm=None, protocol=None,
-            halfClosed=None, port=None, timeout=None):
+            halfClosed=None, port=None, timeout=None, httpsRedirect=None):
         """
         Provides a way to modify the following attributes of a load balancer:
             - name
@@ -432,6 +433,7 @@ class CloudLoadBalancerManager(BaseManager):
             - halfClosed
             - port
             - timeout
+            - httpsRedirect
         """
         body = {}
         if name is not None:
@@ -446,6 +448,8 @@ class CloudLoadBalancerManager(BaseManager):
             body["port"] = port
         if timeout is not None:
             body["timeout"] = timeout
+        if httpsRedirect is not None:
+            body["httpsRedirect"] = httpsRedirect
         if not body:
             # Nothing passed
             return
@@ -467,7 +471,8 @@ class CloudLoadBalancerManager(BaseManager):
     def _create_body(self, name, port=None, protocol=None, nodes=None,
             virtual_ips=None, algorithm=None, halfClosed=None, accessList=None,
             connectionLogging=None, connectionThrottle=None, healthMonitor=None,
-            metadata=None, timeout=None, sessionPersistence=None):
+            metadata=None, timeout=None, sessionPersistence=None,
+            httpsRedirect=None):
         """
         Used to create the dict required to create a load balancer instance.
         """
@@ -501,6 +506,7 @@ class CloudLoadBalancerManager(BaseManager):
                 "metadata": metadata,
                 "timeout": timeout,
                 "sessionPersistence": sessionPersistence,
+                "httpsRedirect": httpsRedirect,
                 }}
         return body
 
@@ -1296,7 +1302,7 @@ class CloudLoadBalancerClient(BaseClient):
 
     @assure_loadbalancer
     def update(self, loadbalancer, name=None, algorithm=None, protocol=None,
-            halfClosed=None, port=None, timeout=None):
+            halfClosed=None, port=None, timeout=None, httpsRedirect=None):
         """
         Provides a way to modify the following attributes of a load balancer:
             - name
@@ -1305,10 +1311,11 @@ class CloudLoadBalancerClient(BaseClient):
             - halfClosed
             - port
             - timeout
+            - httpsRedirect
         """
         return self._manager.update(loadbalancer, name=name,
                 algorithm=algorithm, protocol=protocol, halfClosed=halfClosed,
-                port=port, timeout=timeout)
+                port=port, timeout=timeout, httpsRedirect=httpsRedirect)
 
 
     @assure_loadbalancer

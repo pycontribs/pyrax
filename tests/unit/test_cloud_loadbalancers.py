@@ -137,9 +137,11 @@ class CloudLoadBalancerTest(unittest.TestCase):
         name = utils.random_unicode()
         algorithm = utils.random_unicode()
         timeout = utils.random_unicode()
-        clt.update(lb, name=name, algorithm=algorithm, timeout=timeout)
+        httpsRedirect = utils.random_unicode()
+        clt.update(lb, name=name, algorithm=algorithm, timeout=timeout, httpsRedirect=httpsRedirect)
         mgr.update.assert_called_once_with(lb, name=name, algorithm=algorithm,
-                protocol=None, halfClosed=None, port=None, timeout=timeout)
+                protocol=None, halfClosed=None, port=None, timeout=timeout,
+                httpsRedirect=httpsRedirect)
 
     def test_lb_update_lb(self):
         lb = self.loadbalancer
@@ -148,9 +150,11 @@ class CloudLoadBalancerTest(unittest.TestCase):
         name = utils.random_unicode()
         algorithm = utils.random_unicode()
         timeout = utils.random_unicode()
-        lb.update(name=name, algorithm=algorithm, timeout=timeout)
+        httpsRedirect = utils.random_unicode()
+        lb.update(name=name, algorithm=algorithm, timeout=timeout, httpsRedirect=httpsRedirect )
         mgr.update.assert_called_once_with(lb, name=name, algorithm=algorithm,
-                protocol=None, halfClosed=None, port=None, timeout=timeout)
+                protocol=None, halfClosed=None, port=None, timeout=timeout,
+                httpsRedirect=httpsRedirect)
 
     def test_mgr_update_lb(self):
         lb = self.loadbalancer
@@ -1169,6 +1173,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
         fake_metadata = {"fake": utils.random_unicode()}
         fake_timeout = 42
         fake_sessionPersistence = True
+        fake_httpsRedirect = True
         expected = {"loadBalancer": {
                 "name": fake_name,
                 "port": fake_port,
@@ -1184,6 +1189,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
                 "metadata": fake_metadata,
                 "timeout": fake_timeout,
                 "sessionPersistence": fake_sessionPersistence,
+                "httpsRedirect": fake_httpsRedirect,
                 }}
         ret = mgr._create_body(fake_name, port=fake_port,
                 protocol=fake_protocol, nodes=fake_nodes,
@@ -1194,7 +1200,8 @@ class CloudLoadBalancerTest(unittest.TestCase):
                 connectionThrottle=fake_connectionThrottle,
                 healthMonitor=fake_healthMonitor, metadata=fake_metadata,
                 timeout=fake_timeout,
-                sessionPersistence=fake_sessionPersistence)
+                sessionPersistence=fake_sessionPersistence,
+                httpsRedirect=fake_httpsRedirect)
         self.assertEqual(ret, expected)
 
     def test_bad_node_condition(self):
@@ -1216,6 +1223,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
         fake_metadata = {"fake": utils.random_unicode()}
         fake_timeout = 42
         fake_sessionPersistence = True
+        fake_httpsRedirect = True
         self.assertRaises(exc.InvalidNodeCondition, mgr._create_body,
                 fake_name, port=fake_port, protocol=fake_protocol,
                 nodes=fake_nodes, virtual_ips=fake_virtual_ips,
@@ -1225,7 +1233,8 @@ class CloudLoadBalancerTest(unittest.TestCase):
                 connectionThrottle=fake_connectionThrottle,
                 healthMonitor=fake_healthMonitor, metadata=fake_metadata,
                 timeout=fake_timeout,
-                sessionPersistence=fake_sessionPersistence)
+                sessionPersistence=fake_sessionPersistence,
+                httpsRedirect=fake_httpsRedirect)
 
     def test_missing_lb_parameters(self):
         mgr = self.client._manager
@@ -1245,6 +1254,7 @@ class CloudLoadBalancerTest(unittest.TestCase):
         fake_metadata = {"fake": utils.random_unicode()}
         fake_timeout = 42
         fake_sessionPersistence = True
+        fake_httpsRedirect = True
         self.assertRaises(exc.MissingLoadBalancerParameters, mgr._create_body,
                 fake_name, port=fake_port, protocol=fake_protocol,
                 nodes=fake_nodes, virtual_ips=fake_virtual_ips,
@@ -1254,7 +1264,8 @@ class CloudLoadBalancerTest(unittest.TestCase):
                 connectionThrottle=fake_connectionThrottle,
                 healthMonitor=fake_healthMonitor, metadata=fake_metadata,
                 timeout=fake_timeout,
-                sessionPersistence=fake_sessionPersistence)
+                sessionPersistence=fake_sessionPersistence,
+                httpsRedirect=fake_httpsRedirect)
 
     def test_client_get_usage(self):
         clt = self.client
