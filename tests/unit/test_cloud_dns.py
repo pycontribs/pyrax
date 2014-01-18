@@ -306,6 +306,13 @@ class CloudDNSTest(unittest.TestCase):
         BaseManager.findall.assert_called_once_with(foo="bar")
         BaseManager.findall = sav
 
+    def test_manager_empty_get_body_error(self):
+        clt = self.client
+        mgr = clt._manager
+        mgr.api.method_get = Mock(return_value=(None, None))
+        self.assertRaises(exc.ServiceResponseFailure,
+                          mgr.list)
+
     def test_create_body(self):
         mgr = self.client._manager
         fake_name = utils.random_unicode()
@@ -497,7 +504,8 @@ class CloudDNSTest(unittest.TestCase):
         clt = self.client
         mgr = clt._manager
         dom = self.domain
-        clt.method_get = Mock(return_value=({}, {}))
+        resp_body = {'Something': 'here'}
+        clt.method_get = Mock(return_value=({}, resp_body))
 #        uri = "/domains/%s/subdomains" % utils.get_id(dom)
         uri = "/domains?name=%s&limit=5" % dom.name
         clt.list_subdomains(dom, limit=5)
@@ -507,7 +515,8 @@ class CloudDNSTest(unittest.TestCase):
         clt = self.client
         mgr = clt._manager
         dom = self.domain
-        clt.method_get = Mock(return_value=({}, {}))
+        resp_body = {'Something': 'here'}
+        clt.method_get = Mock(return_value=({}, resp_body))
         uri = "/domains/%s/records" % utils.get_id(dom)
         clt.list_records(dom)
         clt.method_get.assert_called_once_with(uri)
@@ -544,7 +553,8 @@ class CloudDNSTest(unittest.TestCase):
         typ = "A"
         nm = utils.random_unicode()
         data = "0.0.0.0"
-        clt.method_get = Mock(return_value=({}, {}))
+        resp_body = {"Something": "here"}
+        clt.method_get = Mock(return_value=({}, resp_body))
         uri = "/domains/%s/records?type=%s&name=%s&data=%s" % (
                 utils.get_id(dom), typ, nm, data)
         clt.search_records(dom, typ, name=nm, data=data)
@@ -856,6 +866,15 @@ class CloudDNSTest(unittest.TestCase):
         mgr = clt._manager
         res_iter = RecordResultsIterator(mgr)
         self.assertEqual(res_iter.paging_service, "record")
+
+    # patch BaseClients method_get to make it always return an empty
+    # body. client method_get uses super to get at BaseClient's
+    # method_get.
+    @patch.object(pyrax.client.BaseClient, 'method_get',
+                  new=lambda x, y: (None, None))
+    def test_client_empty_get_body_error(self):
+        clt = self.client
+        self.assertRaises(exc.ServiceResponseFailure, clt.get_absolute_limits)
 
 
 if __name__ == "__main__":

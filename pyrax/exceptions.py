@@ -284,6 +284,9 @@ class QueueClientIDNotDefined(PyraxException):
 class ServiceNotAvailable(PyraxException):
     pass
 
+class ServiceResponseFailure(PyraxException):
+    pass
+
 class SnapshotNotAvailable(PyraxException):
     pass
 
