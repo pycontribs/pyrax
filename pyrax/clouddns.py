@@ -437,8 +437,8 @@ class CloudDNSManager(BaseManager):
             if body:
                 return resp, body
         # Tried too many times
-        raise exc.ServiceResponseFailure("The Cloud DNS service failed to"
-                                          " respond to the request.")
+        raise exc.ServiceResponseFailure("The Cloud DNS service failed to "
+                "respond to the request.")
 
     def _async_call(self, uri, body=None, method="GET", error_class=None,
             has_response=True, *args, **kwargs):
@@ -1040,8 +1040,8 @@ class CloudDNSClient(BaseClient):
             resp, body = super(CloudDNSClient, self).method_get(uri, **kwargs)
             if body:
                 return resp, body
-        raise exc.ServiceResponseFailure("The Cloud DNS service failed to"
-                                         " respond to the request.")
+        raise exc.ServiceResponseFailure("The Cloud DNS service failed to "
+                "respond to the request.")
 
 
     def set_timeout(self, timeout):

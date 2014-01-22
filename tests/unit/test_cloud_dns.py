@@ -310,8 +310,7 @@ class CloudDNSTest(unittest.TestCase):
         clt = self.client
         mgr = clt._manager
         mgr.api.method_get = Mock(return_value=(None, None))
-        self.assertRaises(exc.ServiceResponseFailure,
-                          mgr.list)
+        self.assertRaises(exc.ServiceResponseFailure, mgr.list)
 
     def test_create_body(self):
         mgr = self.client._manager
@@ -870,8 +869,8 @@ class CloudDNSTest(unittest.TestCase):
     # patch BaseClients method_get to make it always return an empty
     # body. client method_get uses super to get at BaseClient's
     # method_get.
-    @patch.object(pyrax.client.BaseClient, 'method_get',
-                  new=lambda x, y: (None, None))
+    @patch.object(pyrax.client.BaseClient, "method_get",
+            new=lambda x, y: (None, None))
     def test_client_empty_get_body_error(self):
         clt = self.client
         self.assertRaises(exc.ServiceResponseFailure, clt.get_absolute_limits)

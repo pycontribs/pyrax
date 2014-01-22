@@ -138,7 +138,8 @@ class CloudLoadBalancerTest(unittest.TestCase):
         algorithm = utils.random_unicode()
         timeout = utils.random_unicode()
         httpsRedirect = utils.random_unicode()
-        clt.update(lb, name=name, algorithm=algorithm, timeout=timeout, httpsRedirect=httpsRedirect)
+        clt.update(lb, name=name, algorithm=algorithm, timeout=timeout,
+                httpsRedirect=httpsRedirect)
         mgr.update.assert_called_once_with(lb, name=name, algorithm=algorithm,
                 protocol=None, halfClosed=None, port=None, timeout=timeout,
                 httpsRedirect=httpsRedirect)
@@ -151,7 +152,8 @@ class CloudLoadBalancerTest(unittest.TestCase):
         algorithm = utils.random_unicode()
         timeout = utils.random_unicode()
         httpsRedirect = utils.random_unicode()
-        lb.update(name=name, algorithm=algorithm, timeout=timeout, httpsRedirect=httpsRedirect )
+        lb.update(name=name, algorithm=algorithm, timeout=timeout,
+                httpsRedirect=httpsRedirect)
         mgr.update.assert_called_once_with(lb, name=name, algorithm=algorithm,
                 protocol=None, halfClosed=None, port=None, timeout=timeout,
                 httpsRedirect=httpsRedirect)
