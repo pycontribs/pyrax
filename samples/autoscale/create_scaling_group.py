@@ -24,6 +24,8 @@ creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 au = pyrax.autoscale
 cs = pyrax.cloudservers
+clb = pyrax.cloud_loadbalancers
+
 
 def safe_int(val, allow_zero=True):
     """
@@ -40,6 +42,36 @@ def safe_int(val, allow_zero=True):
         return False
     return ret
 
+
+def get_yn(prompt):
+    answer = yn = None
+    while not answer:
+        answer = raw_input("%s (y/n) " % prompt)
+        yn = answer[0].lower()
+        if yn not in "yn":
+            print "Please answer 'y' or 'n', not '%s'." % answer
+            answer = None
+            continue
+    return (yn == "y")
+
+
+def select_lbs():
+    print "Getting a list of your load balancers..."
+    lbs = clb.list()
+    for pos, lb in enumerate(lbs):
+        print "%s - %s (port %s)" % (pos, lb.name, lb.port)
+    chosen = raw_input("Enter the number(s) of the load balancer to use, "
+            "separated by commas: ")
+    lb_ints = [safe_int(num) for num in chosen.split(",")]
+    lb_pos = [lb_int for lb_int in lb_ints
+        if lb_int
+        and lb_int < len(lbs)]
+    selected = []
+    for pos in lb_pos:
+        selected.append(lbs[pos])
+    return selected
+
+
 # Give the scaling group a name
 sg_name = ""
 while not sg_name:
@@ -51,14 +83,15 @@ while not cooldown:
     cooldown = safe_int(str_secs, False)
 
 # We want a minimum of 2 servers, and a max of 20.
-min_entities = max_entities = 0
-while not min_entities:
-    min_entities = safe_int(raw_input("Enter the minimum entities: "), False)
-while not max_entities:
-    max_entities = safe_int(raw_input("Enter the maximum entities: "), False)
+min_entities = max_entities = None
+min_entities = safe_int(raw_input("Enter the minimum entities (0-1000): "),
+        False)
+max_entities = min_entities
+while max_entities <= min_entities:
+    max_entities = safe_int(raw_input("Enter the maximum entities: (%s-1000)"
+            % min_entities), False)
     if max_entities and (max_entities < min_entities):
         print "The value for max_entities must be greater than min_entities."
-        max_entities = 0
 
 # Configure the server launch settings.
 server_name = ""
@@ -90,8 +123,21 @@ disk_config = "MANUAL"
 # Let's give the servers some metadata
 metadata = {"created_by": "autoscale sample script"}
 
+load_balancers = []
+add_lb = get_yn("Do you want to add one or more load balancers to this "
+        "scaling group?")
+while add_lb:
+    lbs = select_lbs()
+    if not lbs:
+        print "No valid load balancers were entered."
+        add_lb = get_yn("Do you want to try again?")
+        continue
+    add_lb = False
+    load_balancers = [(lb.id, lb.port) for lb in lbs]
+
 sg = au.create(sg_name, cooldown, min_entities, max_entities, "launch_server",
-        server_name, image, flavor, disk_config=disk_config, metadata=metadata)
+        server_name, image, flavor, load_balancers=load_balancers,
+        disk_config=disk_config, metadata=metadata)
 
 print
 print
