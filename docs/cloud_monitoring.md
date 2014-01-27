@@ -226,10 +226,159 @@ If your check has not yet collected any metrics, which is dependent on the *peri
 
 Those metrics can then be used to construct the criteria string in ``cm.create_alarm``.
 
-## Create the Alarm
+### Create the Alarm
 
 Once you have created an entity, a check, and a notification plan, you can create an alarm using the mini-language. For example:
 
     alarm = cm.create_alarm(entity, check, np, "if (rate(metric['average']) > 10) { return new AlarmStatus(WARNING); } return new AlarmStatus(OK);")
 
 This alarm will alert the *warning* notification in the notification plan when your check's **average** metric measures over 10. Otherwise, the the alarm will report that your check turned out *OK*.
+
+
+## List Alarm Changelogs
+
+The monitoring service records changelogs for alarm statuses. By default the last 7 days of changelog information is returned. If you have many devices that are being monitored, this can be a lot of information, so you can optionally specify an entity, and the results are limited to changelogs for that entity's alarms.
+
+To get the changelogs, make the following call:
+
+    chglogs = cm.get_changelogs([entity=my_entity])
+
+If you specify an entity, it can either be an Entity object returned from a previous operation, or the ID of that entity. The result looks like the following, with one element in the `values` list for each changelog returned:
+
+    {
+        "values": [
+            {
+                "id": "4c5e28f0-0b3f-11e1-860d-c55c4705a286",
+                "timestamp": 1320890228991,
+                "entity_id": "enPhid7noo",
+                "alarm_id": "alahf9vuNa",
+                "check_id": "chIe7vohba",
+                "state": "WARNING",
+                "analyzed_by_monitoring_zone_id": "DFW"
+            }
+        ],
+        "metadata": {
+            "count": 1,
+            "limit": 50,
+            "marker": null,
+            "next_marker": null,
+            "next_href": null
+        }
+    }
+
+## Get Overview
+
+Views contain a combination of data that usually includes multiple, different objects. The primary purpose of a view is to save API calls and make data retrieval more efficient. The data is returned in a dictionary with a `values` key that holds a list for each entity in your account and each entity's child check and alarm objects. Along with the child check and alarm objects it also includes the latest computed state for each check and alarm pair. If there is no latest state available for a check and alarm pair, it means the alarm hasn't been evaluated yet and the current state for this pair is 'UNKNOWN'.
+
+Please note that this is a convenience method, and returns raw data, and not the `Entity`, `Alarm`, and `Check` objects like the other methods in this module.
+
+The call is:
+
+    view = cm.get_overview([entity=my_entity])
+
+You can optionally list this to return the information for a single entity. If you specify an entity, it can either be an Entity object returned from a previous operation, or the ID of that entity. The result looks like the following, with one element in the `values` list for each entity returned:
+
+    {'metadata':
+        {'count': 3,
+          'limit': 50,
+          'marker': None,
+          'next_href': None,
+          'next_marker': None},
+     'values': [
+         {'alarms': [{'check_id': 'chFour',
+         'criteria': 'if (metric["size"] >= 200) { return new AlarmStatus(CRITICAL); }',
+         'id': 'alThree',
+         'notification_plan_id': 'npOne'}],
+       'checks': [{'details': {'method': 'GET', 'url': 'http://www.foo.com'},
+         'disabled': False,
+         'id': 'chFour',
+         'label': 'ch a',
+         'monitoring_zones_poll': ['mzA'],
+         'period': 150,
+         'target_alias': 'default',
+         'target_hostname': '',
+         'target_resolver': '',
+         'timeout': 60,
+         'type': 'remote.http'}],
+       'entity': {'id': 'enBBBBIPV4',
+        'ip_addresses': {'default': '127.0.0.1'},
+        'label': 'entity b v4',
+        'metadata': None},
+       'latest_alarm_states': [{'alarm_id': 'alThree',
+         'analyzed_by_monitoring_zone_id': None,
+         'check_id': 'chFour',
+         'entity_id': 'enBBBBIPV4',
+         'previous_state': 'WARNING',
+         'state': 'OK',
+         'status': 'everything is ok',
+         'timestamp': 1321898988}]},
+      {'alarms': [],
+       'checks': [],
+       'entity': {'id': 'enCCCCIPV4',
+        'ip_addresses': {'default': '127.0.0.1'},
+        'label': 'entity c v4',
+        'metadata': None},
+       'latest_alarm_states': []},
+      {'alarms': [{'check_id': 'chOne',
+         'criteria': 'if (metric["duration"] >= 2) { return new AlarmStatus(OK); } return new AlarmStatus(CRITICAL);',
+         'id': 'alOne',
+         'label': 'Alarm 1',
+         'notification_plan_id': 'npOne'},
+        {'check_id': 'chOne',
+         'criteria': 'if (metric["size"] >= 200) { return CRITICAL } return OK',
+         'id': 'alTwo',
+         'label': 'Alarm 2',
+         'notification_plan_id': 'npOne'}],
+       'checks': [{'details': {'method': 'GET', 'url': 'http://www.foo.com'},
+         'disabled': False,
+         'id': 'chOne',
+         'label': 'ch a',
+         'monitoring_zones_poll': ['mzA'],
+         'period': 150,
+         'target_alias': 'default',
+         'target_hostname': '',
+         'target_resolver': '',
+         'timeout': 60,
+         'type': 'remote.http'},
+        {'details': {'method': 'GET', 'url': 'http://www.foo.com'},
+         'disabled': False,
+         'id': 'chThree',
+         'label': 'ch a',
+         'monitoring_zones_poll': ['mzA'],
+         'period': 150,
+         'target_alias': 'default',
+         'target_hostname': '',
+         'target_resolver': '',
+         'timeout': 60,
+         'type': 'remote.http'},
+        {'details': {'method': 'GET', 'url': 'http://www.foo.com'},
+         'disabled': False,
+         'id': 'chTwo',
+         'label': 'ch a',
+         'monitoring_zones_poll': ['mzA'],
+         'period': 150,
+         'target_alias': 'default',
+         'target_hostname': '',
+         'target_resolver': '',
+         'timeout': 60,
+         'type': 'remote.http'}],
+       'entity': {'id': 'enAAAAIPV4',
+        'ip_addresses': {'default': '127.0.0.1'},
+        'label': 'entity a',
+        'metadata': None},
+       'latest_alarm_states': [{'alarm_id': 'alOne',
+         'analyzed_by_monitoring_zone_id': None,
+         'check_id': 'chOne',
+         'entity_id': 'enAAAAIPV4',
+         'previous_state': 'OK',
+         'state': 'WARNING',
+         'status': 'matched return statement on line 7',
+         'timestamp': 1321898988},
+        {'alarm_id': 'alOne',
+         'analyzed_by_monitoring_zone_id': None,
+         'check_id': 'chTwo',
+         'entity_id': 'enAAAAIPV4',
+         'state': 'CRITICAL',
+         'timestamp': 1321898988}]}
+        ]
+    }
