@@ -164,7 +164,7 @@ class Container(object):
         """
         return self.client.upload_file(self, file_or_path, obj_name=obj_name,
                 content_type=content_type, etag=etag, return_none=return_none,
-                content_encoding=content_encoding, ttl=None,
+                content_encoding=content_encoding, ttl=ttl,
                 content_length=content_length)
 
 
