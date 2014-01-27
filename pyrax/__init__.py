@@ -156,6 +156,7 @@ class Settings(object):
             "custom_user_agent": "CLOUD_USER_AGENT",
             "debug": "CLOUD_DEBUG",
             "verify_ssl": "CLOUD_VERIFY_SSL",
+            "use_servicenet": "USE_SERVICENET",
             }
     _settings = {"default": dict.fromkeys(env_dct.keys())}
     _default_set = False
@@ -290,6 +291,8 @@ class Settings(object):
             dct["auth_endpoint"] = safe_get(section, "auth_endpoint")
             dct["tenant_name"] = safe_get(section, "tenant_name")
             dct["tenant_id"] = safe_get(section, "tenant_id")
+            use_servicenet = safe_get(section, "use_servicenet", "False")
+            dct["use_servicenet"] = use_servicenet == "True"
             app_agent = safe_get(section, "custom_user_agent")
             if app_agent:
                 # Customize the user-agent string with the app name.
@@ -646,20 +649,25 @@ def connect_to_cloudservers(region=None, **kwargs):
 
 
 @_require_auth
-def connect_to_cloudfiles(region=None, public=True):
+def connect_to_cloudfiles(region=None, public=None):
     """
     Creates a client for working with cloud files. The default is to connect
     to the public URL; if you need to work with the ServiceNet connection, pass
-    False to the 'public' parameter.
+    False to the 'public' parameter or set the "use_servicenet" setting to True.
     """
+    if public is None:
+        is_public = not bool(get_setting("use_servicenet"))
+    else:
+        is_public = public
+
     region = _safe_region(region)
-    cf_url = _get_service_endpoint("object_store", region, public=public)
+    cf_url = _get_service_endpoint("object_store", region, public=is_public)
     cloudfiles = None
     if not cf_url:
         # Service is not available
         return
     cdn_url = _get_service_endpoint("object_cdn", region)
-    ep_type = {True: "publicURL", False: "internalURL"}[public]
+    ep_type = {True: "publicURL", False: "internalURL"}[is_public]
     opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token,
             "endpoint_type": ep_type, "tenant_name": identity.tenant_name,
             "object_storage_url": cf_url, "object_cdn_url": cdn_url,

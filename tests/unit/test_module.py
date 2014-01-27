@@ -42,6 +42,7 @@ class PyraxInitTest(unittest.TestCase):
                     "tenant_id": None,
                     "tenant_name": None,
                     "user_agent": "pyrax/%s" % vers,
+                    "use_servicenet": False,
                 },
                 "alternate": {
                     "auth_endpoint": "ALT_AUTH",
@@ -54,6 +55,7 @@ class PyraxInitTest(unittest.TestCase):
                     "tenant_id": None,
                     "tenant_name": None,
                     "user_agent": "pyrax/%s" % vers,
+                    "use_servicenet": False,
                 }}
         pyrax.identity = fakes.FakeIdentity()
         pyrax.identity.authenticated = True
@@ -310,6 +312,21 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
         pyrax.cloudfiles = pyrax.connect_to_cloudfiles()
         self.assertIsNotNone(pyrax.cloudfiles)
+
+    @patch('pyrax._cf.CFClient')
+    def test_connect_to_cloudfiles_ServiceNet(self, client):
+        orig = pyrax.get_setting("use_servicenet")
+        pyrax.set_setting("use_servicenet", True)
+        pyrax.cloudfiles = None
+        pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
+        cf = pyrax.connect_to_cloudfiles(public=False)
+        # Check the call arguments to see that our setting stuck and we're
+        # sending internalURL on to CFClient.
+        _, kwargs = client.call_args
+        opts = kwargs["os_options"]
+        self.assertEqual(opts["endpoint_type"], "internalURL")
+        self.assertIsNotNone(cf)
+        pyrax.set_setting("use_servicenet", orig)
 
     @patch('pyrax.CloudLoadBalancerClient', new=fakes.FakeService)
     def test_connect_to_cloud_loadbalancers(self):
