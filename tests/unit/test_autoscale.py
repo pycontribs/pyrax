@@ -14,12 +14,10 @@ from pyrax.autoscale import AutoScalePolicy
 from pyrax.autoscale import AutoScaleWebhook
 from pyrax.autoscale import ScalingGroup
 from pyrax.autoscale import ScalingGroupManager
-from pyrax.autoscale import SERVICE_NET_ID
-
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
-from tests.unit import fakes
+import fakes
 
 
 
@@ -837,8 +835,6 @@ class AutoscaleTest(unittest.TestCase):
         name = utils.random_unicode()
         ptype = utils.random_unicode()
         cooldown = utils.random_unicode()
-        change = utils.random_unicode()
-        args = utils.random_unicode()
         new_name = utils.random_unicode()
         old_percent = 10
         old_info = {
@@ -852,6 +848,30 @@ class AutoscaleTest(unittest.TestCase):
         uri = "/%s/%s/policies/%s" % (mgr.uri_base, sg.id, pol)
         put_body = {"name": new_name, "cooldown": cooldown, "type": ptype,
                 "changePercent": old_percent}
+        ret = mgr.update_policy(sg, pol, name=new_name)
+        mgr.api.method_put.assert_called_with(uri, body=put_body)
+
+    def test_mgr_update_policy_maintain_is_absolute(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        pol = utils.random_unicode()
+        name = utils.random_unicode()
+        ptype = utils.random_unicode()
+        cooldown = utils.random_unicode()
+        change = utils.random_unicode()
+        new_name = utils.random_unicode()
+        old_change = 10
+        old_info = {
+                "type": ptype,
+                "change": old_change,
+                "cooldown": cooldown,
+                }
+        mgr.get_policy = Mock(
+                return_value=fakes.FakeAutoScalePolicy(mgr, old_info, sg))
+        mgr.api.method_put = Mock(return_value=(None, None))
+        uri = "/%s/%s/policies/%s" % (mgr.uri_base, sg.id, pol)
+        put_body = {"name": new_name, "cooldown": cooldown, "type": ptype,
+                "change": old_change}
         ret = mgr.update_policy(sg, pol, name=new_name)
         mgr.api.method_put.assert_called_with(uri, body=put_body)
 
@@ -996,6 +1016,16 @@ class AutoscaleTest(unittest.TestCase):
         expected = {"loadBalancerId": clb.id, "port": clb.port}
         self.assertEqual(ret, [expected])
 
+    def test_mgr_resolve_lbs_tuple(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        fake_id = utils.random_unicode()
+        fake_port = utils.random_unicode()
+        lbs = (fake_id, fake_port)
+        ret = mgr._resolve_lbs(lbs)
+        expected = {"loadBalancerId": fake_id, "port": fake_port}
+        self.assertEqual(ret, [expected])
+
     def test_mgr_resolve_lbs_id(self):
         sg = self.scaling_group
         mgr = sg.manager
@@ -1028,6 +1058,13 @@ class AutoscaleTest(unittest.TestCase):
         max_entities = utils.random_unicode()
         launch_config_type = utils.random_unicode()
         flavor = utils.random_unicode()
+        disk_config = None
+        metadata = None
+        personality = None
+        scaling_policies = None
+        networks = utils.random_unicode()
+        lb = fakes.FakeLoadBalancer()
+        load_balancers = (lb.id, lb.port)
         server_name = utils.random_unicode()
         image = utils.random_unicode()
         group_metadata = utils.random_unicode()
@@ -1041,15 +1078,16 @@ class AutoscaleTest(unittest.TestCase):
                     "metadata": group_metadata},
                 "launchConfiguration": {
                     "args": {
-                        "loadBalancers": [],
+                        "loadBalancers": [{"loadBalancerId": lb.id,
+                            "port": lb.port}],
                         "server": {
                             "OS-DCF:diskConfig": "AUTO",
                             "flavorRef": flavor,
                             "imageRef": image,
                             "metadata": {},
                             "name": server_name,
-                            "networks": [{"uuid": SERVICE_NET_ID}],
                             "personality": [],
+                            "networks": networks,
                             "key_name": key_name}
                         },
                     "type": launch_config_type},
@@ -1058,8 +1096,10 @@ class AutoscaleTest(unittest.TestCase):
         self.maxDiff = 1000000
         ret = mgr._create_body(name, cooldown, min_entities, max_entities,
                 launch_config_type, server_name, image, flavor,
-                disk_config=None, metadata=None, personality=None,
-                networks=None, load_balancers=None, scaling_policies=None,
+                disk_config=disk_config, metadata=metadata,
+                personality=personality, networks=networks,
+                load_balancers=load_balancers,
+                scaling_policies=scaling_policies,
                 group_metadata=group_metadata, key_name=key_name)
         self.assertEqual(ret, expected)
 

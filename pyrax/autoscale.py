@@ -20,7 +20,6 @@
 import pyrax
 from pyrax.client import BaseClient
 from pyrax.cloudloadbalancers import CloudLoadBalancer
-from pyrax.cloudnetworks import SERVICE_NET_ID
 import pyrax.exceptions as exc
 from pyrax.manager import BaseManager
 from pyrax.resource import BaseResource
@@ -565,22 +564,21 @@ class ScalingGroupManager(BaseManager):
                 "type": policy_type or policy.type,
                 "cooldown": cooldown or policy.cooldown,
                 }
-        if desired_capacity is not None or change is not None:
-            if desired_capacity is not None:
-                body["desiredCapacity"] = desired_capacity
-            elif change is not None:
-                if is_percent:
-                    body["changePercent"] = change
-                else:
-                    body["change"] = change
+        if desired_capacity is not None:
+            body["desiredCapacity"] = desired_capacity
+        elif change is not None:
+            if is_percent:
+                body["changePercent"] = change
+            else:
+                body["change"] = change
         else:
-            if getattr(policy, 'changePercent', None) is not None:
+            if getattr(policy, "changePercent", None) is not None:
                 body["changePercent"] = policy.changePercent
-            elif getattr(policy, 'change', None) is not None:
+            elif getattr(policy, "change", None) is not None:
                 body["change"] = policy.change
-            elif getattr(policy, 'desiredCapacity', None) is not None:
+            elif getattr(policy, "desiredCapacity", None) is not None:
                 body["desiredCapacity"] = policy.desiredCapacity
-        args = args or getattr(policy, 'args', None)
+        args = args or getattr(policy, "args", None)
         if args is not None:
             body["args"] = args
         resp, resp_body = self.api.method_put(uri, body=body)
@@ -766,9 +764,6 @@ class ScalingGroupManager(BaseManager):
             metadata = {}
         if personality is None:
             personality = []
-        if networks is None:
-            # Default to ServiceNet only
-            networks = [{"uuid": SERVICE_NET_ID}]
         if scaling_policies is None:
             scaling_policies = []
         group_config = self._create_group_config_body(name, cooldown,
