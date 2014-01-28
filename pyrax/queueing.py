@@ -161,12 +161,12 @@ class Queue(BaseResource):
         return claim.messages
 
 
-    def post_message(self, body, ttl=None):
+    def post_message(self, body, ttl):
         """
-        Create a message in this queue. The 'ttl' parameter defaults to 14 days
-        if not specified.
+        Create a message in this queue. The value of ttl must be between 60 and
+        1209600 seconds (14 days).
         """
-        return self._message_manager.create(body, ttl=ttl)
+        return self._message_manager.create(body, ttl)
 
 
     def claim_messages(self, ttl, grace, count=None):
@@ -229,12 +229,14 @@ class QueueMessage(BaseResource):
     """
     This class represents a Message posted to a Queue.
     """
-    id = None
-    age = None
-    body = None
-    href = None
-    ttl = None
-    claim_id = None
+    def __init__(self, *args, **kwargs):
+        self.id = None
+        self.age = None
+        self.body = None
+        self.href = None
+        self.ttl = None
+        self.claim_id = None
+        super(QueueMessage, self).__init__(*args, **kwargs)
 
 
     def _add_details(self, info):
@@ -697,12 +699,12 @@ class QueueClient(BaseClient):
 
 
     @assure_queue
-    def post_message(self, queue, body, ttl=None):
+    def post_message(self, queue, body, ttl):
         """
-        Create a message in the specified queue. The 'ttl' parameter defaults
-        to 14 days if not specified.
+        Create a message in the specified queue. The value of ttl must be
+        between 60 and 1209600 seconds (14 days).
         """
-        return queue.post_message(body, ttl=ttl)
+        return queue.post_message(body, ttl)
 
 
     @assure_queue

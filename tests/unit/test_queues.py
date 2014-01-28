@@ -156,8 +156,8 @@ class QueuesTest(unittest.TestCase):
         q._message_manager.create = Mock()
         body = utils.random_unicode()
         ttl = utils.random_unicode()
-        q.post_message(body, ttl=ttl)
-        q._message_manager.create.assert_called_once_with(body, ttl=ttl)
+        q.post_message(body, ttl)
+        q._message_manager.create.assert_called_once_with(body, ttl)
 
     def test_queue_claim_messages(self):
         q = self.queue
@@ -722,8 +722,8 @@ class QueuesTest(unittest.TestCase):
         body = utils.random_unicode()
         ttl = utils.random_unicode()
         q.post_message = Mock()
-        clt.post_message(q, body, ttl=ttl)
-        q.post_message.assert_called_once_with(body, ttl=ttl)
+        clt.post_message(q, body, ttl)
+        q.post_message.assert_called_once_with(body, ttl)
 
     def test_clt_claim_messages(self):
         clt = self.client
