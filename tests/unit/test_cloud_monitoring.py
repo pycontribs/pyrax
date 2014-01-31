@@ -430,7 +430,7 @@ class CloudMonitoringTest(unittest.TestCase):
         err.message = "Validation error for key 'fake'"
         err.details = "Validation failed for 'fake'"
         clt.method_post = Mock(side_effect=err)
-        self.assertRaises(exc.InvalidMonitoringCheckDetails, mgr.create_check,
+        self.assertRaises(exc.BadRequest, mgr.create_check,
                 ent, details="fake", target_alias="fake",
                 check_type="remote.fake", monitoring_zones_poll="fake")
 
@@ -442,7 +442,7 @@ class CloudMonitoringTest(unittest.TestCase):
         err.message = "Validation error for key 'something'"
         err.details = "Validation failed for 'something'"
         clt.method_post = Mock(side_effect=err)
-        self.assertRaises(exc.MissingMonitoringCheckDetails, mgr.create_check,
+        self.assertRaises(exc.BadRequest, mgr.create_check,
                 ent, details="fake", target_alias="fake",
                 check_type="remote.fake", monitoring_zones_poll="fake")
 

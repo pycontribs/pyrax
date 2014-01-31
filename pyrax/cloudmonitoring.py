@@ -369,11 +369,11 @@ class CloudMonitorEntityManager(BaseManager):
                     errmsg = "".join(["The value passed for '%s' in the ",
                             "details parameter is not valid."]) % missing
                 else:
-                    errcls = exc.MissingMonitoringCheckDetails
                     errmsg = "".join(["The required value for the '%s' ",
                             "setting is missing from the 'details' ",
                             "parameter."]) % missing
-                raise errcls(errmsg)
+                    utils.update_exc(e, errmsg)
+                raise e
             else:
                 if msg == "Validation error":
                     # Info is in the 'details'
