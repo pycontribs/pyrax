@@ -188,6 +188,10 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all available monitoring zones.  <a href="#aa4b0e32f41ba11a5cd20dd43a9fc7c66"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a264e06827aca6792c0bb9342703b90f6">get_monitoring_zone</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the monitoring zone for the given ID.  <a href="#a264e06827aca6792c0bb9342703b90f6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a51cc4e0d1e3af50c4375eecd08e128dd">get_changelogs</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a dictionary containing the changelogs.  <a href="#a51cc4e0d1e3af50c4375eecd08e128dd"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a795c88c7d05f125834f1b18a1cb3bcae">get_overview</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a dictionary containing the overview information.  <a href="#a795c88c7d05f125834f1b18a1cb3bcae"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The following methods are defined in the generic client class, but don't have meaning in monitoring, as there is not a single resource that defines this module.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
@@ -1005,6 +1009,37 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a51cc4e0d1e3af50c4375eecd08e128dd"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorClient::get_changelogs" ref="a51cc4e0d1e3af50c4375eecd08e128dd" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a51cc4e0d1e3af50c4375eecd08e128dd">get_changelogs</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>entity</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a dictionary containing the changelogs. </p>
+<p>The monitoring service records changelogs for alarm statuses.</p>
+<p>You may supply an entity to filter the results to show only the alarms for the specified entity. </p>
+
+</div>
+</div>
 <a class="anchor" id="a663e1c9857cbc0bf083314e6404e976f"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorClient::get_check" ref="a663e1c9857cbc0bf083314e6404e976f" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1279,6 +1314,37 @@ Public Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a795c88c7d05f125834f1b18a1cb3bcae"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorClient::get_overview" ref="a795c88c7d05f125834f1b18a1cb3bcae" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#a795c88c7d05f125834f1b18a1cb3bcae">get_overview</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>entity</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a dictionary containing the overview information. </p>
+<p>Views contain a combination of data that usually includes multiple, different objects. The primary purpose of a view is to save API calls and make data retrieval more efficient. Instead of doing multiple API calls and then combining the result yourself, you can perform a single API call against the view endpoint.</p>
+<p>You may supply an entity to filter the results to show only the data for the specified entity. </p>
 
 </div>
 </div>
@@ -1835,7 +1901,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 4 2013 13:36:37 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Feb 3 2014 11:34:23 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

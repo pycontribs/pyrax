@@ -123,6 +123,8 @@ Inheritance diagram for CloudDNSClient:</div>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#ac1f6b6211af6452ff038fbb8a25f4822">method_get</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Overload the method_get function in order to retry on empty body responses from the Cloud DNS API.  <a href="#ac1f6b6211af6452ff038fbb8a25f4822"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a095ce5c15e8d86c06b68342d3ef66c66">set_timeout</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the amount of time that calls will wait for a response from the DNS system before timing out.  <a href="#a095ce5c15e8d86c06b68342d3ef66c66"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#a13d1c3a88953a8923813b7d253010dd0">set_delay</a></td></tr>
@@ -960,6 +962,43 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ac1f6b6211af6452ff038fbb8a25f4822"></a><!-- doxytag: member="pyrax::clouddns::CloudDNSClient::method_get" ref="ac1f6b6211af6452ff038fbb8a25f4822" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1clouddns_1_1CloudDNSClient.html#ac1f6b6211af6452ff038fbb8a25f4822">method_get</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>uri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>kwargs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Overload the method_get function in order to retry on empty body responses from the Cloud DNS API. </p>
+
+<p>Reimplemented from <a class="el" href="classpyrax_1_1client_1_1BaseClient.html#ac1f6b6211af6452ff038fbb8a25f4822">BaseClient</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ae7afc3edf5d837708e01cfa202d748b6"></a><!-- doxytag: member="pyrax::clouddns::CloudDNSClient::search_records" ref="ae7afc3edf5d837708e01cfa202d748b6" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1286,7 +1325,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 4 2013 13:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Feb 3 2014 11:34:22 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
