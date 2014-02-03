@@ -43,9 +43,9 @@ You should get back something like this:
 
 The RAM available is listed in MB, so the flavor with ram=4096 would create an instance with 4GB of RAM.
 
-Assuming that you want to create an instance using the `m1.tiny` flavor and 2GB of disk space, run the following code:
+Assuming that you want to create an instance using the smallest flavor and 2GB of disk space, run the following code:
 
-    inst = cdb.create("first_instance", flavor="1GB Instance", volume=2)
+    inst = cdb.create("first_instance", flavor=1, volume=2)
     print inst
 
 Assuming that all went well, you should see your new instance:
@@ -56,10 +56,10 @@ If you are planning on using your Cloud Database instance from one of your Cloud
 
 
 ## Resizing an Instance
-Resizing an instance refers to changing the amount of RAM allocated to your instance. To do this, call the instance's `resize()` method, passing in the flavor of the desired size. This can be a `CloudDatabaseFlavor` object, the flavor name, flavor ID or RAM size of the new flavor. For example, the following 3 commands all change the instance flavor to the `m1.medium` size:
+Resizing an instance refers to changing the amount of RAM allocated to your instance. To do this, call the instance's `resize()` method, passing in the flavor of the desired size. This can be a `CloudDatabaseFlavor` object, the flavor name, flavor ID or RAM size of the new flavor. For example, the following 3 commands all change the instance flavor to the 2GB size:
 
     # By name
-    inst.resize("1GB Instance")
+    inst.resize("2GB Instance")
     # By RAM (in MB)
     inst.resize(2048)
     # By ID

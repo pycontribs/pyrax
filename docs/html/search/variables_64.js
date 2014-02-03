@@ -7,6 +7,7 @@ var searchData=
   ['default_5fdelay',['DEFAULT_DELAY',['../namespacepyrax_1_1clouddns.html#a0695d4ce7bb0b1de03ba3068cde8d89a',1,'pyrax::clouddns']]],
   ['default_5fencoding',['default_encoding',['../namespacepyrax.html#ab8005f4babffb239fd05dbb8c38551b7',1,'pyrax']]],
   ['default_5fregion',['default_region',['../namespacepyrax.html#affa3c4afe67ff7c721e823ac8b67fa16',1,'pyrax']]],
+  ['default_5fretry',['DEFAULT_RETRY',['../namespacepyrax_1_1clouddns.html#aaa69438071807c71e3d2f798f0382e78',1,'pyrax::clouddns']]],
   ['default_5ftimeout',['DEFAULT_TIMEOUT',['../namespacepyrax_1_1clouddns.html#aa66130c897c01393a63de104588aceb7',1,'pyrax::clouddns']]],
   ['description',['description',['../namespacesetup.html#a23af17c78302b71c14ef38ea40b8d1d7',1,'setup']]],
   ['desired',['desired',['../classpyrax_1_1utils_1_1__WaitThread.html#a6788c2131efce60abb1699742c1c9509',1,'pyrax::utils::_WaitThread']]],

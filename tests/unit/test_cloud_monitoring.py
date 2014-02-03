@@ -430,7 +430,7 @@ class CloudMonitoringTest(unittest.TestCase):
         err.message = "Validation error for key 'fake'"
         err.details = "Validation failed for 'fake'"
         clt.method_post = Mock(side_effect=err)
-        self.assertRaises(exc.InvalidMonitoringCheckDetails, mgr.create_check,
+        self.assertRaises(exc.BadRequest, mgr.create_check,
                 ent, details="fake", target_alias="fake",
                 check_type="remote.fake", monitoring_zones_poll="fake")
 
@@ -442,7 +442,7 @@ class CloudMonitoringTest(unittest.TestCase):
         err.message = "Validation error for key 'something'"
         err.details = "Validation failed for 'something'"
         clt.method_post = Mock(side_effect=err)
-        self.assertRaises(exc.MissingMonitoringCheckDetails, mgr.create_check,
+        self.assertRaises(exc.BadRequest, mgr.create_check,
                 ent, details="fake", target_alias="fake",
                 check_type="remote.fake", monitoring_zones_poll="fake")
 
@@ -732,6 +732,24 @@ class CloudMonitoringTest(unittest.TestCase):
         ret = mgr.delete_alarm(ent, id_)
         exp_uri = "/%s/%s/alarms/%s" % (mgr.uri_base, ent.id, id_)
         clt.method_delete.assert_called_once_with(exp_uri)
+
+    def test_changelog_mgr_list(self):
+        clt = self.client
+        mgr = clt._changelog_manager
+        mgr._list = Mock(return_value=(None, None))
+        entity = utils.random_unicode()
+        mgr.list(entity=entity)
+        expected_uri = "/%s?entityId=%s" % (mgr.uri_base, entity)
+        mgr._list.assert_called_once_with(expected_uri, return_raw=True)
+
+    def test_overview_mgr_list(self):
+        clt = self.client
+        mgr = clt._overview_manager
+        mgr._list = Mock(return_value=(None, None))
+        entity = utils.random_unicode()
+        mgr.list(entity=entity)
+        expected_uri = "/%s?entityId=%s" % (mgr.uri_base, entity)
+        mgr._list.assert_called_once_with(expected_uri, return_raw=True)
 
     def test_check(self):
         ent = self.entity
@@ -1444,6 +1462,22 @@ class CloudMonitoringTest(unittest.TestCase):
         ret = clt.get_monitoring_zone(mz_id)
         mgr.get.assert_called_once_with(mz_id)
         self.assertEqual(ret, answer)
+
+    def test_clt_get_changelogs(self):
+        clt = self.client
+        mgr = clt._changelog_manager
+        entity = utils.random_unicode()
+        mgr.list = Mock()
+        clt.get_changelogs(entity=entity)
+        mgr.list.assert_called_once_with(entity=entity)
+
+    def test_clt_get_overview(self):
+        clt = self.client
+        mgr = clt._overview_manager
+        entity = utils.random_unicode()
+        mgr.list = Mock()
+        clt.get_overview(entity=entity)
+        mgr.list.assert_called_once_with(entity=entity)
 
     def test_clt_list(self):
         clt = self.client
