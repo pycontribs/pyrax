@@ -1,20 +1,46 @@
 # Release Notes for pyrax
 
+###2014.02.03 - Version 1.6.3
+ - Cloud Monitoring:
+   - Added back missing error info. GitHub #285
+   - Added support for Overviews and Changelogs from Cloud Monitoring. GitHub #267
+ - Autoscale:
+   - Corrected how networks are created when none are specified. GitHub #262
+   - Added load balancers to sample code for creating a scaling group.
+   - Fixed bug in autoscale group creation. GitHub #249 and #203
+ - Queues:
+   - Removed default TTL when posting messages to a queue. GitHub #265
+ - Cloud Files:
+   - Add `use_servicenet` setting for Cloud Files. GitHub #273
+   - Fixed bug in passing TTL to `delete_in_seconds()`. GitHub #281
+   - Added a fix for GETting 0-byte content with Dynamic Large Objects (multipart files). GitHub #258
+   - Include container name in `X-Object-Manifest` header when creating DLO. GitHub #261
+   - Use `X-Object-Manifest` instead of `X-Object-Meta-Manifest` when creating DLO. GitHub #260
+ - Cloud Load Balancers:
+   - Added `httpsRedirect` param for Cloud Load Balancers. GitHub #277
+   - Adding an entry for the `id` attribute to the Node's `to_dict()` method. GitHub #276
+ - Cloud DNS:
+   - Handle empty bodies in GET responses from the Cloud DNS API. GitHub #280
+ - Cloud Servers:
+   - Updated docs and samples to eliminate old flavor references.
+ - General:
+   - Add requests as installation requirement. GitHub #269
+
 ###2013.11.13 - Version 1.6.2
  - Cloud Databases:
-  - Added missing 'host' parameter. GitHub #246
+   - Added missing 'host' parameter. GitHub #246
  - Cloud Queues:
-  - Removed requirement for Client ID for non-message requests. GitHub #244
-  - Added support for ServiceNet queues. GitHub #240
-  - Added the `claim_id` parameter to message deletion calls. GitHub #243
-  - Fixed a bug when parsing message and claim IDs.
-  - Made several corrections in the docs. - Cloud DNS:
-  - Added handling for an occasional empty body when polling a running request.
+   - Removed requirement for Client ID for non-message requests. GitHub #244
+   - Added support for ServiceNet queues. GitHub #240
+   - Added the `claim_id` parameter to message deletion calls. GitHub #243
+   - Fixed a bug when parsing message and claim IDs.
+   - Made several corrections in the docs. - Cloud DNS:
+   - Added handling for an occasional empty body when polling a running request.
     GitHub #237
  - General:
-  - Added support for Python Wheel distribution
-  - Fixed missing file spec in MANIFEST.in
-  - Removed unneeded files
+   - Added support for Python Wheel distribution
+   - Fixed missing file spec in MANIFEST.in
+   - Removed unneeded files
 
 ###2013.10.31 - Version 1.6.1
  - Cloud Databases:
