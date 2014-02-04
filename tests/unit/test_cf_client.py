@@ -16,13 +16,13 @@ from pyrax.cf_wrapper.container import Container
 import pyrax.utils as utils
 import pyrax.exceptions as exc
 
-from tests.unit.fakes import fake_attdict
-from tests.unit.fakes import FakeBulkDeleter
-from tests.unit.fakes import FakeContainer
-from tests.unit.fakes import FakeFolderUploader
-from tests.unit.fakes import FakeIdentity
-from tests.unit.fakes import FakeResponse
-from tests.unit.fakes import FakeStorageObject
+from fakes import fake_attdict
+from fakes import FakeBulkDeleter
+from fakes import FakeContainer
+from fakes import FakeFolderUploader
+from fakes import FakeIdentity
+from fakes import FakeResponse
+from fakes import FakeStorageObject
 
 
 class CF_ClientTest(unittest.TestCase):
@@ -1310,8 +1310,8 @@ class CF_ClientTest(unittest.TestCase):
         resp = FakeResp()
         # Need to make these ASCII, since some characters will confuse the
         # splitlines() call.
-        num_del = utils.random_ascii()
-        num_not_found = utils.random_ascii()
+        num_del = random.randint(0, 100)
+        num_not_found = random.randint(0, 100)
         status = utils.random_ascii()
         errors = utils.random_ascii()
         useless = utils.random_ascii()
