@@ -311,6 +311,9 @@ class UserNotFound(PyraxException):
 class VolumeAttachmentFailed(PyraxException):
     pass
 
+class VolumeCloneTooSmall(PyraxException):
+    pass
+
 class VolumeDetachmentFailed(PyraxException):
     pass
 
