@@ -758,8 +758,8 @@ class ScalingGroupManager(BaseManager):
         Used to create the dict required to create any of the following:
             A Scaling Group
         """
-        if disk_config is None:
-            disk_config = "AUTO"
+#        if disk_config is None:
+#            disk_config = "AUTO"
         if metadata is None:
             metadata = {}
         if personality is None:
