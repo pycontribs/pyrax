@@ -23,7 +23,7 @@ import pyrax.exceptions as exc
 from pyrax.manager import BaseManager
 import pyrax.utils as utils
 
-import fakes
+from pyrax import fakes
 
 example_uri = "http://example.com"
 

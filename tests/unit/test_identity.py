@@ -20,7 +20,7 @@ import pyrax.exceptions as exc
 from pyrax import base_identity
 from pyrax.identity import rax_identity
 
-from tests.unit import fakes
+from pyrax import fakes
 
 
 class DummyResponse(object):

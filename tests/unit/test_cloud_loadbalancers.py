@@ -16,7 +16,7 @@ from pyrax.cloudloadbalancers import assure_loadbalancer
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
-from tests.unit import fakes
+from pyrax import fakes
 
 example_uri = "http://example.com"
 
