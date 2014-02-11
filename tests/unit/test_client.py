@@ -17,7 +17,7 @@ import pyrax.utils as utils
 import pyrax.exceptions as exc
 from pyrax import client
 
-from tests.unit import fakes
+from pyrax import fakes
 
 DUMMY_URL = "http://example.com"
 ID_CLS = pyrax.settings.get("identity_class") or pyrax.rax_identity.RaxIdentity

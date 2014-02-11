@@ -17,7 +17,7 @@ from pyrax.autoscale import ScalingGroupManager
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
-import fakes
+from pyrax import fakes
 
 
 

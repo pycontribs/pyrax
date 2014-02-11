@@ -16,13 +16,13 @@ from pyrax.cf_wrapper.container import Container
 import pyrax.utils as utils
 import pyrax.exceptions as exc
 
-from fakes import fake_attdict
-from fakes import FakeBulkDeleter
-from fakes import FakeContainer
-from fakes import FakeFolderUploader
-from fakes import FakeIdentity
-from fakes import FakeResponse
-from fakes import FakeStorageObject
+from pyrax.fakes import fake_attdict
+from pyrax.fakes import FakeBulkDeleter
+from pyrax.fakes import FakeContainer
+from pyrax.fakes import FakeFolderUploader
+from pyrax.fakes import FakeIdentity
+from pyrax.fakes import FakeResponse
+from pyrax.fakes import FakeStorageObject
 
 
 class CF_ClientTest(unittest.TestCase):

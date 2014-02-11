@@ -14,11 +14,11 @@ from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.container import Fault
 import pyrax.utils as utils
 import pyrax.exceptions as exc
-from tests.unit.fakes import fake_attdict
-from tests.unit.fakes import FakeContainer
-from tests.unit.fakes import FakeIdentity
-from tests.unit.fakes import FakeResponse
-from tests.unit.fakes import FakeStorageObject
+from pyrax.fakes import fake_attdict
+from pyrax.fakes import FakeContainer
+from pyrax.fakes import FakeIdentity
+from pyrax.fakes import FakeResponse
+from pyrax.fakes import FakeStorageObject
 
 
 

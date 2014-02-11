@@ -16,7 +16,7 @@ from pyrax.cloudnetworks import _get_server_networks
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
-from tests.unit import fakes
+from pyrax import fakes
 
 example_cidr = "1.1.1.0/8"
 example_uri = "http://example.com"
