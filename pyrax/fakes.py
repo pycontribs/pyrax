@@ -607,14 +607,14 @@ fake_identity_tenant_response = {"name": "fake", "id": "fake",
 
 fake_identity_tenants_response = {
         "tenants": [
-                {"name": "fake", "id": "fake", "description": "fake",
-                        "enabled": True},
-                {"name": "faker", "id": "faker", "description": "faker",
-                        "enabled": True},
-                ]}
+        {"name": "fake", "id": "fake", "description": "fake",
+        "enabled": True},
+        {"name": "faker", "id": "faker", "description": "faker",
+        "enabled": True},
+        ]}
 
-fake_identity_tokens_response = {"access": {
-        'metadata': {u'is_admin': 0,
+fake_identity_tokens_response = {"access":
+        {'metadata': {u'is_admin': 0,
             'roles': [u'asdfgh',
             'sdfghj',
             'dfghjk']},
@@ -624,9 +624,9 @@ fake_identity_tokens_response = {"access": {
             'publicURL': 'http://10.0.0.0:8774/v2/qweqweqwe',
             'internalURL': 'http://10.0.0.0:8774/v2/qweqweqwe',
             'region': 'some_region'}],
-        'endpoints_links': [],
-        'name': 'nova',
-        'type': 'compute'},
+            'endpoints_links': [],
+            'name': 'nova',
+            'type': 'compute'},
             {u'endpoints': [{u'adminURL': 'http://10.0.0.0:35357/v2.0',
             'id': 'qweqweqwe',
             'internalURL': 'http://10.0.0.0:5000/v2.0',
@@ -636,19 +636,19 @@ fake_identity_tokens_response = {"access": {
             'name': 'keystone',
             'type': 'identity'}],
         'token': {u'expires': '1999-05-04T16:45:05Z',
-            'id': 'qweqweqwe',
+        'id': 'qweqweqwe',
         'tenant': {u'description': 'admin Tenant',
-            'enabled': True,
-            'id': 'qweqweqwe',
-            'name': 'admin'}},
+        'enabled': True,
+        'id': 'qweqweqwe',
+        'name': 'admin'}},
         'user': {u'id': 'qweqweqwe',
-            'name': 'admin',
-            'roles': [{u'id': 'qweqweqwe', 'name': 'admin'},
+        'name': 'admin',
+        'roles': [{u'id': 'qweqweqwe', 'name': 'admin'},
             {u'id': 'qweqweqwe', 'name': 'KeystoneAdmin'},
             {u'id': 'qweqweqwe',
             'name': 'KeystoneServiceAdmin'}],
-            'roles_links': [],
-            'username': 'admin'}}}
+        'roles_links': [],
+        'username': 'admin'}}}
 
 fake_identity_endpoints_response = {"access": {
         "endpoints": ["fake", "faker", "fakest"]}}
@@ -656,117 +656,117 @@ fake_identity_endpoints_response = {"access": {
 fake_identity_response = {u'access':
     {u'serviceCatalog': [
         {u'endpoints': [{u'publicURL':
-                'https://ord.loadbalancers.api.rackspacecloud.com/v1.0/000000',
+            'https://ord.loadbalancers.api.rackspacecloud.com/v1.0/000000',
             'region': 'ORD',
             'tenantId': '000000'},
-        {u'publicURL':
-                'https://dfw.loadbalancers.api.rackspacecloud.com/v1.0/000000',
+            {u'publicURL':
+            'https://dfw.loadbalancers.api.rackspacecloud.com/v1.0/000000',
             'region': 'DFW',
             'tenantId': '000000'},
-        {u'publicURL':
-                'https://syd.loadbalancers.api.rackspacecloud.com/v1.0/000000',
+            {u'publicURL':
+            'https://syd.loadbalancers.api.rackspacecloud.com/v1.0/000000',
             'region': 'SYD',
             'tenantId': '000000'}],
-            'name': 'cloudLoadBalancers',
-            'type': 'rax:load-balancer'},
+        'name': 'cloudLoadBalancers',
+        'type': 'rax:load-balancer'},
         {u'endpoints': [{u'internalURL':
-                'https://snet-aa.fake1.clouddrive.com/v1/MossoCloudFS_abc',
+            'https://snet-aa.fake1.clouddrive.com/v1/MossoCloudFS_abc',
             'publicURL': 'https://aa.fake1.clouddrive.com/v1/MossoCloudFS_abc',
             'region': 'FAKE',
             'tenantId': 'MossoCloudFS_abc'},
-        {u'internalURL':
-                'https://snet-aa.dfw1.clouddrive.com/v1/MossoCloudFS_abc',
+            {u'internalURL':
+            'https://snet-aa.dfw1.clouddrive.com/v1/MossoCloudFS_abc',
             'publicURL': 'https://aa.dfw1.clouddrive.com/v1/MossoCloudFS_abc',
             'region': 'DFW',
             'tenantId': 'MossoCloudFS_abc'},
-        {u'internalURL':
-                'https://snet-aa.ord1.clouddrive.com/v1/MossoCloudFS_abc',
+            {u'internalURL':
+            'https://snet-aa.ord1.clouddrive.com/v1/MossoCloudFS_abc',
             'publicURL': 'https://aa.ord1.clouddrive.com/v1/MossoCloudFS_abc',
             'region': 'ORD',
             'tenantId': 'MossoCloudFS_abc'},
-        {u'internalURL':
-                'https://snet-aa.syd1.clouddrive.com/v1/MossoCloudFS_abc',
+            {u'internalURL':
+            'https://snet-aa.syd1.clouddrive.com/v1/MossoCloudFS_abc',
             'publicURL': 'https://aa.ord1.clouddrive.com/v1/MossoCloudFS_abc',
             'region': 'SYD',
             'tenantId': 'MossoCloudFS_abc'}],
-            'name': 'cloudFiles',
-            'type': 'object-store'},
+        'name': 'cloudFiles',
+        'type': 'object-store'},
         {u'endpoints': [{u'publicURL':
-                'https://dfw.servers.api.rackspacecloud.com/v2/000000',
+            'https://dfw.servers.api.rackspacecloud.com/v2/000000',
             'region': 'DFW',
             'tenantId': '000000',
             'versionId': '2',
             'versionInfo': 'https://dfw.servers.api.rackspacecloud.com/v2',
             'versionList': 'https://dfw.servers.api.rackspacecloud.com/'},
-        {u'publicURL':
-                'https://ord.servers.api.rackspacecloud.com/v2/000000',
+            {u'publicURL':
+            'https://ord.servers.api.rackspacecloud.com/v2/000000',
             'region': 'ORD',
             'tenantId': '000000',
             'versionId': '2',
             'versionInfo': 'https://ord.servers.api.rackspacecloud.com/v2',
             'versionList': 'https://ord.servers.api.rackspacecloud.com/'},
-        {u'publicURL':
-                'https://syd.servers.api.rackspacecloud.com/v2/000000',
+            {u'publicURL':
+            'https://syd.servers.api.rackspacecloud.com/v2/000000',
             'region': 'SYD',
             'tenantId': '000000',
             'versionId': '2',
             'versionInfo': 'https://syd.servers.api.rackspacecloud.com/v2',
             'versionList': 'https://syd.servers.api.rackspacecloud.com/'}],
-            'name': 'cloudServersOpenStack',
-            'type': 'compute'},
+        'name': 'cloudServersOpenStack',
+        'type': 'compute'},
         {u'endpoints': [{u'publicURL':
-                'https://dns.api.rackspacecloud.com/v1.0/000000',
-            'tenantId': '000000'}],
-            'name': 'cloudDNS',
-            'type': 'rax:dns'},
+        'https://dns.api.rackspacecloud.com/v1.0/000000',
+        'tenantId': '000000'}],
+        'name': 'cloudDNS',
+        'type': 'rax:dns'},
         {u'endpoints': [{u'publicURL':
-                'https://dfw.databases.api.rackspacecloud.com/v1.0/000000',
+            'https://dfw.databases.api.rackspacecloud.com/v1.0/000000',
             'region': 'DFW',
             'tenantId': '000000'},
-        {u'publicURL':
-                'https://syd.databases.api.rackspacecloud.com/v1.0/000000',
+            {u'publicURL':
+            'https://syd.databases.api.rackspacecloud.com/v1.0/000000',
             'region': 'SYD',
             'tenantId': '000000'},
-        {u'publicURL':
-                'https://ord.databases.api.rackspacecloud.com/v1.0/000000',
+            {u'publicURL':
+            'https://ord.databases.api.rackspacecloud.com/v1.0/000000',
             'region': 'ORD',
             'tenantId': '000000'}],
-            'name': 'cloudDatabases',
-            'type': 'rax:database'},
+        'name': 'cloudDatabases',
+        'type': 'rax:database'},
         {u'endpoints': [{u'publicURL':
-                'https://servers.api.rackspacecloud.com/v1.0/000000',
-            'tenantId': '000000',
-            'versionId': '1.0',
-            'versionInfo': 'https://servers.api.rackspacecloud.com/v1.0',
-            'versionList': 'https://servers.api.rackspacecloud.com/'}],
-            'name': 'cloudServers',
-            'type': 'compute'},
+        'https://servers.api.rackspacecloud.com/v1.0/000000',
+        'tenantId': '000000',
+        'versionId': '1.0',
+        'versionInfo': 'https://servers.api.rackspacecloud.com/v1.0',
+        'versionList': 'https://servers.api.rackspacecloud.com/'}],
+        'name': 'cloudServers',
+        'type': 'compute'},
         {u'endpoints': [{u'publicURL':
-                'https://cdn1.clouddrive.com/v1/MossoCloudFS_abc',
+            'https://cdn1.clouddrive.com/v1/MossoCloudFS_abc',
             'region': 'DFW',
             'tenantId': 'MossoCloudFS_abc'},
-        {u'publicURL': 'https://cdn1.clouddrive.com/v1/MossoCloudFS_abc',
+            {u'publicURL': 'https://cdn1.clouddrive.com/v1/MossoCloudFS_abc',
             'region': 'SYD',
             'tenantId': 'MossoCloudFS_abc'},
-        {u'publicURL': 'https://cdn2.clouddrive.com/v1/MossoCloudFS_abc',
+            {u'publicURL': 'https://cdn2.clouddrive.com/v1/MossoCloudFS_abc',
             'region': 'ORD',
             'tenantId': 'MossoCloudFS_abc'}],
-            'name': 'cloudFilesCDN',
-            'type': 'rax:object-cdn'},
+        'name': 'cloudFilesCDN',
+        'type': 'rax:object-cdn'},
         {u'endpoints': [{u'publicURL':
-                'https://monitoring.api.rackspacecloud.com/v1.0/000000',
+            'https://monitoring.api.rackspacecloud.com/v1.0/000000',
             'tenantId': '000000'}],
-            'name': 'cloudMonitoring',
-    'type': 'rax:monitor'}],
-        u'token': {u'expires': '2222-02-22T22:22:22.000-02:00',
-        'id': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
-        'tenant': {u'id': '000000', 'name': '000000'}},
-        u'user': {u'id': '123456',
-        'name': 'fakeuser',
-        'RAX-AUTH:defaultRegion': 'DFW',
-        'roles': [{u'description': 'User Admin Role.',
-        'id': '3',
-        'name': 'identity:user-admin'}],
+        'name': 'cloudMonitoring',
+        'type': 'rax:monitor'}],
+    u'token': {u'expires': '2222-02-22T22:22:22.000-02:00',
+    'id': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+    'tenant': {u'id': '000000', 'name': '000000'}},
+    u'user': {u'id': '123456',
+    'name': 'fakeuser',
+    'RAX-AUTH:defaultRegion': 'DFW',
+    'roles': [{u'description': 'User Admin Role.',
+    'id': '3',
+    'name': 'identity:user-admin'}],
     }}}
 
 
