@@ -606,7 +606,7 @@ fake_identity_tenant_response = {"name": "fake", "id": "fake",
         "description": "fake", "enabled": True}
 
 fake_identity_tenants_response = {
-        "tenants": [
+    "tenants": [
         {"name": "fake", "id": "fake", "description": "fake",
         "enabled": True},
         {"name": "faker", "id": "faker", "description": "faker",
@@ -616,8 +616,8 @@ fake_identity_tenants_response = {
 fake_identity_tokens_response = {"access":
         {'metadata': {u'is_admin': 0,
             'roles': [u'asdfgh',
-            'sdfghj',
-            'dfghjk']},
+                'sdfghj',
+                'dfghjk']},
         'serviceCatalog': [{u'endpoints': [
             {u'adminURL': 'http://10.0.0.0:8774/v2/qweqweqwe',
             'id': 'dddddddddd',
@@ -636,19 +636,19 @@ fake_identity_tokens_response = {"access":
             'name': 'keystone',
             'type': 'identity'}],
         'token': {u'expires': '1999-05-04T16:45:05Z',
-        'id': 'qweqweqwe',
-        'tenant': {u'description': 'admin Tenant',
-        'enabled': True,
-        'id': 'qweqweqwe',
-        'name': 'admin'}},
+            'id': 'qweqweqwe',
+            'tenant': {u'description': 'admin Tenant',
+                'enabled': True,
+                'id': 'qweqweqwe',
+                'name': 'admin'}},
         'user': {u'id': 'qweqweqwe',
-        'name': 'admin',
-        'roles': [{u'id': 'qweqweqwe', 'name': 'admin'},
-            {u'id': 'qweqweqwe', 'name': 'KeystoneAdmin'},
-            {u'id': 'qweqweqwe',
-            'name': 'KeystoneServiceAdmin'}],
-        'roles_links': [],
-        'username': 'admin'}}}
+            'name': 'admin',
+            'roles': [{u'id': 'qweqweqwe', 'name': 'admin'},
+                {u'id': 'qweqweqwe', 'name': 'KeystoneAdmin'},
+                {u'id': 'qweqweqwe',
+                'name': 'KeystoneServiceAdmin'}],
+            'roles_links': [],
+            'username': 'admin'}}}
 
 fake_identity_endpoints_response = {"access": {
         "endpoints": ["fake", "faker", "fakest"]}}
