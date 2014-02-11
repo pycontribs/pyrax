@@ -24,7 +24,7 @@ from pyrax.queueing import _parse_marker
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
-import fakes
+from pyrax import fakes
 
 
 def _safe_id():

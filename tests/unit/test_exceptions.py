@@ -8,7 +8,7 @@ from mock import MagicMock as Mock
 import pyrax.utils as utils
 import pyrax.exceptions as exc
 
-from tests.unit import fakes
+from pyrax import fakes
 
 fake_url = "http://example.com"
 

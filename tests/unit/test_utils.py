@@ -15,7 +15,7 @@ from mock import MagicMock as Mock
 
 import pyrax.utils as utils
 import pyrax.exceptions as exc
-import fakes
+from pyrax import fakes
 
 FAKE_CONTENT = "x" * 100
 
@@ -79,7 +79,7 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(expected, received)
 
     def test_get_checksum_from_binary(self):
-        test = fakes.png_content
+        test = fakes.get_png_content()
         md = hashlib.md5()
         enc = "utf8"
         md.update(test)

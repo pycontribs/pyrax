@@ -11,7 +11,7 @@ from mock import MagicMock as Mock
 import pyrax
 import pyrax.exceptions as exc
 import pyrax.utils as utils
-from tests.unit import fakes
+from pyrax import fakes
 
 
 

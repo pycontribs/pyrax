@@ -10,7 +10,7 @@ import pyrax.exceptions as exc
 from pyrax import manager
 import pyrax.utils as utils
 
-from tests.unit import fakes
+from pyrax import fakes
 
 fake_url = "http://example.com"
 
