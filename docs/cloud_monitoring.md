@@ -180,7 +180,7 @@ The `id` value is then passed in as the `notification_type` parameter to `create
 To create the notification, run the following:
 
     email = cm.create_notification("email", label="my_email_notification",
-            details={"address": "me@example.com")
+            details={"address": "me@example.com"})
 
 This will create an email notification that will notify the caller at *me@example.com*.
 
