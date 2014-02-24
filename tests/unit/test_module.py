@@ -86,6 +86,29 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.identity.authenticated = False
         self.assertRaises(exc.NotAuthenticated, testfunc)
 
+    def test_import_identity(self):
+        sav = pyrax.utils.import_class
+        cls = utils.random_unicode()
+        pyrax.utils.import_class = Mock(return_value=cls)
+        ret = pyrax._import_identity(cls)
+        self.assertEqual(ret, cls)
+        pyrax.utils.import_class = sav
+
+    def test_import_identity_external(self):
+        sav = pyrax.utils.import_class
+        cls = utils.random_unicode()
+
+        def fake_import(nm):
+            if "pyrax.identity." in nm:
+                raise ImportError()
+            else:
+                return nm
+
+        pyrax.utils.import_class = fake_import
+        ret = pyrax._import_identity(cls)
+        self.assertEqual(ret, cls)
+        pyrax.utils.import_class = sav
+
     def test_settings_get(self):
         def_ep = pyrax.get_setting("auth_endpoint", "default")
         alt_ep = pyrax.get_setting("auth_endpoint", "alternate")
