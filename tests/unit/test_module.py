@@ -4,6 +4,7 @@
 import json
 import os
 import unittest
+import warnings
 
 from mock import patch
 from mock import MagicMock as Mock
@@ -114,6 +115,21 @@ class PyraxInitTest(unittest.TestCase):
             pyrax.settings.read_config(cfgfile)
         self.assertEqual(pyrax.get_setting("region"), "FAKE")
         self.assertTrue(pyrax.get_setting("user_agent").startswith("FAKE "))
+        pyrax.default_region = sav_region
+        pyrax.USER_AGENT = sav_USER_AGENT
+
+    def test_read_config_creds(self):
+        dummy_cfg = fakes.fake_config_file
+        sav_region = pyrax.default_region
+        sav_USER_AGENT = pyrax.USER_AGENT
+        with utils.SelfDeletingTempfile() as cfgfile:
+            with open(cfgfile, "w") as cfg:
+                cfg.write(dummy_cfg)
+                # Add password entry
+                cfg.write("password = fake\n")
+            with warnings.catch_warnings(record=True) as warn:
+                pyrax.settings.read_config(cfgfile)
+                self.assertEqual(len(warn), 1)
         pyrax.default_region = sav_region
         pyrax.USER_AGENT = sav_USER_AGENT
 

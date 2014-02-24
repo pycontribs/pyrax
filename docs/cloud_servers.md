@@ -84,13 +84,13 @@ There are two types of images: the base images supplied by your cloud provider, 
 ## Listing Flavors
 Let's do the same for flavors:
 
-flvs = cs.list_flavors()
-for flv in flvs:
-    print "Name:", flv.name
-    print "  ID:", flv.id
-    print "  RAM:", flv.ram
-    print "  Disk:", flv.disk
-    print "  VCPUs:", flv.vcpus
+    flvs = cs.list_flavors()
+    for flv in flvs:
+        print "Name:", flv.name
+        print "  ID:", flv.id
+        print "  RAM:", flv.ram
+        print "  Disk:", flv.disk
+        print "  VCPUs:", flv.vcpus
 
 This returns:
 

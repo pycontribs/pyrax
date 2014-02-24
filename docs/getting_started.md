@@ -122,6 +122,8 @@ Please note that if you used `auth_with_token()` to authenticate originally, pyr
 ## Pyrax Configuration
 You can control how pyrax behaves through the configuration file. It should be named `~/.pyrax.cfg`. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Alternatively, you may set these values using environment variables in the OS. Note that the configuration file values take precendence over any environment variables. Environment variables also do not support multiple configurations.
 
+Do **not** include login credentials, such as passwords, in the configuration file. As this is a defined file in a known location, it is a security risk to have your login information stored in clear text. You may use a [credential file](#authenticating) if you wish to store your credentials on disk; this can be named whatever you wish, and placed anywhere on disk, since you pass the full path to the file when authenticating this way. Please note that credentials stored in the configuration file will be ignored, and a warning will be issued if they are found.
+
 **NOTE**: At the very least, you *must* set the `identity_type` setting so that can use the correct identity class. Prior versions only worked with Rackspace identity, but that is no longer the case. If you don't want to use a configuration file or an environment variable, you can do this in code:
 
     pyrax.set_setting("identity_type", "keystone")

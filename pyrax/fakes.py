@@ -589,7 +589,7 @@ identity_type = rackspace
 keyring_username =
 region = FAKE
 custom_user_agent = FAKE
-debug =
+http_debug =
 """
 
 # This will handle both singular and plural responses.
