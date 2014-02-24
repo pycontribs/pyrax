@@ -21,7 +21,7 @@ from pyrax.cloudmonitoring import _params_to_dict
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
-from tests.unit import fakes
+from pyrax import fakes
 
 
 

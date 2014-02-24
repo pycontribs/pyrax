@@ -126,14 +126,8 @@ class CloudBlockStorageVolume(BaseResource):
     """
     def __init__(self, *args, **kwargs):
         super(CloudBlockStorageVolume, self).__init__(*args, **kwargs)
-        try:
-            region = self.manager.api.region_name
-            self._nova_volumes = pyrax.connect_to_cloudservers(region).volumes
-        except AttributeError:
-            # This will happen in unit testing, where the full pyrax
-            # namespace is not exposed. In that situation, there is
-            # no need for the reference anyway
-            pass
+        region = self.manager.api.region_name
+        self._nova_volumes = pyrax.connect_to_cloudservers(region).volumes
 
 
     def attach_to_instance(self, instance, mountpoint):
@@ -246,7 +240,8 @@ class CloudBlockStorageManager(BaseManager):
     Manager class for Cloud Block Storage.
     """
     def _create_body(self, name, size=None, volume_type=None, description=None,
-             metadata=None, snapshot_id=None, availability_zone=None):
+             metadata=None, snapshot_id=None, clone_id=None,
+             availability_zone=None):
         """
         Used to create the dict required to create a new volume
         """
@@ -263,6 +258,7 @@ class CloudBlockStorageManager(BaseManager):
         body = {"volume": {
                 "size": size,
                 "snapshot_id": snapshot_id,
+                "source_volid": clone_id,
                 "display_name": name,
                 "display_description": description,
                 "volume_type": volume_type,
@@ -270,6 +266,22 @@ class CloudBlockStorageManager(BaseManager):
                 "availability_zone": availability_zone,
                 }}
         return body
+
+
+    def create(self, *args, **kwargs):
+        """
+        Catches errors that may be returned, and raises more informational
+        exceptions.
+        """
+        try:
+            return super(CloudBlockStorageManager, self).create(*args,
+                    **kwargs)
+        except exc.BadRequest as e:
+            msg = e.message
+            if "Clones currently must be >= original volume size" in msg:
+                raise exc.VolumeCloneTooSmall(msg)
+            else:
+                raise
 
 
     def list_snapshots(self):
@@ -360,21 +372,6 @@ class CloudBlockStorageClient(BaseClient):
         self._snapshot_manager = CloudBlockStorageSnapshotManager(self,
                 resource_class=CloudBlockStorageSnapshot,
                 response_key="snapshot", uri_base="snapshots")
-
-
-    def create(self, name="", size=None, volume_type=None, description=None,
-             metadata=None, snapshot_id=None, availability_zone=None):
-        """
-        Makes sure that the size is passed and is within allowed values.
-        """
-        if not isinstance(size, (int, long)) or not (
-                MIN_SIZE <= size <= MAX_SIZE):
-            raise exc.InvalidSize("Volume sizes must be integers between "
-                    "%s and %s." % (MIN_SIZE, MAX_SIZE))
-        return super(CloudBlockStorageClient, self).create(name, size=size,
-                volume_type=volume_type, description=description,
-                metadata=metadata, snapshot_id=snapshot_id,
-                availability_zone=availability_zone)
 
 
     def list_types(self):

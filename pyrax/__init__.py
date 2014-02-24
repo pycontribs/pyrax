@@ -40,6 +40,7 @@ from functools import wraps
 import inspect
 import logging
 import os
+import warnings
 
 # keyring is an optional import
 try:
@@ -134,9 +135,13 @@ def _id_type(ityp):
 
 
 def _import_identity(import_str):
-    import_str = _id_type(import_str)
-    full_str = "pyrax.identity.%s" % import_str
-    return utils.import_class(full_str)
+    try:
+        import_str = _id_type(import_str)
+        full_str = "pyrax.identity.%s" % import_str
+        return utils.import_class(full_str)
+    except ImportError:
+        pass
+    return utils.import_class(import_str)
 
 
 
@@ -268,12 +273,22 @@ class Settings(object):
             except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
                 return default
 
+        # A common mistake is including credentials in the config file. If any
+        # values are found, issue a warning so that the developer can correct
+        # this problem.
+        creds_found = False
         for section in cfg.sections():
             if section == "settings":
                 section_name = "default"
                 self._default_set = True
             else:
                 section_name = section
+            # Check for included credentials
+            for key in ("username", "password", "api_key"):
+                if creds_found:
+                    break
+                if safe_get(section, key):
+                    creds_found = True
             dct = self._settings[section_name] = {}
             dct["region"] = safe_get(section, "region", default_region)
             ityp = safe_get(section, "identity_type")
@@ -304,6 +319,13 @@ class Settings(object):
             if not self._default_set:
                 self._settings["default"] = self._settings[section]
                 self._default_set = True
+        if creds_found:
+            warnings.warn("Login credentials were detected in your .pyrax.cfg "
+                    "file. These have been ignored, but you should remove "
+                    "them and either place them in a credential file, or "
+                    "consider using another means of authentication. More "
+                    "information on the use of credential files can be found "
+                    "in the 'docs/getting_started.md' document.")
 
 
 def get_environment():

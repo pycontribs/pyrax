@@ -1,5 +1,21 @@
 # Release Notes for pyrax
 
+###2014.02.24 - Version 1.6.4
+ - Cloud Block Storage:
+   - Added support for volume cloning.
+ - Cloud Files:
+   - Added support for bulk deletes > 10K objects. GitHub #286
+   - Fixed edge case with object size == max chunk size. GitHub #287
+ - General:
+   - Added support for identity modules outside of pyrax. GitHub #292
+ - Testing:
+   - Moved fakes.py into pyrax module to enable easier testing from other
+     projects. GitHub #288
+ - Docs:
+   - Fixed several typos. GitHub #296 & #296.
+ - Autoscale:
+   - Removed default of AUTO for diskConfig from Autoscale.
+
 ###2014.02.03 - Version 1.6.3
  - Cloud Monitoring:
    - Added back missing error info. GitHub #285

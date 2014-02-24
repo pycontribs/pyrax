@@ -118,6 +118,7 @@ Inheritance diagram for BaseAuth:</div>
   <map id="BaseAuth_map" name="BaseAuth_map">
 <area href="classpyrax_1_1identity_1_1keystone__identity_1_1KeystoneIdentity.html" title="Implements the Keystone-specific behaviors for Identity." alt="KeystoneIdentity" shape="rect" coords="0,56,104,80"/>
 <area href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html" title="This class handles all of the authentication requirements for working with the Rackspace Cloud..." alt="RaxIdentity" shape="rect" coords="114,56,218,80"/>
+<area href="classpyrax_1_1fakes_1_1FakeIdentity.html" title="Class that returns canned authentication responses." alt="FakeIdentity" shape="rect" coords="114,112,218,136"/>
 </map>
  </div></div>
 
@@ -374,7 +375,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>If a valid token is already known, this call will use it to generate the service catalog. </p>
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a2323e991798b13063610509c2bb4aaf4">RaxIdentity</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a2323e991798b13063610509c2bb4aaf4">FakeIdentity</a>, and <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a2323e991798b13063610509c2bb4aaf4">RaxIdentity</a>.</p>
 
 </div>
 </div>
@@ -396,7 +397,7 @@ Static Public Attributes</h2></td></tr>
 <p>Using the supplied credentials, connects to the specified authentication endpoint and attempts to log in. </p>
 <p>If successful, records the token information. </p>
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#ac0665028c611e61881f7e9fd0e752b99">RaxIdentity</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#ac0665028c611e61881f7e9fd0e752b99">FakeIdentity</a>, and <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#ac0665028c611e61881f7e9fd0e752b99">RaxIdentity</a>.</p>
 
 </div>
 </div>
@@ -666,6 +667,8 @@ Static Public Attributes</h2></td></tr>
 
 <p>Returns the auth token, if it is valid. </p>
 <p>If not, calls the auth endpoint to get a new token. Passing 'True' to 'force' will force a call for a new token, even if there already is a valid token. </p>
+
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#ab99f34de8275c77cf5ff09b1d7d0a04a">FakeIdentity</a>.</p>
 
 </div>
 </div>
@@ -1269,7 +1272,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a48f0dc4cf47cd14cdfda7e8495b0a76b">RaxIdentity</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a48f0dc4cf47cd14cdfda7e8495b0a76b">FakeIdentity</a>, and <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a48f0dc4cf47cd14cdfda7e8495b0a76b">RaxIdentity</a>.</p>
 
 </div>
 </div>
@@ -1323,7 +1326,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a9dbb300e28bc21c8dab41b01883918eb">RaxIdentity</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a9dbb300e28bc21c8dab41b01883918eb">FakeIdentity</a>, and <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a9dbb300e28bc21c8dab41b01883918eb">RaxIdentity</a>.</p>
 
 </div>
 </div>
@@ -1338,7 +1341,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a9dbb300e28bc21c8dab41b01883918eb">RaxIdentity</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a9dbb300e28bc21c8dab41b01883918eb">FakeIdentity</a>, and <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a9dbb300e28bc21c8dab41b01883918eb">RaxIdentity</a>.</p>
 
 </div>
 </div>
@@ -1392,6 +1395,8 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a9f8b98f9d8644964bbb15a9fb217ccb7">FakeIdentity</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="a9f8b98f9d8644964bbb15a9fb217ccb7"></a><!-- doxytag: member="pyrax::base_identity::BaseAuth::tenant_id" ref="a9f8b98f9d8644964bbb15a9fb217ccb7" args="" -->
@@ -1404,6 +1409,8 @@ Static Public Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a9f8b98f9d8644964bbb15a9fb217ccb7">FakeIdentity</a>.</p>
 
 </div>
 </div>
@@ -1418,6 +1425,8 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a0eda5ccf1b845b56032e5dfb7e536642">FakeIdentity</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="a0eda5ccf1b845b56032e5dfb7e536642"></a><!-- doxytag: member="pyrax::base_identity::BaseAuth::tenant_name" ref="a0eda5ccf1b845b56032e5dfb7e536642" args="" -->
@@ -1430,6 +1439,8 @@ Static Public Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a0eda5ccf1b845b56032e5dfb7e536642">FakeIdentity</a>.</p>
 
 </div>
 </div>
@@ -1444,6 +1455,8 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a87da3d8264af1c9427605148f20dd9c4">FakeIdentity</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="a87da3d8264af1c9427605148f20dd9c4"></a><!-- doxytag: member="pyrax::base_identity::BaseAuth::token" ref="a87da3d8264af1c9427605148f20dd9c4" args="" -->
@@ -1456,6 +1469,8 @@ Static Public Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a87da3d8264af1c9427605148f20dd9c4">FakeIdentity</a>.</p>
 
 </div>
 </div>
@@ -1496,7 +1511,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">RaxIdentity</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">FakeIdentity</a>, and <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">RaxIdentity</a>.</p>
 
 </div>
 </div>
@@ -1511,7 +1526,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">RaxIdentity</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">FakeIdentity</a>, and <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">RaxIdentity</a>.</p>
 
 </div>
 </div>
@@ -1549,7 +1564,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 4 2013 13:36:36 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Feb 24 2014 11:17:57 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

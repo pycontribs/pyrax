@@ -12,10 +12,10 @@ import pyrax
 from pyrax.cf_wrapper.storage_object import StorageObject
 import pyrax.exceptions as exc
 import pyrax.utils as utils
-from tests.unit.fakes import fake_attdict
-from tests.unit.fakes import FakeContainer
-from tests.unit.fakes import FakeIdentity
-from tests.unit.fakes import FakeResponse
+from pyrax.fakes import fake_attdict
+from pyrax.fakes import FakeContainer
+from pyrax.fakes import FakeIdentity
+from pyrax.fakes import FakeResponse
 
 
 

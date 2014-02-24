@@ -41,6 +41,7 @@ LIST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
 AUTH_ATTEMPTS = 2
+MAX_BULK_DELETE = 10000
 
 no_such_container_pattern = re.compile(
         r"Container (?:GET|HEAD) failed: .+/(.+) 404")
@@ -756,7 +757,7 @@ class CFClient(object):
                     fsize = get_file_size(fileobj)
                 else:
                     fsize = content_length
-            if fsize < self.max_file_size:
+            if fsize <= self.max_file_size:
                 # We can just upload it as-is.
                 return self.connection.put_object(cont.name, obj_name,
                         contents=fileobj, content_type=content_type,
@@ -1520,33 +1521,39 @@ class BulkDeleter(threading.Thread):
         client = self.client
         container = self.container
         object_names = self.object_names
+        self.results = {"deleted": 0, "not_found": 0, "status": "",
+                "errors": ""}
+        res_keys = {"Number Deleted": "deleted",
+                "Number Not Found": "not_found",
+                "Response Status": "status",
+                "Errors": "errors",
+                }
         cname = client._resolve_name(container)
         parsed, conn = client.connection.http_connection()
         method = "DELETE"
         headers = {"X-Auth-Token": pyrax.identity.token,
                 "Content-type": "text/plain",
                 }
-        obj_paths = ("%s/%s" % (cname, nm) for nm in object_names)
-        body = "\n".join(obj_paths)
-        pth = "%s/?bulk-delete=1" % parsed.path
-        conn.request(method, pth, body, headers)
-        resp = conn.getresponse()
-        status = resp.status
-        reason = resp.reason
-        resp_body = resp.read()
-        resp_lines = resp_body.splitlines()
-        self.results = {}
-        res_keys = {"Number Deleted": "deleted",
-                "Number Not Found": "not_found",
-                "Response Status": "status",
-                "Errors": "errors",
-                }
-        for resp_line in resp_lines:
-            if not resp_line:
-                continue
-            resp_key, val = resp_line.split(":")
-            result_key = res_keys.get(resp_key)
-            if not result_key:
-                continue
-            self.results[result_key] = val.strip()
+        while object_names:
+            this_batch, object_names = (object_names[:MAX_BULK_DELETE],
+                    object_names[MAX_BULK_DELETE:])
+            obj_paths = ("%s/%s" % (cname, nm) for nm in this_batch)
+            body = "\n".join(obj_paths)
+            pth = "%s/?bulk-delete=1" % parsed.path
+            conn.request(method, pth, body, headers)
+            resp = conn.getresponse()
+            status = resp.status
+            reason = resp.reason
+            resp_body = resp.read()
+            for resp_line in resp_body.splitlines():
+                if not resp_line:
+                    continue
+                resp_key, val = resp_line.split(":", 1)
+                result_key = res_keys.get(resp_key)
+                if not result_key:
+                    continue
+                if result_key in ("deleted", "not_found"):
+                    self.results[result_key] += int(val.strip())
+                else:
+                    self.results[result_key] = val.strip()
         self.completed = True

@@ -13,6 +13,7 @@ var searchData=
   ['cloudnetworks',['cloudnetworks',['../namespacepyrax_1_1cloudnetworks.html',1,'pyrax']]],
   ['container',['container',['../namespacepyrax_1_1cf__wrapper_1_1container.html',1,'pyrax::cf_wrapper']]],
   ['exceptions',['exceptions',['../namespacepyrax_1_1exceptions.html',1,'pyrax']]],
+  ['fakes',['fakes',['../namespacepyrax_1_1fakes.html',1,'pyrax']]],
   ['identity',['identity',['../namespacepyrax_1_1identity.html',1,'pyrax']]],
   ['keystone_5fidentity',['keystone_identity',['../namespacepyrax_1_1identity_1_1keystone__identity.html',1,'pyrax::identity']]],
   ['manager',['manager',['../namespacepyrax_1_1manager.html',1,'pyrax']]],

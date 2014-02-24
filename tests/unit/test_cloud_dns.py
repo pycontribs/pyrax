@@ -23,7 +23,7 @@ from pyrax.clouddns import RecordResultsIterator
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
-import fakes
+from pyrax import fakes
 
 example_uri = "http://example.com"
 

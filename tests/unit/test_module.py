@@ -4,6 +4,7 @@
 import json
 import os
 import unittest
+import warnings
 
 from mock import patch
 from mock import MagicMock as Mock
@@ -11,7 +12,7 @@ from mock import MagicMock as Mock
 import pyrax
 import pyrax.exceptions as exc
 import pyrax.utils as utils
-from tests.unit import fakes
+from pyrax import fakes
 
 
 
@@ -85,6 +86,29 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.identity.authenticated = False
         self.assertRaises(exc.NotAuthenticated, testfunc)
 
+    def test_import_identity(self):
+        sav = pyrax.utils.import_class
+        cls = utils.random_unicode()
+        pyrax.utils.import_class = Mock(return_value=cls)
+        ret = pyrax._import_identity(cls)
+        self.assertEqual(ret, cls)
+        pyrax.utils.import_class = sav
+
+    def test_import_identity_external(self):
+        sav = pyrax.utils.import_class
+        cls = utils.random_unicode()
+
+        def fake_import(nm):
+            if "pyrax.identity." in nm:
+                raise ImportError()
+            else:
+                return nm
+
+        pyrax.utils.import_class = fake_import
+        ret = pyrax._import_identity(cls)
+        self.assertEqual(ret, cls)
+        pyrax.utils.import_class = sav
+
     def test_settings_get(self):
         def_ep = pyrax.get_setting("auth_endpoint", "default")
         alt_ep = pyrax.get_setting("auth_endpoint", "alternate")
@@ -114,6 +138,21 @@ class PyraxInitTest(unittest.TestCase):
             pyrax.settings.read_config(cfgfile)
         self.assertEqual(pyrax.get_setting("region"), "FAKE")
         self.assertTrue(pyrax.get_setting("user_agent").startswith("FAKE "))
+        pyrax.default_region = sav_region
+        pyrax.USER_AGENT = sav_USER_AGENT
+
+    def test_read_config_creds(self):
+        dummy_cfg = fakes.fake_config_file
+        sav_region = pyrax.default_region
+        sav_USER_AGENT = pyrax.USER_AGENT
+        with utils.SelfDeletingTempfile() as cfgfile:
+            with open(cfgfile, "w") as cfg:
+                cfg.write(dummy_cfg)
+                # Add password entry
+                cfg.write("password = fake\n")
+            with warnings.catch_warnings(record=True) as warn:
+                pyrax.settings.read_config(cfgfile)
+                self.assertEqual(len(warn), 1)
         pyrax.default_region = sav_region
         pyrax.USER_AGENT = sav_USER_AGENT
 

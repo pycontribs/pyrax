@@ -17,7 +17,7 @@ from pyrax.autoscale import ScalingGroupManager
 import pyrax.exceptions as exc
 import pyrax.utils as utils
 
-import fakes
+from pyrax import fakes
 
 
 
@@ -1081,7 +1081,60 @@ class AutoscaleTest(unittest.TestCase):
                         "loadBalancers": [{"loadBalancerId": lb.id,
                             "port": lb.port}],
                         "server": {
-                            "OS-DCF:diskConfig": "AUTO",
+                            "flavorRef": flavor,
+                            "imageRef": image,
+                            "metadata": {},
+                            "name": server_name,
+                            "personality": [],
+                            "networks": networks,
+                            "key_name": key_name}
+                        },
+                    "type": launch_config_type},
+                    "scalingPolicies": []}
+
+        self.maxDiff = 1000000
+        ret = mgr._create_body(name, cooldown, min_entities, max_entities,
+                launch_config_type, server_name, image, flavor,
+                disk_config=disk_config, metadata=metadata,
+                personality=personality, networks=networks,
+                load_balancers=load_balancers,
+                scaling_policies=scaling_policies,
+                group_metadata=group_metadata, key_name=key_name)
+        self.assertEqual(ret, expected)
+
+    def test_mgr_create_body_disk_config(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        name = utils.random_unicode()
+        cooldown = utils.random_unicode()
+        min_entities = utils.random_unicode()
+        max_entities = utils.random_unicode()
+        launch_config_type = utils.random_unicode()
+        flavor = utils.random_unicode()
+        disk_config = utils.random_unicode()
+        metadata = None
+        personality = None
+        scaling_policies = None
+        networks = utils.random_unicode()
+        lb = fakes.FakeLoadBalancer()
+        load_balancers = (lb.id, lb.port)
+        server_name = utils.random_unicode()
+        image = utils.random_unicode()
+        group_metadata = utils.random_unicode()
+        key_name = utils.random_unicode()
+        expected = {
+                "groupConfiguration": {
+                    "cooldown": cooldown,
+                    "maxEntities": max_entities,
+                    "minEntities": min_entities,
+                    "name": name,
+                    "metadata": group_metadata},
+                "launchConfiguration": {
+                    "args": {
+                        "loadBalancers": [{"loadBalancerId": lb.id,
+                            "port": lb.port}],
+                        "server": {
+                            "OS-DCF:diskConfig": disk_config,
                             "flavorRef": flavor,
                             "imageRef": image,
                             "metadata": {},
