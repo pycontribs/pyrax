@@ -27,5 +27,5 @@ var searchData=
   ['upload_5ffiles_5fin_5ffolder',['upload_files_in_folder',['../classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html#af1d1df487458050d64d162846617d266',1,'pyrax::cf_wrapper::client::FolderUploader']]],
   ['upload_5ffolder',['upload_folder',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1d81cba43ddabd40e412c5d709192958',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['uri',['uri',['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html#af205052c80b55070237ee9052f067ba3',1,'pyrax::cf_wrapper::client::Connection']]],
-  ['url_5ffor',['url_for',['../classpyrax_1_1service__catalog_1_1ServiceCatalog.html#a50e97fbd8e0fb99b0ebf1b6d31958969',1,'pyrax::service_catalog::ServiceCatalog']]]
+  ['url_5ffor',['url_for',['../classpyrax_1_1fakes_1_1FakeServiceCatalog.html#a50e97fbd8e0fb99b0ebf1b6d31958969',1,'pyrax::fakes::FakeServiceCatalog.url_for()'],['../classpyrax_1_1service__catalog_1_1ServiceCatalog.html#a50e97fbd8e0fb99b0ebf1b6d31958969',1,'pyrax::service_catalog::ServiceCatalog.url_for()']]]
 ];
