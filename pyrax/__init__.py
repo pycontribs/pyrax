@@ -135,9 +135,13 @@ def _id_type(ityp):
 
 
 def _import_identity(import_str):
-    import_str = _id_type(import_str)
-    full_str = "pyrax.identity.%s" % import_str
-    return utils.import_class(full_str)
+    try:
+        import_str = _id_type(import_str)
+        full_str = "pyrax.identity.%s" % import_str
+        return utils.import_class(full_str)
+    except ImportError:
+        pass
+    return utils.import_class(import_str)
 
 
 
