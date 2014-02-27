@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Pyrax by rackspace</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/rackspace/pyrax">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/rackspace/pyrax/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/rackspace/pyrax/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Pyrax</h1>
+          <p>The Python SDK for OpenStack and the Rackspace Cloud</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/rackspace">rackspace</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>
+<a name="pyrax" class="anchor" href="#pyrax"><span class="octicon octicon-link"></span></a>pyrax</h1>
+
+<p>Python SDK for OpenStack/Rackspace APIs</p>
+
+<p>See the COPYING file for license and copyright information.</p>
+
+<p><strong>pyrax</strong> should work with most OpenStack-based cloud deployments, though it specifically targets the Rackspace public cloud. For example, the code for cloudfiles contains the ability to publish your content on Rackspace's CDN network, even though CDN support is not part of OpenStack Swift. But if you don't use any of the CDN-related code, your app will work fine on any standard Swift deployment.</p>
+
+<p>See the <a href="https://github.com/rackspace/pyrax/tree/master/RELEASENOTES.md">Release Notes</a> for what has changed in the latest release</p>
+
+<p><a href="https://travis-ci.org/rackspace/pyrax"><img src="https://travis-ci.org/rackspace/pyrax.png" alt="Build Status"></a></p>
+
+<h2>
+<a name="getting-started-with-openstackrackspace" class="anchor" href="#getting-started-with-openstackrackspace"><span class="octicon octicon-link"></span></a>Getting Started with OpenStack/Rackspace</h2>
+
+<p>To sign up for a Rackspace Cloud account, go to</p>
+
+<p><a href="http://www.rackspace.com/cloud">http://www.rackspace.com/cloud</a></p>
+
+<p>and follow the prompts.</p>
+
+<p>If you are working with an OpenStack deployment, you can find more information at <a href="http://www.openstack.org">http://www.openstack.org</a>.</p>
+
+<h2>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>A Rackspace Cloud account
+
+<ul>
+<li>username</li>
+<li>API key</li>
+</ul>
+</li>
+<li>Python 2.7
+
+<ul>
+<li>pyrax is not yet tested yet with other Python versions. Please post feedback about what works or does not work with other versions. See the <strong>Support and Feedback</strong> section below for where to post.</li>
+</ul>
+</li>
+</ul><h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>The best way to install <strong>pyrax</strong> is by using <a href="http://www.pip-installer.org/en/latest/">pip</a> to get the latest official release:</p>
+
+<pre><code>pip install pyrax
+</code></pre>
+
+<p>If you would like to work with the current development state of pyrax, you can install directly from trunk on GitHub:</p>
+
+<pre><code>pip install git+git://github.com/rackspace/pyrax.git
+</code></pre>
+
+<p>If you are not using <a href="http://pypi.python.org/pypi/virtualenv">virtualenv</a>, you will need to run <code>pip install</code> as admin using <code>sudo</code>.</p>
+
+<p>You may also download and install from source. The source code for <strong>pyrax</strong> is available on <a href="https://github.com/rackspace/pyrax/">GitHub</a>.</p>
+
+<p>Once you have the source code, <code>cd</code> to the base directory of the source and run (using <code>sudo</code>, if necessary):</p>
+
+<pre><code>python setup.py install
+</code></pre>
+
+<h2>
+<a name="updates" class="anchor" href="#updates"><span class="octicon octicon-link"></span></a>Updates</h2>
+
+<p>If you installed <strong>pyrax</strong> using pip, it is simple to get the latest updates from either PyPI or GitHub:</p>
+
+<pre><code># PyPI
+pip install --upgrade pyrax
+# GitHub
+pip install --upgrade git+git://github.com/rackspace/pyrax.git
+</code></pre>
+
+<h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>Please see the HACKING file for contribution guidelines. Make sure pull requests are on the <code>working</code> branch!</p>
+
+<h2>
+<a name="support-and-feedback" class="anchor" href="#support-and-feedback"><span class="octicon octicon-link"></span></a>Support and Feedback</h2>
+
+<p>You can find documentation for using the <strong>pyrax</strong> SDK at <a href="http://docs.rackspace.com/sdks/guide/content/python.html">docs.rackspace.com</a>.</p>
+
+<p>Your feedback is appreciated! If you have specific issues with the <strong>pyrax</strong> SDK, developers should file an <a href="https://github.com/rackspace/pyrax/issues">issue via Github</a>.</p>
+
+<p>For general feedback and support requests, send an email to: <a href="mailto:sdk-support@rackspace.com">sdk-support@rackspace.com</a>.</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
