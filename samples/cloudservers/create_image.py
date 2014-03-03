@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -25,20 +27,20 @@ pyrax.set_credential_file(creds_file)
 cs = pyrax.cloudservers
 servers = cs.servers.list()
 srv_dict = {}
-print "Select a server from which an image will be created."
+print("Select a server from which an image will be created.")
 for pos, srv in enumerate(servers):
-    print "%s: %s" % (pos, srv.name)
+    print("%s: %s" % (pos, srv.name))
     srv_dict[str(pos)] = srv.id
 selection = None
 while selection not in srv_dict:
     if selection is not None:
-        print "   -- Invalid choice"
+        print("   -- Invalid choice")
     selection = raw_input("Enter the number for your choice: ")
 
 server_id = srv_dict[selection]
-print
+print()
 nm = raw_input("Enter a name for the image: ")
 
 img_id = cs.servers.create_image(server_id, nm)
 
-print "Image '%s' is being created. Its ID is: %s" % (nm, img_id)
+print("Image '%s' is being created. Its ID is: %s" % (nm, img_id))

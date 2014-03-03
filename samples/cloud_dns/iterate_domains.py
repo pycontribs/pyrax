@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 
 import pyrax
@@ -28,10 +30,10 @@ pyrax.set_credential_file(creds_file)
 dns = pyrax.cloud_dns
 
 def print_domain(domain):
-    print "Domain:", domain.name
-    print "  email:", domain.emailAddress
-    print "  created:", domain.created
-    print
+    print("Domain:", domain.name)
+    print("  email:", domain.emailAddress)
+    print("  created:", domain.created)
+    print()
 
 count = 0
 
@@ -40,4 +42,4 @@ for domain in iterator:
     count += 1
     print_domain(domain)
 
-print "There were a total of %s domain(s)." % count
+print("There were a total of %s domain(s)." % count)

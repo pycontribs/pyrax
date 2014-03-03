@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 import time
@@ -28,46 +30,46 @@ pyrax.set_credential_file(creds_file)
 cs = pyrax.cloudservers
 
 def create_server():
-    print "Creating the sacrificial server..."
+    print("Creating the sacrificial server...")
     img = cs.list_images()[0]
     flv = cs.list_flavors()[0]
     srv = cs.servers.create("sacrifice", img.id, flv.id)
-    print "Server '%s' created; ID=%s" % (srv.name, srv.id)
+    print("Server '%s' created; ID=%s" % (srv.name, srv.id))
     return srv
 
-print
-print "Looking for a server named 'sacrifice' to delete..."
+print()
+print("Looking for a server named 'sacrifice' to delete...")
 try:
     sacrifice = cs.servers.find(name="sacrifice")
-    print "Found server named 'sacrifice'."
+    print("Found server named 'sacrifice'.")
 except Exception as e:
-    print "No server named 'sacrifice' exists, so for safety reasons this"
-    print "script will not do anything potentially destructive."
-    print
+    print("No server named 'sacrifice' exists, so for safety reasons this")
+    print("script will not do anything potentially destructive.")
+    print()
     answer = raw_input("Do you want to create that server now? [y/n] ")
     if answer.strip().lower()[0] == "y":
         sacrifice = create_server()
     else:
-        print "The server will not be created."
+        print("The server will not be created.")
         sys.exit()
 
 if sacrifice.status != "ACTIVE":
-    print "Please wait until the 'sacrifice' server is in ACTIVE status."
-    print "Current status:", sacrifice.status
+    print("Please wait until the 'sacrifice' server is in ACTIVE status.")
+    print("Current status:", sacrifice.status)
     raw_answer = raw_input("Do you want this script to cycle every 10 seconds "
             "to check? [y/n] ")
     answer = raw_answer[0].lower()
     if answer != "y":
         sys.exit()
-    print "Waiting...  (press CTRL-C to stop)"
+    print("Waiting...  (press CTRL-C to stop)")
     while sacrifice.status != "ACTIVE":
         time.sleep(10)
         sacrifice = cs.servers.get(sacrifice.id)
-        print "Status is '%s' at %s" % (sacrifice.status, time.ctime())
-    print
-    print "The server is now active. You may re-run this script to delete it."
+        print("Status is '%s' at %s" % (sacrifice.status, time.ctime()))
+    print()
+    print("The server is now active. You may re-run this script to delete it.")
     sys.exit()
 
-print "Deleting 'sacrifice' server...",
+print("Deleting 'sacrifice' server...", end=' ')
 sacrifice.delete()
-print "  Done!"
+print("  Done!")

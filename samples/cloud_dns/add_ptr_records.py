@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -45,5 +47,5 @@ ipv6_rec = {"name": domain_name,
         "ttl": 7200}
 
 recs = dns.add_ptr_records(server, [ipv4_rec, ipv6_rec])
-print recs
-print
+print(recs)
+print()
