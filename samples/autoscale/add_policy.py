@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 
 pyrax.set_setting("identity_type", "rackspace")
@@ -28,8 +29,8 @@ au = pyrax.autoscale
 
 def safe_int(val, allow_zero=True):
     """
-    This function converts the raw_input values to integers. It handles invalid
-    entries, and optionally forbids values of zero.
+    This function converts the six.moves.input values to integers. It handles
+    invalid entries, and optionally forbids values of zero.
     """
     try:
         ret = int(val)
@@ -52,7 +53,7 @@ print()
 print("Available Scaling Groups:")
 for pos, sg in enumerate(sgs):
     print("%s - %s" % (pos, sg.name))
-answer = raw_input("Enter the number of the scaling group you wish to add a "
+answer = six.moves.input("Enter the number of the scaling group you wish to add a "
         "policy to: ")
 if not answer:
     print("Nothing entered; exiting.")
@@ -65,17 +66,18 @@ sg = sgs[intanswer]
 
 pname = ""
 while not pname:
-    pname = raw_input("Enter a name for this policy: ")
+    pname = six.moves.input("Enter a name for this policy: ")
 
 cooldown = 0
 while not cooldown:
-    cooldown = safe_int(raw_input("Enter a cooldown period in seconds: "), False)
+    cooldown_input = six.moves.input("Enter a cooldown period in seconds: ")
+    cooldown = safe_int(cooldown_input, False)
 
 change = 0
 while not change:
-    change = safe_int(raw_input("Enter the change increment: "), False)
+    change = safe_int(six.moves.input("Enter the change increment: "), False)
 
-answer = raw_input("Is that a percentage change? [y/N]: ")
+answer = six.moves.input("Is that a percentage change? [y/N]: ")
 is_percent = "y" in answer.lower()
 
 policy = au.add_policy(sg, pname, "webhook", cooldown, change, is_percent)

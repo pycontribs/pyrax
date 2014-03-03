@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 import pyrax.exceptions as exc
 
@@ -39,8 +40,8 @@ else:
     print("Queues:")
     for pos, queue in enumerate(queues):
         print("%s - %s" % (pos, queue.name))
-    snum = raw_input("Enter the number of the queue you wish to list messages "
-            "from: ")
+    snum = six.moves.input("Enter the number of the queue you wish to list "
+        "messages from: ")
     if not snum:
         exit()
     try:
@@ -60,7 +61,7 @@ if not msgs:
 for pos, msg in enumerate(msgs):
     msg.get()
     print(pos, "- ID:", msg.id, msg.claim_id, "Body='%s'" % msg.body[:80])
-snum = raw_input("Enter the number of the message you wish to delete: ")
+snum = six.moves.input("Enter the number of the message you wish to delete: ")
 if not snum:
     print("No message selected; exiting.")
     exit()

@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import os
 import sys
+import six
 
 import pyrax
 import pyrax.exceptions as exc
@@ -35,7 +36,7 @@ domain_name = "abc.example.edu"
 try:
     dom = dns.find(name=domain_name)
 except exc.NotFound:
-    answer = raw_input("The domain '%s' was not found. Do you want to create "
+    answer = six.moves.input("The domain '%s' was not found. Do you want to create "
             "it? [y/n]" % domain_name)
     if not answer.lower().startswith("y"):
         sys.exit()

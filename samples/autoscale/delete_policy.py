@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 
 pyrax.set_setting("identity_type", "rackspace")
@@ -28,8 +29,8 @@ au = pyrax.autoscale
 
 def safe_int(val, allow_zero=True):
     """
-    This function converts the raw_input values to integers. It handles invalid
-    entries, and optionally forbids values of zero.
+    This function converts the six.moves.input values to integers. It handles
+    invalid entries, and optionally forbids values of zero.
     """
     try:
         ret = int(val)
@@ -53,7 +54,7 @@ for pos, sg in enumerate(sgs):
     print("%s - %s" % (pos, sg.name))
 intanswer = -1
 while intanswer < 0:
-    answer = raw_input("Enter the number of the scaling group: ")
+    answer = six.moves.input("Enter the number of the scaling group: ")
     if not answer:
         print("Nothing entered; exiting.")
         exit()
@@ -71,7 +72,7 @@ if not policies:
     exit()
 for pos, policy in enumerate(policies):
     print("%s - %s" % (pos, policy.name))
-answer = raw_input("Enter the number of the policy to delete: ")
+answer = six.moves.input("Enter the number of the policy to delete: ")
 if not answer:
     print("Nothing entered; exiting.")
     exit()

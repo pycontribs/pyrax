@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import os
 import sys
+import six
 
 import pyrax
 
@@ -39,7 +40,7 @@ for pos, inst in enumerate(instances):
     print("%s: %s (%s, RAM=%s, volume=%s) Status=%s" % (pos, inst.name,
             inst.flavor.name, inst.flavor.ram, inst.volume.size, inst.status))
 try:
-    sel = int(raw_input("Enter the number of the instance to delete: "))
+    sel = int(six.moves.input("Enter the number of the instance to delete: "))
 except ValueError:
     print()
     print("Invalid (non-numeric) entry.")

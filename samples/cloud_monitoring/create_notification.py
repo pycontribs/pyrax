@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import os
 import sys
+import six
 
 sys.path.insert(0, os.path.abspath(os.pardir))
 
@@ -50,7 +51,7 @@ check = checks[check_num]
 # cm.list_notification_types() would provide all available check types.
 # However, this sample will use the most basic type: email
 
-email = raw_input("Enter the email address to be notified at: ")
+email = six.moves.input("Enter the email address to be notified at: ")
 
 # Create the notification
 notif = cm.create_notification("email", label="sample email",

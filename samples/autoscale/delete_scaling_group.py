@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 
 pyrax.set_setting("identity_type", "rackspace")
@@ -37,7 +38,7 @@ print()
 print("Available Scaling Groups:")
 for pos, sg in enumerate(sgs):
     print("%s - %s" % (pos, sg.name))
-answer = raw_input("Enter the number of the scaling group to delete: ")
+answer = six.moves.input("Enter the number of the scaling group to delete: ")
 if not answer:
     print("Nothing entered; exiting.")
     exit()

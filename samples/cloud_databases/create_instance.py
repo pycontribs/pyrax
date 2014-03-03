@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import os
 import sys
+import six
 
 import pyrax
 
@@ -30,13 +31,13 @@ cdb = pyrax.cloud_databases
 instance_name = pyrax.utils.random_ascii(8)
 
 flavors = cdb.list_flavors()
-nm = raw_input("Enter a name for your new instance: ")
+nm = six.moves.input("Enter a name for your new instance: ")
 print()
 print("Available Flavors:")
 for pos, flavor in enumerate(flavors):
     print("%s: %s, %s" % (pos, flavor.name, flavor.ram))
 
-flav = int(raw_input("Select a Flavor for your new instance: "))
+flav = int(six.moves.input("Select a Flavor for your new instance: "))
 try:
     selected = flavors[flav]
 except IndexError:
@@ -44,7 +45,7 @@ except IndexError:
     sys.exit()
 
 print()
-sz = int(raw_input("Enter the volume size in GB (1-50): "))
+sz = int(six.moves.input("Enter the volume size in GB (1-50): "))
 
 instance = cdb.create(nm, flavor=selected, volume=sz)
 print("Name:", instance.name)

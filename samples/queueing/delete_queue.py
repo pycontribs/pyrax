@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 import pyrax.exceptions as exc
 
@@ -35,7 +36,7 @@ if not queues:
 print("Queues:")
 for pos, queue in enumerate(queues):
     print("%s - %s" % (pos, queue.name))
-snum = raw_input("Enter the number of the queue to delete: ")
+snum = six.moves.input("Enter the number of the queue to delete: ")
 if not snum:
     exit()
 try:

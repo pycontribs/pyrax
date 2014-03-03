@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import os
 import sys
+import six
 
 import pyrax
 
@@ -42,7 +43,7 @@ selection = None
 while selection not in img_dict:
     if selection is not None:
         print("   -- Invalid choice")
-    selection = raw_input("Enter the number for your choice: ")
+    selection = six.moves.input("Enter the number for your choice: ")
 
 image = img_dict.get(selection)
 cs.images.delete(image.id)

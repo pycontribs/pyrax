@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 
 pyrax.set_setting("identity_type", "rackspace")
@@ -35,11 +36,11 @@ selection = None
 while selection not in srv_dict:
     if selection is not None:
         print("   -- Invalid choice")
-    selection = raw_input("Enter the number for your choice: ")
+    selection = six.moves.input("Enter the number for your choice: ")
 
 server_id = srv_dict[selection]
 print()
-nm = raw_input("Enter a name for the image: ")
+nm = six.moves.input("Enter a name for the image: ")
 
 img_id = cs.servers.create_image(server_id, nm)
 

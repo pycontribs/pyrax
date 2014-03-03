@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 import pyrax.exceptions as exc
 
@@ -39,8 +40,8 @@ else:
     print("Queues:")
     for pos, queue in enumerate(queues):
         print("%s - %s" % (pos, queue.name))
-    snum = raw_input("Enter the number of the queue you wish to post a message "
-            "to: ")
+    snum = six.moves.input("Enter the number of the queue you wish to post a "
+        "message to: ")
     if not snum:
         exit()
     try:
@@ -52,8 +53,8 @@ else:
         print("'%s' is not a valid queue number." % snu)
         exit()
     queue = queues[num]
-msg = raw_input("Enter the message to post: ")
-sttl = raw_input("Enter a TTL for the message, or just press Enter for the "
+msg = six.moves.input("Enter the message to post: ")
+sttl = six.moves.input("Enter a TTL for the message, or just press Enter for the "
         "default of 14 days: ")
 if not sttl:
     ttl = None

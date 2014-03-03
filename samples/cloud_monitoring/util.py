@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import sys
+import six
 
 def option_chooser(options, attr=None):
     """Given an iterable, enumerate its contents for a user to choose from.
@@ -35,7 +36,7 @@ def option_chooser(options, attr=None):
     # Add an escape option
     escape_opt = num + 1
     print("%s: I want to exit!" % escape_opt)
-    choice = raw_input("Selection: ")
+    choice = six.moves.input("Selection: ")
     try:
         ichoice = int(choice)
         if ichoice > escape_opt:

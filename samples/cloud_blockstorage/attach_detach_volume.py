@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import sys
 
 import pyrax
@@ -35,7 +36,8 @@ except cs.exceptions.NotFound as e:
     print()
     print("Before running this sample, create a server named 'sample_server' ")
     print("and wait for it to be in an ACTIVE state.")
-    answer = raw_input("Do you wish to have this server created for you? [y/N]")
+    prompt = "Do you wish to have this server created for you? [y/N]"
+    answer = six.moves.input(prompt)
     if answer.lower().startswith("y"):
         ubu_image = [img for img in cs.images.list()
                 if "Ubuntu" in img.name][0]

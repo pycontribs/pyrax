@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import os
 import sys
+import six
 
 import pyrax
 
@@ -42,13 +43,13 @@ print("Server Name:", active.name)
 print("Server ID:", active.id)
 print("Server Status:", active.status)
 print()
-answer = raw_input("Do you wish to reboot this server? [y/n] ")
+answer = six.moves.input("Do you wish to reboot this server? [y/n] ")
 if answer.strip().lower()[0] == "y":
     print()
     print("A 'soft' reboot attempts a graceful shutdown and restart of your "
         "server.")
     print("A 'hard' reboot power cycles your server.")
-    answer = raw_input("Which type of reboot do you want to do? [s/h] ")
+    answer = six.moves.input("Which type of reboot do you want to do? [s/h] ")
     answer = answer.strip().lower()[0]
     reboot_type = {"s": "soft", "h": "hard"}[answer]
     active.reboot(reboot_type)

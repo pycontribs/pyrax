@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 
 pyrax.set_setting("identity_type", "rackspace")
@@ -31,8 +32,8 @@ clb = pyrax.cloud_loadbalancers
 
 def safe_int(val, allow_zero=True):
     """
-    This function converts the raw_input values to integers. It handles invalid
-    entries, and optionally forbids values of zero.
+    This function converts the six.moves.input values to integers. It handles
+    invalid entries, and optionally forbids values of zero.
     """
     try:
         ret = int(val)
@@ -48,7 +49,7 @@ def safe_int(val, allow_zero=True):
 def get_yn(prompt):
     answer = yn = None
     while not answer:
-        answer = raw_input("%s (y/n) " % prompt)
+        answer = six.moves.input("%s (y/n) " % prompt)
         yn = answer[0].lower()
         if yn not in "yn":
             print("Please answer 'y' or 'n', not '%s'." % answer)
@@ -62,7 +63,7 @@ def select_lbs():
     lbs = clb.list()
     for pos, lb in enumerate(lbs):
         print("%s - %s (port %s)" % (pos, lb.name, lb.port))
-    chosen = raw_input("Enter the number(s) of the load balancer to use, "
+    chosen = six.moves.input("Enter the number(s) of the load balancer to use, "
             "separated by commas: ")
     lb_ints = [safe_int(num) for num in chosen.split(",")]
     lb_pos = [lb_int for lb_int in lb_ints
@@ -77,20 +78,20 @@ def select_lbs():
 # Give the scaling group a name
 sg_name = ""
 while not sg_name:
-    sg_name = raw_input("Enter a name for the scaling group: ")
+    sg_name = six.moves.input("Enter a name for the scaling group: ")
 
 cooldown = 0
 while not cooldown:
-    str_secs = raw_input("Enter a cooldown period in seconds: ")
+    str_secs = six.moves.input("Enter a cooldown period in seconds: ")
     cooldown = safe_int(str_secs, False)
 
 # We want a minimum of 2 servers, and a max of 20.
 min_entities = max_entities = None
-min_entities = safe_int(raw_input("Enter the minimum entities (0-1000): "),
+min_entities = safe_int(six.moves.input("Enter the minimum entities (0-1000): "),
         False)
 max_entities = min_entities
 while max_entities <= min_entities:
-    max_entities = safe_int(raw_input("Enter the maximum entities: (%s-1000)"
+    max_entities = safe_int(six.moves.input("Enter the maximum entities: (%s-1000)"
             % min_entities), False)
     if max_entities and (max_entities < min_entities):
         print("The value for max_entities must be greater than min_entities.")
@@ -98,7 +99,7 @@ while max_entities <= min_entities:
 # Configure the server launch settings.
 server_name = ""
 while not server_name:
-    server_name = raw_input("Enter the name base for the servers in this "
+    server_name = six.moves.input("Enter the name base for the servers in this "
             "scaling group: ")
 
 print("Getting a list of images...")
@@ -107,7 +108,7 @@ for pos, img in enumerate(imgs):
     print("%s - %s" % (pos, img.name))
 answer = -1
 while answer < 0:
-    answer = safe_int(raw_input("Enter the number of the image to use: "))
+    answer = safe_int(six.moves.input("Enter the number of the image to use: "))
     if answer is False:
         # safe_int() returns False for invalid values.
         answer = -1
