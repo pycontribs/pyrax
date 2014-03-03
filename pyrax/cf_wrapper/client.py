@@ -316,7 +316,7 @@ class CFClient(object):
         path_parts = (conn_url[v1pos:], cname, oname)
         cleaned = (part.strip("/\\") for part in path_parts)
         pth = "/%s" % "/".join(cleaned)
-        if isinstance(pth, unicode):
+        if isinstance(pth, six.text_type):
             pth = pth.encode(pyrax.get_encoding())
         expires = int(time.time() + int(seconds))
         hmac_body = "%s\n%s\n%s" % (mod_method, expires, pth)
@@ -1415,7 +1415,7 @@ class Connection(_swift_client.Connection):
         Taken directly from the cloudfiles library and modified for use here.
         """
         def quote(val):
-            if isinstance(val, unicode):
+            if isinstance(val, six.text_type):
                 val = val.encode("utf-8")
             return urllib.quote(val)
 
