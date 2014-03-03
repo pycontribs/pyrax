@@ -31,12 +31,10 @@ def option_chooser(options, attr=None):
         if attr:
             print("%s: %s" % (num, getattr(option, attr)))
         else:
-            print("%s: %s" % (num, option)
-)
+            print("%s: %s" % (num, option))
     # Add an escape option
     escape_opt = num + 1
-    print("%s: I want to exit!" % escape_opt
-)
+    print("%s: I want to exit!" % escape_opt)
     choice = raw_input("Selection: ")
     try:
         ichoice = int(choice)
