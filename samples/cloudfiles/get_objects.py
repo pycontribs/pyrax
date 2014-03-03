@@ -20,6 +20,8 @@ from __future__ import print_function
 
 import os
 
+import six
+
 import pyrax
 import pyrax.exceptions as exc
 
@@ -33,14 +35,14 @@ cont = cf.create_container(cont_name)
 text = "File Content"
 
 # Create 5 files with a similar name
-for i in xrange(5):
+for i in six.moves.range(5):
     nm = "series_%s" % i
     cont.store_object(nm, text)
 
 # Create 5 files in a "folder", with repeated single-letter names
 start = ord("a")
 end = start + 5
-for i in xrange(start, end):
+for i in six.moves.range(start, end):
     chars = chr(i) * 4
     nm = "stuff/%s" % chars
     cont.store_object(nm, text)

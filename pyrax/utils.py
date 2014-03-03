@@ -26,6 +26,8 @@ except ImportError:
     import pdb as pudb
 trace = pudb.set_trace
 
+import six
+
 import pyrax
 import pyrax.exceptions as exc
 
@@ -173,7 +175,7 @@ def random_unicode(length=20):
     """
     def get_char():
         return unichr(random.randint(32, 1000))
-    chars = u"".join([get_char() for ii in xrange(length)])
+    chars = u"".join([get_char() for ii in six.moves.range(length)])
     return _join_chars(chars, length)
 
 
