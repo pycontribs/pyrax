@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import time
 
@@ -29,33 +31,33 @@ cf = pyrax.cloudfiles
 
 cont_name = pyrax.utils.random_name()
 cont = cf.create_container(cont_name)
-print "Container:", cont
-
+print("Container:", cont
+)
 # Get the existing metadata, if any
 meta = cf.get_container_metadata(cont)
-print "Initial metadata:", meta
-
+print("Initial metadata:", meta
+)
 # Create a dict of metadata. Make one key with the required prefix,
 # and the other without, to illustrate how pyrax will 'massage'
 # the keys to include the require prefix.
 new_meta = {"X-Container-Meta-City": "Springfield",
         "Famous_Family": "Simpsons"}
-print
-print "Setting container metadata to:", new_meta
+print()
+print("Setting container metadata to:", new_meta)
 cf.set_container_metadata(cont, new_meta)
 
 # Verify that the new metadata has been set for both keys.
 meta = cf.get_container_metadata(cont)
-print "Updated metadata:", meta
-
+print("Updated metadata:", meta
+)
 # Now remove the city key
-print
-print "Removing meta key for 'city'"
+print()
+print("Removing meta key for 'city'")
 cf.remove_container_metadata_key(cont, "city")
 
 # Verify that the key has been removed.
 meta = cf.get_container_metadata(cont)
-print "After removing key:", meta
-
+print("After removing key:", meta
+)
 # Clean up
 cont.delete(True)

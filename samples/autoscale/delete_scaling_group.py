@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -28,27 +30,27 @@ cs = pyrax.cloudservers
 # Get the current scaling groups
 sgs = au.list()
 if not sgs:
-    print "There are no scaling groups defined."
+    print("There are no scaling groups defined.")
     exit()
 
-print
-print "Available Scaling Groups:"
+print()
+print("Available Scaling Groups:")
 for pos, sg in enumerate(sgs):
-    print "%s - %s" % (pos, sg.name)
+    print("%s - %s" % (pos, sg.name))
 answer = raw_input("Enter the number of the scaling group to delete: ")
 if not answer:
-    print "Nothing entered; exiting."
+    print("Nothing entered; exiting.")
     exit()
 try:
     intanswer = int(answer)
 except ValueError:
-    print "'%s' is not a valid number; exiting." % answer
+    print("'%s' is not a valid number; exiting." % answer)
     exit()
 if not 0 <= intanswer < len(sgs):
-    print "The number '%s' does not correspond to any scaling group." % answer
+    print("The number '%s' does not correspond to any scaling group." % answer)
     exit()
 
 sg_del = sgs[intanswer]
 sg_del.update(min_entities=0, max_entities=0)
 sg_del.delete()
-print "Scaling group '%s' has been deleted." % sg_del.name
+print("Scaling group '%s' has been deleted." % sg_del.name)

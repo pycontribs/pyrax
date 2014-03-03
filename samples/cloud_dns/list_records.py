@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -34,12 +36,12 @@ domain_name = "abc.example.edu"
 
 def print_records(records):
     for record in records:
-        print "Record:", record.type
-        print "  ID:", record.id
-        print "  data:", record.data
-        print "  TTL:", record.ttl
-        print "  comment:", record.comment
-        print
+        print("Record:", record.type)
+        print("  ID:", record.id)
+        print("  data:", record.data)
+        print("  TTL:", record.ttl)
+        print("  comment:", record.comment)
+        print()
 
 try:
     dom = dns.find(name=domain_name)
@@ -52,9 +54,9 @@ except exc.NotFound:
         dom = dns.create(name=domain_name, emailAddress="sample@example.edu",
                 ttl=900, comment="sample domain")
     except exc.DomainCreationFailed as e:
-        print "Domain creation failed:", e
-    print "Domain created:", dom
-    print
+        print("Domain creation failed:", e)
+    print("Domain created:", dom)
+    print()
 
 records = dom.list_records(limit=PAGE_SIZE)
 count += len(records)
@@ -69,5 +71,5 @@ while True:
         break
     print_records(records)
 
-print "There were a total of %s record(s)." % count
-print
+print("There were a total of %s record(s)." % count)
+print()

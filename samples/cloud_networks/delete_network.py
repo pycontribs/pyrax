@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 from pyrax import exc
@@ -36,11 +38,11 @@ try:
 except exc.NetworkNotFound:
     msg = ("The sample network was not found. Please run the 'create_network' "
             "script before running this script.")
-    print msg
+    print(msg)
     exit()
 
-print "Sample network:"
-print net
-print
+print("Sample network:")
+print(net)
+print()
 net.delete()
-print "The network has been deleted."
+print("The network has been deleted.")

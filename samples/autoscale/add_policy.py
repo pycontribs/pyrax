@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -32,32 +34,32 @@ def safe_int(val, allow_zero=True):
     try:
         ret = int(val)
     except ValueError:
-        print "Sorry, '%s' is not a valid integer." % val
+        print("Sorry, '%s' is not a valid integer." % val)
         return False
     if not allow_zero and ret == 0:
-        print "Please enter a non-zero integer."
+        print("Please enter a non-zero integer.")
         return False
     return ret
 
 # Get the current scaling groups
 sgs = au.list()
 if not sgs:
-    print "There are no scaling groups defined. Please run the "\
-            "'create_scaling_group.py' script first."
+    print("There are no scaling groups defined. Please run the "
+        "'create_scaling_group.py' script first.")
     exit()
 
-print
-print "Available Scaling Groups:"
+print()
+print("Available Scaling Groups:")
 for pos, sg in enumerate(sgs):
-    print "%s - %s" % (pos, sg.name)
+    print("%s - %s" % (pos, sg.name))
 answer = raw_input("Enter the number of the scaling group you wish to add a "
         "policy to: ")
 if not answer:
-    print "Nothing entered; exiting."
+    print("Nothing entered; exiting.")
     exit()
 intanswer = safe_int(answer)
 if not 0 <= intanswer < len(sgs):
-    print "The number '%s' does not correspond to any scaling group." % answer
+    print("The number '%s' does not correspond to any scaling group." % answer)
     exit()
 sg = sgs[intanswer]
 
@@ -78,4 +80,4 @@ is_percent = "y" in answer.lower()
 
 policy = au.add_policy(sg, pname, "webhook", cooldown, change, is_percent)
 
-print "Policy added: %s" % policy
+print("Policy added: %s" % policy)

@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 import pyrax.exceptions as exc
@@ -27,22 +29,22 @@ pq = pyrax.queues
 
 queues = pq.list()
 if not queues:
-    print "There are no queues to delete."
+    print("There are no queues to delete.")
     exit()
 
-print "Queues:"
+print("Queues:")
 for pos, queue in enumerate(queues):
-    print "%s - %s" % (pos, queue.name)
+    print("%s - %s" % (pos, queue.name))
 snum = raw_input("Enter the number of the queue to delete: ")
 if not snum:
     exit()
 try:
     num = int(snum)
 except ValueError:
-    print "'%s' is not a valid number." % snum
+    print("'%s' is not a valid number." % snum)
     exit()
 if not 0 <= num < len(queues):
-    print "'%s' is not a valid queue number." % snum
+    print("'%s' is not a valid queue number." % snum)
     exit()
 pq.delete(queues[num])
-print "Queue '%s' has been deleted." % queue.name
+print("Queue '%s' has been deleted." % queue.name)

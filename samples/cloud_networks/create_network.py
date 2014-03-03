@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 from pyrax import utils
@@ -30,9 +32,9 @@ new_network_cidr = "192.168.0.0/24"
 # List initial status
 nets = cnw.list()
 for net in nets:
-    print "Network: %s; cidr=%s; id=%s" % (net.label, net.cidr, net.id)
-print
+    print("Network: %s; cidr=%s; id=%s" % (net.label, net.cidr, net.id))
+print()
 
 # Add the new network
 new_net = cnw.create(new_network_name, cidr=new_network_cidr)
-print "NEW NET", new_net
+print("NEW NET", new_net)

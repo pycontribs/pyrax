@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -32,31 +34,31 @@ text = "This is some text containing unicode characters like é, ü and ˚¬∆�
 obj = cf.store_object(cont, obj_name, text)
 
 # Make sure that the content stored is identical
-print "Using obj.get()"
+print("Using obj.get()")
 stored_text = obj.get()
 if stored_text == text:
-    print "Stored text is identical"
+    print("Stored text is identical")
 else:
-    print "Difference detected!"
-    print "Original:", text
-    print "Stored:", stored_text
-
+    print("Difference detected!")
+    print("Original:", text)
+    print("Stored:", stored_text
+)
 # Let's look at the metadata for the stored object
 meta, stored_text = obj.get(include_meta=True)
-print
-print "Metadata:", meta
-
+print()
+print("Metadata:", meta
+)
 # Demonstrate chunked retrieval
-print
-print "Using chunked retrieval"
+print()
+print("Using chunked retrieval")
 obj_generator = obj.get(chunk_size=256)
 joined_text = "".join(obj_generator)
 if joined_text == text:
-    print "Joined text is identical"
+    print("Joined text is identical")
 else:
-    print "Difference detected!"
-    print "Original:", text
-    print "Joined:", joined_text
-
+    print("Difference detected!")
+    print("Original:", text)
+    print("Joined:", joined_text
+)
 # Clean up
 cont.delete(True)

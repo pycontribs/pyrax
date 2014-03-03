@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -29,23 +31,23 @@ instance_name = pyrax.utils.random_name(8)
 
 flavors = cdb.list_flavors()
 nm = raw_input("Enter a name for your new instance: ")
-print
-print "Available Flavors:"
+print()
+print("Available Flavors:")
 for pos, flavor in enumerate(flavors):
-    print "%s: %s, %s" % (pos, flavor.name, flavor.ram)
+    print("%s: %s, %s" % (pos, flavor.name, flavor.ram))
 
 flav = int(raw_input("Select a Flavor for your new instance: "))
 try:
     selected = flavors[flav]
 except IndexError:
-    print "Invalid selection; exiting."
+    print("Invalid selection; exiting.")
     sys.exit()
 
-print
+print()
 sz = int(raw_input("Enter the volume size in GB (1-50): "))
 
 instance = cdb.create(nm, flavor=selected, volume=sz)
-print "Name:", instance.name
-print "ID:", instance.id
-print "Status:", instance.status
-print "Flavor:", instance.flavor.name
+print("Name:", instance.name)
+print("ID:", instance.id)
+print("Status:", instance.status)
+print("Flavor:", instance.flavor.name)
