@@ -207,7 +207,7 @@ class CFClient(object):
 
 
     def _resolve_name(self, val):
-        return val if isinstance(val, basestring) else val.name
+        return val if isinstance(val, six.string_types) else val.name
 
 
     @handle_swiftclient_exception
@@ -751,7 +751,7 @@ class CFClient(object):
             return total_size
 
         def upload(fileobj, content_type, etag, headers):
-            if isinstance(fileobj, basestring):
+            if isinstance(fileobj, six.string_types):
                 # This is an empty directory file
                 fsize = 0
             else:
@@ -789,7 +789,7 @@ class CFClient(object):
                     contents=None, headers=headers,
                     response_dict=extra_info)
 
-        ispath = isinstance(file_or_path, basestring)
+        ispath = isinstance(file_or_path, six.string_types)
         if ispath:
             # Make sure it exists
             if not os.path.exists(file_or_path):

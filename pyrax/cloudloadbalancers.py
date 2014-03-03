@@ -19,6 +19,8 @@
 
 from functools import wraps
 
+import six
+
 import pyrax
 from pyrax.client import BaseClient
 import pyrax.exceptions as exc
@@ -396,7 +398,7 @@ class CloudLoadBalancer(BaseResource):
 
     def _set_session_persistence(self, val):
         if val:
-            if not isinstance(val, basestring) or (val.upper() not in
+            if not isinstance(val, six.string_types) or (val.upper() not in
                     ("HTTP_COOKIE", "SOURCE_IP")):
                 raise exc.InvalidSessionPersistenceType("Session Persistence "
                         "must be one of 'HTTP_COOKIE' or 'SOURCE_IP'. '%s' is "
