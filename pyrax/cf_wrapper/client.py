@@ -22,6 +22,8 @@ import urlparse
 import uuid
 import mimetypes
 
+import six
+
 from swiftclient import client as _swift_client
 import pyrax
 from pyrax.cf_wrapper.container import Container
@@ -768,7 +770,7 @@ class CFClient(object):
             digits = int(math.log10(num_segments)) + 1
             # NOTE: This could be greatly improved with threading or other
             # async design.
-            for segment in xrange(num_segments):
+            for segment in six.moves.range(num_segments):
                 sequence = str(segment + 1).zfill(digits)
                 seg_name = "%s.%s" % (obj_name, sequence)
                 with utils.SelfDeletingTempfile() as tmpname:

@@ -10,6 +10,8 @@ import sys
 import time
 import unittest
 
+import six
+
 from mock import patch
 from mock import MagicMock as Mock
 
@@ -111,7 +113,7 @@ class UtilsTest(unittest.TestCase):
     def test_folder_size_no_ignore(self):
         with utils.SelfDeletingTempDirectory() as tmpdir:
             # write 5 files of 100 bytes each
-            for idx in xrange(5):
+            for idx in six.moves.range(5):
                 pth = os.path.join(tmpdir, "test%s" % idx)
                 with open(pth, "w") as ff:
                     ff.write(FAKE_CONTENT)
@@ -121,7 +123,7 @@ class UtilsTest(unittest.TestCase):
     def test_folder_size_ignore_string(self):
         with utils.SelfDeletingTempDirectory() as tmpdir:
             # write 5 files of 100 bytes each
-            for idx in xrange(5):
+            for idx in six.moves.range(5):
                 pth = os.path.join(tmpdir, "test%s" % idx)
                 with open(pth, "w") as ff:
                     ff.write(FAKE_CONTENT)
@@ -132,7 +134,7 @@ class UtilsTest(unittest.TestCase):
     def test_folder_size_ignore_list(self):
         with utils.SelfDeletingTempDirectory() as tmpdir:
             # write 5 files of 100 bytes each
-            for idx in xrange(5):
+            for idx in six.moves.range(5):
                 pth = os.path.join(tmpdir, "test%s" % idx)
                 with open(pth, "w") as ff:
                     ff.write(FAKE_CONTENT)

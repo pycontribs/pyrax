@@ -21,6 +21,8 @@ from __future__ import print_function
 import os
 import time
 
+import six
+
 import pyrax
 import pyrax.exceptions as exc
 import pyrax.utils as utils
@@ -37,7 +39,7 @@ cont = cf.create_container(cont_name)
 # themselves up.
 with utils.SelfDeletingTempDirectory() as tmpfolder:
     # Create a bunch of files
-    for idx in xrange(13):
+    for idx in six.moves.range(13):
         fname = "file_%s" % idx
         pth = os.path.join(tmpfolder, fname)
         with open(pth, "w") as tmp:
@@ -47,7 +49,7 @@ with utils.SelfDeletingTempDirectory() as tmpfolder:
     subfolder_path = os.path.join(tmpfolder, "subfolder")
     os.mkdir(subfolder_path)
     # Create some files in the subfolder, too.
-    for idx in xrange(7):
+    for idx in six.moves.range(7):
         fname = "subfile_%s" % idx
         pth = os.path.join(subfolder_path, fname)
         with open(pth, "w") as tmp:
