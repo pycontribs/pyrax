@@ -40,7 +40,7 @@ class UtilsTest(unittest.TestCase):
 
     def test_self_deleting_temp_file(self):
         with utils.SelfDeletingTempfile() as tmp:
-            self.assert_(isinstance(tmp, basestring))
+            self.assert_(isinstance(tmp, six.string_types))
             self.assert_(os.path.exists(tmp))
             self.assert_(os.path.isfile(tmp))
         # File shoud be deleted after exiting the block
@@ -48,7 +48,7 @@ class UtilsTest(unittest.TestCase):
 
     def test_self_deleting_temp_directory(self):
         with utils.SelfDeletingTempDirectory() as tmp:
-            self.assert_(isinstance(tmp, basestring))
+            self.assert_(isinstance(tmp, six.string_types))
             self.assert_(os.path.exists(tmp))
             self.assert_(os.path.isdir(tmp))
         # Directory shoud be deleted after exiting the block
