@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -28,20 +30,20 @@ cs = pyrax.cloudservers
 all_images = cs.images.list()
 images = [img for img in all_images if hasattr(img, "server")]
 if not images:
-    print "There are no images to delete. Create one, and then re-run this script."
-    print
+    print("There are no images to delete. Create one, and then re-run this script.")
+    print()
     sys.exit()
 img_dict = {}
-print "Select an image to delete:"
+print("Select an image to delete:")
 for pos, img in enumerate(images):
-    print "%s: %s" % (pos, img.name)
+    print("%s: %s" % (pos, img.name))
     img_dict[str(pos)] = img
 selection = None
 while selection not in img_dict:
     if selection is not None:
-        print "   -- Invalid choice"
+        print("   -- Invalid choice")
     selection = raw_input("Enter the number for your choice: ")
 
 image = img_dict.get(selection)
 cs.images.delete(image.id)
-print "Image '%s' has been deleted." % image.name
+print("Image '%s' has been deleted." % image.name)

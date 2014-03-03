@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -29,15 +31,15 @@ clb = pyrax.cloud_loadbalancers
 try:
     lb = clb.list()[0]
 except IndexError:
-    print "You do not have any load balancers yet."
-    print "Please create one and then re-run this script."
+    print("You do not have any load balancers yet.")
+    print("Please create one and then re-run this script.")
     sys.exit()
 
-print "Load Balancer:", lb
-print "Name:", lb.name
-print "ID:", lb.id
-print "Status:", lb.status
-print "Nodes:", lb.nodes
-print "Virtual IPs:", lb.virtual_ips
-print "Algorithm:", lb.algorithm
-print "Protocol:", lb.protocol
+print("Load Balancer:", lb)
+print("Name:", lb.name)
+print("ID:", lb.id)
+print("Status:", lb.status)
+print("Nodes:", lb.nodes)
+print("Virtual IPs:", lb.virtual_ips)
+print("Algorithm:", lb.algorithm)
+print("Protocol:", lb.protocol)

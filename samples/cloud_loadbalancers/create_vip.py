@@ -15,6 +15,9 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -31,7 +34,7 @@ clb = pyrax.cloud_loadbalancers
 #    id: None
 
 vip = clb.VirtualIP()
-print "Virtual IP (using defaults):", vip
-
+print("Virtual IP (using defaults):", vip
+)
 vip = clb.VirtualIP(type="SERVICENET", address="1.2.3.4", ipVersion="IPV4", id=999)
-print "Virtual IP (using supplied values):", vip
+print("Virtual IP (using supplied values):", vip)

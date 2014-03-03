@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import time
 
@@ -37,8 +39,8 @@ cont.store_object(fname, text)
 
 # Verify that it's there.
 obj = cont.get_object(fname)
-print "Object present, size =", obj.total_bytes
-
+print("Object present, size =", obj.total_bytes
+)
 # Delete it!
 obj.delete()
 start = time.time()
@@ -49,12 +51,12 @@ start = time.time()
 while obj:
     try:
         obj = cont.get_object(fname)
-        print "...still there..."
+        print("...still there...")
         time.sleep(0.5)
     except exc.NoSuchObject:
         obj = None
-        print "Object '%s' has been deleted" % fname
-        print "It took %4.2f seconds to appear as deleted." % (time.time() - start)
-
+        print("Object '%s' has been deleted" % fname)
+        print("It took %4.2f seconds to appear as deleted." % (time.time() - start)
+)
 # Clean up
 cont.delete(True)

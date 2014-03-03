@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -40,21 +42,21 @@ except exc.DomainCreationFailed as e:
         dom = dns.create(name=domain_name, emailAddress="sample@example.edu",
                 ttl=900, comment="sample domain")
     except exc.DomainCreationFailed as e:
-        print "Domain creation failed:", e
-        print
+        print("Domain creation failed:", e)
+        print()
         sys.exit()
-    print "Domain created:", dom
-    print
+    print("Domain created:", dom)
+    print()
 
 sub_name = "sub.%s" % domain_name
 try:
     sub = dns.create(name=sub_name, emailAddress="sample@example.edu", ttl=900,
             comment="sample subdomain")
 except exc.DomainCreationFailed as e:
-    print "Could not create '%s': %s" % (sub_name, e)
-    print
+    print("Could not create '%s': %s" % (sub_name, e))
+    print()
     sys.exit()
 
-print "Subdomain '%s' successfully created." % sub_name
-print sub
-print
+print("Subdomain '%s' successfully created." % sub_name)
+print(sub)
+print()

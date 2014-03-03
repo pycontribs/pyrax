@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -28,30 +30,30 @@ cdb = pyrax.cloud_databases
 
 instances = cdb.list()
 if not instances:
-    print "There are no cloud database instances to delete."
+    print("There are no cloud database instances to delete.")
     sys.exit()
 
-print
-print "Available Instances:"
+print()
+print("Available Instances:")
 for pos, inst in enumerate(instances):
-    print "%s: %s (%s, RAM=%s, volume=%s) Status=%s" % (pos, inst.name,
-            inst.flavor.name, inst.flavor.ram, inst.volume.size, inst.status)
+    print("%s: %s (%s, RAM=%s, volume=%s) Status=%s" % (pos, inst.name,
+            inst.flavor.name, inst.flavor.ram, inst.volume.size, inst.status))
 try:
     sel = int(raw_input("Enter the number of the instance to delete: "))
 except ValueError:
-    print
-    print "Invalid (non-numeric) entry."
-    print
+    print()
+    print("Invalid (non-numeric) entry.")
+    print()
     sys.exit()
 try:
     del_inst = instances[sel]
 except IndexError:
-    print
-    print "Invalid selection."
-    print
+    print()
+    print("Invalid selection.")
+    print()
     sys.exit()
 
 del_inst.delete()
-print
-print "Instance %s has been deleted." % del_inst.name
-print
+print()
+print("Instance %s has been deleted." % del_inst.name)
+print()

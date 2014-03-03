@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import datetime
 import os
 
@@ -28,22 +30,22 @@ clb = pyrax.cloud_loadbalancers
 
 # Get load balancer usage
 usage = clb.get_usage()
-print "Usage for Account:", usage["accountId"]
-print
-print "Account Usage Records"
-print "-" * 30
+print("Usage for Account:", usage["accountId"])
+print()
+print("Account Usage Records")
+print("-" * 30)
 au_recs = usage["accountUsage"]
 for rec_key in au_recs.keys()[:5]:
     recs = au_recs[rec_key]
     if len(recs) > 5:
-        print "(only the first 5 records...)"
-    print recs[:5]
-    print
-print "Load Balancer Usage Records"
-print "-" * 30
+        print("(only the first 5 records...)")
+    print(recs[:5])
+    print()
+print("Load Balancer Usage Records")
+print("-" * 30)
 lb_recs = usage["loadBalancerUsages"]
 if len(lb_recs) > 5:
-    print "(only the first 5 records...)"
+    print("(only the first 5 records...)")
 for rec in lb_recs[:5]:
-    print rec
-    print
+    print(rec)
+    print()

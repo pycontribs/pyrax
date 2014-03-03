@@ -16,8 +16,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import time
+
+import six
 
 import pyrax
 import pyrax.exceptions as exc
@@ -35,7 +39,7 @@ cont = cf.create_container(cont_name)
 # themselves up.
 with utils.SelfDeletingTempDirectory() as tmpfolder:
     # Create a bunch of files
-    for idx in xrange(13):
+    for idx in six.moves.range(13):
         fname = "file_%s" % idx
         pth = os.path.join(tmpfolder, fname)
         with open(pth, "w") as tmp:
@@ -45,7 +49,7 @@ with utils.SelfDeletingTempDirectory() as tmpfolder:
     subfolder_path = os.path.join(tmpfolder, "subfolder")
     os.mkdir(subfolder_path)
     # Create some files in the subfolder, too.
-    for idx in xrange(7):
+    for idx in six.moves.range(7):
         fname = "subfile_%s" % idx
         pth = os.path.join(subfolder_path, fname)
         with open(pth, "w") as tmp:
@@ -55,25 +59,25 @@ with utils.SelfDeletingTempDirectory() as tmpfolder:
     # named 'upfolder'. We'll have it skip all files ending in the digits
     # '2', '6' or '0'.
     ignore = ["*2", "*6", "*0"]
-    print "Beginning Folder Uplaod"
+    print("Beginning Folder Uplaod")
     upload_key, total_bytes = cf.upload_folder(tmpfolder, cont, ignore=ignore)
     # Since upload_folder happens in the background, we need to stay in this
     # block until the upload is complete, or the SelfDeletingTempDirectory
     # will be deleted, and the upload won't find the files it needs.
-    print "Total bytes to upload:", total_bytes
+    print("Total bytes to upload:", total_bytes)
     uploaded = 0
     while uploaded < total_bytes:
         uploaded = cf.get_uploaded(upload_key)
-        print "Progress: %4.2f%%" % ((uploaded * 100.0) / total_bytes)
+        print("Progress: %4.2f%%" % ((uploaded * 100.0) / total_bytes))
         time.sleep(1)
 
 # OK, the upload is complete. Let's verify what's in 'upfolder'.
 folder_name = os.path.basename(tmpfolder)
-print
-print "Temp folder name:", folder_name
+print()
+print("Temp folder name:", folder_name)
 nms = cf.get_container_object_names(cont, prefix=folder_name)
-print "Number of files in container:", len(nms)
-print "\n".join(nms)
-
+print("Number of files in container:", len(nms))
+print("\n".join(nms)
+)
 # Clean up
 cont.delete(True)

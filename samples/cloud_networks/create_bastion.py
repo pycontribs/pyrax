@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 from pprint import pprint
 import os
 
@@ -37,23 +39,23 @@ flavor_id = "performance1-1"
 
 # Create the new network
 new_net = cnw.create(new_network_name, cidr=new_network_cidr)
-print "New network:", new_net
-
+print("New network:", new_net
+)
 # Create the bastion server
 networks = new_net.get_server_networks(public=True, private=True)
 bastion = cs.servers.create("bastion", img_id, flavor_id,
         nics=networks)
-print "Bastion server:", bastion.name, bastion.id
-
+print("Bastion server:", bastion.name, bastion.id
+)
 # Create an isolated server
 networks = new_net.get_server_networks(public=False, private=False)
 isolated = cs.servers.create("isolated", img_id, flavor_id,
         nics=networks)
-print "Isolated server:", isolated.name, isolated.id
-
-print
-print "The networks will not be visible until the servers have finished building."
-print "Do you want to wait until then to see the results? It might take several"
+print("Isolated server:", isolated.name, isolated.id
+)
+print()
+print("The networks will not be visible until the servers have finished building.")
+print("Do you want to wait until then to see the results? It might take several")
 answer = raw_input("minutes to complete. [y/N]")
 if answer not in "yY":
     exit()
@@ -68,11 +70,11 @@ pyrax.utils.wait_until(isolated, "status", ("ERROR", "ACTIVE"), attempts=0,
 bastion = cs.servers.get(bas_id)
 isolated = cs.servers.get(iso_id)
 if "ERROR" in (bastion.status, isolated.status):
-    print "There was an error building the servers. Please try again."
+    print("There was an error building the servers. Please try again.")
     exit()
 
-print "Bastion server networks:"
+print("Bastion server networks:")
 pprint(bastion.networks)
-print
-print "Isolated server networks:"
+print()
+print("Isolated server networks:")
 pprint(isolated.networks)

@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -26,30 +28,30 @@ cf = pyrax.cloudfiles
 
 cont_name = pyrax.utils.random_name()
 cont = cf.create_container(cont_name)
-print "Container:", cont
-print "Before Making Public"
-print "cdn_enabled", cont.cdn_enabled
-print "cdn_ttl", cont.cdn_ttl
-print "cdn_log_retention", cont.cdn_log_retention
-print "cdn_uri", cont.cdn_uri
-print "cdn_ssl_uri", cont.cdn_ssl_uri
-print "cdn_streaming_uri", cont.cdn_streaming_uri
-print "cdn_ios_uri", cont.cdn_ios_uri
-
+print("Container:", cont)
+print("Before Making Public")
+print("cdn_enabled", cont.cdn_enabled)
+print("cdn_ttl", cont.cdn_ttl)
+print("cdn_log_retention", cont.cdn_log_retention)
+print("cdn_uri", cont.cdn_uri)
+print("cdn_ssl_uri", cont.cdn_ssl_uri)
+print("cdn_streaming_uri", cont.cdn_streaming_uri)
+print("cdn_ios_uri", cont.cdn_ios_uri
+)
 # Make it public
 cont.make_public(ttl=1200)
 
 # Now re-check the container's attributes
 cont = cf.get_container(cont_name)
-print
-print "After Making Public"
-print "cdn_enabled", cont.cdn_enabled
-print "cdn_ttl", cont.cdn_ttl
-print "cdn_log_retention", cont.cdn_log_retention
-print "cdn_uri", cont.cdn_uri
-print "cdn_ssl_uri", cont.cdn_ssl_uri
-print "cdn_streaming_uri", cont.cdn_streaming_uri
-print "cdn_ios_uri", cont.cdn_ios_uri
-
+print()
+print("After Making Public")
+print("cdn_enabled", cont.cdn_enabled)
+print("cdn_ttl", cont.cdn_ttl)
+print("cdn_log_retention", cont.cdn_log_retention)
+print("cdn_uri", cont.cdn_uri)
+print("cdn_ssl_uri", cont.cdn_ssl_uri)
+print("cdn_streaming_uri", cont.cdn_streaming_uri)
+print("cdn_ios_uri", cont.cdn_ios_uri
+)
 # clean up
 cont.delete()
