@@ -315,9 +315,10 @@ class QueueMessageManager(BaseQueueManager):
         """
         ret = []
         if limit is None:
-            limit = MSG_LIMIT
-        this_limit = min(MSG_LIMIT, limit)
-        limit = max(0, (limit - this_limit))
+            this_limit = MSG_LIMIT
+        else:
+            this_limit = min(MSG_LIMIT, limit)
+            limit = limit - this_limit
         uri = "/%s?include_claimed=%s&echo=%s" % (self.uri_base,
                 json.dumps(include_claimed), json.dumps(echo))
         qs_parts = []
@@ -335,7 +336,7 @@ class QueueMessageManager(BaseQueueManager):
         marker = _parse_marker(resp_body)
 
         loop = 0
-        if limit and marker:
+        if ((limit is None) or limit > 0) and marker:
             loop += 1
             ret.extend(self._iterate_list(include_claimed, echo, marker, limit))
         return ret
