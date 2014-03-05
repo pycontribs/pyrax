@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -36,12 +38,12 @@ server = cs.servers.get(server_id)
 ptr_records = dns.list_ptr_records(server)
 if ptr_records:
     for ptr_record in ptr_records:
-        print "PTR Record:"
-        print "  ID:", ptr_record.id
-        print "  name:", ptr_record.name
-        print "  data:", ptr_record.data
-        print "  TTL:", ptr_record.ttl
-        print "  comment:", ptr_record.comment
+        print("PTR Record:")
+        print("  ID:", ptr_record.id)
+        print("  name:", ptr_record.name)
+        print("  data:", ptr_record.data)
+        print("  TTL:", ptr_record.ttl)
+        print("  comment:", ptr_record.comment)
 else:
-    print "There are no PTR records for device '%s'." % server
-print
+    print("There are no PTR records for device '%s'." % server)
+print()

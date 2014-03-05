@@ -20,6 +20,8 @@
 from functools import wraps
 import time
 
+import six
+
 import pyrax
 from pyrax.client import BaseClient
 import pyrax.exceptions as exc
@@ -34,12 +36,12 @@ RETRY_INTERVAL = 5
 
 def _resolve_id(val):
     """Takes an object or an ID and returns the ID."""
-    return val if isinstance(val, basestring) else val.id
+    return val if isinstance(val, six.string_types) else val.id
 
 
 def _resolve_name(val):
     """Takes an object or a name and returns the name."""
-    return val if isinstance(val, basestring) else val.name
+    return val if isinstance(val, six.string_types) else val.name
 
 
 def assure_volume(fnc):

@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 import pyrax.exceptions as exc
@@ -27,16 +29,16 @@ pq = pyrax.queues
 
 queues = pq.list()
 if not queues:
-    print "There are no queues to post to. Please create one before proceeding."
+    print("There are no queues to post to. Please create one before proceeding.")
     exit()
 
 if len(queues) == 1:
     queue = queues[0]
-    print "Only one queue available; using '%s'." % queue.name
+    print("Only one queue available; using '%s'." % queue.name)
 else:
-    print "Queues:"
+    print("Queues:")
     for pos, queue in enumerate(queues):
-        print "%s - %s" % (pos, queue.name)
+        print("%s - %s" % (pos, queue.name))
     snum = raw_input("Enter the number of the queue you wish to list messages "
             "from: ")
     if not snum:
@@ -44,34 +46,34 @@ else:
     try:
         num = int(snum)
     except ValueError:
-        print "'%s' is not a valid number." % snum
+        print("'%s' is not a valid number." % snum)
         exit()
     if not 0 <= num < len(queues):
-        print "'%s' is not a valid queue number." % snum
+        print("'%s' is not a valid queue number." % snum)
         exit()
     queue = queues[num]
 echo = claimed = True
 msgs = pq.list_messages(queue, echo=echo, include_claimed=claimed)
 if not msgs:
-    print "There are no messages available in this queue."
+    print("There are no messages available in this queue.")
     exit()
 for pos, msg in enumerate(msgs):
     msg.get()
-    print pos, "- ID:", msg.id, msg.claim_id, "Body='%s'" % msg.body[:80]
+    print(pos, "- ID:", msg.id, msg.claim_id, "Body='%s'" % msg.body[:80])
 snums = raw_input("Enter one or more numbers of the messages you wish to "
         "delete, separated by spaces: ")
 if not snums:
-    print "No messages selected; exiting."
+    print("No messages selected; exiting.")
     exit()
 nums = [int(num) for num in snums.split()]
 ids = [msg.id for msg in msgs if msgs.index(msg) in nums]
 if not ids:
-    print "No messages match your selections; exiting."
+    print("No messages match your selections; exiting.")
     exit()
-print "DEL", pq.delete_messages_by_ids(queue, ids)
+print("DEL", pq.delete_messages_by_ids(queue, ids))
 del_msgs = [msg for msg in msgs if msg.id in ids]
 
-print
-print "The following messages were deleted:"
+print()
+print("The following messages were deleted:")
 for del_msg in del_msgs:
-    print del_msg.id, "Body='%s'" % del_msg.body
+    print(del_msg.id, "Body='%s'" % del_msg.body)

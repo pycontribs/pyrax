@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -33,15 +35,15 @@ cm = pyrax.cloud_monitoring
 # We need the IP address of the entity for this check
 ents = cm.list_entities()
 if not ents:
-    print "You must create an entity before you can create a notification."
+    print("You must create an entity before you can create a notification.")
     sys.exit()
-print "Select the entity on which you wish to create the notification:"
+print("Select the entity on which you wish to create the notification:")
 ent = option_chooser(ents, attr="name")
 entity = ents[ent]
-print entity
-
+print(entity
+)
 checks = entity.list_checks()
-print "Select a check to notify about:"
+print("Select a check to notify about:")
 check_num = option_chooser(checks, attr="label")
 check = checks[check_num]
 
@@ -56,4 +58,4 @@ alarm = cm.create_alarm(entity, check, plan,
     ("if (rate(metric['average']) > 5) { return new AlarmStatus(WARNING); } "
      "return new AlarmStatus(OK);"), label="sample alarm")
 
-print "Created Alarm %s" % alarm.id
+print("Created Alarm %s" % alarm.id)

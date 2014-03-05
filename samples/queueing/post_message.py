@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 import pyrax.exceptions as exc
@@ -27,16 +29,16 @@ pq = pyrax.queues
 
 queues = pq.list()
 if not queues:
-    print "There are no queues to post to. Please create one before proceeding."
+    print("There are no queues to post to. Please create one before proceeding.")
     exit()
 
 if len(queues) == 1:
     queue = queues[0]
-    print "Only one queue available; using '%s'." % queue.name
+    print("Only one queue available; using '%s'." % queue.nam)
 else:
-    print "Queues:"
+    print("Queues:")
     for pos, queue in enumerate(queues):
-        print "%s - %s" % (pos, queue.name)
+        print("%s - %s" % (pos, queue.name))
     snum = raw_input("Enter the number of the queue you wish to post a message "
             "to: ")
     if not snum:
@@ -44,10 +46,10 @@ else:
     try:
         num = int(snum)
     except ValueError:
-        print "'%s' is not a valid number." % snum
+        print("'%s' is not a valid number." % snu)
         exit()
     if not 0 <= num < len(queues):
-        print "'%s' is not a valid queue number." % snum
+        print("'%s' is not a valid queue number." % snu)
         exit()
     queue = queues[num]
 msg = raw_input("Enter the message to post: ")
@@ -59,7 +61,7 @@ else:
     try:
         ttl = int(sttl)
     except ValueError:
-        print "'%s' is not a valid number." % sttl
+        print("'%s' is not a valid number." % stt)
         exit()
 pq.post_message(queue, msg, ttl=ttl)
-print "Your message has been posted."
+print("Your message has been posted.")

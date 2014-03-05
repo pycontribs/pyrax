@@ -22,6 +22,8 @@ import urlparse
 import uuid
 import mimetypes
 
+import six
+
 from swiftclient import client as _swift_client
 import pyrax
 from pyrax.cf_wrapper.container import Container
@@ -205,7 +207,7 @@ class CFClient(object):
 
 
     def _resolve_name(self, val):
-        return val if isinstance(val, basestring) else val.name
+        return val if isinstance(val, six.string_types) else val.name
 
 
     @handle_swiftclient_exception
@@ -314,7 +316,7 @@ class CFClient(object):
         path_parts = (conn_url[v1pos:], cname, oname)
         cleaned = (part.strip("/\\") for part in path_parts)
         pth = "/%s" % "/".join(cleaned)
-        if isinstance(pth, unicode):
+        if isinstance(pth, six.text_type):
             pth = pth.encode(pyrax.get_encoding())
         expires = int(time.time() + int(seconds))
         hmac_body = "%s\n%s\n%s" % (mod_method, expires, pth)
@@ -749,7 +751,7 @@ class CFClient(object):
             return total_size
 
         def upload(fileobj, content_type, etag, headers):
-            if isinstance(fileobj, basestring):
+            if isinstance(fileobj, six.string_types):
                 # This is an empty directory file
                 fsize = 0
             else:
@@ -768,7 +770,7 @@ class CFClient(object):
             digits = int(math.log10(num_segments)) + 1
             # NOTE: This could be greatly improved with threading or other
             # async design.
-            for segment in xrange(num_segments):
+            for segment in six.moves.range(num_segments):
                 sequence = str(segment + 1).zfill(digits)
                 seg_name = "%s.%s" % (obj_name, sequence)
                 with utils.SelfDeletingTempfile() as tmpname:
@@ -787,7 +789,7 @@ class CFClient(object):
                     contents=None, headers=headers,
                     response_dict=extra_info)
 
-        ispath = isinstance(file_or_path, basestring)
+        ispath = isinstance(file_or_path, six.string_types)
         if ispath:
             # Make sure it exists
             if not os.path.exists(file_or_path):
@@ -1413,7 +1415,7 @@ class Connection(_swift_client.Connection):
         Taken directly from the cloudfiles library and modified for use here.
         """
         def quote(val):
-            if isinstance(val, unicode):
+            if isinstance(val, six.text_type):
                 val = val.encode("utf-8")
             return urllib.quote(val)
 

@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -33,7 +35,7 @@ count = 0
 try:
     dom = dns.find(name=domain_name)
 except exc.NotFound:
-    print "There is no DNS information for the domain '%s'." % domain_name
+    print("There is no DNS information for the domain '%s'." % domain_name)
     sys.exit()
 
 sub_iter = dns.get_subdomain_iterator(dom)
@@ -42,10 +44,10 @@ for sub in sub_iter:
     count += 1
 
 if not count:
-    print "There were no subdomains to delete."
+    print("There were no subdomains to delete.")
 else:
     if count == 1:
-        print "The one subdomain of '%s' has been deleted." % domain_name
+        print("The one subdomain of '%s' has been deleted." % domain_name)
     else:
-        print "All %s subdomains of '%s' have been deleted." % (count, domain_name)
-print
+        print("All %s subdomains of '%s' have been deleted." % (count, domain_name))
+print()

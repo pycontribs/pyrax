@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -34,6 +36,6 @@ server_id = "00000000-0000-0000-0000-000000000000"
 server = cs.servers.get(server_id)
 
 ret = dns.delete_ptr_records(server)
-print
-print ret
-print
+print()
+print(ret)
+print()

@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 
 import pyrax
@@ -35,25 +37,25 @@ text = """First Line
 Last Line"""
 # pyrax has a utility for creating temporary local files that clean themselves up.
 with utils.SelfDeletingTempfile() as tmpname:
-    print "Creating text file with the following content:"
-    print "-" * 44
-    print text
-    print "-" * 44
+    print("Creating text file with the following content:")
+    print("-" * 44)
+    print(text)
+    print("-" * 44)
     with open(tmpname, "w") as tmp:
         tmp.write(text)
     nm = os.path.basename(tmpname)
-    print
-    print "Uploading file: %s" % nm
+    print()
+    print("Uploading file: %s" % nm)
     cf.upload_file(cont, tmpname, content_type="text/text")
 # Let's verify that the file is there
 obj = cont.get_object(nm)
-print
-print "Stored Object:", obj
-print "Retrieved Content:"
-print "-" * 44
+print()
+print("Stored Object:", obj)
+print("Retrieved Content:")
+print("-" * 44)
 # Get the contents
-print obj.get()
-print "-" * 44
-
+print(obj.get())
+print("-" * 44
+)
 # Clean up
 cont.delete(True)
