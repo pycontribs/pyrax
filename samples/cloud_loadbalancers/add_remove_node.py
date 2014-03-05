@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import time
 
@@ -28,11 +30,11 @@ pyrax.set_credential_file(creds_file)
 clb = pyrax.cloud_loadbalancers
 
 lb = clb.list()[0]
-print
-print "Load Balancer:", lb
-print
-print "Current nodes:", lb.nodes
-
+print()
+print("Load Balancer:", lb)
+print()
+print("Current nodes:", lb.nodes
+)
 # You may have to adjust the address of the node to something on
 # the same internal network as your load balancer.
 new_node = clb.Node(address="10.177.1.2", port=80, condition="ENABLED")
@@ -40,18 +42,18 @@ lb.add_nodes([new_node])
 pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30,
         verbose=True)
 
-print
-print "After adding node:", lb.nodes
-
+print()
+print("After adding node:", lb.nodes
+)
 # Now remove that node. Note that we can't use the original node instance,
 # as it was created independently, and doesn't have the link to its load
 # balancer. Instead, we'll get the last node from the load balancer.
 added_node = [node for node in lb.nodes
         if node.address == new_node.address][0]
-print
-print "Added Node:", added_node
+print()
+print("Added Node:", added_node)
 added_node.delete()
 pyrax.utils.wait_until(lb, "status", "ACTIVE", interval=1, attempts=30,
         verbose=True)
-print
-print "After removing node:", lb.nodes
+print()
+print("After removing node:", lb.nodes)

@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -27,14 +29,13 @@ server_name = pyrax.utils.random_ascii(8)
 
 ubu_image = [img for img in cs.images.list()
         if "12.04" in img.name][0]
-print "Ubuntu Image:", ubu_image
+print("Ubuntu Image:", ubu_image)
 flavor_1GB = [flavor for flavor in cs.flavors.list()
         if flavor.ram == 1024][0]
-print "1024 Flavor:", flavor_1GB
-
+print("1024 Flavor:", flavor_1GB)
 server = cs.servers.create(server_name, ubu_image.id, flavor_1GB.id)
-print "Name:", server.name
-print "ID:", server.id
-print "Status:", server.status
-print "Admin Password:", server.adminPass
-print "Networks:", server.networks
+print("Name:", server.name)
+print("ID:", server.id)
+print("Status:", server.status)
+print("Admin Password:", server.adminPass)
+print("Networks:", server.networks)

@@ -38,6 +38,7 @@ setup(
         "httplib2",
         "keyring",
         "requests>=1.0.0",
+        "six",
     ] + testing_requires,
     packages=[
         "pyrax",

@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -31,8 +33,8 @@ cont = cf.create_container(cont_name)
 content = "This is a random collection of words."
 chksum = pyrax.utils.get_checksum(content)
 obj = cf.store_object(cont, obj_name, content, etag=chksum)
-print "Calculated checksum:", chksum
-print " Stored object etag:", obj.etag
-
+print("Calculated checksum:", chksum)
+print(" Stored object etag:", obj.etag
+)
 # Clean up
 cont.delete(True)

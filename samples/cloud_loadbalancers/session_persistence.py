@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -29,18 +31,18 @@ clb = pyrax.cloud_loadbalancers
 try:
     lb = clb.list()[0]
 except IndexError:
-    print "You do not have any load balancers yet."
-    print "Please create one and then re-run this script."
+    print("You do not have any load balancers yet.")
+    print("Please create one and then re-run this script.")
     sys.exit()
 
-print "Load Balancer:", lb
+print("Load Balancer:", lb)
 orig = lb.session_persistence
-print "Current setting of session persistence:", orig or '""'
-print
+print("Current setting of session persistence:", orig or '""')
+print()
 if orig:
-    print "Clearing..."
+    print("Clearing...")
     lb.session_persistence = ""
 else:
-    print "Setting persistence to HTTP_COOKIE..."
+    print("Setting persistence to HTTP_COOKIE...")
     lb.session_persistence = "HTTP_COOKIE"
-print "New setting of session persistence:", lb.session_persistence or '""'
+print("New setting of session persistence:", lb.session_persistence or '""')

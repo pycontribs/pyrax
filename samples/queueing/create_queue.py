@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 import pyrax.exceptions as exc
@@ -34,4 +36,4 @@ try:
     msg = "The queue '%s' has been created." % queue.name
 except exc.DuplicateQueue:
     msg = "A queue with the name '%s' already exists." % name
-print msg
+print(msg)

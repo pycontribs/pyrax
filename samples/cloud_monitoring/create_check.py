@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -33,15 +35,15 @@ cm = pyrax.cloud_monitoring
 # We need the IP address of the entity for this check
 ents = cm.list_entities()
 if not ents:
-    print "You must create an entity before you can create a notification."
+    print("You must create an entity before you can create a notification.")
     sys.exit()
-print "Select the entity on which you wish to create the notification:"
+print("Select the entity on which you wish to create the notification:")
 ent = option_chooser(ents, attr="name")
 entity = ents[ent]
-print entity
-
+print(entity
+)
 aliases = entity.ip_addresses.items()
-print "Select an IP address to check"
+print("Select an IP address to check")
 interface = option_chooser(aliases)
 alias = aliases[interface][0]
 
@@ -50,7 +52,7 @@ alias = aliases[interface][0]
 
 # List the available Monitoring Zones
 zones = cm.list_monitoring_zones()
-print "Select a Monitoring Zone:"
+print("Select a Monitoring Zone:")
 zone_choice = option_chooser(zones, attr="label")
 zone = zones[zone_choice]
 
@@ -59,5 +61,5 @@ chk = cm.create_check(entity, label="sample_check", check_type="remote.ping",
         details={"count": 5}, monitoring_zones_poll=[zone],
         period=60, timeout=20, target_alias=alias)
 
-print "Name:", chk.name
-print "ID:", chk.id
+print("Name:", chk.name)
+print("ID:", chk.id)

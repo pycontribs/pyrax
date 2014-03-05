@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 import pyrax.exceptions as exc
@@ -27,16 +29,16 @@ pq = pyrax.queues
 
 queues = pq.list()
 if not queues:
-    print "There are no queues to post to. Please create one before proceeding."
+    print("There are no queues to post to. Please create one before proceeding.")
     exit()
 
 if len(queues) == 1:
     queue = queues[0]
-    print "Only one queue available; using '%s'." % queue.name
+    print("Only one queue available; using '%s'." % queue.name)
 else:
-    print "Queues:"
+    print("Queues:")
     for pos, queue in enumerate(queues):
-        print "%s - %s" % (pos, queue.name)
+        print("%s - %s" % (pos, queue.name))
     snum = raw_input("Enter the number of the queue you wish to post a message "
             "to: ")
     if not snum:
@@ -44,16 +46,16 @@ else:
     try:
         num = int(snum)
     except ValueError:
-        print "'%s' is not a valid number." % snum
+        print("'%s' is not a valid number." % snum)
         exit()
     if not 0 <= num < len(queues):
-        print "'%s' is not a valid queue number." % snum
+        print("'%s' is not a valid queue number." % snum)
         exit()
     queue = queues[num]
 
 sttl = raw_input("Enter a TTL for the claim: ")
 if not sttl:
-    print "A TTL value is required."
+    print("A TTL value is required.")
     exit()
 else:
     try:
@@ -61,15 +63,15 @@ else:
         if not 60 <= ttl <= 43200:
             old_ttl = ttl
             ttl = max(min(ttl, 43200), 60)
-            print ("TTL values must be between 60 and 43200 seconds; changing "
-                    "it to '%s'." % ttl)
+            print("TTL values must be between 60 and 43200 seconds; changing "
+                "it to '%s'." % ttl)
     except ValueError:
-        print "'%s' is not a valid number." % sttl
+        print("'%s' is not a valid number." % sttl)
         exit()
 
 sgrace = raw_input("Enter a grace period for the claim: ")
 if not sgrace:
-    print "A value for the grace period is required."
+    print("A value for the grace period is required.")
     exit()
 else:
     try:
@@ -77,10 +79,10 @@ else:
         if not 60 <= grace <= 43200:
             old_grace = grace
             grace = max(min(grace, 43200), 60)
-            print ("Grace values must be between 60 and 43200 seconds; changing "
-                    "it to '%s'." % grace)
+            print("Grace values must be between 60 and 43200 seconds; changing "
+                "it to '%s'." % grace)
     except ValueError:
-        print "'%s' is not a valid number." % sgrace
+        print("'%s' is not a valid number." % sgrace)
         exit()
 
 scount = raw_input("Enter the number of messages to claim (max=20), or press "
@@ -91,18 +93,18 @@ else:
     try:
         count = int(scount)
     except ValueError:
-        print "'%s' is not a valid number." % scount
+        print("'%s' is not a valid number." % scount)
         exit()
 
 claim = pq.claim_messages(queue, ttl, grace, count=count)
 if not claim:
-    print "There were no messages available to claim."
+    print("There were no messages available to claim.")
     exit()
 num_msgs = len(claim.messages)
-print
-print "You have successfully claimed %s messages." % num_msgs
-print "Claim ID:", claim.id
+print()
+print("You have successfully claimed %s messages." % num_msgs)
+print("Claim ID:", claim.id)
 for msg in claim.messages:
-    print "Age:", msg.age
-    print "Body:", msg.body
-    print
+    print("Age:", msg.age)
+    print("Body:", msg.body)
+    print()

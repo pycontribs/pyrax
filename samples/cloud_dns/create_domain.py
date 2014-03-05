@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 
 import pyrax
@@ -32,5 +34,5 @@ try:
     dom = dns.create(name=domain_name, emailAddress="sample@example.edu",
             ttl=900, comment="sample domain")
 except exc.DomainCreationFailed as e:
-    print "Domain creation failed:", e
-print "Domain created:", dom
+    print("Domain creation failed:", e)
+print("Domain created:", dom)

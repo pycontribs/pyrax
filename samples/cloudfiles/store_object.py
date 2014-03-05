@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -32,19 +34,19 @@ text = "This is some text containing unicode like é, ü and ˚¬∆ç"
 obj = cf.store_object(cont, obj_name, text)
 
 # Verify that the object is there
-print "Stored Object Name:", obj.name
-print "Size:", obj.total_bytes
-
+print("Stored Object Name:", obj.name)
+print("Size:", obj.total_bytes
+)
 # Make sure that the content stored is identical
 stored_text = obj.get()
-print "Original text:", text
-print "  Stored text:", stored_text
+print("Original text:", text)
+print("  Stored text:", stored_text)
 if stored_text == text:
-    print "Stored text is identical"
+    print("Stored text is identical")
 else:
-    print "Difference detected!"
-    print "Original:", text
-    print "Stored:", stored_text
-
+    print("Difference detected!")
+    print("Original:", text)
+    print("Stored:", stored_text
+)
 # Clean up
 cont.delete(True)

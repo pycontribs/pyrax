@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -36,7 +38,7 @@ server = cs.servers.get(server_id)
 domain_name = "abc.example.edu"
 records = dns.list_ptr_records(server)
 if not records:
-    print "There are no PTR records for device '%s' to update." % server
+    print("There are no PTR records for device '%s' to update." % server)
     sys.exit()
 rec = records[0]
 orig_ttl = rec.ttl
@@ -47,8 +49,8 @@ resp = dns.update_ptr_record(server, rec, domain_name, ttl=new_ttl,
         data=orig_data, comment="TTL has been increased")
 
 if resp:
-    print "Original TTL:", orig_ttl
-    print "New TTL:", new_ttl
+    print("Original TTL:", orig_ttl)
+    print("New TTL:", new_ttl)
 else:
-    print "Update failed."
-print
+    print("Update failed.")
+print()

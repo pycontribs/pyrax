@@ -22,6 +22,8 @@ import json
 import re
 import time
 
+import six
+
 import pyrax
 from pyrax.client import BaseClient
 from pyrax.cloudloadbalancers import CloudLoadBalancer
@@ -432,7 +434,7 @@ class CloudDNSManager(BaseManager):
         Handles GET calls to the Cloud DNS API in order to retry on empty
         body responses.
         """
-        for i in xrange(DEFAULT_RETRY):
+        for i in six.moves.range(DEFAULT_RETRY):
             resp, body = self.api.method_get(uri)
             if body:
                 return resp, body
@@ -1036,7 +1038,7 @@ class CloudDNSClient(BaseClient):
         Overload the method_get function in order to retry on empty body
         responses from the Cloud DNS API
         """
-        for i in xrange(3):
+        for i in six.moves.range(3):
             resp, body = super(CloudDNSClient, self).method_get(uri, **kwargs)
             if body:
                 return resp, body

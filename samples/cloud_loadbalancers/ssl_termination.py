@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -29,22 +31,22 @@ clb = pyrax.cloud_loadbalancers
 try:
     lb = clb.list()[0]
 except IndexError:
-    print "You do not have any load balancers yet."
-    print "Please create one and then re-run this script."
+    print("You do not have any load balancers yet.")
+    print("Please create one and then re-run this script.")
     sys.exit()
 
 orig = lb.get_ssl_termination()
-print "Current setting of SSL Termination:", orig
-print
+print("Current setting of SSL Termination:", orig)
+print()
 
 if orig:
-    print "Updating SSL Termination info..."
+    print("Updating SSL Termination info...")
     curr_enabled = orig["enabled"]
     new_enabled = not curr_enabled
     lb.update_ssl_termination(enabled=new_enabled)
 else:
-    print "Adding SSL Termination info..."
+    print("Adding SSL Termination info...")
     lb.add_ssl_termination(securePort=443, secureTrafficOnly=False,
             certificate="dummy_certificate", privatekey="dummy_private_key")
-print
-print "New setting of SSL Termination:", lb.get_ssl_termination()
+print()
+print("New setting of SSL Termination:", lb.get_ssl_termination())

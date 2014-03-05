@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -25,15 +27,15 @@ pyrax.set_credential_file(creds_file)
 cf = pyrax.cloudfiles
 
 cont_name = pyrax.utils.random_name(8)
-print "Creating container with random name:", cont_name
+print("Creating container with random name:", cont_name)
 cont = cf.create_container(cont_name)
-print "New Container"
-print "Name:", cont.name
-print "# of objects:", cont.object_count
-print
-print "All Containers"
-print "list_containers:", cf.list_containers()
-print "get_all_containers:", cf.get_all_containers()
-
+print("New Container")
+print("Name:", cont.name)
+print("# of objects:", cont.object_count)
+print()
+print("All Containers")
+print("list_containers:", cf.list_containers())
+print("get_all_containers:", cf.get_all_containers()
+)
 # Clean up
 cont.delete()

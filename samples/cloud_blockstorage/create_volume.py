@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -28,9 +30,9 @@ vol_name = pyrax.utils.random_name(length=8)
 sata_vol = cbs.create(name="my_standard_volume", size=500, volume_type="SATA")
 ssd_vol = cbs.create(name="my_fast_volume", size=500, volume_type="SSD")
 
-print "SATA:", sata_vol
-print
-print "SSD:", ssd_vol
-print
-print "To delete these volumes, run 'delete_volume.py'"
-print
+print("SATA:", sata_vol)
+print()
+print("SSD:", ssd_vol)
+print()
+print("To delete these volumes, run 'delete_volume.py'")
+print()
