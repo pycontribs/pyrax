@@ -794,7 +794,7 @@ def get_encoding():
 
 # Read in the configuration file, if any
 settings = Settings()
-config_file = os.path.join(os.path.expanduser("~"),".pyrax.cfg")
+config_file = os.path.join(os.path.expanduser("~"), ".pyrax.cfg")
 if os.path.exists(config_file):
     settings.read_config(config_file)
     debug = get_setting("http_debug") or False
