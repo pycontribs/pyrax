@@ -73,14 +73,18 @@ def handle_swiftclient_exception(fnc):
                 ret = fnc(self, *args, **kwargs)
                 return ret
             except _swift_client.ClientException as e:
-                if attempts < AUTH_ATTEMPTS:
-                    # Assume it is an auth failure. Re-auth and retry.
-                    ### NOTE: This is a hack to get around an apparent bug
-                    ### in python-swiftclient when using Rackspace auth.
-                    pyrax.authenticate(connect=False)
-                    if pyrax.identity.authenticated:
-                        pyrax.plug_hole_in_swiftclient_auth(self, clt_url)
-                    continue
+                if e.http_status == 404:
+                    raise exc.NoSuchObject("The requested object/container "
+                            "does not exist.")
+                elif e.http_status == 401:
+                    if attempts < AUTH_ATTEMPTS:
+                        # Assume it is an auth failure. Re-auth and retry.
+                        ### NOTE: This is a hack to get around an apparent bug
+                        ### in python-swiftclient when using Rackspace auth.
+                        pyrax.authenticate(connect=False)
+                        if pyrax.identity.authenticated:
+                            pyrax.plug_hole_in_swiftclient_auth(self, clt_url)
+                        continue
                 str_error = "%s" % e
                 bad_container = no_such_container_pattern.search(str_error)
                 if bad_container:
@@ -95,9 +99,6 @@ def handle_swiftclient_exception(fnc):
                     cont, fname = failed_upload.groups()
                     raise exc.UploadFailed("Upload of file '%(fname)s' to "
                             "container '%(cont)s' failed." % locals())
-                if e.http_status == 404:
-                    raise exc.NoSuchObject("The requested object/container "
-                            "does not exist.")
                 # Not handled; re-raise
                 raise
     return _wrapped

@@ -1249,9 +1249,9 @@ class CF_ClientTest(unittest.TestCase):
         gc = client.get_container
         client.get_container = Mock()
         go = client.get_object
-        client.get_object = Mock()
-        client.get_object.side_effect = _swift_client.ClientException(
-                "Object GET failed: https://example.com/cont/some_object 404")
+        bad = _swift_client.ClientException("Object GET failed: "
+                "https://example.com/cont/some_object 404", http_status=404)
+        client.get_object = Mock(side_effect=bad)
         # Note: we're using copy_object because it calls get_object().
         self.assertRaises(exc.NoSuchObject, client.copy_object,
                 "some_container", "some_object", "fake")
