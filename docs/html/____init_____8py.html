@@ -143,6 +143,8 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with cloud monitoring.  <a href="#a56d538a03d4ded8621b4e483c93b5f1a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a1773238b5af2fb51b54754bbe83b2971">connect_to_autoscale</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with AutoScale.  <a href="#a1773238b5af2fb51b54754bbe83b2971"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a0adcbd0664ff8fb086c10a68d6f9696c">connect_to_images</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with Images.  <a href="#a0adcbd0664ff8fb086c10a68d6f9696c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ac8d659180e8fac04349063827198b196">connect_to_queues</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with Queues.  <a href="#ac8d659180e8fac04349063827198b196"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a2766ee16854adf9575c29ac661f447fd">get_http_debug</a></td></tr>
@@ -163,6 +165,7 @@ Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#af25ef81616c79ed5da4655185879259f">cloud_networks</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a312b914939298c0bef9d8665edc44646">cloud_monitoring</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a71d7ac858bc96ae6302115ab8fe7095a">autoscale</a> = None</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a51dcdeb45e5f187043150dc943c52faf">images</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a66c651710751cc178b5a5c0f029a9e8f">queues</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#affa3c4afe67ff7c721e823ac8b67fa16">default_region</a> = None</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ab8005f4babffb239fd05dbb8c38551b7">default_encoding</a> = &quot;utf-8&quot;</td></tr>
@@ -174,7 +177,7 @@ Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a2b45bebec67926b49ea55f14eb0b8f8e">regions</a> = tuple()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#af615dc60ad41afcddd9dfa11de351b5c">services</a> = tuple()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dictionary&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a4eef1d8d29581de251687dd30b035f3a">_client_classes</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ae6512f1802b7f1f9cc6f196a0938db60">config_file</a> = os.path.expanduser(&quot;~/.pyrax.cfg&quot;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ae6512f1802b7f1f9cc6f196a0938db60">config_file</a> = os.path.join(os.path.expanduser(&quot;~&quot;), &quot;.pyrax.cfg&quot;)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a4c919e19877c5868fcd9f7662c236649">debug</a> = get_setting(&quot;http_debug&quot;)</td></tr>
 </table>
 </div><!-- contents -->
@@ -195,7 +198,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 24 2013 09:26:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 12 2014 16:01:43 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
