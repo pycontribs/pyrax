@@ -71,6 +71,7 @@ try:
     from clouddns import CloudDNSClient
     from cloudnetworks import CloudNetworkClient
     from cloudmonitoring import CloudMonitorClient
+    from image import ImageClient
     from queueing import QueueClient
 except ImportError:
     # See if this is the result of the importing of version.py in setup.py
@@ -93,6 +94,7 @@ cloud_dns = None
 cloud_networks = None
 cloud_monitoring = None
 autoscale = None
+images = None
 queues = None
 # Default region for all services. Can be individually overridden if needed
 default_region = None
@@ -122,6 +124,7 @@ _client_classes = {
         "compute:network": CloudNetworkClient,
         "monitor": CloudMonitorClient,
         "autoscale": AutoScaleClient,
+        "image": ImageClient,
         "queues": QueueClient,
         }
 
@@ -560,7 +563,7 @@ def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, regions, services, cloudservers, cloudfiles
     global cloud_loadbalancers, cloud_databases, cloud_blockstorage, cloud_dns
-    global cloud_networks, cloud_monitoring, autoscale, queues
+    global cloud_networks, cloud_monitoring, autoscale, images, queues
     identity = None
     regions = tuple()
     services = tuple()
@@ -573,6 +576,7 @@ def clear_credentials():
     cloud_networks = None
     cloud_monitoring = None
     autoscale = None
+    images = None
     queues = None
 
 
@@ -591,7 +595,7 @@ def connect_to_services(region=None):
     """Establishes authenticated connections to the various cloud APIs."""
     global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
     global cloud_blockstorage, cloud_dns, cloud_networks, cloud_monitoring
-    global autoscale, queues
+    global autoscale, images, queues
     cloudservers = connect_to_cloudservers(region=region)
     cloudfiles = connect_to_cloudfiles(region=region)
     cloud_loadbalancers = connect_to_cloud_loadbalancers(region=region)
@@ -601,6 +605,7 @@ def connect_to_services(region=None):
     cloud_networks = connect_to_cloud_networks(region=region)
     cloud_monitoring = connect_to_cloud_monitoring(region=region)
     autoscale = connect_to_autoscale(region=region)
+    images = connect_to_images(region=region)
     queues = connect_to_queues(region=region)
 
 
@@ -759,6 +764,12 @@ def connect_to_autoscale(region=None):
             region=region)
 
 
+def connect_to_images(region=None, public=True):
+    """Creates a client for working with Images."""
+    return _create_client(ep_name="image", service_type="image",
+            region=region, public=public)
+
+
 def connect_to_queues(region=None, public=True):
     """Creates a client for working with Queues."""
     return _create_client(ep_name="queues", service_type="queues",
@@ -777,7 +788,7 @@ def set_http_debug(val):
     identity.http_log_debug = val
     for svc in (cloudservers, cloudfiles, cloud_loadbalancers,
             cloud_blockstorage, cloud_databases, cloud_dns, cloud_networks,
-            autoscale, queues):
+            autoscale, images, queues):
         if svc is not None:
             svc.http_log_debug = val
     if not val:

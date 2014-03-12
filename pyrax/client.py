@@ -154,7 +154,7 @@ class BaseClient(httplib2.Http):
             return
         string_parts = ["curl -i"]
         for element in args:
-            if element in ("GET", "POST", "PUT", "DELETE", "HEAD"):
+            if element in ("GET", "POST", "PUT", "DELETE", "HEAD", "PATCH"):
                 string_parts.append(" -X %s" % element)
             else:
                 string_parts.append(" %s" % element)
@@ -199,7 +199,8 @@ class BaseClient(httplib2.Http):
         kwargs["headers"]["User-Agent"] = self.user_agent
         kwargs["headers"]["Accept"] = "application/json"
         if "body" in kwargs:
-            kwargs["headers"]["Content-Type"] = "application/json"
+            if not kwargs["headers"].get("Content-Type"):
+                kwargs["headers"]["Content-Type"] = "application/json"
             kwargs["body"] = json.dumps(kwargs["body"])
         # Allow subclasses to add their own headers
         self._add_custom_headers(kwargs["headers"])

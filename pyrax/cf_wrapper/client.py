@@ -73,10 +73,8 @@ def handle_swiftclient_exception(fnc):
                 ret = fnc(self, *args, **kwargs)
                 return ret
             except _swift_client.ClientException as e:
-                if e.http_status == 404:
-                    raise exc.NoSuchObject("The requested object/container "
-                            "does not exist.")
-                elif e.http_status == 401:
+                str_error = "%s" % e
+                if e.http_status == 401:
                     if attempts < AUTH_ATTEMPTS:
                         # Assume it is an auth failure. Re-auth and retry.
                         ### NOTE: This is a hack to get around an apparent bug
@@ -85,15 +83,15 @@ def handle_swiftclient_exception(fnc):
                         if pyrax.identity.authenticated:
                             pyrax.plug_hole_in_swiftclient_auth(self, clt_url)
                         continue
-                str_error = "%s" % e
-                bad_container = no_such_container_pattern.search(str_error)
-                if bad_container:
-                    raise exc.NoSuchContainer("Container '%s' doesn't exist" %
-                            bad_container.groups()[0])
-                bad_object = no_such_object_pattern.search(str_error)
-                if bad_object:
-                    raise exc.NoSuchObject("Object '%s' doesn't exist" %
-                            bad_object.groups()[0])
+                elif e.http_status == 404:
+                    bad_container = no_such_container_pattern.search(str_error)
+                    if bad_container:
+                        raise exc.NoSuchContainer("Container '%s' doesn't exist"
+                                % bad_container.groups()[0])
+                    bad_object = no_such_object_pattern.search(str_error)
+                    if bad_object:
+                        raise exc.NoSuchObject("Object '%s' doesn't exist" %
+                                bad_object.groups()[0])
                 failed_upload = etag_failed_pattern.search(str_error)
                 if failed_upload:
                     cont, fname = failed_upload.groups()

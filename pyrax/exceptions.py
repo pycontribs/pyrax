@@ -95,9 +95,6 @@ class FileNotFound(PyraxException):
 class FolderNotFound(PyraxException):
     pass
 
-class InvalidEmail(PyraxException):
-    pass
-
 class KeyringModuleNotInstalled(PyraxException):
     pass
 
@@ -125,10 +122,22 @@ class InvalidDateTimeString(PyraxException):
 class InvalidDeviceType(PyraxException):
     pass
 
+class InvalidEmail(PyraxException):
+    pass
+
+class InvalidImageMember(PyraxException):
+    pass
+
+class InvalidImageMemberStatus(PyraxException):
+    pass
+
 class InvalidLoadBalancer(PyraxException):
     pass
 
 class InvalidLoadBalancerParameters(PyraxException):
+    pass
+
+class InvalidImageMemberStatus(PyraxException):
     pass
 
 class InvalidMonitoringCheckDetails(PyraxException):
@@ -300,6 +309,9 @@ class UnattachedVirtualIP(PyraxException):
     pass
 
 class UnicodePathError(PyraxException):
+    pass
+
+class UnsharableImage(PyraxException):
     pass
 
 class UploadFailed(PyraxException):

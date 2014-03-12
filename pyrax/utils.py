@@ -498,6 +498,15 @@ def params_to_dict(params, dct, local_dict):
     return dct
 
 
+def dict_to_qs(dct):
+    """
+    Takes a dictionary and uses it to create a query string.
+    """
+    itms = ["%s=%s" % (key, val) for key, val in list(dct.items())
+            if val is not None]
+    return "&".join(itms)
+
+
 def match_pattern(nm, patterns):
     """
     Compares `nm` with the supplied patterns, and returns True if it matches
