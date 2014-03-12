@@ -35,12 +35,13 @@ providing an object-oriented interface to the Swift object store.
 
 It also adds in CDN functionality that is Rackspace-specific.
 """
-import ConfigParser
 from functools import wraps
 import inspect
 import logging
 import os
 import warnings
+
+from six.moves import configparser
 
 # keyring is an optional import
 try:
@@ -52,10 +53,10 @@ except ImportError:
 # since importing the version info in setup.py tries to import this
 # entire module.
 try:
-    from identity import *
+    from .identity import *
 
-    import exceptions as exc
-    import version
+    from . import exceptions as exc
+    from . import version
 
     import cf_wrapper.client as _cf
     from novaclient import exceptions as _cs_exceptions
@@ -70,6 +71,7 @@ try:
     from clouddns import CloudDNSClient
     from cloudnetworks import CloudNetworkClient
     from cloudmonitoring import CloudMonitorClient
+    from image import ImageClient
     from queueing import QueueClient
 except ImportError:
     # See if this is the result of the importing of version.py in setup.py
@@ -92,6 +94,7 @@ cloud_dns = None
 cloud_networks = None
 cloud_monitoring = None
 autoscale = None
+images = None
 queues = None
 # Default region for all services. Can be individually overridden if needed
 default_region = None
@@ -121,6 +124,7 @@ _client_classes = {
         "compute:network": CloudNetworkClient,
         "monitor": CloudMonitorClient,
         "autoscale": AutoScaleClient,
+        "image": ImageClient,
         "queues": QueueClient,
         }
 
@@ -260,17 +264,17 @@ class Settings(object):
         Parses the specified configuration file and stores the values. Raises
         an InvalidConfigurationFile exception if the file is not well-formed.
         """
-        cfg = ConfigParser.SafeConfigParser()
+        cfg = configparser.SafeConfigParser()
         try:
             cfg.read(config_file)
-        except ConfigParser.MissingSectionHeaderError as e:
+        except configparser.MissingSectionHeaderError as e:
             # The file exists, but doesn't have the correct format.
             raise exc.InvalidConfigurationFile(e)
 
         def safe_get(section, option, default=None):
             try:
                 return cfg.get(section, option)
-            except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+            except (configparser.NoSectionError, configparser.NoOptionError):
                 return default
 
         # A common mistake is including credentials in the config file. If any
@@ -559,7 +563,7 @@ def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, regions, services, cloudservers, cloudfiles
     global cloud_loadbalancers, cloud_databases, cloud_blockstorage, cloud_dns
-    global cloud_networks, cloud_monitoring, autoscale, queues
+    global cloud_networks, cloud_monitoring, autoscale, images, queues
     identity = None
     regions = tuple()
     services = tuple()
@@ -572,6 +576,7 @@ def clear_credentials():
     cloud_networks = None
     cloud_monitoring = None
     autoscale = None
+    images = None
     queues = None
 
 
@@ -590,7 +595,7 @@ def connect_to_services(region=None):
     """Establishes authenticated connections to the various cloud APIs."""
     global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
     global cloud_blockstorage, cloud_dns, cloud_networks, cloud_monitoring
-    global autoscale, queues
+    global autoscale, images, queues
     cloudservers = connect_to_cloudservers(region=region)
     cloudfiles = connect_to_cloudfiles(region=region)
     cloud_loadbalancers = connect_to_cloud_loadbalancers(region=region)
@@ -600,6 +605,7 @@ def connect_to_services(region=None):
     cloud_networks = connect_to_cloud_networks(region=region)
     cloud_monitoring = connect_to_cloud_monitoring(region=region)
     autoscale = connect_to_autoscale(region=region)
+    images = connect_to_images(region=region)
     queues = connect_to_queues(region=region)
 
 
@@ -758,6 +764,12 @@ def connect_to_autoscale(region=None):
             region=region)
 
 
+def connect_to_images(region=None, public=True):
+    """Creates a client for working with Images."""
+    return _create_client(ep_name="image", service_type="image",
+            region=region, public=public)
+
+
 def connect_to_queues(region=None, public=True):
     """Creates a client for working with Queues."""
     return _create_client(ep_name="queues", service_type="queues",
@@ -776,7 +788,7 @@ def set_http_debug(val):
     identity.http_log_debug = val
     for svc in (cloudservers, cloudfiles, cloud_loadbalancers,
             cloud_blockstorage, cloud_databases, cloud_dns, cloud_networks,
-            autoscale, queues):
+            autoscale, images, queues):
         if svc is not None:
             svc.http_log_debug = val
     if not val:
@@ -794,7 +806,7 @@ def get_encoding():
 
 # Read in the configuration file, if any
 settings = Settings()
-config_file = os.path.expanduser("~/.pyrax.cfg")
+config_file = os.path.join(os.path.expanduser("~"), ".pyrax.cfg")
 if os.path.exists(config_file):
     settings.read_config(config_file)
     debug = get_setting("http_debug") or False

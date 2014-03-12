@@ -22,6 +22,8 @@ import urlparse
 import uuid
 import mimetypes
 
+import six
+
 from swiftclient import client as _swift_client
 import pyrax
 from pyrax.cf_wrapper.container import Container
@@ -71,31 +73,30 @@ def handle_swiftclient_exception(fnc):
                 ret = fnc(self, *args, **kwargs)
                 return ret
             except _swift_client.ClientException as e:
-                if attempts < AUTH_ATTEMPTS:
-                    # Assume it is an auth failure. Re-auth and retry.
-                    ### NOTE: This is a hack to get around an apparent bug
-                    ### in python-swiftclient when using Rackspace auth.
-                    pyrax.authenticate(connect=False)
-                    if pyrax.identity.authenticated:
-                        pyrax.plug_hole_in_swiftclient_auth(self, clt_url)
-                    continue
                 str_error = "%s" % e
-                bad_container = no_such_container_pattern.search(str_error)
-                if bad_container:
-                    raise exc.NoSuchContainer("Container '%s' doesn't exist" %
-                            bad_container.groups()[0])
-                bad_object = no_such_object_pattern.search(str_error)
-                if bad_object:
-                    raise exc.NoSuchObject("Object '%s' doesn't exist" %
-                            bad_object.groups()[0])
+                if e.http_status == 401:
+                    if attempts < AUTH_ATTEMPTS:
+                        # Assume it is an auth failure. Re-auth and retry.
+                        ### NOTE: This is a hack to get around an apparent bug
+                        ### in python-swiftclient when using Rackspace auth.
+                        pyrax.authenticate(connect=False)
+                        if pyrax.identity.authenticated:
+                            pyrax.plug_hole_in_swiftclient_auth(self, clt_url)
+                        continue
+                elif e.http_status == 404:
+                    bad_container = no_such_container_pattern.search(str_error)
+                    if bad_container:
+                        raise exc.NoSuchContainer("Container '%s' doesn't exist"
+                                % bad_container.groups()[0])
+                    bad_object = no_such_object_pattern.search(str_error)
+                    if bad_object:
+                        raise exc.NoSuchObject("Object '%s' doesn't exist" %
+                                bad_object.groups()[0])
                 failed_upload = etag_failed_pattern.search(str_error)
                 if failed_upload:
                     cont, fname = failed_upload.groups()
                     raise exc.UploadFailed("Upload of file '%(fname)s' to "
                             "container '%(cont)s' failed." % locals())
-                if e.http_status == 404:
-                    raise exc.NoSuchObject("The requested object/container "
-                            "does not exist.")
                 # Not handled; re-raise
                 raise
     return _wrapped
@@ -205,7 +206,7 @@ class CFClient(object):
 
 
     def _resolve_name(self, val):
-        return val if isinstance(val, basestring) else val.name
+        return val if isinstance(val, six.string_types) else val.name
 
 
     @handle_swiftclient_exception
@@ -314,7 +315,7 @@ class CFClient(object):
         path_parts = (conn_url[v1pos:], cname, oname)
         cleaned = (part.strip("/\\") for part in path_parts)
         pth = "/%s" % "/".join(cleaned)
-        if isinstance(pth, unicode):
+        if isinstance(pth, six.text_type):
             pth = pth.encode(pyrax.get_encoding())
         expires = int(time.time() + int(seconds))
         hmac_body = "%s\n%s\n%s" % (mod_method, expires, pth)
@@ -749,7 +750,7 @@ class CFClient(object):
             return total_size
 
         def upload(fileobj, content_type, etag, headers):
-            if isinstance(fileobj, basestring):
+            if isinstance(fileobj, six.string_types):
                 # This is an empty directory file
                 fsize = 0
             else:
@@ -768,7 +769,7 @@ class CFClient(object):
             digits = int(math.log10(num_segments)) + 1
             # NOTE: This could be greatly improved with threading or other
             # async design.
-            for segment in xrange(num_segments):
+            for segment in six.moves.range(num_segments):
                 sequence = str(segment + 1).zfill(digits)
                 seg_name = "%s.%s" % (obj_name, sequence)
                 with utils.SelfDeletingTempfile() as tmpname:
@@ -787,7 +788,7 @@ class CFClient(object):
                     contents=None, headers=headers,
                     response_dict=extra_info)
 
-        ispath = isinstance(file_or_path, basestring)
+        ispath = isinstance(file_or_path, six.string_types)
         if ispath:
             # Make sure it exists
             if not os.path.exists(file_or_path):
@@ -1413,7 +1414,7 @@ class Connection(_swift_client.Connection):
         Taken directly from the cloudfiles library and modified for use here.
         """
         def quote(val):
-            if isinstance(val, unicode):
+            if isinstance(val, six.text_type):
                 val = val.encode("utf-8")
             return urllib.quote(val)
 

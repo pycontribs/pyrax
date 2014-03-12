@@ -131,7 +131,12 @@ Inheritance diagram for BaseManager:</div>
 <area href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationPlanManager.html" title="Handles all of the requests dealing with Notification Plans." alt="CloudMonitorNotificationPlanManager" shape="rect" coords="237,728,464,752"/>
 <area href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorOverviewManager.html" title="Handles calls to retrieve overview information." alt="CloudMonitorOverviewManager" shape="rect" coords="237,784,464,808"/>
 <area href="classpyrax_1_1cloudnetworks_1_1CloudNetworkManager.html" title="Does nothing special, but is used in testing." alt="CloudNetworkManager" shape="rect" coords="237,840,464,864"/>
-<area href="classpyrax_1_1queueing_1_1BaseQueueManager.html" title="This class attempts to add in all the common deviations from the API standards that the regular base ..." alt="BaseQueueManager" shape="rect" coords="237,896,464,920"/>
+<area href="classpyrax_1_1image_1_1ImageManager.html" title="Manager class for an Image." alt="ImageManager" shape="rect" coords="237,896,464,920"/>
+<area href="classpyrax_1_1image_1_1ImageMemberManager.html" title="Manager class for members (users) of an Image." alt="ImageMemberManager" shape="rect" coords="237,952,464,976"/>
+<area href="classpyrax_1_1image_1_1ImageTagManager.html" title="Manager class for Image tags." alt="ImageTagManager" shape="rect" coords="237,1008,464,1032"/>
+<area href="classpyrax_1_1image_1_1ImageTasksManager.html" title="Manager class for ImageTasks." alt="ImageTasksManager" shape="rect" coords="237,1064,464,1088"/>
+<area href="classpyrax_1_1image_1_1JSONSchemaManager.html" title="Manager class for retrieving JSON schemas." alt="JSONSchemaManager" shape="rect" coords="237,1120,464,1144"/>
+<area href="classpyrax_1_1queueing_1_1BaseQueueManager.html" title="This class attempts to add in all the common deviations from the API standards that the regular base ..." alt="BaseQueueManager" shape="rect" coords="237,1176,464,1200"/>
 </map>
  </div></div>
 
@@ -341,6 +346,8 @@ Static Public Attributes</h2></td></tr>
 <p>For cases where no response is returned from the API on creation, pass `return_none=True` so that the _create method doesn't expect one.</p>
 <p>For cases where you do not want the _create method to attempt to parse the response, but instead have it returned directly, pass `return_raw=True`.</p>
 <p>For cases where the API returns information in the response and not the response_body, pass `return_response=True`. </p>
+
+<p>Reimplemented in <a class="el" href="classpyrax_1_1image_1_1ImageTasksManager.html#a5b7ef0221e471e99fa7f0a87a28ba1ea">ImageTasksManager</a>, and <a class="el" href="classpyrax_1_1image_1_1ImageMemberManager.html#a5b7ef0221e471e99fa7f0a87a28ba1ea">ImageMemberManager</a>.</p>
 
 </div>
 </div>
@@ -602,7 +609,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeDNSManager.html#a692be54e20855ad7f41d446719f26491">FakeDNSManager</a>, and <a class="el" href="classpyrax_1_1queueing_1_1QueueMessageManager.html#a692be54e20855ad7f41d446719f26491">QueueMessageManager</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeImageManager.html#a692be54e20855ad7f41d446719f26491">FakeImageManager</a>, <a class="el" href="classpyrax_1_1fakes_1_1FakeDNSManager.html#a692be54e20855ad7f41d446719f26491">FakeDNSManager</a>, and <a class="el" href="classpyrax_1_1queueing_1_1QueueMessageManager.html#a692be54e20855ad7f41d446719f26491">QueueMessageManager</a>.</p>
 
 </div>
 </div>
@@ -617,7 +624,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeDNSManager.html#ad9ec49f2ad20e5d29aaaedf6da36c880">FakeDNSManager</a>.</p>
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeImageManager.html#ad9ec49f2ad20e5d29aaaedf6da36c880">FakeImageManager</a>, and <a class="el" href="classpyrax_1_1fakes_1_1FakeDNSManager.html#ad9ec49f2ad20e5d29aaaedf6da36c880">FakeDNSManager</a>.</p>
 
 </div>
 </div>
@@ -672,7 +679,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 24 2014 11:18:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 12 2014 16:01:48 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

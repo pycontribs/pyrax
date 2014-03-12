@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -26,4 +28,4 @@ cs = pyrax.cloudservers
 
 imgs = cs.images.list()
 for img in imgs:
-    print "Name: %s\n    ID: %s" % (img.name, img.id)
+    print("Name: %s\n    ID: %s" % (img.name, img.id))

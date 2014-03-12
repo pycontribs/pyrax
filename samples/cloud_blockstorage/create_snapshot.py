@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -31,25 +33,25 @@ vol = cbs.create(name="sample_volume", size=500, volume_type="SATA")
 
 snap = vol.create_snapshot("sample_snap")
 
-print "Volume:", vol
-print "Snapshot:", snap
-print
-print "You have to wait until the snapshot finishes being created before"
-print "it can be deleted. Press Ctrl-C to interrupt."
+print("Volume:", vol)
+print("Snapshot:", snap)
+print()
+print("You have to wait until the snapshot finishes being created before")
+print("it can be deleted. Press Ctrl-C to interrupt.")
 try:
     pyrax.utils.wait_until(snap, "status", "available", attempts=0, verbose=True)
 except KeyboardInterrupt:
-    print
-    print "Process interrupted."
-    print "Be sure to manually delete this snapshot when it completes."
+    print()
+    print("Process interrupted.")
+    print("Be sure to manually delete this snapshot when it completes.")
     sys.exit(0)
-print
-print "Deleting snapshot..."
+print()
+print("Deleting snapshot...")
 snap.delete()
 try:
     vol.delete()
 except exc.VolumeNotAvailable:
-    print "Could not delete volume; snapshot deletion has not completed yet."
-    print "Please be sure to delete the volume manually."
-    print
-print "Done."
+    print("Could not delete volume; snapshot deletion has not completed yet.")
+    print("Please be sure to delete the volume manually.")
+    print()
+print("Done.")

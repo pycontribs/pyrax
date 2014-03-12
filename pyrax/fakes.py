@@ -44,6 +44,11 @@ from pyrax.cloudmonitoring import CloudMonitorClient
 from pyrax.cloudmonitoring import CloudMonitorEntity
 from pyrax.cloudmonitoring import CloudMonitorCheck
 from pyrax.cloudmonitoring import CloudMonitorNotification
+from pyrax.image import Image
+from pyrax.image import ImageClient
+from pyrax.image import ImageManager
+from pyrax.image import ImageMemberManager
+from pyrax.image import ImageTagManager
 from pyrax.queueing import Queue
 from pyrax.queueing import QueueClaim
 from pyrax.queueing import QueueMessage
@@ -550,6 +555,49 @@ class FakeQueueManager(QueueManager):
         if api is None:
             api = FakeQueueClient()
         super(FakeQueueManager, self).__init__(api, *args, **kwargs)
+        self.id = utils.random_ascii()
+
+
+class FakeImage(Image):
+    def __init__(self, *args, **kwargs):
+        info = kwargs.pop("info", {"fake": "fake"})
+        info["name"] = utils.random_unicode()
+        info["id"] = utils.random_unicode()
+        mgr = kwargs.pop("manager", FakeImageManager())
+        kwargs["member_manager_class"] = FakeImageMemberManager
+        kwargs["tag_manager_class"] = FakeImageTagManager
+        super(FakeImage, self).__init__(mgr, info, *args, **kwargs)
+
+
+class FakeImageClient(ImageClient):
+    def __init__(self, *args, **kwargs):
+        super(FakeImageClient, self).__init__("fakeuser",
+                "fakepassword", *args, **kwargs)
+
+
+class FakeImageMemberManager(ImageMemberManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeImageClient()
+        super(FakeImageMemberManager, self).__init__(api, *args, **kwargs)
+        self.id = utils.random_ascii()
+
+
+class FakeImageTagManager(ImageTagManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeImageClient()
+        super(FakeImageTagManager, self).__init__(api, *args, **kwargs)
+        self.id = utils.random_ascii()
+
+
+class FakeImageManager(ImageManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeImageClient()
+        super(FakeImageManager, self).__init__(api, *args, **kwargs)
+        self.plural_response_key = "images"
+        self.resource_class = FakeImage
         self.id = utils.random_ascii()
 
 

@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -25,4 +27,4 @@ pyrax.set_credential_file(creds_file)
 clb = pyrax.cloud_loadbalancers
 
 # Get available protocols
-print "Protocols:", clb.protocols
+print("Protocols:", clb.protocols)

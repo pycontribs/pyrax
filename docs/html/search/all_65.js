@@ -22,5 +22,6 @@ var searchData=
   ['expires',['expires',['../classpyrax_1_1base__identity_1_1BaseAuth.html#ac7a7efd7d064c324be145a0e88c25be8',1,'pyrax::base_identity::BaseAuth.expires()'],['../classpyrax_1_1base__identity_1_1BaseAuth.html#a49192f7cc960a0aab538e014cf449225',1,'pyrax::base_identity::BaseAuth.expires()']]],
   ['export',['export',['../classpyrax_1_1clouddns_1_1CloudDNSDomain.html#a7aff5c605f882c9bad6df59ef505bb5b',1,'pyrax::clouddns::CloudDNSDomain']]],
   ['export_5fdomain',['export_domain',['../classpyrax_1_1clouddns_1_1CloudDNSManager.html#a0e037c749fa4bb12133e5986c410d7b4',1,'pyrax::clouddns::CloudDNSManager.export_domain()'],['../classpyrax_1_1clouddns_1_1CloudDNSClient.html#a0e037c749fa4bb12133e5986c410d7b4',1,'pyrax::clouddns::CloudDNSClient.export_domain()']]],
+  ['export_5ftask',['export_task',['../classpyrax_1_1image_1_1ImageClient.html#a930a257e1debae07d3a4aeac562ec290',1,'pyrax::image::ImageClient']]],
   ['extra_5fargs',['extra_args',['../classpyrax_1_1clouddns_1_1ResultsIterator.html#a9fc9a19c3a197ea5fff10e2861ba5480',1,'pyrax::clouddns::ResultsIterator.extra_args()'],['../classpyrax_1_1clouddns_1_1SubdomainResultsIterator.html#a9fc9a19c3a197ea5fff10e2861ba5480',1,'pyrax::clouddns::SubdomainResultsIterator.extra_args()']]]
 ];

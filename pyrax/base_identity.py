@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import ConfigParser
+from __future__ import print_function
+
 import datetime
 import json
 import re
 import requests
+
+from six.moves import configparser
 
 import pyrax
 import pyrax.exceptions as exc
@@ -129,19 +132,19 @@ class BaseAuth(object):
 
         """
         self._creds_file = credential_file
-        cfg = ConfigParser.SafeConfigParser()
+        cfg = configparser.SafeConfigParser()
         try:
             if not cfg.read(credential_file):
                 # If the specified file does not exist, the parser will
                 # return an empty list
                 raise exc.FileNotFound("The specified credential file '%s' "
                         "does not exist" % credential_file)
-        except ConfigParser.MissingSectionHeaderError as e:
+        except configparser.MissingSectionHeaderError as e:
             # The file exists, but doesn't have the correct format.
             raise exc.InvalidCredentialFile(e)
         try:
             self._read_credential_file(cfg)
-        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as e:
+        except (configparser.NoSectionError, configparser.NoOptionError) as e:
             raise exc.InvalidCredentialFile(e)
         if region:
             self.region = region
@@ -254,11 +257,11 @@ class BaseAuth(object):
             hdrs.update(headers)
         jdata = json.dumps(data) if data else None
         if self.http_log_debug:
-            print "REQ:", mthd.func_name.upper(), uri
-            print "HDRS:", hdrs
+            print("REQ:", mthd.func_name.upper(), uri)
+            print("HDRS:", hdrs)
             if data:
-                print "DATA", jdata
-            print
+                print("DATA", jdata)
+            print()
         return mthd(uri, data=jdata, headers=hdrs, verify=self.verify_ssl)
 
 

@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -26,8 +28,8 @@ clb = pyrax.cloud_loadbalancers
 
 # You need to specify an address, port and condition
 node = clb.Node(address="10.1.1.1", port=80, condition="DISABLED")
-print "Node:", node
-
+print("Node:", node
+)
 # Actually, 'condition' is optional; it will default to 'ENABLED'.
 node_default = clb.Node(address="10.1.1.2", port=80)
-print "Node(using default condition):", node_default
+print("Node(using default condition):", node_default)

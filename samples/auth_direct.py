@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 
 import pyrax
@@ -24,11 +26,11 @@ import pyrax.exceptions as exc
 pyrax.set_setting("identity_type", "rackspace")
 
 # Pass credentials directly (replace with your credentials)
-print "Pass directly:"
+print("Pass directly:")
 try:
     pyrax.set_credentials("real_username", "real_api_key")
 except exc.AuthenticationFailed:
-    print "Did you remember to replace the credentials with your actual",
-    print "username and api_key?"
-print "authenticated =", pyrax.identity.authenticated
-print
+    print("Did you remember to replace the credentials with your actual", end=' ')
+    print("username and api_key?")
+print("authenticated =", pyrax.identity.authenticated)
+print()

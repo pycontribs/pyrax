@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 
 import pyrax
@@ -32,10 +34,10 @@ count = 0
 
 def print_domains(domains):
     for domain in domains:
-        print "Domain:", domain.name
-        print "  email:", domain.emailAddress
-        print "  created:", domain.created
-        print
+        print("Domain:", domain.name)
+        print("  email:", domain.emailAddress)
+        print("  created:", domain.created)
+        print()
 
 domains = dns.list(limit=PAGE_SIZE)
 count += len(domains)
@@ -50,4 +52,4 @@ while True:
         break
     print_domains(domains)
 
-print "There were a total of %s domain(s)." % count
+print("There were a total of %s domain(s)." % count)

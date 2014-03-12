@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 
@@ -26,9 +28,9 @@ cs = pyrax.cloudservers
 
 flvs = cs.list_flavors()
 for flv in flvs:
-    print "Name:", flv.name
-    print "  ID:", flv.id
-    print "  RAM:", flv.ram
-    print "  Disk:", flv.disk
-    print "  VCPUs:", flv.vcpus
-    print
+    print("Name:", flv.name)
+    print("  ID:", flv.id)
+    print("  RAM:", flv.ram)
+    print("  Disk:", flv.disk)
+    print("  VCPUs:", flv.vcpus)
+    print()

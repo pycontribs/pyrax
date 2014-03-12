@@ -7,6 +7,8 @@ import random
 import unittest
 import uuid
 
+import six
+
 from mock import ANY, call, patch
 from mock import MagicMock as Mock
 
@@ -717,7 +719,7 @@ class CF_ClientTest(unittest.TestCase):
         num_files = 10
         fake_upload_key = "abcd"
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            for idx in xrange(num_files):
+            for idx in six.moves.range(num_files):
                 nm = "file%s" % idx
                 pth = os.path.join(tmpdir, nm)
                 open(pth, "w").write("test")
@@ -752,7 +754,7 @@ class CF_ClientTest(unittest.TestCase):
         cont = clt.create_container(cont_name)
         num_files = 7
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            for idx in xrange(num_files):
+            for idx in six.moves.range(num_files):
                 nm = "file%s" % idx
                 pth = os.path.join(tmpdir, nm)
                 open(pth, "w").write("test")
@@ -775,11 +777,11 @@ class CF_ClientTest(unittest.TestCase):
         num_hid_files = 4
         num_all_files = num_vis_files + num_hid_files
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            for idx in xrange(num_vis_files):
+            for idx in six.moves.range(num_vis_files):
                 nm = "file%s" % idx
                 pth = os.path.join(tmpdir, nm)
                 open(pth, "w").write("test")
-            for idx in xrange(num_hid_files):
+            for idx in six.moves.range(num_hid_files):
                 nm = ".file%s" % idx
                 pth = os.path.join(tmpdir, nm)
                 open(pth, "w").write("test")
@@ -802,13 +804,13 @@ class CF_ClientTest(unittest.TestCase):
         num_nested_files = 6
         num_all_files = num_files + num_nested_files
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            for idx in xrange(num_files):
+            for idx in six.moves.range(num_files):
                 nm = "file%s" % idx
                 pth = os.path.join(tmpdir, nm)
                 open(pth, "w").write("test")
             nested_folder = os.path.join(tmpdir, "nested")
             os.mkdir(nested_folder)
-            for idx in xrange(num_nested_files):
+            for idx in six.moves.range(num_nested_files):
                 nm = "file%s" % idx
                 pth = os.path.join(nested_folder, nm)
                 open(pth, "w").write("test")
@@ -1234,8 +1236,10 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         gc = client.get_container
         client.get_container = Mock()
-        client.get_container.side_effect = _swift_client.ClientException(
-                "Container GET failed: https://example.com/some_container 404")
+        side_effect = _swift_client.ClientException("Container GET failed: "
+                "https://example.com/some_container 404")
+        side_effect.http_status = 404
+        client.get_container.side_effect = side_effect
         # Note: we're using delete_object because its first call
         # is get_container()
         self.assertRaises(exc.NoSuchContainer, client.delete_object,
@@ -1247,9 +1251,9 @@ class CF_ClientTest(unittest.TestCase):
         gc = client.get_container
         client.get_container = Mock()
         go = client.get_object
-        client.get_object = Mock()
-        client.get_object.side_effect = _swift_client.ClientException(
-                "Object GET failed: https://example.com/cont/some_object 404")
+        bad = _swift_client.ClientException("Object GET failed: "
+                "https://example.com/cont/some_object 404", http_status=404)
+        client.get_object = Mock(side_effect=bad)
         # Note: we're using copy_object because it calls get_object().
         self.assertRaises(exc.NoSuchObject, client.copy_object,
                 "some_container", "some_object", "fake")

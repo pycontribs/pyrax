@@ -16,12 +16,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import pyrax
 import pyrax.exceptions as exc
 
 
-print "Sorry, this hasn't been implemented yet."
+print("Sorry, this hasn't been implemented yet.")
 exit()
 
 pyrax.set_setting("identity_type", "rackspace")
@@ -31,16 +33,16 @@ pq = pyrax.queues
 
 queues = pq.list()
 if not queues:
-    print "There are no queues to post to. Please create one before proceeding."
+    print("There are no queues to post to. Please create one before proceeding.")
     exit()
 
 if len(queues) == 1:
     queue = queues[0]
-    print "Only one queue available; using '%s'." % queue.name
+    print("Only one queue available; using '%s'." % queue.name)
 else:
-    print "Queues:"
+    print("Queues:")
     for pos, queue in enumerate(queues):
-        print "%s - %s" % (pos, queue.name)
+        print("%s - %s" % (pos, queue.name))
     snum = raw_input("Enter the number of the queue you wish to list messages "
             "from: ")
     if not snum:
@@ -48,17 +50,17 @@ else:
     try:
         num = int(snum)
     except ValueError:
-        print "'%s' is not a valid number." % snum
+        print("'%s' is not a valid number." % snum)
         exit()
     if not 0 <= num < len(queues):
-        print "'%s' is not a valid queue number." % snum
+        print("'%s' is not a valid queue number." % snum)
         exit()
     queue = queues[num]
 claims = pq.list_claims(queue)
 if not claims:
-    print "There are no claims available in this queue."
+    print("There are no claims available in this queue.")
     exit()
 for claim in claims:
-    print "ID:", claim.id
-    print claim
-    print
+    print("ID:", claim.id)
+    print(claim)
+    print()

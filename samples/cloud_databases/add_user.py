@@ -16,6 +16,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import getpass
 import os
 import sys
@@ -29,41 +31,41 @@ cdb = pyrax.cloud_databases
 
 instances = cdb.list()
 if not instances:
-    print "There are no cloud database instances."
-    print "Please create one and re-run this script."
+    print("There are no cloud database instances.")
+    print("Please create one and re-run this script.")
     sys.exit()
 
-print
-print "Available Instances:"
+print()
+print("Available Instances:")
 for pos, inst in enumerate(instances):
-    print "%s: %s (%s, RAM=%s, volume=%s) Status=%s" % (pos, inst.name,
-            inst.flavor.name, inst.flavor.ram, inst.volume.size, inst.status)
+    print("%s: %s (%s, RAM=%s, volume=%s) Status=%s" % (pos, inst.name,
+            inst.flavor.name, inst.flavor.ram, inst.volume.size, inst.status))
 try:
     sel = int(raw_input("Enter the number of the instance to which you want to "
             "add a user: "))
 except ValueError:
-    print
-    print "Invalid (non-numeric) entry."
-    print
+    print()
+    print("Invalid (non-numeric) entry.")
+    print()
     sys.exit()
 try:
     inst = instances[sel]
 except IndexError:
-    print
-    print "Invalid selection."
-    print
+    print()
+    print("Invalid selection.")
+    print()
     sys.exit()
 
-print
+print()
 nm = raw_input("Enter the user name: ")
 pw = getpass.getpass("Enter the password for this user: ")
-print
-print "Available Databases:"
+print()
+print("Available Databases:")
 dbs = inst.list_databases()
 for pos, db in enumerate(dbs):
-    print "%s: %s" % (pos, db.name)
-print "Enter the numbers of the databases which the user can access,",
-print "separated by spaces: ",
+    print("%s: %s" % (pos, db.name))
+print("Enter the numbers of the databases which the user can access,", end=' ')
+print("separated by spaces: ", end=' ')
 selected = raw_input()
 selnums = [int(val) for val in selected.split()]
 sel_dbs = [db.name for pos, db in enumerate(dbs)
@@ -71,6 +73,6 @@ sel_dbs = [db.name for pos, db in enumerate(dbs)
 
 user = inst.create_user(nm, pw, database_names=sel_dbs)
 
-print
-print "User '%s' has been created on instance '%s'." % (nm, inst.name)
-print
+print()
+print("User '%s' has been created on instance '%s'." % (nm, inst.name))
+print()
