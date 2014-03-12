@@ -1,5 +1,19 @@
 # Release Notes for pyrax
 
+###2014.03.12 - Version 1.7.0
+  - New:
+    - Added support for **Cloud Images** (Glance).
+      - Import/export your compute images across different data centers, or
+        even different providers.
+      - Share your images with other accounts.
+  - Queues:
+    - Fixed limit bug for queue messages. GitHub #309
+  - General
+    - Many Python 3 compatibility improvements.
+      - Not fully compatible yet, but getting closer.
+    - Fixed config file pathing problem on Windows. GitHub #306
+    - Fixed issue where non-401 exceptions were suppressed. GitHub #310
+
 ###2014.02.24 - Version 1.6.4
  - Cloud Block Storage:
    - Added support for volume cloning.
