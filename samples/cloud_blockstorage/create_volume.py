@@ -25,7 +25,7 @@ pyrax.set_setting("identity_type", "rackspace")
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cbs = pyrax.cloud_blockstorage
-vol_name = pyrax.utils.random_name(length=8)
+vol_name = pyrax.utils.random_ascii(length=8)
 
 sata_vol = cbs.create(name="my_standard_volume", size=500, volume_type="SATA")
 ssd_vol = cbs.create(name="my_fast_volume", size=500, volume_type="SSD")

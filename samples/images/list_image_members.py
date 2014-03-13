@@ -39,4 +39,4 @@ for image in images:
     else:
         print("Image %s:" % image.id)
         for member in members:
-            print("  %s (%s)" % (member.id, member.status)) 
+            print("  %s (%s)" % (member.id, member.status))

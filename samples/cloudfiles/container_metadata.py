@@ -29,7 +29,7 @@ creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cf = pyrax.cloudfiles
 
-cont_name = pyrax.utils.random_name()
+cont_name = pyrax.utils.random_ascii()
 cont = cf.create_container(cont_name)
 print("Container:", cont
 )

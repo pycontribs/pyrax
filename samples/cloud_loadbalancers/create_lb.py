@@ -25,7 +25,7 @@ pyrax.set_setting("identity_type", "rackspace")
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 clb = pyrax.cloud_loadbalancers
-lb_name = pyrax.utils.random_name(length=8)
+lb_name = pyrax.utils.random_ascii(length=8)
 
 # You may have to adjust the address of the node to something on
 # the same internal network as your load balancer.

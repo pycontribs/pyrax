@@ -27,7 +27,7 @@ pyrax.set_setting("identity_type", "rackspace")
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cdb = pyrax.cloud_databases
-instance_name = pyrax.utils.random_name(8)
+instance_name = pyrax.utils.random_ascii(8)
 
 flavors = cdb.list_flavors()
 nm = raw_input("Enter a name for your new instance: ")
