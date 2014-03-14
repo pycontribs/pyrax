@@ -45,7 +45,6 @@ class ClientTest(unittest.TestCase):
         endpoint_type = "fakeenpointtype"
         management_url = "fakemanagementurl"
         auth_token = "fakeauthtoken"
-        service_type = "fakeservicetype"
         service_name = "fakeservicename"
         timings = "faketimings"
         no_cache = "fakenocache"
@@ -57,14 +56,12 @@ class ClientTest(unittest.TestCase):
         client.BaseClient._configure_manager = Mock()
         bc = client.BaseClient(region_name=region_name,
                 endpoint_type=endpoint_type, management_url=management_url,
-                service_type=service_type, service_name=service_name,
-                timings=timings, http_log_debug=http_log_debug,
-                timeout=timeout,)
+                service_name=service_name, timings=timings,
+                http_log_debug=http_log_debug, timeout=timeout,)
 
         self.assertEqual(bc.region_name, region_name)
         self.assertEqual(bc.endpoint_type, endpoint_type)
         self.assertEqual(bc.management_url, management_url)
-        self.assertEqual(bc.service_type, service_type)
         self.assertEqual(bc.service_name, service_name)
         self.assertEqual(bc.timings, timings)
         self.assertEqual(bc.http_log_debug, http_log_debug)

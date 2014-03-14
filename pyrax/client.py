@@ -41,14 +41,12 @@ class BaseClient(httplib2.Http):
     name = "base"
 
     def __init__(self, region_name=None, endpoint_type="publicURL",
-            management_url=None, service_type=None, service_name=None,
-            timings=False, verify_ssl=True, http_log_debug=False,
-            timeout=None):
+            management_url=None, service_name=None, timings=False,
+            verify_ssl=True, http_log_debug=False, timeout=None):
         super(BaseClient, self).__init__(timeout=timeout)
         self.version = "v1.1"
         self.region_name = region_name
         self.endpoint_type = endpoint_type
-        self.service_type = service_type
         self.service_name = service_name
         self.management_url = management_url
         self.timings = timings
