@@ -218,10 +218,10 @@ def folder_size(pth, ignore=None):
         for pth in paths[::-1]:
             if not os.path.exists(pth):
                 paths.remove(pth)
-            if os.path.isdir(pth):
+            elif os.path.isdir(pth):
                 # Don't count folder stat sizes
                 paths.remove(pth)
-            if match_pattern(pth, ignore):
+            elif match_pattern(pth, ignore):
                 paths.remove(pth)
         total[0] += sum(os.stat(pth).st_size for pth in paths)
 
