@@ -783,9 +783,16 @@ def set_http_debug(val):
             autoscale, images, queues):
         if svc is not None:
             svc.http_log_debug = val
-    if not val:
-        # Need to manually remove the debug handler for swiftclient
-        swift_logger = _cf._swift_client.logger
+    # Need to manually add/remove the debug handler for swiftclient
+    swift_logger = _cf._swift_client.logger
+    if val:
+        for handler in swift_logger.handlers:
+            if isinstance(handler, logging.StreamHandler):
+                # Already present
+                return
+        swift_logger.addHandler(logging.StreamHandler())
+        swift_logger.setLevel(logging.DEBUG)
+    else:
         for handler in swift_logger.handlers:
             if isinstance(handler, logging.StreamHandler):
                 swift_logger.removeHandler(handler)
