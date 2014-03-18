@@ -32,7 +32,7 @@ To upgrade your installation in the future, re-run the same command, but this ti
 ## Set up Authentication
 You need to submit your username and password in order to authenticate. If you are using the Rackspace Public Cloud, that would be your account username and API key. If you are using another OpenStack cloud, you also need to include your tenant ID, which you should be able to get from your provider.
 
-Please note that **all versions of pyrax beginning with 1.4.0 require that you define what type of authentication system you are working with**. Previous versions only worked with Rackspace authentication, so this was not an issue. To do this, you have three options, listed below. In all cases the examples use `keystone` as the identity_type, but if you're using the Rackspace Cloud, change this to `rackspace`. 
+Please note that **all versions of pyrax beginning with 1.4.0 require that you define what type of authentication system you are working with**. Previous versions only worked with Rackspace authentication, so this was not an issue. To do this, you have three options, listed below. In all cases the examples use `keystone` as the identity_type, but if you're using the Rackspace Cloud, change this to `rackspace`.
 
 1. **Configuration File**: make sure that the line `identity_type = keystone` is in your [configuration file](#pyrax-configuration).
 1. **Environment Variable** - If you don't have a configuration file, pyrax checks for the environment variable `CLOUD_ID_TYPE`. Set this by executing `export CLOUD_ID_TYPE=keystone` in a bash shell, or by setting it in the System section of the Control Panel in Windows.
@@ -73,7 +73,7 @@ To authenticate, run the following code using one of these authentication method
 
     # Using credentials file
     pyrax.set_credential_file("/path/to/credential/file")
-    
+
     # Using keychain
     pyrax.keyring_auth("my_username")
     # Using keychain with username set in configuration file
@@ -153,7 +153,7 @@ Setting | Affects | Default | Notes | Env. Variable
 **identity_type** | The system used for authentication.  | -none- | This should be "rackspace" (for the Rackspace Public Cloud) or "keystone" (for all Keystone-based auth systems). Any other system needs a class defined to handle that auth system, and its script added to the pyrax/identity directory. The entry for such custom classes should be in the format of 'module_name.ClassName'. | CLOUD_ID_TYPE
 **auth_endpoint** | The URI of the authentication service | -none- | Not required for the Rackspace Public Cloud, where it can be determined from the region. For everything else it is required. | CLOUD_AUTH_ENDPOINT
 **keyring_username** | User name used when fetching password from keyring. | -none- | Without setting this, you need to supply the username every time you use keyring_auth(). | CLOUD_KEYRING_USER
-**region** | Regional datacenter to connect to; either 'DFW', 'ORD', or 'LON' for Rackspace; typically 'RegionOne' in Keystone. | DFW | This must be specified for all non-Rackspace environments. | CLOUD_REGION
+**region** | Regional datacenter to connect to; for instance 'DFW', 'ORD', 'IAD' for Rackspace ([full list](http://www.rackspace.com/about/datacenters/)); typically 'RegionOne' in Keystone. | Depends on account settings | This must be specified for all non-Rackspace environments. | CLOUD_REGION
 **tenant_id** | The tenant ID used for authentication. | -none- | Not used in the Rackspace Public Cloud. | CLOUD_TENANT_ID
 **tenant_name** | The tenant name used for authentication. | -none- | Not used in the Rackspace Public Cloud. | CLOUD_TENANT_NAME
 **encoding** | The encoding to use when working with non-ASCII values. Unless you have a specific need, the default should work fine. | utf-8 | | CLOUD_ENCODING
