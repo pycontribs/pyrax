@@ -56,6 +56,7 @@ try:
     from .identity import *
 
     from . import exceptions as exc
+    from . import http
     from . import version
 
     import cf_wrapper.client as _cf
@@ -810,3 +811,8 @@ if os.path.exists(config_file):
     settings.read_config(config_file)
     debug = get_setting("http_debug") or False
     set_http_debug(debug)
+
+# Set up logging
+_logger = logging.getLogger("pyrax")
+_logger.setLevel(logging.DEBUG)
+_logger.addHandler(logging.StreamHandler())

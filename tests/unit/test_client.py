@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import httplib2
 import json
 import os
 import pkg_resources
+import requests
 import unittest
 from urllib import quote
 
@@ -111,6 +111,22 @@ class ClientTest(unittest.TestCase):
         mgr.create.assert_called_once_with("val")
         mgr.create = sav
 
+    def test_find(self):
+        mgr = self.client._manager
+        mgr.find = Mock()
+        prop = utils.random_unicode()
+        val = utils.random_unicode()
+        self.client.find(prop=val)
+        mgr.find.assert_called_once_with(prop=val)
+
+    def test_findall(self):
+        mgr = self.client._manager
+        mgr.findall = Mock()
+        prop = utils.random_unicode()
+        val = utils.random_unicode()
+        self.client.findall(prop=val)
+        mgr.findall.assert_called_once_with(prop=val)
+
     def test_unauthenticate(self):
         clt = self.client
         id_svc = self.id_svc
@@ -135,103 +151,80 @@ class ClientTest(unittest.TestCase):
         ret = clt.get_limits()
         self.assertEqual(ret, data)
 
-    def test_http_log_req(self):
-        clt = self.client
-        args = ("a", "b")
-        kwargs = {"headers": {"c": "C"}}
-        clt.http_log_debug = False
-        self.assertIsNone(clt.http_log_req(args, kwargs))
-        clt.http_log_debug = True
-        sav = clt._logger.debug
-        clt._logger.debug = Mock()
-        clt.http_log_req(args, kwargs)
-        clt._logger.debug.assert_called_once_with(
-                "\nREQ: curl -i a b -H 'c: C'\n")
-        kwargs["body"] = "text"
-        clt.http_log_req(args, kwargs)
-        cargs, ckw = clt._logger.debug.call_args
-        self.assertEqual(cargs, ("REQ BODY: text\n", ))
-        clt._logger.debug = sav
-
-    def test_http_log_resp(self):
-        clt = self.client
-        sav = clt._logger.debug
-        clt._logger.debug = Mock()
-        resp = "resp"
-        body = "body"
-        clt.http_log_debug = False
-        clt.http_log_resp(resp, body)
-        self.assertFalse(clt._logger.debug.called)
-        clt.http_log_debug = True
-        clt.http_log_resp(resp, body)
-        self.assertTrue(clt._logger.debug.called)
-        clt._logger.debug.assert_called_once_with(
-                "RESP: %s %s\n", "resp", "body")
-        clt._logger.debug = sav
-
     def test_request_ok(self):
         clt = self.client
         clt.http_log_debug = False
+        clt.timeout = utils.random_unicode()
         fakeresp = fakes.FakeResponse()
-        fakeresp.status = 200
+        fakeresp.status_code = 200
         body_content = {"one": 2, "three": 4}
-        fakebody = json.dumps(body_content)
-        sav = httplib2.Http.request
-        httplib2.Http.request = Mock(return_value=(fakeresp, fakebody))
-        resp, body = clt.request(body="text")
+        fake_uri = utils.random_unicode()
+        fake_method = utils.random_unicode()
+        sav = pyrax.http.request
+        pyrax.http.request = Mock(return_value=(fakeresp, body_content))
+        resp, body = clt.request(fake_uri, fake_method, body="text")
         self.assertTrue(isinstance(resp, fakes.FakeResponse))
-        self.assertEqual(resp.status, 200)
+        self.assertEqual(resp.status_code, 200)
         self.assertEqual(body, body_content)
-        httplib2.Http.request = sav
+        pyrax.http.request = sav
 
     def test_request_400(self):
         clt = self.client
         clt.http_log_debug = False
         fakeresp = fakes.FakeResponse()
-        fakeresp.status = 400
+        fakeresp.status_code = 400
         body_content = {"one": 2, "three": 4}
         fakebody = json.dumps(body_content)
-        sav = httplib2.Http.request
-        httplib2.Http.request = Mock(return_value=(fakeresp, fakebody))
+        fake_uri = utils.random_unicode()
+        fake_method = utils.random_unicode()
+        sav = pyrax.http.request
+        pyrax.http.request = Mock(return_value=(fakeresp, fakebody))
         savexc = exc.from_response
         exc.from_response = Mock(side_effect=fakes.FakeException)
-        self.assertRaises(fakes.FakeException, clt.request)
+        self.assertRaises(fakes.FakeException, clt.request, fake_uri,
+                fake_method)
         exc.from_response = savexc
-        httplib2.Http.request = sav
+        pyrax.http.request = sav
 
     def test_request_no_json_resp(self):
         clt = self.client
         clt.http_log_debug = False
         fakeresp = fakes.FakeResponse()
-        fakeresp.status = 400
+        fakeresp.status_code = 400
         body_content = {"one": 2, "three": 4}
         fakebody = json.dumps(body_content)
-        sav = httplib2.Http.request
+        sav = pyrax.http.request
         # Test non-json response
         fakebody = "{{{{{{"
-        httplib2.Http.request = Mock(return_value=(fakeresp, fakebody))
+        fake_uri = utils.random_unicode()
+        fake_method = utils.random_unicode()
+        pyrax.http.request = Mock(return_value=(fakeresp, fakebody))
         savexc = exc.from_response
         exc.from_response = Mock(side_effect=fakes.FakeException)
-        self.assertRaises(fakes.FakeException, clt.request)
+        self.assertRaises(fakes.FakeException, clt.request, fake_uri,
+                fake_method)
         exc.from_response = savexc
-        httplib2.Http.request = sav
+        pyrax.http.request = sav
 
     def test_request_empty_body(self):
         clt = self.client
         clt.http_log_debug = False
         fakeresp = fakes.FakeResponse()
-        fakeresp.status = 400
+        fakeresp.status_code = 400
         body_content = {"one": 2, "three": 4}
         fakebody = json.dumps(body_content)
-        sav = httplib2.Http.request
+        sav = pyrax.http.request
         fakebody = ""
-        httplib2.Http.request = Mock(return_value=(fakeresp, fakebody))
+        fake_uri = utils.random_unicode()
+        fake_method = utils.random_unicode()
+        pyrax.http.request = Mock(return_value=(fakeresp, fakebody))
         savexc = exc.from_response
         exc.from_response = Mock(side_effect=fakes.FakeException)
-        self.assertRaises(fakes.FakeException, clt.request)
-        exc.from_response.assert_called_once_with(fakeresp, None)
+        self.assertRaises(fakes.FakeException, clt.request, fake_uri,
+                fake_method)
+        exc.from_response.assert_called_once_with(fakeresp, "")
         exc.from_response = savexc
-        httplib2.Http.request = sav
+        pyrax.http.request = sav
 
     def test_time_request(self):
         clt = self.client
@@ -242,6 +235,33 @@ class ClientTest(unittest.TestCase):
         clt.request(url, method)
         clt.request.assert_called_once_with(url, method)
         clt.request = sav
+
+    def test_api_request_expired(self):
+        clt = self.client
+        id_svc = self.id_svc
+        sav_auth = id_svc.authenticate
+        returns = [exc.Unauthorized(""), (fakes.FakeIdentityResponse(),
+                fakes.fake_identity_response)]
+
+        def auth_resp(*args, **kwargs):
+            result = returns.pop(0)
+            if isinstance(result, Exception):
+                raise result
+            return result
+
+        id_svc.authenticate = Mock()
+        sav_req = clt.request
+        clt.request = Mock(side_effect=auth_resp)
+        url = DUMMY_URL
+        method = "PUT"
+        clt.unauthenticate()
+        clt.management_url = url
+        id_svc.token = ""
+        id_svc.tenant_id = utils.random_unicode()
+        clt._api_request(url, method)
+        self.assertEqual(id_svc.authenticate.call_count, 2)
+        clt.request = sav_req
+        id_svc.authenticate = sav_auth
 
     def test_api_request_not_authed(self):
         clt = self.client
@@ -255,6 +275,7 @@ class ClientTest(unittest.TestCase):
         clt.unauthenticate()
         clt.management_url = url
         id_svc.token = ""
+        id_svc.tenant_id = utils.random_unicode()
         clt._api_request(url, method)
         id_svc.authenticate.assert_called_once_with()
         clt.request = sav_req
@@ -370,6 +391,15 @@ class ClientTest(unittest.TestCase):
         url = DUMMY_URL
         clt.method_delete(url)
         clt._api_request.assert_called_once_with(url, "DELETE")
+        clt._api_request = sav
+
+    def test_method_patch(self):
+        clt = self.client
+        sav = clt._api_request
+        clt._api_request = Mock()
+        url = DUMMY_URL
+        clt.method_patch(url)
+        clt._api_request.assert_called_once_with(url, "PATCH")
         clt._api_request = sav
 
     def test_authenticate(self):

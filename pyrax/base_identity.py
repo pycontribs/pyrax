@@ -6,7 +6,6 @@ from __future__ import print_function
 import datetime
 import json
 import re
-import requests
 
 from six.moves import configparser
 
@@ -217,33 +216,34 @@ class BaseAuth(object):
 
 
     # The following method_* methods wrap the _call() method.
-    def method_get(self, uri, admin=False, data=None, headers=None,
-            std_headers=True):
-        return self._call(requests.get, uri, admin, data, headers, std_headers)
-
     def method_head(self, uri, admin=False, data=None, headers=None,
             std_headers=True):
-        return self._call(requests.head, uri, admin, data, headers, std_headers)
+        return self._call("HEAD", uri, admin, data, headers, std_headers)
+
+    def method_get(self, uri, admin=False, data=None, headers=None,
+            std_headers=True):
+        return self._call("GET", uri, admin, data, headers, std_headers)
 
     def method_post(self, uri, admin=False, data=None, headers=None,
             std_headers=True):
-        return self._call(requests.post, uri, admin, data, headers, std_headers)
+        return self._call("POST", uri, admin, data, headers, std_headers)
 
     def method_put(self, uri, admin=False, data=None, headers=None,
             std_headers=True):
-        return self._call(requests.put, uri, admin, data, headers, std_headers)
+        return self._call("PUT", uri, admin, data, headers, std_headers)
 
     def method_delete(self, uri, admin=False, data=None, headers=None,
             std_headers=True):
-        return self._call(requests.delete, uri, admin, data, headers,
+        return self._call("DELETE", uri, admin, data, headers,
+                std_headers)
+
+    def method_patch(self, uri, admin=False, data=None, headers=None,
+            std_headers=True):
+        return self._call("PATCH", uri, admin, data, headers,
                 std_headers)
 
 
     def _call(self, mthd, uri, admin, data, headers, std_headers):
-        """
-        Handles all the common functionality required for API calls. Returns
-        the resulting response object.
-        """
         if not uri.startswith("http"):
             uri = "/".join((self.auth_endpoint.rstrip("/"), uri))
         if admin:
@@ -255,14 +255,12 @@ class BaseAuth(object):
             hdrs = {}
         if headers:
             hdrs.update(headers)
-        jdata = json.dumps(data) if data else None
-        if self.http_log_debug:
-            print("REQ:", mthd.func_name.upper(), uri)
-            print("HDRS:", hdrs)
-            if data:
-                print("DATA", jdata)
-            print()
-        return mthd(uri, data=jdata, headers=hdrs, verify=self.verify_ssl)
+        kwargs = {"headers": hdrs,
+                "body": data}
+        if "tokens" in uri:
+            # We'll handle the exception here
+            kwargs["raise_exception"] = False
+        return pyrax.http.request(mthd, uri, **kwargs)
 
 
     def authenticate(self):
@@ -275,15 +273,15 @@ class BaseAuth(object):
         headers = {"Content-Type": "application/json",
                 "Accept": "application/json",
                 }
-        resp = self.method_post("tokens", data=creds, headers=headers,
-                std_headers=False)
+        resp, resp_body = self.method_post("tokens", data=creds,
+                headers=headers, std_headers=False)
 
         if resp.status_code == 401:
             # Invalid authorization
             raise exc.AuthenticationFailed("Incorrect/unauthorized "
                     "credentials received")
         elif resp.status_code > 299:
-            msg_dict = resp.json()
+            msg_dict = resp_body
             try:
                 msg = msg_dict[msg_dict.keys()[0]]["message"]
             except KeyError:
@@ -293,7 +291,6 @@ class BaseAuth(object):
             else:
                 err = "%s." % resp.reason
             raise exc.AuthenticationFailed(err)
-        resp_body = resp.json()
         self._parse_response(resp_body)
         self.authenticated = True
 
