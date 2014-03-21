@@ -20,9 +20,9 @@
 OpenStack Client interface. Handles the REST calls and responses.
 """
 
-import httplib2
 import json
 import logging
+import requests
 import time
 import urllib
 import urlparse
@@ -31,7 +31,7 @@ import pyrax
 import pyrax.exceptions as exc
 
 
-class BaseClient(httplib2.Http):
+class BaseClient(object):
     """
     The base class for all pyrax clients.
     """
@@ -43,7 +43,6 @@ class BaseClient(httplib2.Http):
     def __init__(self, region_name=None, endpoint_type="publicURL",
             management_url=None, service_name=None, timings=False,
             verify_ssl=True, http_log_debug=False, timeout=None):
-        super(BaseClient, self).__init__(timeout=timeout)
         self.version = "v1.1"
         self.region_name = region_name
         self.endpoint_type = endpoint_type
@@ -52,16 +51,9 @@ class BaseClient(httplib2.Http):
         self.timings = timings
         self.verify_ssl = verify_ssl
         self.http_log_debug = http_log_debug
+        self.timeout = timeout
         self.times = []  # [("item", starttime, endtime), ...]
 
-        # httplib2 overrides
-        self.force_exception_to_status_code = True
-        self.disable_ssl_certificate_validation = not verify_ssl
-
-        self._logger = logging.getLogger(self.__class__.__name__)
-        ch = logging.StreamHandler()
-        self._logger.setLevel(logging.DEBUG)
-        self._logger.addHandler(ch)
         self._manager = None
         # Hook method for subclasses to create their manager instance
         # without having to override __init__().
@@ -143,39 +135,6 @@ class BaseClient(httplib2.Http):
         return resp_body
 
 
-    def http_log_req(self, args, kwargs):
-        """
-        When self.http_log_debug is True, outputs the equivalent `curl`
-        command for the API request being made.
-        """
-        if not self.http_log_debug:
-            return
-        string_parts = ["curl -i"]
-        for element in args:
-            if element in ("GET", "POST", "PUT", "DELETE", "HEAD", "PATCH"):
-                string_parts.append(" -X %s" % element)
-            else:
-                string_parts.append(" %s" % element)
-
-        for element in kwargs["headers"]:
-            header = " -H '%s: %s'" % (element, kwargs["headers"][element])
-            string_parts.append(header)
-
-        self._logger.debug("\nREQ: %s\n" % "".join(string_parts))
-        if "body" in kwargs:
-            self._logger.debug("REQ BODY: %s\n" % (kwargs["body"]))
-
-
-    def http_log_resp(self, resp, body):
-        """
-        When self.http_log_debug is True, outputs the response received
-        from the API request.
-        """
-        if not self.http_log_debug:
-            return
-        self._logger.debug("RESP: %s %s\n", resp, body)
-
-
     def _add_custom_headers(self, dct):
         """
         Clients for some services must add headers that are required for that
@@ -188,32 +147,28 @@ class BaseClient(httplib2.Http):
         pass
 
 
-    def request(self, *args, **kwargs):
+    def request(self, uri, method, *args, **kwargs):
         """
         Formats the request into a dict representing the headers
         and body that will be used to make the API call.
         """
+        if self.timeout:
+            kwargs["timeout"] = self.timeout
+        kwargs["verify"] = self.verify_ssl
         kwargs.setdefault("headers", kwargs.get("headers", {}))
         kwargs["headers"]["User-Agent"] = self.user_agent
         kwargs["headers"]["Accept"] = "application/json"
         if "body" in kwargs:
-            if not kwargs["headers"].get("Content-Type"):
+            if not "Content-Type" in kwargs["headers"]:
                 kwargs["headers"]["Content-Type"] = "application/json"
-            kwargs["body"] = json.dumps(kwargs["body"])
+            # JSON-encode by default, unless explicitly told not to.
+            use_json = kwargs.pop("json_encode", True)
+            if use_json:
+                kwargs["body"] = json.dumps(kwargs["body"])
         # Allow subclasses to add their own headers
         self._add_custom_headers(kwargs["headers"])
-        self.http_log_req(args, kwargs)
-        resp, body = super(BaseClient, self).request(*args, **kwargs)
-        self.http_log_resp(resp, body)
-
-        if body:
-            try:
-                body = json.loads(body)
-            except ValueError:
-                pass
-        else:
-            body = None
-        if resp.status >= 400:
+        resp, body = pyrax.http.request(method, uri, *args, **kwargs)
+        if resp.status_code >= 400:
             raise exc.from_response(resp, body)
         return resp, body
 

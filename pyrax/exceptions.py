@@ -436,15 +436,19 @@ def from_response(response, body):
     Usage::
 
         resp, body = http.request(...)
-        if resp.status != 200:
+        if resp.status_code != 200:
             raise exception_from_response(resp, body)
     """
     if isinstance(response, dict):
-        status = response.get("status")
+        status = response.get("status_code")
     else:
-        status = response.status
+        status = response.status_code
     cls = _code_map.get(int(status), ClientException)
-    request_id = response.get("x-compute-request-id")
+
+#    import pyrax
+#    pyrax.utils.trace()
+
+    request_id = response.headers.get("x-compute-request-id")
     if body:
         message = "n/a"
         details = "n/a"

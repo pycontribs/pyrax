@@ -405,7 +405,7 @@ class QueuesTest(unittest.TestCase):
         claim_id = utils.random_unicode()
         rbody = [{"href": "http://example.com/foo?claim_id=%s" % claim_id}]
         resp = fakes.FakeResponse()
-        resp.status = 204
+        resp.status_code = 204
         mgr.api.method_post = Mock(return_value=(resp, rbody))
         mgr.get = Mock()
         exp_uri = "/%s" % mgr.uri_base
@@ -468,7 +468,7 @@ class QueuesTest(unittest.TestCase):
         name = utils.random_unicode()
         exp_uri = "/%s/%s" % (mgr.uri_base, name)
         resp = fakes.FakeResponse()
-        resp.status = 201
+        resp.status_code = 201
         mgr.api.method_put = Mock(return_value=(resp, None))
         q = mgr.create(name)
         self.assertTrue(isinstance(q, Queue))
@@ -480,7 +480,7 @@ class QueuesTest(unittest.TestCase):
         name = utils.random_unicode()
         exp_uri = "/%s/%s" % (mgr.uri_base, name)
         resp = fakes.FakeResponse()
-        resp.status = 400
+        resp.status_code = 400
         mgr.api.method_put = Mock(return_value=(resp, None))
         self.assertRaises(exc.InvalidQueueName, mgr.create, name)
 

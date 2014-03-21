@@ -417,7 +417,7 @@ class QueueClaimManager(BaseQueueManager):
                 "grace": grace,
                 }
         resp, resp_body = self.api.method_post(uri, body=body)
-        if resp.status == 204:
+        if resp.status_code == 204:
             # Nothing available to claim
             return None
         # Get the claim ID from the first message in the list.
@@ -472,9 +472,9 @@ class QueueManager(BaseQueueManager):
     def create(self, name):
         uri = "/%s/%s" % (self.uri_base, name)
         resp, resp_body = self.api.method_put(uri)
-        if resp.status == 201:
+        if resp.status_code == 201:
             return Queue(self, {"name": name})
-        elif resp.status == 400:
+        elif resp.status_code == 400:
             # Most likely an invalid name
             raise exc.InvalidQueueName("Queue names must not exceed 64 bytes "
                     "in length, and are limited to US-ASCII letters, digits, "
