@@ -107,7 +107,7 @@ This server's `networks` attribute shows all three networks:
 ## Limitations of Cloud Networks
 Please note that there are several limitations regarding Cloud Networks:
 
-* You can create a maximum of **three** isolated networks.
+* You can create a maximum of **10** isolated networks. Please create a Rackspace support ticket if you'll need more than 10 networks.
 * You can attach an isolated network to a maximum of **60** servers.
 * A server instance can have a maximum of **15** virtual interfaces (VIFs).
 * You cannot attach an isolated network to an existing server.
