@@ -30,7 +30,7 @@ imgs.http_log_debug = True
 print("Listing images with pending status...")
 images = imgs.list(visibility="shared", member_status="pending")
 
-if len(images) == 0:
+if not images:
     print("No pending images found")
     exit()
 
@@ -41,7 +41,7 @@ for pos, image in enumerate(images):
     if choice == 'a':
         new_status = 'accepted'
     elif choice == 'r':
-        new_status = 'accepted'
+        new_status = 'rejected'
 
     if new_status is not None:
         print("[%s] - %s : Updating status to %s" % (pos, image.name, new_status))
