@@ -244,7 +244,7 @@ You can override any of these defaults in the call to `wait_for_build()`. For ex
 
 
 ### Additional Parameters to Create()
-There are several optional parameters that you can include when creating a server. Here are the two most common:
+There are several optional parameters that you can include when creating a server. Here are the most common:
 
 `meta` - An arbitrary dict of up to 5 key/value pairs that can be stored with the server. Note that the keys and values must be simple strings, and not numbers, datetimes, tuples, or anything else.
 
