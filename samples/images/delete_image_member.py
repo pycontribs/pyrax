@@ -66,7 +66,7 @@ imgs.http_log_debug = True
 res = imgs.delete_image_member(member.image_id, member.id)
 
 print("RES", res)
-#print("The following member was added:")
-#print("   ID: %s" % member.id)
-#print("   Status: %s" % member.status)
-#print("   Created at: %s" % member.created_at)
+# print("The following member was added:")
+# print("   ID: %s" % member.id)
+# print("   Status: %s" % member.status)
+# print("   Created at: %s" % member.created_at)

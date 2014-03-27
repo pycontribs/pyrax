@@ -127,7 +127,7 @@ class SmokeTester(object):
             self.cmn_create_alarm()
 
 
-    ## Specific tests start here ##
+    # Specific tests start here ##
     def cs_list_flavors(self):
         print("Listing Flavors:", end=' ')
         self.cs_flavors = self.cs.list_flavors()
