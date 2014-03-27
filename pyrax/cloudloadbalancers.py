@@ -370,7 +370,7 @@ class CloudLoadBalancer(BaseResource):
         return self.manager.clear_error_page(self)
 
 
-    ## BEGIN - property definitions ##
+    # BEGIN - property definitions ##
     def _get_connection_logging(self):
         if self._connection_logging is None:
             self._connection_logging = self.manager.get_connection_logging(self)
@@ -420,7 +420,7 @@ class CloudLoadBalancer(BaseResource):
             _set_session_persistence, None, "The current state of session "
             "persistence. Possible values are either 'HTTP_COOKIE' or "
             "'SOURCE_IP', depending on the type of load balancing.")
-    ## END - property definitions ##
+    # END - property definitions ##
 
 
 
@@ -1155,7 +1155,7 @@ class Node(object):
         """
         diff = self._diff()
         if not diff:
-            #Nothing to do!
+            # Nothing to do!
             return
         self.parent.update_node(self, diff)
 
@@ -1653,4 +1653,4 @@ class CloudLoadBalancerClient(BaseClient):
         """
         loadbalancer.session_persistence = val
 
-    ## END pass-through methods ##
+    # END pass-through methods ##

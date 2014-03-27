@@ -33,7 +33,7 @@ req_methods = {
     "PATCH": requests.patch,
     }
 
-#NOTE: FIX THIS!!!
+# NOTE: FIX THIS!!!
 verify_ssl = False
 
 

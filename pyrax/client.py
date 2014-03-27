@@ -159,7 +159,7 @@ class BaseClient(object):
         kwargs["headers"]["User-Agent"] = self.user_agent
         kwargs["headers"]["Accept"] = "application/json"
         if "body" in kwargs:
-            if not "Content-Type" in kwargs["headers"]:
+            if "Content-Type" not in kwargs["headers"]:
                 kwargs["headers"]["Content-Type"] = "application/json"
             # JSON-encode by default, unless explicitly told not to.
             use_json = kwargs.pop("json_encode", True)

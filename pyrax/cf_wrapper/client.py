@@ -77,8 +77,8 @@ def handle_swiftclient_exception(fnc):
                 if e.http_status == 401:
                     if attempts < AUTH_ATTEMPTS:
                         # Assume it is an auth failure. Re-auth and retry.
-                        ### NOTE: This is a hack to get around an apparent bug
-                        ### in python-swiftclient when using Rackspace auth.
+                        # NOTE: This is a hack to get around an apparent bug
+                        # in python-swiftclient when using Rackspace auth.
                         pyrax.authenticate(connect=False)
                         if pyrax.identity.authenticated:
                             pyrax.plug_hole_in_swiftclient_auth(self, clt_url)
@@ -707,7 +707,7 @@ class CFClient(object):
         cont = self.get_container(container)
         obj = self.get_object(cont, obj)
         if guess and cont.cdn_enabled:
-            #Test against the CDN url to guess the content-type.
+            # Test against the CDN url to guess the content-type.
             obj_url = "%s/%s" % (cont.cdn_uri, obj.name)
             new_ctype = mimetypes.guess_type(obj_url)[0]
         hdrs = {"X-Copy-From": "/%s/%s" % (cont.name, obj.name)}
