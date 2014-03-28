@@ -282,6 +282,9 @@ class BaseAuth(object):
             # Invalid authorization
             raise exc.AuthenticationFailed("Incorrect/unauthorized "
                     "credentials received")
+        elif resp.status_code == 500:
+            # Internal Server Error
+            raise exc.InternalServerError()
         elif resp.status_code > 299:
             msg_dict = resp.json()
             try:
