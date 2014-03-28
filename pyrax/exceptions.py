@@ -107,6 +107,9 @@ class KeyringUsernameMissing(PyraxException):
 class IdentityClassNotDefined(PyraxException):
     pass
 
+class InternalServerError(PyraxException):
+    pass
+
 class InvalidCDNMetadata(PyraxException):
     pass
 
