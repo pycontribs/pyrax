@@ -35,10 +35,9 @@ setup(
         "python-novaclient>=2.13.0",
         "rackspace-novaclient",
         "python-swiftclient>=1.5.0",
-        "httplib2",
         "keyring",
-        "requests>=1.0.0",
-        "six",
+        "requests>=2.2.1",
+        "six>=1.5.2",
     ] + testing_requires,
     packages=[
         "pyrax",

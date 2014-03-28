@@ -15,6 +15,5 @@ var searchData=
   ['flavors',['flavors',['../classpyrax_1_1fakes_1_1FakeCSClient.html#ae18dec9cd12ee32dd9ea0f5c8aabfcae',1,'pyrax::fakes::FakeCSClient']]],
   ['fnames',['fnames',['../namespacepyrax_1_1identity.html#a6cac12681a298a3f33aefe5d9a6044ea',1,'pyrax::identity']]],
   ['folder_5fupload_5fstatus',['folder_upload_status',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aa27847dbcb2f79be04aaabd5b85291e6',1,'pyrax::cf_wrapper::client::CFClient']]],
-  ['force_5fexception_5fto_5fstatus_5fcode',['force_exception_to_status_code',['../classpyrax_1_1client_1_1BaseClient.html#a3e15723c0bdd0c672e7d4179ed42570a',1,'pyrax::client::BaseClient']]],
   ['fpath',['fpath',['../namespacepyrax_1_1identity.html#a709dee3638ba4186d2985e17f10f8b0a',1,'pyrax::identity']]]
 ];

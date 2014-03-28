@@ -97,7 +97,6 @@ var searchData=
   ['foldernotfound',['FolderNotFound',['../classpyrax_1_1exceptions_1_1FolderNotFound.html',1,'pyrax::exceptions']]],
   ['folderuploader',['FolderUploader',['../classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html',1,'pyrax::cf_wrapper::client']]],
   ['forbidden',['Forbidden',['../classpyrax_1_1exceptions_1_1Forbidden.html',1,'pyrax::exceptions']]],
-  ['force_5fexception_5fto_5fstatus_5fcode',['force_exception_to_status_code',['../classpyrax_1_1client_1_1BaseClient.html#a3e15723c0bdd0c672e7d4179ed42570a',1,'pyrax::client::BaseClient']]],
   ['fpath',['fpath',['../namespacepyrax_1_1identity.html#a709dee3638ba4186d2985e17f10f8b0a',1,'pyrax::identity']]],
   ['from_5fresponse',['from_response',['../namespacepyrax_1_1exceptions.html#a6ec044b1084ca1566f5a0e9555c63998',1,'pyrax::exceptions']]]
 ];

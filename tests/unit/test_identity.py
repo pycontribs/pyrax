@@ -5,7 +5,6 @@ import datetime
 import json
 import os
 import random
-import requests
 import StringIO
 import sys
 import unittest
@@ -262,35 +261,39 @@ class IdentityTest(unittest.TestCase):
         self.assertEqual(self.password, key)
 
     def test_authenticate(self):
-        savrequest = requests.api.request
-        requests.api.request = Mock(return_value=fakes.FakeIdentityResponse())
+        savrequest = pyrax.http.request
+        fake_resp = fakes.FakeIdentityResponse()
+        fake_body = fakes.fake_identity_response
+        pyrax.http.request = Mock(return_value=(fake_resp, fake_body))
         for cls in self.id_classes.values():
             ident = cls()
             if cls is self.keystone_identity_class:
                 # Necessary for testing to avoid NotImplementedError.
                 utils.add_method(ident, lambda self: "", "_get_auth_endpoint")
             ident.authenticate()
-        requests.api.request = savrequest
+        pyrax.http.request = savrequest
 
     def test_authenticate_fail_creds(self):
         ident = self.rax_identity_class(username="BAD", password="BAD")
-        savrequest = requests.api.request
+        savrequest = pyrax.http.request
         fake_resp = fakes.FakeIdentityResponse()
         fake_resp.status_code = 401
-        requests.api.request = Mock(return_value=fake_resp)
+        fake_body = fakes.fake_identity_response
+        pyrax.http.request = Mock(return_value=(fake_resp, fake_body))
         self.assertRaises(exc.AuthenticationFailed, ident.authenticate)
-        requests.api.request = savrequest
+        pyrax.http.request = savrequest
 
     def test_authenticate_fail_other(self):
         ident = self.rax_identity_class(username="BAD", password="BAD")
-        savrequest = requests.api.request
+        savrequest = pyrax.http.request
         fake_resp = fakes.FakeIdentityResponse()
         fake_resp.status_code = 500
+        fake_body = fakes.fake_identity_response
         fake_resp.json = Mock(return_value={u'unauthorized': {
                 u'message': u'Username or api key is invalid', u'code': 500}})
-        requests.api.request = Mock(return_value=fake_resp)
+        pyrax.http.request = Mock(return_value=(fake_resp, fake_body))
         self.assertRaises(exc.AuthenticationFailed, ident.authenticate)
-        requests.api.request = savrequest
+        pyrax.http.request = savrequest
 
     def test_endpoint_defined(self):
         ident = self.base_identity_class()
@@ -329,40 +332,39 @@ class IdentityTest(unittest.TestCase):
         std_headers = True
         ident.method_get(uri, admin=False, data=data, headers=headers,
                 std_headers=std_headers)
-        ident._call.assert_called_with(requests.get, uri, False, data, headers,
+        ident._call.assert_called_with("GET", uri, False, data, headers,
                 std_headers)
         ident.method_head(uri, admin=False, data=data, headers=headers,
                 std_headers=std_headers)
-        ident._call.assert_called_with(requests.head, uri, False, data, headers,
+        ident._call.assert_called_with("HEAD", uri, False, data, headers,
                 std_headers)
         ident.method_post(uri, admin=False, data=data, headers=headers,
                 std_headers=std_headers)
-        ident._call.assert_called_with(requests.post, uri, False, data, headers,
+        ident._call.assert_called_with("POST", uri, False, data, headers,
                 std_headers)
         ident.method_put(uri, admin=False, data=data, headers=headers,
                 std_headers=std_headers)
-        ident._call.assert_called_with(requests.put, uri, False, data, headers,
+        ident._call.assert_called_with("PUT", uri, False, data, headers,
                 std_headers)
         ident.method_delete(uri, admin=False, data=data, headers=headers,
                 std_headers=std_headers)
-        ident._call.assert_called_with(requests.delete, uri, False, data,
+        ident._call.assert_called_with("DELETE", uri, False, data,
                 headers, std_headers)
 
     def test_call(self):
         ident = self.base_identity_class()
-        sav_post = requests.post
-        requests.post = Mock()
+        sav_req = pyrax.http.request
+        pyrax.http.request = Mock()
         sav_debug = ident.http_log_debug
         ident.http_log_debug = True
-        uri = "https://%s/%s" % (utils.random_unicode(), utils.random_unicode())
+        uri = "https://%s/%s" % (utils.random_ascii(), utils.random_ascii())
         sav_stdout = sys.stdout
         out = StringIO.StringIO()
         sys.stdout = out
         utils.add_method(ident, lambda self: "", "_get_auth_endpoint")
-        dkv = utils.random_unicode()
+        dkv = utils.random_ascii()
         data = {dkv: dkv}
-        jdata = json.dumps(data)
-        hkv = utils.random_unicode()
+        hkv = utils.random_ascii()
         headers = {hkv: hkv}
         for std_headers in (True, False):
             expected_headers = ident._standard_headers() if std_headers else {}
@@ -370,13 +372,13 @@ class IdentityTest(unittest.TestCase):
             for admin in (True, False):
                 ident.method_post(uri, data=data, headers=headers,
                         std_headers=std_headers, admin=admin)
-                requests.post.assert_called_with(uri, data=jdata,
-                        headers=expected_headers, verify=True)
-                self.assertTrue(out.getvalue())
+                pyrax.http.request.assert_called_with("POST", uri, body=data,
+                        headers=expected_headers)
+                self.assertEqual(out.getvalue(), "")
                 out.seek(0)
                 out.truncate()
         out.close()
-        requests.post = sav_post
+        pyrax.http.request = sav_req
         ident.http_log_debug = sav_debug
         sys.stdout = sav_stdout
 
@@ -385,20 +387,22 @@ class IdentityTest(unittest.TestCase):
         ident._get_auth_endpoint = Mock()
         ident._get_auth_endpoint.return_value = "http://example.com/v2.0"
         ident.verify_ssl = False
-        mthd = Mock()
-        ident._call(mthd, "tokens", False, {}, {}, False)
-        mthd.assert_called_with("http://example.com/v2.0/tokens", data=None,
-            headers={}, verify=False)
+        pyrax.http.request = Mock()
+        ident._call("POST", "tokens", False, {}, {}, False)
+        pyrax.http.request.assert_called_with("POST",
+                "http://example.com/v2.0/tokens", body={}, headers={},
+                raise_exception=False)
 
     def test_call_with_slash(self):
         ident = self.base_identity_class()
         ident._get_auth_endpoint = Mock()
         ident._get_auth_endpoint.return_value = "http://example.com/v2.0/"
         ident.verify_ssl = False
-        mthd = Mock()
-        ident._call(mthd, "tokens", False, {}, {}, False)
-        mthd.assert_called_with("http://example.com/v2.0/tokens", data=None,
-            headers={}, verify=False)
+        pyrax.http.request = Mock()
+        ident._call("POST", "tokens", False, {}, {}, False)
+        pyrax.http.request.assert_called_with("POST",
+                "http://example.com/v2.0/tokens", body={}, headers={},
+                raise_exception=False)
 
     def test_list_users(self):
         ident = self.rax_identity_class()
@@ -674,8 +678,9 @@ class IdentityTest(unittest.TestCase):
             ident.authenticate = sav_auth
 
     def test_has_valid_token(self):
-        savrequest = requests.api.request
-        requests.api.request = Mock(return_value=fakes.FakeIdentityResponse())
+        savrequest = pyrax.http.request
+        pyrax.http.request = Mock(return_value=(fakes.FakeIdentityResponse(),
+                fakes.fake_identity_response))
         for cls in self.id_classes.values():
             ident = cls()
             if cls is self.keystone_identity_class:
@@ -690,7 +695,7 @@ class IdentityTest(unittest.TestCase):
             ident = self._get_clean_identity()
             valid = ident._has_valid_token()
             self.assertFalse(valid)
-        requests.api.request = savrequest
+        pyrax.http.request = savrequest
 
     def test_list_token(self):
         for cls in self.id_classes.values():

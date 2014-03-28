@@ -140,11 +140,12 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads in the credentials from the supplied file.  <a href="#a31357d099c87594b661d674bb12a56c0"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a2323e991798b13063610509c2bb4aaf4">auth_with_token</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">If a valid token is already known, this call will use it to generate the service catalog.  <a href="#a2323e991798b13063610509c2bb4aaf4"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#ac1f6b6211af6452ff038fbb8a25f4822">method_get</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a2b66a305940ec13628995f2a93c55b89">method_head</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#ac1f6b6211af6452ff038fbb8a25f4822">method_get</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a248efd43b254ea67d11575531bad3247">method_post</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a49de945eec86f955f4ac7d1487dcf286">method_put</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a1132703a22def73f131d037165a971aa">method_delete</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a8212f8a94b29f7c39e38a9b6d8741322">method_patch</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#ac0665028c611e61881f7e9fd0e752b99">authenticate</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Using the supplied credentials, connects to the specified authentication endpoint and attempts to log in.  <a href="#ac0665028c611e61881f7e9fd0e752b99"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a143a677947f3597dc3cc3055a0eae66e">unauthenticate</a></td></tr>
@@ -935,6 +936,57 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a8212f8a94b29f7c39e38a9b6d8741322"></a><!-- doxytag: member="pyrax::base_identity::BaseAuth::method_patch" ref="a8212f8a94b29f7c39e38a9b6d8741322" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a8212f8a94b29f7c39e38a9b6d8741322">method_patch</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>uri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>admin</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>data</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>headers</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>std_headers</em> = <code>True</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a248efd43b254ea67d11575531bad3247"></a><!-- doxytag: member="pyrax::base_identity::BaseAuth::method_post" ref="a248efd43b254ea67d11575531bad3247" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1564,7 +1616,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 24 2014 11:17:57 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 28 2014 08:11:50 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

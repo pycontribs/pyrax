@@ -56,6 +56,7 @@ try:
     from .identity import *
 
     from . import exceptions as exc
+    from . import http
     from . import version
 
     import cf_wrapper.client as _cf
@@ -710,7 +711,7 @@ def connect_to_cloudfiles(region=None, public=None):
 
 
 @_require_auth
-def _create_client(ep_name, service_type, region, public=True):
+def _create_client(ep_name, region, public=True):
     region = _safe_region(region)
     ep = _get_service_endpoint(ep_name.split(":")[0], region, public=public)
     if not ep:
@@ -718,62 +719,54 @@ def _create_client(ep_name, service_type, region, public=True):
     verify_ssl = get_setting("verify_ssl")
     cls = _client_classes[ep_name]
     client = cls(region_name=region, management_url=ep, verify_ssl=verify_ssl,
-            http_log_debug=_http_debug, service_type=service_type)
+            http_log_debug=_http_debug)
     client.user_agent = _make_agent_name(client.user_agent)
     return client
 
 
 def connect_to_cloud_databases(region=None):
     """Creates a client for working with cloud databases."""
-    return _create_client(ep_name="database", service_type="rax:database",
-            region=region)
+    return _create_client(ep_name="database", region=region)
 
 
 def connect_to_cloud_loadbalancers(region=None):
     """Creates a client for working with cloud loadbalancers."""
-    return _create_client(ep_name="load_balancer",
-            service_type="rax:load-balancer", region=region)
+    return _create_client(ep_name="load_balancer", region=region)
 
 
 def connect_to_cloud_blockstorage(region=None):
     """Creates a client for working with cloud blockstorage."""
-    return _create_client(ep_name="volume", service_type="volume",
-            region=region)
+    return _create_client(ep_name="volume", region=region)
 
 
 def connect_to_cloud_dns(region=None):
     """Creates a client for working with cloud dns."""
-    return _create_client(ep_name="dns", service_type="rax:dns", region=region)
+    return _create_client(ep_name="dns", region=region)
 
 
 def connect_to_cloud_networks(region=None):
     """Creates a client for working with cloud networks."""
-    return _create_client(ep_name="compute:network", service_type="compute",
-            region=region)
+    return _create_client(ep_name="compute:network", region=region)
 
 
 def connect_to_cloud_monitoring(region=None):
     """Creates a client for working with cloud monitoring."""
-    return _create_client(ep_name="monitor", service_type="monitor",
-            region=region)
+    return _create_client(ep_name="monitor", region=region)
 
 
 def connect_to_autoscale(region=None):
     """Creates a client for working with AutoScale."""
-    return _create_client(ep_name="autoscale", service_type="autoscale",
-            region=region)
+    return _create_client(ep_name="autoscale", region=region)
 
 
 def connect_to_images(region=None, public=True):
     """Creates a client for working with Images."""
-    return _create_client(ep_name="image", service_type="image",
-            region=region, public=public)
+    return _create_client(ep_name="image", region=region, public=public)
 
 
 def connect_to_queues(region=None, public=True):
     """Creates a client for working with Queues."""
-    return _create_client(ep_name="queues", service_type="queues",
-            region=region, public=public)
+    return _create_client(ep_name="queues", region=region, public=public)
 
 
 def get_http_debug():
@@ -791,9 +784,16 @@ def set_http_debug(val):
             autoscale, images, queues):
         if svc is not None:
             svc.http_log_debug = val
-    if not val:
-        # Need to manually remove the debug handler for swiftclient
-        swift_logger = _cf._swift_client.logger
+    # Need to manually add/remove the debug handler for swiftclient
+    swift_logger = _cf._swift_client.logger
+    if val:
+        for handler in swift_logger.handlers:
+            if isinstance(handler, logging.StreamHandler):
+                # Already present
+                return
+        swift_logger.addHandler(logging.StreamHandler())
+        swift_logger.setLevel(logging.DEBUG)
+    else:
         for handler in swift_logger.handlers:
             if isinstance(handler, logging.StreamHandler):
                 swift_logger.removeHandler(handler)
@@ -811,3 +811,8 @@ if os.path.exists(config_file):
     settings.read_config(config_file)
     debug = get_setting("http_debug") or False
     set_http_debug(debug)
+
+# Set up logging
+_logger = logging.getLogger("pyrax")
+_logger.setLevel(logging.DEBUG)
+_logger.addHandler(logging.StreamHandler())

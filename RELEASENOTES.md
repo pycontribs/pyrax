@@ -1,5 +1,31 @@
 # Release Notes for pyrax
 
+###2014.03.28 - Version 1.7.1
+  - General
+    - Added a CONTRIBUTING.rst file, following the suggestion of @justinclift
+      in GitHub #327.
+    - Removed dependecy on the httplib2 library; pyrax now only relies on the
+      'requests' module for HTTP communication.
+    - Fixed a bug in folder size calculations. GitHub #302
+    - Removed a limit that only handled Rackspace vendor extensions. GitHub #315
+    - Updated the setup.py version requirements for the 'requests' and 'six'
+      libraries. GitHub #314
+    - Updated utility calls to reflect new names. GitHub #312
+
+  - Documentation
+    - Minor typo correction. GitHub #326
+    - Updated docs for better region coverage. GitHub #324 and #316
+    - Updated network limits in docs. GitHub #322
+
+  - Images
+    - Sample code for accepting images that were shared add_image_member.py.
+      GitHub #318
+
+  - Cloud Files
+    - Fixed (yet again) the ability to turn on/off debug output after another
+      change in the underlying swiftclient library. GitHub #317
+
+
 ###2014.03.12 - Version 1.7.0
   - New:
     - Added support for **Cloud Images** (Glance).

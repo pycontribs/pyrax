@@ -441,16 +441,17 @@ class ScalingGroupManager(BaseManager):
         largs = scaling_group.launchConfiguration.get("args", {})
         srv_args = largs.get("server", {})
         lb_args = largs.get("loadBalancers", {})
+        flav = "%s" % flavor or srv_args.get("flavorRef")
+        dconf = disk_config or srv_args.get("OS-DCF:diskConfig")
+        pers = personality or srv_args.get("personality")
         body = {"type": "launch_server",
                 "args": {
                     "server": {
                         "name": server_name or srv_args.get("name"),
                         "imageRef": image or srv_args.get("imageRef"),
-                        "flavorRef": "%s" % flavor or srv_args.get("flavorRef"),
-                        "OS-DCF:diskConfig": disk_config or
-                                srv_args.get("OS-DCF:diskConfig"),
-                        "personality": personality or
-                                srv_args.get("personality"),
+                        "flavorRef": flav,
+                        "OS-DCF:diskConfig": dconf,
+                        "personality": pers,
                         "networks": networks or srv_args.get("networks"),
                         "metadata": metadata or srv_args.get("metadata"),
                     },
@@ -977,7 +978,7 @@ class AutoScaleClient(BaseClient):
         """
         Pauses all execution of the policies for the specified scaling group.
         """
-        #NOTE: This is not yet implemented. The code is based on the docs,
+        # NOTE: This is not yet implemented. The code is based on the docs,
         # so it should either work or be pretty close.
         return self._manager.pause(scaling_group)
 
@@ -986,7 +987,7 @@ class AutoScaleClient(BaseClient):
         """
         Resumes execution of the policies for the specified scaling group.
         """
-        #NOTE: This is not yet implemented. The code is based on the docs,
+        # NOTE: This is not yet implemented. The code is based on the docs,
         # so it should either work or be pretty close.
         return self._manager.resume(scaling_group)
 

@@ -67,8 +67,19 @@ example_uri = "http://example.com"
 class FakeResponse(object):
     headers = {}
     body = ""
-    status = 200
+    status_code = 200
     reason = "Oops"
+    content = "Oops"
+
+    @property
+    def status(self):
+        # TEMPORARY - until the cf_wrapper code is removed.
+        return self.status_code
+
+    @status.setter
+    def status(self, val):
+        # TEMPORARY - until the cf_wrapper code is removed.
+        self.status_code = val
 
     def getheaders(self):
         return self.headers
@@ -78,6 +89,9 @@ class FakeResponse(object):
 
     def get(self, arg):
         pass
+
+    def json(self):
+        return self.content
 
 
 class FakeClient(object):

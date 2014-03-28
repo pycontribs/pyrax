@@ -80,7 +80,7 @@ class CloudBlockStorageSnapshot(BaseResource):
         """
         Adds a check to make sure that the snapshot is able to be deleted.
         """
-        if not self.status in ("available", "error"):
+        if self.status not in ("available", "error"):
             raise exc.SnapshotNotAvailable("Snapshot must be in 'available' "
                     "or 'error' status before deleting. Current status: %s" %
                     self.status)

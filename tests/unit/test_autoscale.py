@@ -430,8 +430,8 @@ class AutoscaleTest(unittest.TestCase):
         personality = utils.random_unicode()
         networks = utils.random_unicode()
         key_name = utils.random_unicode()
-        launchdict = {"launchConfiguration": {
-                "type": typ,
+        launchdict = {"launchConfiguration":
+                {"type": typ,
                 "args": {
                     "loadBalancers": lbs,
                     "server": {
@@ -443,10 +443,10 @@ class AutoscaleTest(unittest.TestCase):
                         "personality": personality,
                         "networks": networks,
                         "key_name": key_name,
+                        },
                     },
                 },
-            },
-        }
+            }
         expected = {
                 "type": typ,
                 "load_balancers": lbs,
@@ -1090,7 +1090,7 @@ class AutoscaleTest(unittest.TestCase):
                             "key_name": key_name}
                         },
                     "type": launch_config_type},
-                    "scalingPolicies": []}
+                "scalingPolicies": []}
 
         self.maxDiff = 1000000
         ret = mgr._create_body(name, cooldown, min_entities, max_entities,
@@ -1144,7 +1144,7 @@ class AutoscaleTest(unittest.TestCase):
                             "key_name": key_name}
                         },
                     "type": launch_config_type},
-                    "scalingPolicies": []}
+                "scalingPolicies": []}
 
         self.maxDiff = 1000000
         ret = mgr._create_body(name, cooldown, min_entities, max_entities,

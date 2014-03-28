@@ -1260,7 +1260,7 @@ class CloudDNSClient(BaseClient):
         """
         return domain.add_records(records)
 
-    #Create an alias, so that adding a single record is more intuitive
+    # Create an alias, so that adding a single record is more intuitive
     add_record = add_records
 
 

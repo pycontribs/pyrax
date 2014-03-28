@@ -453,7 +453,7 @@ class CloudDatabasesTest(unittest.TestCase):
         fakename = utils.random_ascii()
         newpass = utils.random_ascii()
         resp = fakes.FakeResponse()
-        resp.status = 202
+        resp.status_code = 202
         inst._user_manager.api.method_put = Mock(return_value=(resp, {}))
         fakeuser = fakes.FakeDatabaseUser(inst._user_manager, {"name": fakename})
         inst._user_manager.get = Mock(return_value=fakeuser)

@@ -371,7 +371,7 @@ class Container(object):
         return "<Container '%s'>" % self.name
 
 
-    ## BEGIN - CDN property definitions ##
+    # BEGIN - CDN property definitions ##
     @property
     def cdn_enabled(self):
         return bool(self.cdn_uri)
@@ -437,4 +437,4 @@ class Container(object):
     cdn_ssl_uri = property(_get_cdn_ssl_uri, _set_cdn_ssl_uri)
     cdn_streaming_uri = property(_get_cdn_streaming_uri, _set_cdn_streaming_uri)
     cdn_ios_uri = property(_get_cdn_ios_uri, _set_cdn_ios_uri)
-    ## END - CDN property definitions ##
+    # END - CDN property definitions ##
