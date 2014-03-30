@@ -54,7 +54,8 @@ def request(method, uri, *args, **kwargs):
         # The 'data' kwarg is used when you don't want json encoding.
         data = kwargs.pop("data")
     elif "body" in kwargs:
-        kwargs["headers"]["Content-Type"] = "application/json"
+        if "Content-Type" not in kwargs["headers"]:
+            kwargs["headers"]["Content-Type"] = "application/json"
         data = json.dumps(kwargs.pop("body"))
     if data:
         resp = req_method(uri, data=data, **kwargs)

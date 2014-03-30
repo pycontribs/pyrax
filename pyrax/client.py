@@ -158,13 +158,6 @@ class BaseClient(object):
         kwargs.setdefault("headers", kwargs.get("headers", {}))
         kwargs["headers"]["User-Agent"] = self.user_agent
         kwargs["headers"]["Accept"] = "application/json"
-        if "body" in kwargs:
-            if "Content-Type" not in kwargs["headers"]:
-                kwargs["headers"]["Content-Type"] = "application/json"
-            # JSON-encode by default, unless explicitly told not to.
-            use_json = kwargs.pop("json_encode", True)
-            if use_json:
-                kwargs["body"] = json.dumps(kwargs["body"])
         # Allow subclasses to add their own headers
         self._add_custom_headers(kwargs["headers"])
         resp, body = pyrax.http.request(method, uri, *args, **kwargs)

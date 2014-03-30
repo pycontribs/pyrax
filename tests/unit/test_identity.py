@@ -292,7 +292,7 @@ class IdentityTest(unittest.TestCase):
         fake_resp.json = Mock(return_value={u'unauthorized': {
                 u'message': u'Username or api key is invalid', u'code': 500}})
         pyrax.http.request = Mock(return_value=(fake_resp, fake_body))
-        self.assertRaises(exc.AuthenticationFailed, ident.authenticate)
+        self.assertRaises(exc.InternalServerError, ident.authenticate)
         pyrax.http.request = savrequest
 
     def test_endpoint_defined(self):

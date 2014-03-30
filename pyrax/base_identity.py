@@ -280,8 +280,12 @@ class BaseAuth(object):
             # Invalid authorization
             raise exc.AuthenticationFailed("Incorrect/unauthorized "
                     "credentials received")
-        elif resp.status_code > 299:
-            msg_dict = resp_body
+        elif 500 <= resp.status_code < 600:
+            # Internal Server Error
+            error_msg = resp.content or "Service Currently Unavailable"
+            raise exc.InternalServerError(error_msg)
+        elif 299 < resp.status_code < 500:
+            msg_dict = resp.json()
             try:
                 msg = msg_dict[msg_dict.keys()[0]]["message"]
             except KeyError:

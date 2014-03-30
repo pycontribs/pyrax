@@ -250,7 +250,7 @@ There are several optional parameters that you can include when creating a serve
 
 `key_name` – As mentioned above, this is the name you gave to an SSH key that you previously uploaded using `cs.keypairs.create()`. The key is installed in the newly-created server's `/root/.ssh/authorized_keys` file, allowing for key-based authenticating when SSHing into the server.
 
-`files` - A dict of up to 5 files that are written to the server upon creation. The keys for this dict are the absolute file paths on the server where these files are written, and the values are the contents for those files. Values can either be a string, or a file-like object that is read. File sizes are limited to 10K, and binary files are not supported (text only).
+`files` - A dict of up to 5 files that are written to the server upon creation. The keys for this dict are the absolute file paths on the server where these files are written, and the values are the contents for those files. Values can either be a string, or a file-like object that is read. Total combined size of all files must not exceed 2KB, and binary files are not supported (text only).
 
 Now create a server using the `meta` and `files` options. The setup code is the same as in the previous examples; here is the part that you need to change:
 
