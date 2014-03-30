@@ -1,5 +1,9 @@
 # Release Notes for pyrax
 
+###2014.03.30 - Version 1.7.2
+  - General
+    - Fixes a bug that doubly-encoded JSON body content. GitHub #333
+
 ###2014.03.28 - Version 1.7.1
   - General
     - Added a CONTRIBUTING.rst file, following the suggestion of @justinclift
