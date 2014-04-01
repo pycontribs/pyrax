@@ -510,7 +510,8 @@ class CF_ClientTest(unittest.TestCase):
         etag = utils.get_checksum(content)
         obj = client.store_object(self.cont_name, self.obj_name, content,
                 content_type="test/test", etag=etag,
-                content_encoding="gzip")
+                headers={"Content-Disposition": "attachment; filename=test.txt.gz"},
+                content_encoding="gzip",)
         self.assertEqual(client.connection.put_object.call_count, 1)
         # Add extra_info
         response = {}

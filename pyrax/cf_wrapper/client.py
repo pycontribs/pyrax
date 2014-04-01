@@ -629,7 +629,7 @@ class CFClient(object):
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
             etag=None, content_encoding=None, ttl=None, return_none=False,
-            extra_info=None):
+            headers={}, extra_info=None):
         """
         Creates a new object in the specified container, and populates it with
         the given data. A StorageObject reference to the uploaded file
@@ -640,7 +640,6 @@ class CFClient(object):
         underlying swiftclient call.
         """
         cont = self.get_container(container)
-        headers = {}
         if content_encoding is not None:
             headers["Content-Encoding"] = content_encoding
         if ttl is not None:
