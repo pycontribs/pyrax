@@ -1547,7 +1547,7 @@ class BulkDeleter(threading.Thread):
             reason = resp.reason
             resp_body = resp.read()
             for resp_line in resp_body.splitlines():
-                if ':' not in resp_line:
+                if not resp_line.strip():
                     continue
                 resp_key, val = resp_line.split(":", 1)
                 result_key = res_keys.get(resp_key)
