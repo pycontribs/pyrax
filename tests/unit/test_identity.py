@@ -67,7 +67,7 @@ class IdentityTest(unittest.TestCase):
             # Need to stuff this into the standard response
             sav = resp.content["access"]["user"]["name"]
             resp.content["access"]["user"]["name"] = nm
-            ident.method_post = Mock(return_value=resp)
+            ident.method_post = Mock(return_value=(resp, resp.json()))
             ident.auth_with_token(tok, tenant_name=nm)
             ident.method_post.assert_called_once_with("tokens",
                     headers={'Content-Type': 'application/json', 'Accept':
@@ -85,7 +85,7 @@ class IdentityTest(unittest.TestCase):
             # Need to stuff this into the standard response
             sav = resp.content["access"]["token"]["tenant"]["id"]
             resp.content["access"]["token"]["tenant"]["id"] = tenant_id
-            ident.method_post = Mock(return_value=resp)
+            ident.method_post = Mock(return_value=(resp, resp.json()))
             ident.auth_with_token(tok, tenant_id=tenant_id)
             ident.method_post.assert_called_once_with("tokens",
                     headers={'Content-Type': 'application/json', 'Accept':
@@ -101,7 +101,7 @@ class IdentityTest(unittest.TestCase):
             tenant_id = utils.random_unicode()
             resp = fakes.FakeIdentityResponse()
             resp.status_code = 401
-            ident.method_post = Mock(return_value=resp)
+            ident.method_post = Mock(return_value=(resp, resp.json()))
             self.assertRaises(exc.AuthenticationFailed, ident.auth_with_token,
                     tok, tenant_id=tenant_id)
 
@@ -114,7 +114,7 @@ class IdentityTest(unittest.TestCase):
             resp.status_code = 499
             resp.reason = "fake"
             resp.json = Mock(return_value={"error": {"message": "fake"}})
-            ident.method_post = Mock(return_value=resp)
+            ident.method_post = Mock(return_value=(resp, resp.json()))
             self.assertRaises(exc.AuthenticationFailed, ident.auth_with_token,
                     tok, tenant_id=tenant_id)
 
@@ -390,7 +390,7 @@ class IdentityTest(unittest.TestCase):
         pyrax.http.request = Mock()
         ident._call("POST", "tokens", False, {}, {}, False)
         pyrax.http.request.assert_called_with("POST",
-                "http://example.com/v2.0/tokens", body={}, headers={},
+                "http://example.com/v2.0/tokens", headers={},
                 raise_exception=False)
 
     def test_call_with_slash(self):
@@ -401,14 +401,14 @@ class IdentityTest(unittest.TestCase):
         pyrax.http.request = Mock()
         ident._call("POST", "tokens", False, {}, {}, False)
         pyrax.http.request.assert_called_with("POST",
-                "http://example.com/v2.0/tokens", body={}, headers={},
+                "http://example.com/v2.0/tokens", headers={},
                 raise_exception=False)
 
     def test_list_users(self):
         ident = self.rax_identity_class()
         resp = fakes.FakeIdentityResponse()
         resp.response_type = "users"
-        ident.method_get = Mock(return_value=resp)
+        ident.method_get = Mock(return_value=(resp, resp.json()))
         ret = ident.list_users()
         self.assert_(isinstance(ret, list))
         are_users = [isinstance(itm, pyrax.rax_identity.User) for itm in ret]
@@ -418,7 +418,7 @@ class IdentityTest(unittest.TestCase):
         ident = self.rax_identity_class()
         resp = fakes.FakeIdentityResponse()
         resp.response_type = "users"
-        ident.method_get = Mock(return_value=resp)
+        ident._call = Mock(return_value=(resp, resp.json()))
         fake_uri = utils.random_unicode()
         ret = ident._find_user(fake_uri)
         self.assert_(isinstance(ret, pyrax.rax_identity.User))
@@ -441,7 +441,7 @@ class IdentityTest(unittest.TestCase):
         ident = self.rax_identity_class()
         resp = fakes.FakeIdentityResponse()
         resp.response_type = "users"
-        ident.method_post = Mock(return_value=resp)
+        ident.method_post = Mock(return_value=(resp, resp.json()))
         fake_name = utils.random_unicode()
         fake_email = utils.random_unicode()
         fake_password = utils.random_unicode()
@@ -457,7 +457,7 @@ class IdentityTest(unittest.TestCase):
         ident = self.rax_identity_class()
         resp = fakes.FakeIdentityResponse()
         resp.response_type = "users"
-        ident.method_put = Mock(return_value=resp)
+        ident.method_put = Mock(return_value=(resp, resp.json()))
         fake_name = utils.random_unicode()
         fake_email = utils.random_unicode()
         fake_username = utils.random_unicode()
@@ -495,7 +495,7 @@ class IdentityTest(unittest.TestCase):
         resp = fakes.FakeIdentityResponse()
         resp.response_type = "users"
         resp.status_code = 404
-        ident.method_get = Mock(return_value=resp)
+        ident.method_get = Mock(return_value=(resp, resp.json()))
         fake_uri = utils.random_unicode()
         ret = ident._find_user(fake_uri)
         self.assertIsNone(ret)
@@ -505,7 +505,7 @@ class IdentityTest(unittest.TestCase):
             ident = cls()
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "users"
-            ident.method_post = Mock(return_value=resp)
+            ident.method_post = Mock(return_value=(resp, resp.json()))
             fake_name = utils.random_unicode()
             fake_email = utils.random_unicode()
             fake_password = utils.random_unicode()
@@ -523,7 +523,7 @@ class IdentityTest(unittest.TestCase):
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "users"
             resp.status_code = 401
-            ident.method_post = Mock(return_value=resp)
+            ident.method_post = Mock(return_value=(resp, resp.json()))
             fake_name = utils.random_unicode()
             fake_email = utils.random_unicode()
             fake_password = utils.random_unicode()
@@ -536,9 +536,9 @@ class IdentityTest(unittest.TestCase):
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "users"
             resp.status_code = 400
-            resp.text = json.dumps(
-                {"badRequest": {"message": "Expecting valid email address"}})
-            ident.method_post = Mock(return_value=resp)
+            resp_body = {"badRequest": {"message":
+                    "Expecting valid email address"}}
+            ident.method_post = Mock(return_value=(resp, resp_body))
             fake_name = utils.random_unicode()
             fake_email = utils.random_unicode()
             fake_password = utils.random_unicode()
@@ -551,7 +551,7 @@ class IdentityTest(unittest.TestCase):
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "users"
             resp.status_code = 404
-            ident.method_post = Mock(return_value=resp)
+            ident.method_post = Mock(return_value=(resp, resp.json()))
             fake_name = utils.random_unicode()
             fake_email = utils.random_unicode()
             fake_password = utils.random_unicode()
@@ -563,7 +563,7 @@ class IdentityTest(unittest.TestCase):
             ident = cls()
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "users"
-            ident.method_put = Mock(return_value=resp)
+            ident.method_put = Mock(return_value=(resp, resp.json()))
             fake_name = utils.random_unicode()
             fake_email = utils.random_unicode()
             fake_username = utils.random_unicode()
@@ -590,7 +590,7 @@ class IdentityTest(unittest.TestCase):
             ident = cls()
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "users"
-            ident.method_delete = Mock(return_value=resp)
+            ident.method_delete = Mock(return_value=(resp, resp.json()))
             fake_name = utils.random_unicode()
             ident.delete_user(fake_name)
             cargs = ident.method_delete.call_args
@@ -603,7 +603,7 @@ class IdentityTest(unittest.TestCase):
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "users"
             resp.status_code = 404
-            ident.method_delete = Mock(return_value=resp)
+            ident.method_delete = Mock(return_value=(resp, resp.json()))
             fake_name = utils.random_unicode()
             self.assertRaises(exc.UserNotFound, ident.delete_user, fake_name)
 
@@ -613,7 +613,7 @@ class IdentityTest(unittest.TestCase):
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "users"
             resp.status_code = 200
-            ident.method_get = Mock(return_value=resp)
+            ident.method_get = Mock(return_value=(resp, resp.json()))
             resp = ident.list_roles_for_user("fake")
             self.assertTrue(isinstance(resp, list))
             role = resp[0]
@@ -623,7 +623,10 @@ class IdentityTest(unittest.TestCase):
 
     def test_list_credentials(self):
         ident = self.rax_identity_class()
-        ident.method_get = Mock()
+        resp = fakes.FakeIdentityResponse()
+        resp.response_type = "users"
+        resp.status_code = 200
+        ident.method_get = Mock(return_value=(resp, resp.json()))
         fake_name = utils.random_unicode()
         ident.list_credentials(fake_name)
         cargs = ident.method_get.call_args
@@ -633,7 +636,7 @@ class IdentityTest(unittest.TestCase):
 
     def test_get_user_credentials(self):
         ident = self.rax_identity_class()
-        ident.method_get = Mock()
+        ident.method_get = Mock(return_value=(None, None))
         fake_name = utils.random_unicode()
         ident.get_user_credentials(fake_name)
         cargs = ident.method_get.call_args
@@ -702,7 +705,7 @@ class IdentityTest(unittest.TestCase):
             ident = cls()
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tokens"
-            ident.method_get = Mock(return_value=resp)
+            ident.method_get = Mock(return_value=(resp, resp.json()))
             tokens = ident.list_tokens()
             ident.method_get.assert_called_with("tokens/%s" % ident.token,
                     admin=True)
@@ -714,7 +717,7 @@ class IdentityTest(unittest.TestCase):
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tokens"
             resp.status_code = 403
-            ident.method_get = Mock(return_value=resp)
+            ident.method_get = Mock(return_value=(resp, resp.json()))
             self.assertRaises(exc.AuthorizationFailure, ident.list_tokens)
 
     def test_check_token(self):
@@ -722,7 +725,7 @@ class IdentityTest(unittest.TestCase):
             ident = cls()
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tokens"
-            ident.method_head = Mock(return_value=resp)
+            ident.method_head = Mock(return_value=(resp, resp.json()))
             valid = ident.check_token()
             ident.method_head.assert_called_with("tokens/%s" % ident.token,
                     admin=True)
@@ -734,7 +737,7 @@ class IdentityTest(unittest.TestCase):
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tokens"
             resp.status_code = 403
-            ident.method_head = Mock(return_value=resp)
+            ident.method_head = Mock(return_value=(resp, resp.json()))
             self.assertRaises(exc.AuthorizationFailure, ident.check_token)
 
     def test_check_token_fail_valid(self):
@@ -743,7 +746,7 @@ class IdentityTest(unittest.TestCase):
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tokens"
             resp.status_code = 404
-            ident.method_head = Mock(return_value=resp)
+            ident.method_head = Mock(return_value=(resp, resp.json()))
             valid = ident.check_token()
             ident.method_head.assert_called_with("tokens/%s" % ident.token,
                     admin=True)
@@ -754,7 +757,7 @@ class IdentityTest(unittest.TestCase):
             ident = cls()
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "endpoints"
-            ident.method_get = Mock(return_value=resp)
+            ident.method_get = Mock(return_value=(resp, resp.json()))
             eps = ident.get_token_endpoints()
             self.assert_(isinstance(eps, list))
             ident.method_get.assert_called_with("tokens/%s/endpoints" %
@@ -765,7 +768,7 @@ class IdentityTest(unittest.TestCase):
             ident = cls()
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tenants"
-            ident.method_get = Mock(return_value=resp)
+            ident.method_get = Mock(return_value=(resp, resp.json()))
             tenant = ident.get_tenant()
             self.assert_(isinstance(tenant, base_identity.Tenant))
 
@@ -774,7 +777,7 @@ class IdentityTest(unittest.TestCase):
             ident = cls()
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tenants"
-            ident.method_get = Mock(return_value=resp)
+            ident.method_get = Mock(return_value=(resp, resp.json()))
             tenants = ident.list_tenants()
             self.assert_(isinstance(tenants, list))
             are_tenants = [isinstance(itm, base_identity.Tenant)
@@ -787,7 +790,7 @@ class IdentityTest(unittest.TestCase):
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tenants"
             resp.status_code = 403
-            ident.method_get = Mock(return_value=resp)
+            ident.method_get = Mock(return_value=(resp, resp.json()))
             self.assertRaises(exc.AuthorizationFailure, ident.list_tenants)
 
     def test_list_tenants_other_fail(self):
@@ -796,7 +799,7 @@ class IdentityTest(unittest.TestCase):
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tenants"
             resp.status_code = 404
-            ident.method_get = Mock(return_value=resp)
+            ident.method_get = Mock(return_value=(resp, resp.json()))
             self.assertRaises(exc.TenantNotFound, ident.list_tenants)
 
     def test_create_tenant(self):
@@ -804,7 +807,7 @@ class IdentityTest(unittest.TestCase):
             ident = cls()
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tenant"
-            ident.method_post = Mock(return_value=resp)
+            ident.method_post = Mock(return_value=(resp, resp.json()))
             fake_name = utils.random_unicode()
             fake_desc = utils.random_unicode()
             tenant = ident.create_tenant(fake_name, description=fake_desc)
@@ -821,7 +824,7 @@ class IdentityTest(unittest.TestCase):
             ident = cls()
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tenant"
-            ident.method_put = Mock(return_value=resp)
+            ident.method_put = Mock(return_value=(resp, resp.json()))
             fake_id = utils.random_unicode()
             fake_name = utils.random_unicode()
             fake_desc = utils.random_unicode()
@@ -840,7 +843,7 @@ class IdentityTest(unittest.TestCase):
             ident = cls()
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tenant"
-            ident.method_delete = Mock(return_value=resp)
+            ident.method_delete = Mock(return_value=(resp, resp.json()))
             fake_id = utils.random_unicode()
             ident.delete_tenant(fake_id)
             ident.method_delete.assert_called_with("tenants/%s" % fake_id)
@@ -851,7 +854,7 @@ class IdentityTest(unittest.TestCase):
             resp = fakes.FakeIdentityResponse()
             resp.response_type = "tenant"
             resp.status_code = 404
-            ident.method_delete = Mock(return_value=resp)
+            ident.method_delete = Mock(return_value=(resp, resp.json()))
             fake_id = utils.random_unicode()
             self.assertRaises(exc.TenantNotFound, ident.delete_tenant, fake_id)
 

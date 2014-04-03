@@ -101,19 +101,21 @@ class HttpTest(unittest.TestCase):
         self.http.req_methods[mthd] = sav_method
 
     def test_http_log_req(self):
-        args = ("GET", "a", "b")
+        args = ("a", "b")
         kwargs = {"headers": {"c": "C"}}
+        mthd = utils.random_unicode()
+        uri = utils.random_unicode()
         sav_pdbug = pyrax._http_debug
         pyrax._http_debug = False
-        self.assertIsNone(self.http.http_log_req(args, kwargs))
+        self.assertIsNone(self.http.http_log_req(mthd, uri, args, kwargs))
         pyrax._http_debug = True
         sav_pldbug = pyrax._logger.debug
         pyrax._logger.debug = Mock()
-        self.http.http_log_req(args, kwargs)
+        self.http.http_log_req(mthd, uri, args, kwargs)
         pyrax._logger.debug.assert_called_once_with(
-                "\nREQ: curl -i -X GET a b -H 'c: C'\n")
+                "\nREQ: curl -i -X %s a b -H 'c: C' %s\n" % (mthd, uri))
         kwargs["body"] = "text"
-        self.http.http_log_req(args, kwargs)
+        self.http.http_log_req(mthd, uri, args, kwargs)
         cargs, ckw = pyrax._logger.debug.call_args
         self.assertEqual(cargs, ("REQ BODY: text\n", ))
         pyrax._logger.debug = sav_pldbug
