@@ -255,8 +255,9 @@ class BaseAuth(object):
             hdrs = {}
         if headers:
             hdrs.update(headers)
-        kwargs = {"headers": hdrs,
-                "body": data}
+        kwargs = {"headers": hdrs}
+        if data:
+            kwargs["body"] = data
         if "tokens" in uri:
             # We'll handle the exception here
             kwargs["raise_exception"] = False
