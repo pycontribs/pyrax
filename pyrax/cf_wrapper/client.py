@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+from datetime import timedelta
 from functools import wraps
 import hashlib
 import hmac
@@ -123,9 +124,16 @@ def _convert_list_last_modified_to_local(attdict):
         attdict = attdict.copy()
         list_date_format_with_tz = LIST_DATE_FORMAT + ' %Z'
         last_modified_utc = attdict['last_modified'] + ' UTC'
-        tm_tuple = time.strptime(last_modified_utc,
-                                 list_date_format_with_tz)
-        dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
+
+        dttm = datetime.datetime.strptime(last_modified_utc, list_date_format_with_tz)
+
+        # Round the date *up* in seconds, to match the last modified time in head requests
+        # https://review.openstack.org/#/c/55488/
+
+        if dttm.microsecond > 0:
+            dttm = dttm.replace(microsecond=0)
+            dttm += timedelta(seconds=1)
+
         attdict['last_modified'] = dttm.strftime(DATE_FORMAT)
 
     return attdict
