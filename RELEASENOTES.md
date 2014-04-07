@@ -1,5 +1,19 @@
 # Release Notes for pyrax
 
+###2014.04.07 - Version 1.7.3
+  - Identity
+    - Updated the identity module and tests to work with the new http library.
+      GitHub #333
+
+  - General
+    - Fixed some log debug issues.
+    - Removed locale test, as it is unreliable at best.
+
+  - Cloud Files
+    - Round up the datetime in seconds in convert_list_last_modified to match
+      the behaviour in https://review.openstack.org/#/c/55488/. GitHub #337
+    - Fixed ValueError when handling a bulk delete response. GitHub #335
+
 ###2014.03.30 - Version 1.7.2
   - General
     - Fixes a bug that doubly-encoded JSON body content. GitHub #333
