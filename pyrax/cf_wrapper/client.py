@@ -119,15 +119,22 @@ def _convert_head_object_last_modified_to_local(lm_str):
 
 
 def _convert_list_last_modified_to_local(attdict):
-    if 'last_modified' in attdict:
+    if "last_modified" in attdict:
         attdict = attdict.copy()
-        list_date_format_with_tz = LIST_DATE_FORMAT + ' %Z'
-        last_modified_utc = attdict['last_modified'] + ' UTC'
+        list_date_format_with_tz = LIST_DATE_FORMAT + " %Z"
+        last_modified_utc = attdict["last_modified"] + " UTC"
         tm_tuple = time.strptime(last_modified_utc,
                                  list_date_format_with_tz)
         dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
-        attdict['last_modified'] = dttm.strftime(DATE_FORMAT)
 
+        dttm_with_micros = datetime.datetime.strptime(last_modified_utc,
+                list_date_format_with_tz)
+        # Round the date *up* in seconds, to match the last modified time
+        # in head requests
+        # https://review.openstack.org/#/c/55488/
+        if dttm_with_micros.microsecond > 0:
+            dttm += datetime.timedelta(seconds=1)
+        attdict["last_modified"] = dttm.strftime(DATE_FORMAT)
     return attdict
 
 
@@ -1547,7 +1554,7 @@ class BulkDeleter(threading.Thread):
             reason = resp.reason
             resp_body = resp.read()
             for resp_line in resp_body.splitlines():
-                if not resp_line:
+                if not resp_line.strip():
                     continue
                 resp_key, val = resp_line.split(":", 1)
                 result_key = res_keys.get(resp_key)

@@ -13,7 +13,9 @@ from mock import ANY, call, patch
 from mock import MagicMock as Mock
 
 import pyrax
-from pyrax.cf_wrapper.client import _swift_client
+from pyrax.cf_wrapper.client import _swift_client, \
+    _convert_head_object_last_modified_to_local, \
+    _convert_list_last_modified_to_local
 from pyrax.cf_wrapper.container import Container
 import pyrax.utils as utils
 import pyrax.exceptions as exc
@@ -987,19 +989,8 @@ class CF_ClientTest(unittest.TestCase):
         self.assertEqual(objs[0].container.name, self.cont_name)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
-    def test_get_container_objects_locale(self):
+    def test_get_container_objects_last_modified(self):
         client = self.client
-
-        orig_locale = locale.getlocale(locale.LC_TIME)
-        try:
-            # Set locale to Great Britain because we know that DST was active
-            # there at 2013-10-21T01:02:03.123456 UTC
-            locale.setlocale(locale.LC_TIME, 'en_GB')
-        except Exception:
-            # Travis CI seems to have a problem with setting locale, so
-            # just skip this.
-            self.skipTest("Could not set locale to en_GB")
-
         client.connection.head_container = Mock()
         dct = [
             {
@@ -1015,19 +1006,11 @@ class CF_ClientTest(unittest.TestCase):
         ]
         client.connection.get_container = Mock(return_value=({}, dct))
         objs = client.get_container_objects(self.cont_name)
-
         self.assertEqual(len(objs), 2)
         self.assertEqual(objs[0].container.name, self.cont_name)
         self.assertEqual(objs[0].name, "o1")
-        self.assertEqual(objs[0].last_modified, "2013-01-01T01:02:03")
+        self.assertEqual(objs[0].last_modified, "2013-01-01T01:02:04")
         self.assertEqual(objs[1].name, "o2")
-        # Note that hour here is 1 greater than the hour in the last_modified
-        # returned by the server.  This is because they are in different
-        # timezones - the server returns the time in UTC (no DST) but the local
-        # timezone of the client as of 2013-10-21 is BST (1 hour daylight savings).
-        self.assertEqual(objs[1].last_modified, "2013-10-21T02:02:03")
-
-        locale.setlocale(locale.LC_TIME, orig_locale)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_container_object_names(self):
@@ -1340,6 +1323,37 @@ Useless Line: %s
         self.assertEqual(results.get("errors"), errors)
         self.assertTrue(useless not in results.values())
 
+    def test_converted_last_modified_times_head_and_list_match(self):
+        head_last_modified_string = "Mon, 7 Apr 2014 17:34:25 UTC"
+        list_last_modified_string = "2014-04-07T17:34:24.112333"
+
+        converted_head_datetime = _convert_head_object_last_modified_to_local(
+            head_last_modified_string)
+
+        attdict = {
+            "last_modified": list_last_modified_string
+        }
+
+        converted_list_attributes = _convert_list_last_modified_to_local(
+            attdict=attdict)
+
+        converted_list_date = converted_list_attributes["last_modified"]
+
+        self.assertEqual(converted_head_datetime, converted_list_date)
+
+    def test_list_last_modified_times_does_not_round_up_for_zero_microseconds(self):
+        list_last_modified_string = "2014-04-07T17:34:24.000000"
+
+        attdict = {
+            "last_modified": list_last_modified_string
+        }
+
+        converted_list_attributes = _convert_list_last_modified_to_local(
+            attdict=attdict)
+
+        converted_list_date = converted_list_attributes["last_modified"]
+
+        self.assertTrue(converted_list_date.endswith(":24"))
 
 
 

@@ -126,11 +126,10 @@ class RaxIdentity(BaseAuth):
 
     def _find_user(self, uri):
         """Handles the 'find' code for both name and ID searches."""
-        resp = self.method_get(uri)
+        resp, resp_body = self.method_get(uri)
         if resp.status_code in (403, 404):
             return None
-        jusers = resp.json()
-        user_info = jusers["user"]
+        user_info = resp_body["user"]
         return User(self, user_info)
 
 
@@ -151,8 +150,8 @@ class RaxIdentity(BaseAuth):
         if enabled is not None:
             upd["enabled"] = enabled
         data = {"user": upd}
-        resp = self.method_put(uri, data=data)
-        return User(self, resp.json())
+        resp, resp_body = self.method_put(uri, data=data)
+        return User(self, resp_body)
 
 
     def list_credentials(self, user):
@@ -161,7 +160,8 @@ class RaxIdentity(BaseAuth):
         """
         user_id = utils.get_id(user)
         uri = "users/%s/OS-KSADM/credentials" % user_id
-        return self.method_get(uri)
+        resp, resp_body = self.method_get(uri)
+        return resp_body.get("credentials")
 
 
     def get_user_credentials(self, user):
@@ -171,4 +171,5 @@ class RaxIdentity(BaseAuth):
         user_id = utils.get_id(user)
         base_uri = "users/%s/OS-KSADM/credentials/RAX-KSKEY:apiKeyCredentials"
         uri = base_uri % user_id
-        return self.method_get(uri)
+        resp, resp_body = self.method_get(uri)
+        return resp_body

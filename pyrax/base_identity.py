@@ -179,15 +179,14 @@ class BaseAuth(object):
         headers = {"Content-Type": "application/json",
                 "Accept": "application/json",
                 }
-        resp = self.method_post("tokens", data=body, headers=headers,
+        resp, resp_body = self.method_post("tokens", data=body, headers=headers,
                 std_headers=False)
         if resp.status_code == 401:
             # Invalid authorization
             raise exc.AuthenticationFailed("Incorrect/unauthorized "
                     "credentials received")
         elif resp.status_code > 299:
-            msg_dict = resp.json()
-            msg = msg_dict[msg_dict.keys()[0]]["message"]
+            msg = resp_body[resp_body.keys()[0]]["message"]
             raise exc.AuthenticationFailed("%s - %s." % (resp.reason, msg))
         return resp
 
@@ -255,8 +254,9 @@ class BaseAuth(object):
             hdrs = {}
         if headers:
             hdrs.update(headers)
-        kwargs = {"headers": hdrs,
-                "body": data}
+        kwargs = {"headers": hdrs}
+        if data:
+            kwargs["body"] = data
         if "tokens" in uri:
             # We'll handle the exception here
             kwargs["raise_exception"] = False
@@ -363,8 +363,8 @@ class BaseAuth(object):
         """
         Returns a list of extensions enabled on this service.
         """
-        resp = self.method_get("extensions")
-        return resp.json().get("extensions", {}).get("values")
+        resp, resp_body = self.method_get("extensions")
+        return resp_body.get("extensions", {}).get("values")
 
 
     def get_token(self, force=False):
@@ -392,12 +392,11 @@ class BaseAuth(object):
         ADMIN ONLY. Returns a dict containing tokens, endpoints, user info, and
         role metadata.
         """
-        resp = self.method_get("tokens/%s" % self.token, admin=True)
+        resp, resp_body = self.method_get("tokens/%s" % self.token, admin=True)
         if resp.status_code in (401, 403):
             raise exc.AuthorizationFailure("You must be an admin to make this "
                     "call.")
-        token_dct = resp.json()
-        return token_dct.get("access")
+        return resp_body.get("access")
 
 
     def check_token(self, token=None):
@@ -407,7 +406,7 @@ class BaseAuth(object):
         """
         if token is None:
             token = self.token
-        resp = self.method_head("tokens/%s" % token, admin=True)
+        resp, resp_body = self.method_head("tokens/%s" % token, admin=True)
         if resp.status_code in (401, 403):
             raise exc.AuthorizationFailure("You must be an admin to make this "
                     "call.")
@@ -418,12 +417,12 @@ class BaseAuth(object):
         """
         ADMIN ONLY. Returns a list of all endpoints for the current auth token.
         """
-        resp = self.method_get("tokens/%s/endpoints" % self.token, admin=True)
+        resp, resp_body = self.method_get("tokens/%s/endpoints" % self.token,
+                admin=True)
         if resp.status_code in (401, 403, 404):
             raise exc.AuthorizationFailure("You are not authorized to list "
                     "token endpoints.")
-        token_dct = resp.json()
-        return token_dct.get("access", {}).get("endpoints")
+        return resp_body.get("access", {}).get("endpoints")
 
 
     def list_users(self):
@@ -432,17 +431,16 @@ class BaseAuth(object):
         (account) if this request is issued by a user holding the admin role
         (identity:user-admin).
         """
-        resp = self.method_get("users", admin=True)
+        resp, resp_body = self.method_get("users", admin=True)
         if resp.status_code in (401, 403, 404):
             raise exc.AuthorizationFailure("You are not authorized to list "
                     "users.")
-        users = resp.json()
         # The API is inconsistent; if only one user exists, it will not return
         # a list.
-        if "users" in users:
-            users = users["users"]
+        if "users" in resp_body:
+            users = resp_body["users"]
         else:
-            users = [users]
+            users = [resp_body]
         # The returned values may contain password data. Strip that out.
         for user in users:
             bad_keys = [key for key in user.keys()
@@ -473,18 +471,16 @@ class BaseAuth(object):
                 }}
         if password:
             data["user"]["OS-KSADM:password"] = password
-        resp = self.method_post("users", data=data, admin=True)
+        resp, resp_body = self.method_post("users", data=data, admin=True)
         if resp.status_code == 201:
-            jresp = resp.json()
-            return User(self, jresp)
+            return User(self, resp_body)
         elif resp.status_code in (401, 403, 404):
             raise exc.AuthorizationFailure("You are not authorized to create "
                     "users.")
         elif resp.status_code == 409:
             raise exc.DuplicateUser("User '%s' already exists." % name)
         elif resp.status_code == 400:
-            status = json.loads(resp.text)
-            message = status["badRequest"]["message"]
+            message = resp_body["badRequest"]["message"]
             if "Expecting valid email address" in message:
                 raise exc.InvalidEmail("%s is not valid" % email)
             else:
@@ -507,11 +503,11 @@ class BaseAuth(object):
         if enabled is not None:
             upd["enabled"] = enabled
         data = {"user": upd}
-        resp = self.method_put(uri, data=data)
+        resp, resp_body = self.method_put(uri, data=data)
         if resp.status_code in (401, 403, 404):
             raise exc.AuthorizationFailure("You are not authorized to update "
                     "users.")
-        return User(self, resp.json())
+        return User(self, resp_body)
 
 
     def delete_user(self, user):
@@ -522,7 +518,7 @@ class BaseAuth(object):
         """
         user_id = utils.get_id(user)
         uri = "users/%s" % user_id
-        resp = self.method_delete(uri)
+        resp, resp_body = self.method_delete(uri)
         if resp.status_code == 404:
             raise exc.UserNotFound("User '%s' does not exist." % user)
         elif resp.status_code in (401, 403):
@@ -538,11 +534,11 @@ class BaseAuth(object):
         """
         user_id = utils.get_id(user)
         uri = "users/%s/roles" % user_id
-        resp = self.method_get(uri)
+        resp, resp_body = self.method_get(uri)
         if resp.status_code in (401, 403):
             raise exc.AuthorizationFailure("You are not authorized to list "
                     "user roles.")
-        roles = resp.json().get("roles")
+        roles = resp_body.get("roles")
         return roles
 
 
@@ -568,9 +564,9 @@ class BaseAuth(object):
         Returns either a list of all tenants (admin=True), or the tenant for
         the currently-authenticated user (admin=False).
         """
-        resp = self.method_get("tenants", admin=admin)
+        resp, resp_body = self.method_get("tenants", admin=admin)
         if 200 <= resp.status_code < 300:
-            tenants = resp.json().get("tenants", [])
+            tenants = resp_body.get("tenants", [])
             return [Tenant(self, tenant) for tenant in tenants]
         elif resp.status_code in (401, 403):
             raise exc.AuthorizationFailure("You are not authorized to list "
@@ -589,8 +585,8 @@ class BaseAuth(object):
                 }}
         if description:
             data["tenant"]["description"] = description
-        resp = self.method_post("tenants", data=data)
-        return Tenant(self, resp.json())
+        resp, resp_body = self.method_post("tenants", data=data)
+        return Tenant(self, resp_body)
 
 
     def update_tenant(self, tenant, name=None, description=None, enabled=True):
@@ -605,8 +601,8 @@ class BaseAuth(object):
             data["tenant"]["name"] = name
         if description:
             data["tenant"]["description"] = description
-        resp = self.method_put("tenants/%s" % tenant_id, data=data)
-        return Tenant(self, resp.json())
+        resp, resp_body = self.method_put("tenants/%s" % tenant_id, data=data)
+        return Tenant(self, resp_body)
 
 
     def delete_tenant(self, tenant):
@@ -617,7 +613,7 @@ class BaseAuth(object):
         """
         tenant_id = utils.get_id(tenant)
         uri = "tenants/%s" % tenant_id
-        resp = self.method_delete(uri)
+        resp, resp_body = self.method_delete(uri)
         if resp.status_code == 404:
             raise exc.TenantNotFound("Tenant '%s' does not exist." % tenant)
 
