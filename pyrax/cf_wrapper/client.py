@@ -123,13 +123,16 @@ def _convert_list_last_modified_to_local(attdict):
         attdict = attdict.copy()
         list_date_format_with_tz = LIST_DATE_FORMAT + " %Z"
         last_modified_utc = attdict["last_modified"] + " UTC"
-        dttm = datetime.datetime.strptime(last_modified_utc,
+        tm_tuple = time.strptime(last_modified_utc,
+                                 list_date_format_with_tz)
+        dttm = datetime.datetime.fromtimestamp(time.mktime(tm_tuple))
+
+        dttm_with_micros = datetime.datetime.strptime(last_modified_utc,
                 list_date_format_with_tz)
         # Round the date *up* in seconds, to match the last modified time
         # in head requests
         # https://review.openstack.org/#/c/55488/
-        if dttm.microsecond > 0:
-            dttm = dttm.replace(microsecond=0)
+        if dttm_with_micros.microsecond > 0:
             dttm += datetime.timedelta(seconds=1)
         attdict["last_modified"] = dttm.strftime(DATE_FORMAT)
     return attdict
