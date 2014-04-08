@@ -163,19 +163,21 @@ class BaseAuth(object):
 
 
     def _call_token_auth(self, token, tenant_id, tenant_name):
-        if not any((tenant_id, tenant_name)):
-            raise exc.MissingAuthSettings("You must supply either the tenant "
-                    "name or tenant ID")
+        key = val = None
         if tenant_id:
             key = "tenantId"
             val = tenant_id
-        else:
+        elif tenant_name:
             key = "tenantName"
             val = tenant_name
+
         body = {"auth": {
-                key: val,
                 "token": {"id": token},
                 }}
+
+        if(key and val):
+            body["auth"][key] = val
+
         headers = {"Content-Type": "application/json",
                 "Accept": "application/json",
                 }
@@ -205,14 +207,15 @@ class BaseAuth(object):
         Returns the current credentials in the format expected by
         the authentication service.
         """
-        tenant_name = self.tenant_name or self.username
-        tenant_id = self.tenant_id or self.username
-        return {"auth": {"passwordCredentials":
+        credentials = {"auth": {"passwordCredentials":
                 {"username": self.username,
                 "password": self.password,
-                },
-                "tenantId": tenant_id}}
+                }}}
 
+        if(self.tenant_id):
+            credentials["auth"]["passwordCredentials"]["tenantId"] = self.tenant_id
+
+        return credentials
 
     # The following method_* methods wrap the _call() method.
     def method_head(self, uri, admin=False, data=None, headers=None,
@@ -304,8 +307,11 @@ class BaseAuth(object):
         access = resp["access"]
         token = access.get("token")
         self.token = token["id"]
-        self.tenant_id = token["tenant"]["id"]
-        self.tenant_name = token["tenant"]["name"]
+
+        if("tenant" in token):
+            self.tenant_id = token["tenant"]["id"]
+            self.tenant_name = token["tenant"]["name"]
+
         self.expires = self._parse_api_time(token["expires"])
         svc_cat = access.get("serviceCatalog")
         self.services = {}
