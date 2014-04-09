@@ -112,7 +112,6 @@ class IdentityTest(unittest.TestCase):
             self.assertEqual(ident.tenant_id, tenant_id)
             resp.content["access"]["token"]["tenant"]["id"] = sav
 
-
     def test_auth_with_token_id_auth_fail(self):
         for cls in self.id_classes.values():
             ident = cls()
@@ -169,7 +168,6 @@ class IdentityTest(unittest.TestCase):
         ident._call_token_auth.assert_called_with(token, oid, None)
         self.assertTrue("a" in pyrax.services)
         self.assertTrue("b" in pyrax.services)
-
 
     def test_set_credentials(self):
         for cls in self.id_classes.values():
@@ -333,7 +331,6 @@ class IdentityTest(unittest.TestCase):
         for rgn in expected:
             self.assert_(rgn in pyrax.regions)
 
-
     def test_http_methods(self):
         ident = self.base_identity_class()
         ident._call = Mock()
@@ -487,7 +484,6 @@ class IdentityTest(unittest.TestCase):
         self.assertEqual(data["username"], fake_username)
         self.assert_(fake_email in data.values())
         self.assert_(fake_region in data.values())
-
 
     def test_find_user_by_name(self):
         ident = self.rax_identity_class()

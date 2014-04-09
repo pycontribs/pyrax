@@ -170,11 +170,9 @@ class BaseAuth(object):
         elif tenant_name:
             key = "tenantName"
             val = tenant_name
-
         body = {"auth": {
                 "token": {"id": token},
                 }}
-
         if(key and val):
             body["auth"][key] = val
 
@@ -211,11 +209,10 @@ class BaseAuth(object):
                 {"username": self.username,
                 "password": self.password,
                 }}}
-
         if(self.tenant_id):
             credentials["auth"]["passwordCredentials"]["tenantId"] = self.tenant_id
-
         return credentials
+
 
     # The following method_* methods wrap the _call() method.
     def method_head(self, uri, admin=False, data=None, headers=None,
