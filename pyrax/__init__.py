@@ -259,8 +259,7 @@ class Settings(object):
     def environments(self):
         return self._settings.keys()
 
-
-    def read_config(self, config_file):
+    def read_config(self, config_file, section="settings"):
         """
         Parses the specified configuration file and stores the values. Raises
         an InvalidConfigurationFile exception if the file is not well-formed.
@@ -272,9 +271,9 @@ class Settings(object):
             # The file exists, but doesn't have the correct format.
             raise exc.InvalidConfigurationFile(e)
 
-        def safe_get(section, option, default=None):
+        def safe_get(safe_section, option, default=None):
             try:
-                return cfg.get(section, option)
+                return cfg.get(safe_section, option)
             except (configparser.NoSectionError, configparser.NoOptionError):
                 return default
 
@@ -282,48 +281,43 @@ class Settings(object):
         # values are found, issue a warning so that the developer can correct
         # this problem.
         creds_found = False
-        for section in cfg.sections():
-            if section == "settings":
-                section_name = "default"
-                self._default_set = True
-            else:
-                section_name = section
-            # Check for included credentials
-            for key in ("username", "password", "api_key"):
-                if creds_found:
-                    break
-                if safe_get(section, key):
-                    creds_found = True
-            dct = self._settings[section_name] = {}
-            dct["region"] = safe_get(section, "region", default_region)
-            ityp = safe_get(section, "identity_type")
-            dct["identity_type"] = _id_type(ityp)
-            dct["identity_class"] = _import_identity(ityp)
-            # Handle both the old and new names for this setting.
-            debug = safe_get(section, "debug")
-            if debug is None:
-                debug = safe_get(section, "http_debug", "False")
-            dct["http_debug"] = debug == "True"
-            verify_ssl = safe_get(section, "verify_ssl", "True")
-            dct["verify_ssl"] = verify_ssl == "True"
-            dct["keyring_username"] = safe_get(section, "keyring_username")
-            dct["encoding"] = safe_get(section, "encoding", default_encoding)
-            dct["auth_endpoint"] = safe_get(section, "auth_endpoint")
-            dct["tenant_name"] = safe_get(section, "tenant_name")
-            dct["tenant_id"] = safe_get(section, "tenant_id")
-            use_servicenet = safe_get(section, "use_servicenet", "False")
-            dct["use_servicenet"] = use_servicenet == "True"
-            app_agent = safe_get(section, "custom_user_agent")
-            if app_agent:
-                # Customize the user-agent string with the app name.
-                dct["user_agent"] = "%s %s" % (app_agent, USER_AGENT)
-            else:
-                dct["user_agent"] = USER_AGENT
+        # Check for included credentials
+        for key in ("username", "password", "api_key"):
+            if creds_found:
+                break
+            if safe_get(section, key):
+                creds_found = True
+        dct = self._settings[section] = {}
+        self._default_set = False
+        dct["region"] = safe_get(section, "region", default_region)
+        ityp = safe_get(section, "identity_type")
+        dct["identity_type"] = _id_type(ityp)
+        dct["identity_class"] = _import_identity(ityp)
+        # Handle both the old and new names for this setting.
+        debug = safe_get(section, "debug")
+        if debug is None:
+            debug = safe_get(section, "http_debug", "False")
+        dct["http_debug"] = debug == "True"
+        verify_ssl = safe_get(section, "verify_ssl", "True")
+        dct["verify_ssl"] = verify_ssl == "True"
+        dct["keyring_username"] = safe_get(section, "keyring_username")
+        dct["encoding"] = safe_get(section, "encoding", default_encoding)
+        dct["auth_endpoint"] = safe_get(section, "auth_endpoint")
+        dct["tenant_name"] = safe_get(section, "tenant_name")
+        dct["tenant_id"] = safe_get(section, "tenant_id")
+        use_servicenet = safe_get(section, "use_servicenet", "False")
+        dct["use_servicenet"] = use_servicenet == "True"
+        app_agent = safe_get(section, "custom_user_agent")
+        if app_agent:
+            # Customize the user-agent string with the app name.
+            dct["user_agent"] = "%s %s" % (app_agent, USER_AGENT)
+        else:
+            dct["user_agent"] = USER_AGENT
 
-            # If this is the first section, make it the default
-            if not self._default_set:
-                self._settings["default"] = self._settings[section]
-                self._default_set = True
+        # If this is the first section, make it the default
+        if not self._default_set:
+            self._settings["default"] = self._settings[section]
+            self._default_set = True
         if creds_found:
             warnings.warn("Login credentials were detected in your .pyrax.cfg "
                     "file. These have been ignored, but you should remove "
