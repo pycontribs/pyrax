@@ -893,7 +893,8 @@ class CFClient(object):
 
 
     def sync_folder_to_container(self, folder_path, container, delete=False,
-            include_hidden=False, ignore=None, ignore_timestamps=False):
+            include_hidden=False, ignore=None, ignore_timestamps=False,
+            prefix="", log_level=0):
         """
         Compares the contents of the specified folder, and checks to make sure
         that the corresponding object is present in the specified container. If
@@ -916,16 +917,34 @@ class CFClient(object):
         file names, and any names that match any of the 'ignore' patterns will
         not be uploaded. The patterns should be standard *nix-style shell
         patterns; e.g., '*pyc' will ignore all files ending in 'pyc', such as
-        'program.pyc' and 'abcpyc'.  """
+        'program.pyc' and 'abcpyc'.  
+
+        If `prefix` is set it will be appended to the object name when it
+        is checked and uploaded to the container. For example, if you use
+        sync_folder_to_container("folderToSync/", myContainer,
+            prefix="imgFolder") it will upload the files to the
+        container/imgFolder/... instead of just container/...
+
+        Set `log_level` to > 0 to print what is going on. Log level 1 logs
+        when a file is uploaded or not. It also gives the reason an upload
+        did not happen. Log level 2 adds more verbosity."""
         cont = self.get_container(container)
         self._local_files = []
-        self._sync_folder_to_container(folder_path, cont, prefix="",
+        # Load a list of all the remote objects so we don't have to keep hitting the service
+        if log_level >= 2:
+            print "Loading remote object list (prefix=", prefix, ")"
+        data = cont.get_objects(prefix=prefix, full_listing=True)
+        self._remote_files = dict( (d.name,d) for d in data )
+        self._sync_folder_to_container(folder_path, cont, path_prefix="",
                 delete=delete, include_hidden=include_hidden, ignore=ignore,
-                ignore_timestamps=ignore_timestamps)
+                ignore_timestamps=ignore_timestamps,
+                prefix=prefix, log_level=log_level)
+        # Unset the _remote_files
+        self._remote_files = None
 
 
-    def _sync_folder_to_container(self, folder_path, cont, prefix, delete,
-            include_hidden, ignore, ignore_timestamps):
+    def _sync_folder_to_container(self, folder_path, cont, path_prefix, delete,
+            include_hidden, ignore, ignore_timestamps, prefix, log_level):
         """
         This is the internal method that is called recursively to handle
         nested folder structures.
@@ -940,21 +959,24 @@ class CFClient(object):
             pth = os.path.join(folder_path, fname)
             if os.path.isdir(pth):
                 subprefix = fname
-                if prefix:
-                    subprefix = "%s/%s" % (prefix, subprefix)
-                self._sync_folder_to_container(pth, cont, prefix=subprefix,
+                if path_prefix:
+                    subprefix = "%s/%s" % (path_prefix, subprefix)
+                self._sync_folder_to_container(pth, cont, path_prefix=subprefix,
                         delete=delete, include_hidden=include_hidden,
-                        ignore=ignore, ignore_timestamps=ignore_timestamps)
+                        ignore=ignore, ignore_timestamps=ignore_timestamps,
+                        prefix=prefix, log_level=log_level)
                 continue
-            self._local_files.append(os.path.join(prefix, fname))
+            self._local_files.append(os.path.join(prefix, path_prefix, fname))
             local_etag = utils.get_checksum(pth)
             fullname = fname
-            if prefix:
-                fullname = "%s/%s" % (prefix, fname)
+            fullname_with_prefix = "%s/%s" % (prefix, fname)
+            if path_prefix:
+                fullname = "%s/%s" % (path_prefix, fname)
+                fullname_with_prefix = "%s/%s/%s" % (prefix, path_prefix, fname)
             try:
-                obj = cont.get_object(fullname)
+                obj = self._remote_files[fullname_with_prefix]
                 obj_etag = obj.etag
-            except exc.NoSuchObject:
+            except KeyError:
                 obj = None
                 obj_etag = None
             if local_etag != obj_etag:
@@ -968,19 +990,26 @@ class CFClient(object):
                     local_mod_str = local_mod.isoformat()
                     if obj_time_str >= local_mod_str:
                         # Remote object is newer
+                        if log_level >= 1:
+                            print fullname, " NOT UPLOADED because remote object is newer"
                         continue
-                cont.upload_file(pth, obj_name=fullname, etag=local_etag,
+                cont.upload_file(pth, obj_name=fullname_with_prefix, etag=local_etag,
                         return_none=True)
-        if delete and not prefix:
-            self._delete_objects_not_in_list(cont)
+                if log_level >= 1:
+                    print fullname, " UPLOADED"
+            else:
+                if log_level >= 1:
+                    print fullname, " NOT UPLOADED because it already exists"
+        if delete and not path_prefix:
+            self._delete_objects_not_in_list(cont, prefix)
 
 
-    def _delete_objects_not_in_list(self, cont):
+    def _delete_objects_not_in_list(self, cont, prefix=""):
         """
         Finds all the objects in the specified container that are not present
         in the self._local_files list, and deletes them.
         """
-        objnames = set(cont.get_object_names(full_listing=True))
+        objnames = set(cont.get_object_names(prefix=prefix, full_listing=True))
         localnames = set(self._local_files)
         to_delete = list(objnames.difference(localnames))
         # We don't need to wait around for this to complete. Store the thread
