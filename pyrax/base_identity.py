@@ -555,11 +555,12 @@ class BaseAuth(object):
         return None
 
 
-    def list_tenants(self):
+    def list_tenants(self, admin = True):
         """
-        ADMIN ONLY. Returns a list of all tenants.
+        Returns a list of all tenants (admin=True), or the tenant for the
+        currently authenticated user (admin = False).
         """
-        return self._list_tenants(admin=True)
+        return self._list_tenants(admin)
 
 
     def _list_tenants(self, admin):
