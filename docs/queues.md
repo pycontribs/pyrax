@@ -44,12 +44,16 @@ Queues require a unique name. If you try to create a queue with a name that alre
 
     queue = pq.create("my_unique_queue")
 
-There is currently no way to list existing queues, so if you need to determine whether a queue by a specific name exists, call:
+If you wish to check a given queue already exists, you may do so as follows:
 
     exists = pq.queue_exists("name_to_check")
 
 This call returns `True` or `False`, depending on the existence of a queue with the given name.
 
+## Listing queues
+The code below shows how you can list all the queues in a given region:
+
+    qs = pyrax.queues.list()
 
 ## Posting a Message to a Queue
 Messages can be any type of data, as long as they do not exceed 256 KB in length. The message body can be simple values, or a chunk of XML, or a list of JSON values, or anything else. pyrax handles the JSON-encoding required to post the message.
