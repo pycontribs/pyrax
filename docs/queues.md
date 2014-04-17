@@ -13,7 +13,7 @@ In both of these models, administrators can get queue statistics that display th
 ## Using Queues in pyrax
 Once you have authenticated, you can reference the Queues service via `pyrax.queues`. To make your coding easier, include the following line at the beginning of your code:
 
-    pq = pyrax.QueueClient()
+    pq = pyrax.queues
 
 Then you can simply use the alias `pq` to reference the service. All of the code samples in this document assume that `pq` has been defined this way.
 
