@@ -297,8 +297,9 @@ class Settings(object):
             dct = self._settings[section_name] = {}
             dct["region"] = safe_get(section, "region", default_region)
             ityp = safe_get(section, "identity_type")
-            dct["identity_type"] = _id_type(ityp)
-            dct["identity_class"] = _import_identity(ityp)
+            if ityp:
+                dct["identity_type"] = _id_type(ityp)
+                dct["identity_class"] = _import_identity(ityp)
             # Handle both the old and new names for this setting.
             debug = safe_get(section, "debug")
             if debug is None:
