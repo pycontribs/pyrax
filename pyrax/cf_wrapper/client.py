@@ -917,7 +917,7 @@ class CFClient(object):
         file names, and any names that match any of the 'ignore' patterns will
         not be uploaded. The patterns should be standard *nix-style shell
         patterns; e.g., '*pyc' will ignore all files ending in 'pyc', such as
-        'program.pyc' and 'abcpyc'.  
+        'program.pyc' and 'abcpyc'.
 
         If `prefix` is set it will be appended to the object name when it
         is checked and uploaded to the container. For example, if you use
@@ -930,11 +930,12 @@ class CFClient(object):
         did not happen. Log level 2 adds more verbosity."""
         cont = self.get_container(container)
         self._local_files = []
-        # Load a list of all the remote objects so we don't have to keep hitting the service
+        # Load a list of all the remote objects so we don't have to keep
+        # hitting the service
         if log_level >= 2:
             print "Loading remote object list (prefix=", prefix, ")"
         data = cont.get_objects(prefix=prefix, full_listing=True)
-        self._remote_files = dict( (d.name,d) for d in data )
+        self._remote_files = dict((d.name, d) for d in data)
         self._sync_folder_to_container(folder_path, cont, path_prefix="",
                 delete=delete, include_hidden=include_hidden, ignore=ignore,
                 ignore_timestamps=ignore_timestamps,
@@ -991,10 +992,11 @@ class CFClient(object):
                     if obj_time_str >= local_mod_str:
                         # Remote object is newer
                         if log_level >= 1:
-                            print fullname, " NOT UPLOADED because remote object is newer"
+                            print fullname, " NOT UPLOADED because remote"
+                            "object is newer"
                         continue
-                cont.upload_file(pth, obj_name=fullname_with_prefix, etag=local_etag,
-                        return_none=True)
+                cont.upload_file(pth, obj_name=fullname_with_prefix,
+                    etag=local_etag, return_none=True)
                 if log_level >= 1:
                     print fullname, " UPLOADED"
             else:
