@@ -138,6 +138,13 @@ def _convert_list_last_modified_to_local(attdict):
     return attdict
 
 
+def _quote(val):
+    if isinstance(val, six.text_type):
+        val = val.encode("utf-8")
+    return urllib.quote(val)
+
+
+
 class CFClient(object):
     """
     Wraps the calls to swiftclient with objects representing Containers
@@ -1420,12 +1427,7 @@ class Connection(_swift_client.Connection):
 
         Taken directly from the cloudfiles library and modified for use here.
         """
-        def quote(val):
-            if isinstance(val, six.text_type):
-                val = val.encode("utf-8")
-            return urllib.quote(val)
-
-        pth = "/".join([quote(elem) for elem in path])
+        pth = "/".join([_quote(elem) for elem in path])
         uri_path = urlparse.urlparse(self.uri).path
         path = "%s/%s" % (uri_path.rstrip("/"), pth)
         headers = {"Content-Length": str(len(data)),
@@ -1546,7 +1548,7 @@ class BulkDeleter(threading.Thread):
             this_batch, object_names = (object_names[:MAX_BULK_DELETE],
                     object_names[MAX_BULK_DELETE:])
             obj_paths = ("%s/%s" % (cname, nm) for nm in this_batch)
-            body = "\n".join(obj_paths)
+            body = _quote("\n".join(obj_paths))
             pth = "%s/?bulk-delete=1" % parsed.path
             conn.request(method, pth, body, headers)
             resp = conn.getresponse()
