@@ -7,12 +7,12 @@ import datetime
 import json
 import re
 
-from six.moves import configparser
+from six.moves import configparser as ConfigParser
 
 import pyrax
-import pyrax.exceptions as exc
-from pyrax.resource import BaseResource
-import pyrax.utils as utils
+from . import exceptions as exc
+from .resource import BaseResource
+from . import utils
 
 
 _pat = r"""
@@ -72,6 +72,19 @@ class BaseAuth(object):
         self.regions = set()
         self.verify_ssl = verify_ssl
         self._auth_endpoint = None
+        self.service_mapping = {
+                "cloudservers": "compute",
+                "cloudfiles": "object_store",
+                "cloud_loadbalancers": "load_balancer",
+                "cloud_databases": "database",
+                "cloud_blockstorage": "volume",
+                "cloud_dns": "dns",
+                "cloud_networks": "network",
+                "cloud_monitoring": "monitor",
+                "autoscale": "autoscale",
+                "images": "image",
+                "queues": "queues",
+                }
 
 
     @property
@@ -89,6 +102,31 @@ class BaseAuth(object):
     @auth_endpoint.setter
     def auth_endpoint(self, val):
         self._auth_endpoint = val
+
+
+    def __getattr__(self, att):
+        """
+        Magic to allow for specification of client by region/service or by
+        service/region.
+
+        If a service is specified, this should return an object whose endpoints
+        contain keys for each available region for that service. If a region is
+        specified, an object with keys for each service available in that
+        region should be returned.
+        """
+        # First see if it's a service
+        att = self.service_mapping.get(att) or att
+        svc = self.services.get(att)
+        if svc is not None:
+            return svc.endpoints
+        # Either invalid service, or a region
+        ret = utils.DotDict([(stype, svc.endpoints.get(att))
+                for stype, svc in list(self.services.items())
+                if svc.endpoints.get(att) is not None])
+        if ret:
+            return ret
+        # Invalid attribute
+        raise AttributeError("No such attribute '%s'." % att)
 
 
     def _get_auth_endpoint(self):
@@ -131,24 +169,54 @@ class BaseAuth(object):
 
         """
         self._creds_file = credential_file
-        cfg = configparser.SafeConfigParser()
+        cfg = ConfigParser.SafeConfigParser()
         try:
             if not cfg.read(credential_file):
                 # If the specified file does not exist, the parser will
                 # return an empty list
                 raise exc.FileNotFound("The specified credential file '%s' "
                         "does not exist" % credential_file)
-        except configparser.MissingSectionHeaderError as e:
+        except ConfigParser.MissingSectionHeaderError as e:
             # The file exists, but doesn't have the correct format.
             raise exc.InvalidCredentialFile(e)
         try:
             self._read_credential_file(cfg)
-        except (configparser.NoSectionError, configparser.NoOptionError) as e:
+        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError) as e:
             raise exc.InvalidCredentialFile(e)
         if region:
             self.region = region
         if authenticate:
             self.authenticate()
+
+
+    def keyring_auth(self, username=None, region=None, authenticate=True):
+        """
+        Use the password stored within the keyring to authenticate. If a
+        username is supplied, that name is used; otherwise, the
+        keyring_username value from the config file is used.
+
+        If there is no username defined, or if the keyring module is not
+        installed, or there is no password set for the given username, the
+        appropriate errors will be raised.
+
+        If the region is passed, it will authenticate against the proper
+        endpoint for that region, and set the default region for connections.
+        """
+        if not pyrax.keyring:
+            # Module not installed
+            raise exc.KeyringModuleNotInstalled("The 'keyring' Python module "
+                    "is not installed on this system.")
+        if username is None:
+            username = pyrax.settings.get("keyring_username")
+        if not username:
+            raise exc.KeyringUsernameMissing("No username specified for "
+                    "keyring authentication.")
+        password = pyrax.keyring.get_password("pyrax", username)
+        if password is None:
+            raise exc.KeyringPasswordNotFound("No password was found for the "
+                    "username '%s'." % username)
+        self.set_credentials(username, password, region=region,
+                authenticate=authenticate)
 
 
     def auth_with_token(self, token, tenant_id=None, tenant_name=None):
@@ -333,8 +401,8 @@ class BaseAuth(object):
                 except KeyError:
                     pass
         self.regions.discard("ALL")
-        pyrax.regions = tuple(self.regions)
-        pyrax.services = tuple(self.services.keys())
+        self.regions = tuple(self.regions)
+        self.services = tuple(self.services.keys())
         user = access["user"]
         self.user = {}
         self.user["id"] = user["id"]

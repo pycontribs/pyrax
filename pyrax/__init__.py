@@ -35,13 +35,14 @@ providing an object-oriented interface to the Swift object store.
 
 It also adds in CDN functionality that is Rackspace-specific.
 """
+
+from __future__ import absolute_import
 from functools import wraps
 import inspect
 import logging
 import os
+import six.moves.configparser as ConfigParser
 import warnings
-
-from six.moves import configparser
 
 # keyring is an optional import
 try:
@@ -59,21 +60,21 @@ try:
     from . import http
     from . import version
 
-    import cf_wrapper.client as _cf
+    from .cf_wrapper import client as _cf
     from novaclient import exceptions as _cs_exceptions
     from novaclient import auth_plugin as _cs_auth_plugin
     from novaclient.v1_1 import client as _cs_client
     from novaclient.v1_1.servers import Server as CloudServer
 
-    from autoscale import AutoScaleClient
-    from clouddatabases import CloudDatabaseClient
-    from cloudloadbalancers import CloudLoadBalancerClient
-    from cloudblockstorage import CloudBlockStorageClient
-    from clouddns import CloudDNSClient
-    from cloudnetworks import CloudNetworkClient
-    from cloudmonitoring import CloudMonitorClient
-    from image import ImageClient
-    from queueing import QueueClient
+    from .autoscale import AutoScaleClient
+    from .clouddatabases import CloudDatabaseClient
+    from .cloudloadbalancers import CloudLoadBalancerClient
+    from .cloudblockstorage import CloudBlockStorageClient
+    from .clouddns import CloudDNSClient
+    from .cloudnetworks import CloudNetworkClient
+    from .cloudmonitoring import CloudMonitorClient
+    from .image import ImageClient
+    from .queueing import QueueClient
 except ImportError:
     # See if this is the result of the importing of version.py in setup.py
     callstack = inspect.stack()
@@ -168,7 +169,7 @@ class Settings(object):
             "verify_ssl": "CLOUD_VERIFY_SSL",
             "use_servicenet": "USE_SERVICENET",
             }
-    _settings = {"default": dict.fromkeys(env_dct.keys())}
+    _settings = {"default": dict.fromkeys(list(env_dct.keys()))}
     _default_set = False
 
 
@@ -257,7 +258,7 @@ class Settings(object):
 
     @property
     def environments(self):
-        return self._settings.keys()
+        return list(self._settings.keys())
 
 
     def read_config(self, config_file):
@@ -265,17 +266,17 @@ class Settings(object):
         Parses the specified configuration file and stores the values. Raises
         an InvalidConfigurationFile exception if the file is not well-formed.
         """
-        cfg = configparser.SafeConfigParser()
+        cfg = ConfigParser.SafeConfigParser()
         try:
             cfg.read(config_file)
-        except configparser.MissingSectionHeaderError as e:
+        except ConfigParser.MissingSectionHeaderError as e:
             # The file exists, but doesn't have the correct format.
             raise exc.InvalidConfigurationFile(e)
 
         def safe_get(section, option, default=None):
             try:
                 return cfg.get(section, option)
-            except (configparser.NoSectionError, configparser.NoOptionError):
+            except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
                 return default
 
         # A common mistake is including credentials in the config file. If any
@@ -378,18 +379,30 @@ def set_default_region(region):
     default_region = region
 
 
-def _create_identity():
+def create_context(id_type=None):
+    """
+    Returns an instance of the specified identity class, or if none is
+    specified, an instance of the current setting for 'identity_class'.
+    """
+    return _create_identity(return_context=True)
+
+
+def _create_identity(return_context=False):
     """
     Creates an instance of the current identity_class and assigns it to the
     module-level name 'identity'.
     """
-    global identity
     cls = settings.get("identity_class")
     if not cls:
         raise exc.IdentityClassNotDefined("No identity class has "
                 "been defined for the current environment.")
     verify_ssl = get_setting("verify_ssl")
-    identity = cls(verify_ssl=verify_ssl)
+    context = cls(verify_ssl=verify_ssl)
+    if return_context:
+        return context
+    else:
+        global identity
+        identity = context
 
 
 def _assure_identity(fnc):
@@ -453,9 +466,7 @@ def set_credentials(username, api_key=None, password=None, region=None,
     region = _safe_region(region)
     tenant_id = tenant_id or settings.get("tenant_id")
     identity.set_credentials(username=username, password=pw_key,
-            tenant_id=tenant_id, region=region)
-    if authenticate:
-        _auth_and_connect(region=region)
+            tenant_id=tenant_id, region=region, authenticate=authenticate)
 
 
 @_assure_identity
@@ -480,9 +491,8 @@ def set_credential_file(cred_file, region=None, authenticate=True):
     for that region, and set the default region for connections.
     """
     region = _safe_region(region)
-    identity.set_credential_file(cred_file, region=region)
-    if authenticate:
-        _auth_and_connect(region=region)
+    identity.set_credential_file(cred_file, region=region,
+            authenticate=authenticate)
 
 
 def keyring_auth(username=None, region=None, authenticate=True):
@@ -515,23 +525,6 @@ def keyring_auth(username=None, region=None, authenticate=True):
             authenticate=authenticate)
 
 
-def _auth_and_connect(region=None, connect=True):
-    """
-    Handles the call to authenticate, and if successful, connects to the
-    various services.
-    """
-    global default_region
-    identity.authenticated = False
-    default_region = region or default_region
-    try:
-        identity.authenticate()
-    except exc.AuthenticationFailed:
-        clear_credentials()
-        raise
-    if connect:
-        connect_to_services(region=region)
-
-
 @_assure_identity
 def authenticate(connect=True):
     """
@@ -546,8 +539,11 @@ def authenticate(connect=True):
     Normally after successful authentication, connections to the various
     services will be made. However, passing False to the `connect` parameter
     will skip the service connection step.
+
+    The 'connect' parameter is retained for backwards compatibility. It no
+    longer has any effect.
     """
-    _auth_and_connect(connect=connect)
+    identity.authenticate()
 
 
 def plug_hole_in_swiftclient_auth(clt, url):

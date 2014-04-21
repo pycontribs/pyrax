@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # Copyright 2010 Jacob Kaplan-Moss
 # Copyright 2011 OpenStack LLC.
 # Copyright 2011 Piston Cloud Computing, Inc.
@@ -20,16 +23,19 @@
 OpenStack Client interface. Handles the REST calls and responses.
 """
 
+from __future__ import absolute_import
+
 import json
 import logging
 import requests
 import time
 import urllib
-import urlparse
+from six.moves.urllib import parse as urlparse
 
 import pyrax
 import pyrax.exceptions as exc
 
+SAFE_QUOTE_CHARS = "/.?&=,"
 
 class BaseClient(object):
     """
@@ -40,10 +46,11 @@ class BaseClient(object):
     # Each client subclass should set their own name.
     name = "base"
 
-    def __init__(self, region_name=None, endpoint_type="publicURL",
+    def __init__(self, identity, region_name=None, endpoint_type="publicURL",
             management_url=None, service_name=None, timings=False,
             verify_ssl=True, http_log_debug=False, timeout=None):
         self.version = "v1.1"
+        self.identity = identity
         self.region_name = region_name
         self.endpoint_type = endpoint_type
         self.service_name = service_name
@@ -114,7 +121,7 @@ class BaseClient(object):
 
     def unauthenticate(self):
         """Clears all of our authentication information."""
-        pyrax.identity.unauthenticate()
+        self.identity.unauthenticate()
 
 
     def get_timings(self):
@@ -181,7 +188,7 @@ class BaseClient(object):
         the request after authenticating if the initial request returned
         and Unauthorized exception.
         """
-        id_svc = pyrax.identity
+        id_svc = self.identity
         if not all((self.management_url, id_svc.token, id_svc.tenant_id)):
             id_svc.authenticate()
 
@@ -196,11 +203,11 @@ class BaseClient(object):
                 if pos < 2:
                     # Don't escape the scheme or netloc
                     continue
-                parsed[pos] = urllib.quote(parsed[pos], safe="/.?&=,")
+                parsed[pos] = urllib.quote(parsed[pos], safe=SAFE_QUOTE_CHARS)
             safe_uri = urlparse.urlunparse(parsed)
         else:
             safe_uri = "%s%s" % (self.management_url,
-                    urllib.quote(uri, safe="/.?&=,"))
+                    urllib.quote(uri, safe=SAFE_QUOTE_CHARS))
         # Perform the request once. If we get a 401 back then it
         # might be because the auth token expired, so try to
         # re-authenticate and try again. If it still fails, bail.
@@ -258,7 +265,7 @@ class BaseClient(object):
         to modify this method. Please post your findings on GitHub so that
         others can benefit.
         """
-        return pyrax.identity.authenticate()
+        return self.identity.authenticate()
 
 
     @property
@@ -267,4 +274,4 @@ class BaseClient(object):
         The older parts of this code used 'projectid'; this wraps that
         reference.
         """
-        return pyrax.identity.tenant_id
+        return self.identity.tenant_id
