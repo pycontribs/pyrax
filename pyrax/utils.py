@@ -118,13 +118,14 @@ class DotDict(dict):
 
     If the key is not present, an AttributeError is raised.
     """
-    _strict = True
+    _att_mapper = {}
     _fail = object()
 
     def __init__(self, *args, **kwargs):
         super(DotDict, self).__init__(*args, **kwargs)
 
     def __getattr__(self, att):
+        att = self._att_mapper.get(att, att)
         ret = self.get(att, self._fail)
         if ret is self._fail:
             raise AttributeError("'%s' object has no attribute '%s'" %
