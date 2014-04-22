@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
 import datetime
 from functools import wraps
 import hashlib
@@ -894,7 +895,7 @@ class CFClient(object):
 
     def sync_folder_to_container(self, folder_path, container, delete=False,
             include_hidden=False, ignore=None, ignore_timestamps=False,
-            prefix="", log_level=0):
+            object_prefix="", verbose=False):
         """
         Compares the contents of the specified folder, and checks to make sure
         that the corresponding object is present in the specified container. If
@@ -919,39 +920,42 @@ class CFClient(object):
         patterns; e.g., '*pyc' will ignore all files ending in 'pyc', such as
         'program.pyc' and 'abcpyc'.
 
-        If `prefix` is set it will be appended to the object name when it
-        is checked and uploaded to the container. For example, if you use
+        If `object_prefix` is set it will be appended to the object name when
+        it is checked and uploaded to the container. For example, if you use
         sync_folder_to_container("folderToSync/", myContainer,
-            prefix="imgFolder") it will upload the files to the
+            object_prefix="imgFolder") it will upload the files to the
         container/imgFolder/... instead of just container/...
 
-        Set `log_level` to > 0 to print what is going on. Log level 1 logs
-        when a file is uploaded or not. It also gives the reason an upload
-        did not happen. Log level 2 adds more verbosity."""
+        Set `verbose` to True to make it print what is going on. It will
+        show which files are being uploaded and which ones are not and why.
+        """
         cont = self.get_container(container)
         self._local_files = []
         # Load a list of all the remote objects so we don't have to keep
         # hitting the service
-        if log_level >= 2:
-            print "Loading remote object list (prefix=", prefix, ")"
-        data = cont.get_objects(prefix=prefix, full_listing=True)
+        if verbose:
+            log = logging.getLogger("pyrax")
+            log.info("Loading remote object list (prefix=%s)\n",
+                    object_prefix)
+        data = cont.get_objects(prefix=object_prefix, full_listing=True)
         self._remote_files = dict((d.name, d) for d in data)
-        self._sync_folder_to_container(folder_path, cont, path_prefix="",
+        self._sync_folder_to_container(folder_path, cont, prefix="",
                 delete=delete, include_hidden=include_hidden, ignore=ignore,
                 ignore_timestamps=ignore_timestamps,
-                prefix=prefix, log_level=log_level)
+                object_prefix=object_prefix, verbose=verbose)
         # Unset the _remote_files
         self._remote_files = None
 
 
-    def _sync_folder_to_container(self, folder_path, cont, path_prefix, delete,
-            include_hidden, ignore, ignore_timestamps, prefix, log_level):
+    def _sync_folder_to_container(self, folder_path, cont, prefix, delete,
+            include_hidden, ignore, ignore_timestamps, object_prefix, verbose):
         """
         This is the internal method that is called recursively to handle
         nested folder structures.
         """
         fnames = os.listdir(folder_path)
         ignore = utils.coerce_string_to_list(ignore)
+        log = logging.getLogger("pyrax")
         if not include_hidden:
             ignore.append(".*")
         for fname in fnames:
@@ -960,20 +964,20 @@ class CFClient(object):
             pth = os.path.join(folder_path, fname)
             if os.path.isdir(pth):
                 subprefix = fname
-                if path_prefix:
-                    subprefix = "%s/%s" % (path_prefix, subprefix)
-                self._sync_folder_to_container(pth, cont, path_prefix=subprefix,
+                if prefix:
+                    subprefix = "%s/%s" % (prefix, subprefix)
+                self._sync_folder_to_container(pth, cont, prefix=subprefix,
                         delete=delete, include_hidden=include_hidden,
                         ignore=ignore, ignore_timestamps=ignore_timestamps,
-                        prefix=prefix, log_level=log_level)
+                        object_prefix=object_prefix, verbose=verbose)
                 continue
-            self._local_files.append(os.path.join(prefix, path_prefix, fname))
+            self._local_files.append(os.path.join(object_prefix, prefix, fname))
             local_etag = utils.get_checksum(pth)
             fullname = fname
-            fullname_with_prefix = "%s/%s" % (prefix, fname)
-            if path_prefix:
-                fullname = "%s/%s" % (path_prefix, fname)
-                fullname_with_prefix = "%s/%s/%s" % (prefix, path_prefix, fname)
+            fullname_with_prefix = "%s/%s" % (object_prefix, fname)
+            if prefix:
+                fullname = "%s/%s" % (prefix, fname)
+                fullname_with_prefix = "%s/%s/%s" % (object_prefix, prefix, fname)
             try:
                 obj = self._remote_files[fullname_with_prefix]
                 obj_etag = obj.etag
@@ -991,27 +995,29 @@ class CFClient(object):
                     local_mod_str = local_mod.isoformat()
                     if obj_time_str >= local_mod_str:
                         # Remote object is newer
-                        if log_level >= 1:
-                            print fullname, " NOT UPLOADED because remote"
-                            "object is newer"
+                        if verbose:
+                            log.info("%s NOT UPLOADED because remote object is "
+                                    "newer\n", fullname)
                         continue
                 cont.upload_file(pth, obj_name=fullname_with_prefix,
                     etag=local_etag, return_none=True)
-                if log_level >= 1:
-                    print fullname, " UPLOADED"
+                if verbose:
+                    log.info("%s UPLOADED\n", fullname)
             else:
-                if log_level >= 1:
-                    print fullname, " NOT UPLOADED because it already exists"
-        if delete and not path_prefix:
-            self._delete_objects_not_in_list(cont, prefix)
+                if verbose:
+                    log.info("%s NOT UPLOADED because it already "
+                            "exists\n", fullname)
+        if delete and not prefix:
+            self._delete_objects_not_in_list(cont, object_prefix)
 
 
-    def _delete_objects_not_in_list(self, cont, prefix=""):
+    def _delete_objects_not_in_list(self, cont, object_prefix=""):
         """
         Finds all the objects in the specified container that are not present
         in the self._local_files list, and deletes them.
         """
-        objnames = set(cont.get_object_names(prefix=prefix, full_listing=True))
+        objnames = set(cont.get_object_names(prefix=object_prefix,
+                full_listing=True))
         localnames = set(self._local_files)
         to_delete = list(objnames.difference(localnames))
         # We don't need to wait around for this to complete. Store the thread
