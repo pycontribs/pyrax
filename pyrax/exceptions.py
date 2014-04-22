@@ -245,6 +245,9 @@ class NetworkNotFound(PyraxException):
 class NetworkLabelNotUnique(PyraxException):
     pass
 
+class NoClientForService(PyraxException):
+    pass
+
 class NoMoreResults(PyraxException):
     pass
 

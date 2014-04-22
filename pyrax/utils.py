@@ -116,19 +116,17 @@ class DotDict(dict):
     """
     Dictionary subclass that allows accessing keys via dot notation.
 
-    If the key is not present, an AttributeError is raised. If you want a less
-    restrictive version, use the PermissiveDotDict class.
+    If the key is not present, an AttributeError is raised.
     """
     _strict = True
     _fail = object()
 
-    def __init__(self, strict=True, *args, **kwargs):
-        self._strict = strict
+    def __init__(self, *args, **kwargs):
         super(DotDict, self).__init__(*args, **kwargs)
 
     def __getattr__(self, att):
         ret = self.get(att, self._fail)
-        if self._strict and ret is self._fail:
+        if ret is self._fail:
             raise AttributeError("'%s' object has no attribute '%s'" %
                     (self.__class__.__name__, att))
         return ret

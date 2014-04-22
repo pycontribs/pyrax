@@ -119,6 +119,8 @@ regions = tuple()
 services = tuple()
 
 _client_classes = {
+        "object_store": _cf.CFClient,
+        "compute": _cs_client.Client,
         "database": CloudDatabaseClient,
         "load_balancer": CloudLoadBalancerClient,
         "volume": CloudBlockStorageClient,
@@ -764,6 +766,14 @@ def connect_to_images(region=None, public=True):
 def connect_to_queues(region=None, public=True):
     """Creates a client for working with Queues."""
     return _create_client(ep_name="queues", region=region, public=public)
+
+
+def client_class_for_service(service):
+    """
+    Returns the client class registered for the given service, or None if there
+    is no such service, or if no class has been registered.
+    """
+    return _client_classes.get(service)
 
 
 def get_http_debug():

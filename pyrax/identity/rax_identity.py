@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from six.moves import configparser
+from __future__ import absolute_import
 
-from pyrax.base_identity import BaseAuth
-from pyrax.base_identity import User
-import pyrax.exceptions as exc
-import pyrax.utils as utils
+from six.moves import configparser as ConfigParser
+
+import pyrax
+from ..base_identity import BaseIdentity
+from ..base_identity import User
+from .. import exceptions as exc
+from .. import utils as utils
 
 AUTH_ENDPOINT = "https://identity.api.rackspacecloud.com/v2.0/"
 
 
-class RaxIdentity(BaseAuth):
+class RaxIdentity(BaseIdentity):
     """
     This class handles all of the authentication requirements for working
     with the Rackspace Cloud.
@@ -31,7 +34,7 @@ class RaxIdentity(BaseAuth):
         self.username = cfg.get("rackspace_cloud", "username")
         try:
             self.password = cfg.get("rackspace_cloud", "api_key", raw=True)
-        except configparser.NoOptionError as e:
+        except ConfigParser.NoOptionError as e:
             # Allow either the use of either 'api_key' or 'password'.
             self.password = cfg.get("rackspace_cloud", "password", raw=True)
 
@@ -47,23 +50,26 @@ class RaxIdentity(BaseAuth):
         if self._creds_style == "apikey":
             return {"auth": {"RAX-KSKEY:apiKeyCredentials":
                     {"username": "%s" % self.username,
-                    "apiKey": "%s" % self.password}}}
+                    "apiKey": "%s" % self.api_key}}}
         else:
             # Return in the default password-style
             return super(RaxIdentity, self)._get_credentials()
 
 
-    def authenticate(self):
+    def authenticate(self, username=None, password=None, api_key=None,
+            tenant_id=None):
         """
         If the user's credentials include an API key, the default behavior will
         work. But if they are using a password, the initial attempt will fail,
         so try again, but this time using the standard password format.
         """
         try:
-            super(RaxIdentity, self).authenticate()
+            super(RaxIdentity, self).authenticate(username=username,
+                    password=password, api_key=api_key, tenant_id=tenant_id)
         except exc.AuthenticationFailed:
             self._creds_style = "password"
-            super(RaxIdentity, self).authenticate()
+            super(RaxIdentity, self).authenticate(username=username,
+                    password=password, api_key=api_key, tenant_id=tenant_id)
 
 
     def auth_with_token(self, token, tenant_id=None, tenant_name=None):
