@@ -182,9 +182,24 @@ class Endpoint(object):
                     "the '%s' service." % (url_att, self.service))
             setattr(self, client_att, nourl)
             raise nourl
-        clt = self._create_client(clt_class, url)
+        clt = self._create_client(clt_class, url, public=public)
         setattr(self, client_att, clt)
         return clt
+
+
+    def get(self, url_type):
+        """
+        Accepts either 'public' or 'private' as a parameter, and returns the
+        corresponding value for 'public_url' or 'private_url', respectively.
+        """
+        lowtype = url_type.lower()
+        if lowtype == "public":
+            return self.public_url
+        elif lowtype == "private":
+            return self. private_url
+        else:
+            raise ValueError("Valid values are 'public' or 'private'; "
+                    "received '%s'." % url_type)
 
 
     @property
@@ -197,16 +212,18 @@ class Endpoint(object):
         return self._get_client(public=False)
 
 
-    def _create_client(self, clt_class, url):
+    def _create_client(self, clt_class, url, public=True):
         """
         Creates a client instance for the service.
         """
-
-        utils.trace()
-
         verify_ssl = pyrax.get_setting("verify_ssl")
-        client = clt_class(self.identity, region_name=self.region,
-                management_url=url, verify_ssl=verify_ssl)
+        if self.service == "object_store":
+            # Swiftclient requires different parameters.
+            client = pyrax.connect_to_cloudfiles(region=self.region,
+                    public=public, context=self.identity)
+        else:
+            client = clt_class(self.identity, region_name=self.region,
+                    management_url=url, verify_ssl=verify_ssl)
         return client
 
 
@@ -309,6 +326,7 @@ class BaseIdentity(object):
         ret = utils.DotDict([(stype, svc.endpoints.get(att))
                 for stype, svc in list(self.services.items())
                 if svc.endpoints.get(att) is not None])
+        ret._att_mapper.update(self.service_mapping)
         if ret:
             return ret
         # Invalid attribute

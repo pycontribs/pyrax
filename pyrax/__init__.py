@@ -609,24 +609,29 @@ def connect_to_services(region=None):
     queues = connect_to_queues(region=region)
 
 
-def _get_service_endpoint(svc, region=None, public=True):
+def _get_service_endpoint(context, svc, region=None, public=True):
     """
     Parses the services dict to get the proper endpoint for the given service.
     """
     region = _safe_region(region)
-    url_type = {True: "public_url", False: "internal_url"}[public]
-    ep = identity.services.get(svc, {}).get("endpoints", {}).get(
-            region, {}).get(url_type)
+    # If a specific context is passed, use that. Otherwise, use the global
+    # identity reference.
+    context = context or identity
+    url_type = {True: "public", False: "private"}[public]
+    svc_obj = context.services.get(svc)
+    if not svc_obj:
+        return None
+    ep = svc_obj.endpoints.get(region, {}).get(url_type)
     if not ep:
         # Try the "ALL" region, and substitute the actual region
-        ep = identity.services.get(svc, {}).get("endpoints", {}).get(
-                "ALL", {}).get(url_type)
+        ep = svc_obj.endpoints.get("ALL", {}).get(url_type)
     return ep
 
 
 @_require_auth
-def connect_to_cloudservers(region=None, **kwargs):
+def connect_to_cloudservers(region=None, context=None, **kwargs):
     """Creates a client for working with cloud servers."""
+    context = context or identity
     _cs_auth_plugin.discover_auth_systems()
     id_type = get_setting("identity_type")
     if id_type != "keystone":
@@ -634,7 +639,7 @@ def connect_to_cloudservers(region=None, **kwargs):
     else:
         auth_plugin = None
     region = _safe_region(region)
-    mgt_url = _get_service_endpoint("compute", region)
+    mgt_url = _get_service_endpoint(context, "compute", region)
     cloudservers = None
     if not mgt_url:
         # Service is not available
@@ -676,8 +681,8 @@ def connect_to_cloudservers(region=None, **kwargs):
     return cloudservers
 
 
-@_require_auth
-def connect_to_cloudfiles(region=None, public=None):
+#@_require_auth
+def connect_to_cloudfiles(region=None, public=None, context=None):
     """
     Creates a client for working with cloud files. The default is to connect
     to the public URL; if you need to work with the ServiceNet connection, pass
@@ -687,23 +692,26 @@ def connect_to_cloudfiles(region=None, public=None):
         is_public = not bool(get_setting("use_servicenet"))
     else:
         is_public = public
-
+    # If a specific context is passed, use that. Otherwise, use the global
+    # identity reference.
+    context = context or identity
     region = _safe_region(region)
-    cf_url = _get_service_endpoint("object_store", region, public=is_public)
+    cf_url = _get_service_endpoint(context, "object_store", region,
+            public=is_public)
     cloudfiles = None
     if not cf_url:
         # Service is not available
         return
-    cdn_url = _get_service_endpoint("object_cdn", region)
+    cdn_url = _get_service_endpoint(context, "object_cdn", region)
     ep_type = {True: "publicURL", False: "internalURL"}[is_public]
-    opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token,
-            "endpoint_type": ep_type, "tenant_name": identity.tenant_name,
+    opts = {"tenant_id": context.tenant_name, "auth_token": context.token,
+            "endpoint_type": ep_type, "tenant_name": context.tenant_name,
             "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
     verify_ssl = get_setting("verify_ssl")
-    cloudfiles = _cf.CFClient(identity.auth_endpoint, identity.username,
-            identity.password, tenant_name=identity.tenant_name,
-            preauthurl=cf_url, preauthtoken=identity.token, auth_version="2",
+    cloudfiles = _cf.CFClient(context.auth_endpoint, context.username,
+            context.password, tenant_name=context.tenant_name,
+            preauthurl=cf_url, preauthtoken=context.token, auth_version="2",
             os_options=opts, verify_ssl=verify_ssl, http_log_debug=_http_debug)
     cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)
     return cloudfiles
@@ -712,7 +720,7 @@ def connect_to_cloudfiles(region=None, public=None):
 @_require_auth
 def _create_client(ep_name, region, public=True):
     region = _safe_region(region)
-    ep = _get_service_endpoint(ep_name.split(":")[0], region, public=public)
+    ep = _get_service_endpoint(None, ep_name.split(":")[0], region, public=public)
     if not ep:
         return
     verify_ssl = get_setting("verify_ssl")
