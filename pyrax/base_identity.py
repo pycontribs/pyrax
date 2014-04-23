@@ -55,7 +55,7 @@ class Service(object):
     """
     Represents an available service from the service catalog.
     """
-    def __init__(self, catalog, identity):
+    def __init__(self, identity, catalog):
         """
         Parse the catalog entry for a particular service.
         """
@@ -196,10 +196,20 @@ class Endpoint(object):
         if lowtype == "public":
             return self.public_url
         elif lowtype == "private":
-            return self. private_url
+            return self.private_url
         else:
             raise ValueError("Valid values are 'public' or 'private'; "
                     "received '%s'." % url_type)
+
+
+    def __getattr__(self, att):
+        clt = self.client
+        ret = getattr(clt, att, None)
+        if ret:
+            return ret
+        else:
+            raise AttributeError("Endpoint for service '%s' in region '%s' "
+                    "has no attribute '%s'." % (self.service, self.region, att))
 
 
     @property
@@ -221,6 +231,10 @@ class Endpoint(object):
             # Swiftclient requires different parameters.
             client = pyrax.connect_to_cloudfiles(region=self.region,
                     public=public, context=self.identity)
+        elif self.service == "compute":
+            # Novaclient also requires special handling.
+            client = pyrax.connect_to_cloudservers(region=self.region,
+                    context=self.identity)
         else:
             client = clt_class(self.identity, region_name=self.region,
                     management_url=url, verify_ssl=verify_ssl)
@@ -244,6 +258,7 @@ class BaseIdentity(object):
         self.tenant_id = tenant_id
         self.tenant_name = tenant_name
         self.token = token
+        self.expires = None
         self.region = region
         self._creds_file = credential_file
         self._timeout = timeout
@@ -383,40 +398,40 @@ class BaseIdentity(object):
         If a valid token is already known, this call will use it to generate
         the service catalog.
         """
-        resp = self._call_token_auth(token, tenant_id, tenant_name)
-        resp_body = resp.json()
+        resp, resp_body = self._call_token_auth(token, tenant_id, tenant_name)
         self._parse_response(resp_body)
         self.authenticated = True
 
 
     def _call_token_auth(self, token, tenant_id, tenant_name):
-        if not any((tenant_id, tenant_name)):
-            raise exc.MissingAuthSettings("You must supply either the tenant "
-                    "name or tenant ID")
+        key = val = None
         if tenant_id:
             key = "tenantId"
             val = tenant_id
-        else:
+        elif tenant_name:
             key = "tenantName"
             val = tenant_name
+
         body = {"auth": {
-                key: val,
                 "token": {"id": token},
                 }}
+
+        if(key and val):
+            body["auth"][key] = val
+
         headers = {"Content-Type": "application/json",
                 "Accept": "application/json",
                 }
-        resp = self.method_post("tokens", data=body, headers=headers,
+        resp, resp_body = self.method_post("tokens", data=body, headers=headers,
                 std_headers=False)
         if resp.status_code == 401:
             # Invalid authorization
             raise exc.AuthenticationFailed("Incorrect/unauthorized "
                     "credentials received")
         elif resp.status_code > 299:
-            msg_dict = resp.json()
-            msg = msg_dict[list(msg_dict.keys())[0]]["message"]
+            msg = resp_body[resp_body.keys()[0]]["message"]
             raise exc.AuthenticationFailed("%s - %s." % (resp.reason, msg))
-        return resp
+        return resp, resp_body
 
 
     def _read_credential_file(self, cfg):
@@ -500,7 +515,7 @@ class BaseIdentity(object):
         """
         Using the supplied credentials, connects to the specified
         authentication endpoint and attempts to log in.
-        
+
         Credentials can either be passed directly to this method, or
         previously-stored credentials can be used. If authentication is
         successful, the token and service catalog information is stored, and
@@ -508,8 +523,9 @@ class BaseIdentity(object):
         """
         self.username = username or self.username or pyrax.get_setting(
                 "username")
-        self.password = password or self.password
-        self.api_key = api_key or self.api_key
+        # Different identity systems may pass these under inconsistent names.
+        self.password = password or self.password or api_key or self.api_key
+        self.api_key = api_key or self.api_key or self.password
         self.tenant_id = tenant_id or self.tenant_id or pyrax.get_setting(
                 "tenant_id")
         creds = self._get_credentials()
@@ -523,10 +539,16 @@ class BaseIdentity(object):
             # Invalid authorization
             raise exc.AuthenticationFailed("Incorrect/unauthorized "
                     "credentials received")
-        elif resp.status_code > 299:
-            msg_dict = resp.json()
+        elif 500 <= resp.status_code < 600:
+            # Internal Server Error
             try:
-                msg = msg_dict[list(msg_dict.keys())[0]]["message"]
+                error_msg = resp_body[list(resp_body.keys())[0]]["message"]
+            except KeyError:
+                error_msg = "Service Currently Unavailable"
+            raise exc.InternalServerError(error_msg)
+        elif resp.status_code > 299:
+            try:
+                msg = resp_body[list(resp_body.keys())[0]]["message"]
             except KeyError:
                 msg = None
             if msg:
@@ -559,7 +581,7 @@ class BaseIdentity(object):
         self.services = utils.DotDict()
         self.regions = set()
         for svc in self.service_catalog:
-            service = Service(svc, self)
+            service = Service(self, svc)
             if not hasattr(service, "endpoints"):
                 # Not an OpenStack service
                 continue
@@ -599,6 +621,24 @@ class BaseIdentity(object):
             return self.authenticate(username=username, password=password)
 
 
+    def unauthenticate(self):
+        """
+        Clears out any credentials, tokens, and service catalog info.
+        """
+        self.username = ""
+        self.password = ""
+        self.tenant_id = ""
+        self.tenant_name = ""
+        self.token = ""
+        self.expires = None
+        self.region = ""
+        self._creds_file = None
+        self.api_key = ""
+        self.services = utils.DotDict()
+        self.regions = utils.DotDict()
+        self.authenticated = False
+
+
     def _standard_headers(self):
         """
         Returns a dict containing the standard headers for API calls.
@@ -614,8 +654,8 @@ class BaseIdentity(object):
         """
         Returns a list of extensions enabled on this service.
         """
-        resp = self.method_get("extensions")
-        return resp.json().get("extensions", {}).get("values")
+        resp, resp_body = self.method_get("extensions")
+        return resp_body.get("extensions", {}).get("values")
 
 
     def get_token(self, force=False):
@@ -644,12 +684,11 @@ class BaseIdentity(object):
         ADMIN ONLY. Returns a dict containing tokens, endpoints, user info, and
         role metadata.
         """
-        resp = self.method_get("tokens/%s" % self.token, admin=True)
+        resp, resp_body = self.method_get("tokens/%s" % self.token, admin=True)
         if resp.status_code in (401, 403):
             raise exc.AuthorizationFailure("You must be an admin to make this "
                     "call.")
-        token_dct = resp.json()
-        return token_dct.get("access")
+        return resp_body.get("access")
 
 
     def check_token(self, token=None):
@@ -659,7 +698,7 @@ class BaseIdentity(object):
         """
         if token is None:
             token = self.token
-        resp = self.method_head("tokens/%s" % token, admin=True)
+        resp, resp_body = self.method_head("tokens/%s" % token, admin=True)
         if resp.status_code in (401, 403):
             raise exc.AuthorizationFailure("You must be an admin to make this "
                     "call.")
@@ -670,12 +709,12 @@ class BaseIdentity(object):
         """
         ADMIN ONLY. Returns a list of all endpoints for the current auth token.
         """
-        resp = self.method_get("tokens/%s/endpoints" % self.token, admin=True)
+        resp, resp_body = self.method_get("tokens/%s/endpoints" % self.token,
+                admin=True)
         if resp.status_code in (401, 403, 404):
             raise exc.AuthorizationFailure("You are not authorized to list "
                     "token endpoints.")
-        token_dct = resp.json()
-        return token_dct.get("access", {}).get("endpoints")
+        return resp_body.get("access", {}).get("endpoints")
 
 
     def list_users(self):
@@ -684,17 +723,16 @@ class BaseIdentity(object):
         (account) if this request is issued by a user holding the admin role
         (identity:user-admin).
         """
-        resp = self.method_get("users", admin=True)
+        resp, resp_body = self.method_get("users", admin=True)
         if resp.status_code in (401, 403, 404):
             raise exc.AuthorizationFailure("You are not authorized to list "
                     "users.")
-        users = resp.json()
         # The API is inconsistent; if only one user exists, it will not return
         # a list.
-        if "users" in users:
-            users = users["users"]
+        if "users" in resp_body:
+            users = resp_body["users"]
         else:
-            users = [users]
+            users = [resp_body]
         # The returned values may contain password data. Strip that out.
         for user in users:
             bad_keys = [key for key in list(user.keys())
@@ -725,18 +763,16 @@ class BaseIdentity(object):
                 }}
         if password:
             data["user"]["OS-KSADM:password"] = password
-        resp = self.method_post("users", data=data, admin=True)
+        resp, resp_body = self.method_post("users", data=data, admin=True)
         if resp.status_code == 201:
-            jresp = resp.json()
-            return User(self, jresp)
+            return User(self, resp_body)
         elif resp.status_code in (401, 403, 404):
             raise exc.AuthorizationFailure("You are not authorized to create "
                     "users.")
         elif resp.status_code == 409:
             raise exc.DuplicateUser("User '%s' already exists." % name)
         elif resp.status_code == 400:
-            status = json.loads(resp.text)
-            message = status["badRequest"]["message"]
+            message = resp_body["badRequest"]["message"]
             if "Expecting valid email address" in message:
                 raise exc.InvalidEmail("%s is not valid" % email)
             else:
@@ -759,11 +795,11 @@ class BaseIdentity(object):
         if enabled is not None:
             upd["enabled"] = enabled
         data = {"user": upd}
-        resp = self.method_put(uri, data=data)
+        resp, resp_body = self.method_put(uri, data=data)
         if resp.status_code in (401, 403, 404):
             raise exc.AuthorizationFailure("You are not authorized to update "
                     "users.")
-        return User(self, resp.json())
+        return User(self, resp_body)
 
 
     def delete_user(self, user):
@@ -774,7 +810,7 @@ class BaseIdentity(object):
         """
         user_id = utils.get_id(user)
         uri = "users/%s" % user_id
-        resp = self.method_delete(uri)
+        resp, resp_body = self.method_delete(uri)
         if resp.status_code == 404:
             raise exc.UserNotFound("User '%s' does not exist." % user)
         elif resp.status_code in (401, 403):
@@ -790,11 +826,11 @@ class BaseIdentity(object):
         """
         user_id = utils.get_id(user)
         uri = "users/%s/roles" % user_id
-        resp = self.method_get(uri)
+        resp, resp_body = self.method_get(uri)
         if resp.status_code in (401, 403):
             raise exc.AuthorizationFailure("You are not authorized to list "
                     "user roles.")
-        roles = resp.json().get("roles")
+        roles = resp_body.get("roles")
         return roles
 
 
@@ -820,9 +856,9 @@ class BaseIdentity(object):
         Returns either a list of all tenants (admin=True), or the tenant for
         the currently-authenticated user (admin=False).
         """
-        resp = self.method_get("tenants", admin=admin)
+        resp, resp_body = self.method_get("tenants", admin=admin)
         if 200 <= resp.status_code < 300:
-            tenants = resp.json().get("tenants", [])
+            tenants = resp_body.get("tenants", [])
             return [Tenant(self, tenant) for tenant in tenants]
         elif resp.status_code in (401, 403):
             raise exc.AuthorizationFailure("You are not authorized to list "
@@ -841,8 +877,8 @@ class BaseIdentity(object):
                 }}
         if description:
             data["tenant"]["description"] = description
-        resp = self.method_post("tenants", data=data)
-        return Tenant(self, resp.json())
+        resp, resp_body = self.method_post("tenants", data=data)
+        return Tenant(self, resp_body)
 
 
     def update_tenant(self, tenant, name=None, description=None, enabled=True):
@@ -857,8 +893,8 @@ class BaseIdentity(object):
             data["tenant"]["name"] = name
         if description:
             data["tenant"]["description"] = description
-        resp = self.method_put("tenants/%s" % tenant_id, data=data)
-        return Tenant(self, resp.json())
+        resp, resp_body = self.method_put("tenants/%s" % tenant_id, data=data)
+        return Tenant(self, resp_body)
 
 
     def delete_tenant(self, tenant):
@@ -869,7 +905,7 @@ class BaseIdentity(object):
         """
         tenant_id = utils.get_id(tenant)
         uri = "tenants/%s" % tenant_id
-        resp = self.method_delete(uri)
+        resp, resp_body = self.method_delete(uri)
         if resp.status_code == 404:
             raise exc.TenantNotFound("Tenant '%s' does not exist." % tenant)
 

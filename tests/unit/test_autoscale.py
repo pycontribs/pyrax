@@ -26,7 +26,8 @@ class AutoscaleTest(unittest.TestCase):
         super(AutoscaleTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
-        self.scaling_group = fakes.FakeScalingGroup()
+        self.identity = fakes.FakeIdentity()
+        self.scaling_group = fakes.FakeScalingGroup(self.identity)
 
     def tearDown(self):
         pass

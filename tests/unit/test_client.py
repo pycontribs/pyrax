@@ -30,10 +30,10 @@ class ClientTest(unittest.TestCase):
     def setUp(self):
         save_conf = client.BaseClient._configure_manager
         client.BaseClient._configure_manager = Mock()
-        self.client = client.BaseClient()
+        self.identity = pyrax.identity = ID_CLS()
+        self.client = client.BaseClient(self.identity)
         client.BaseClient._configure_manager = save_conf
         self.client._manager = fakes.FakeManager()
-        self.id_svc = pyrax.identity = ID_CLS()
 
     def tearDown(self):
         self.client = None
@@ -54,7 +54,7 @@ class ClientTest(unittest.TestCase):
 
         save_conf = client.BaseClient._configure_manager
         client.BaseClient._configure_manager = Mock()
-        bc = client.BaseClient(region_name=region_name,
+        bc = client.BaseClient(identity=self.identity, region_name=region_name,
                 endpoint_type=endpoint_type, management_url=management_url,
                 service_name=service_name, timings=timings,
                 http_log_debug=http_log_debug, timeout=timeout,)
@@ -69,7 +69,7 @@ class ClientTest(unittest.TestCase):
         client.BaseClient._configure_manager = save_conf
 
     def test_configure_manager(self):
-        self.assertRaises(NotImplementedError, client.BaseClient)
+        self.assertRaises(NotImplementedError, client.BaseClient, self.identity)
 
     def test_list(self):
         mgr = self.client._manager
@@ -129,7 +129,7 @@ class ClientTest(unittest.TestCase):
 
     def test_unauthenticate(self):
         clt = self.client
-        id_svc = self.id_svc
+        id_svc = clt.identity
         clt.unauthenticate()
         self.assertEqual(id_svc.token, "")
 
@@ -238,7 +238,7 @@ class ClientTest(unittest.TestCase):
 
     def test_api_request_expired(self):
         clt = self.client
-        id_svc = self.id_svc
+        id_svc = clt.identity
         sav_auth = id_svc.authenticate
         returns = [exc.Unauthorized(""), (fakes.FakeIdentityResponse(),
                 fakes.fake_identity_response)]
@@ -265,7 +265,7 @@ class ClientTest(unittest.TestCase):
 
     def test_api_request_not_authed(self):
         clt = self.client
-        id_svc = self.id_svc
+        id_svc = clt.identity
         sav_auth = id_svc.authenticate
         id_svc.authenticate = Mock()
         sav_req = clt.request
@@ -283,7 +283,7 @@ class ClientTest(unittest.TestCase):
 
     def test_api_request_auth_failed(self):
         clt = self.client
-        id_svc = self.id_svc
+        id_svc = clt.identity
         sav_auth = id_svc.authenticate
         id_svc.authenticate = Mock()
         sav_req = clt.request
@@ -298,7 +298,7 @@ class ClientTest(unittest.TestCase):
 
     def test_api_request_service_unavailable(self):
         clt = self.client
-        id_svc = self.id_svc
+        id_svc = clt.identity
         sav_auth = id_svc.authenticate
         id_svc.authenticate = Mock()
         sav_req = clt.request
@@ -314,7 +314,7 @@ class ClientTest(unittest.TestCase):
 
     def test_api_request_url_quoting(self):
         clt = self.client
-        id_svc = self.id_svc
+        id_svc = clt.identity
         sav_mgt = clt.management_url
         clt.management_url = "/FAKE"
         sav_auth = id_svc.authenticate
@@ -332,7 +332,7 @@ class ClientTest(unittest.TestCase):
 
     def test_api_request_url_safe_quoting(self):
         clt = self.client
-        id_svc = self.id_svc
+        id_svc = clt.identity
         sav_mgt = clt.management_url
         clt.management_url = "/FAKE"
         sav_auth = id_svc.authenticate
@@ -404,15 +404,16 @@ class ClientTest(unittest.TestCase):
 
     def test_authenticate(self):
         clt = self.client
-        sav_auth = pyrax.identity.authenticate
-        pyrax.identity.authenticate = Mock()
+        sav_auth = clt.identity.authenticate
+        clt.identity.authenticate = Mock()
         ret = clt.authenticate()
-        pyrax.identity.authenticate.assert_called_once_with()
-        pyrax.identity.authenticate = sav_auth
+        clt.identity.authenticate.assert_called_once_with()
+        clt.identity.authenticate = sav_auth
 
     def test_project_id(self):
         clt = self.client
-        self.id_svc.tenant_id = "FAKE"
+        id_svc = clt.identity
+        id_svc.tenant_id = "FAKE"
         self.assertEqual(clt.projectid, "FAKE")
 
 

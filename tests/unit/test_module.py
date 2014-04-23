@@ -28,6 +28,7 @@ class PyraxInitTest(unittest.TestCase):
         super(PyraxInitTest, self).__init__(*args, **kwargs)
         self.username = "fakeuser"
         self.password = "fakeapikey"
+        self.tenant_id = "faketenantid"
 
     def setUp(self):
         vers = pyrax.version.version
@@ -180,33 +181,35 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.set_credentials(self.username, self.password)
         self.assertEqual(pyrax.identity.username, self.username)
         self.assertEqual(pyrax.identity.password, self.password)
-        self.assert_(pyrax.identity.authenticated)
+        self.assertTrue(pyrax.identity.authenticated)
 
     def test_set_bad_credentials(self):
         self.assertRaises(exc.AuthenticationFailed, pyrax.set_credentials,
                 "bad", "creds")
-        self.assertIsNone(pyrax.identity)
+        self.assertFalse(pyrax.identity.authenticated)
 
     def test_set_credential_file(self):
         with utils.SelfDeletingTempfile() as tmpname:
             with open(tmpname, "wb") as tmp:
-                tmp.write("[rackspace_cloud]\n")
+                tmp.write("[keystone]\n")
                 tmp.write("username = %s\n" % self.username)
-                tmp.write("api_key = %s\n" % self.password)
+                tmp.write("password = %s\n" % self.password)
+                tmp.write("tenant_id = %s\n" % self.tenant_id)
             pyrax.set_credential_file(tmpname)
             self.assertEqual(pyrax.identity.username, self.username)
             self.assertEqual(pyrax.identity.password, self.password)
-            self.assert_(pyrax.identity.authenticated)
+            self.assertTrue(pyrax.identity.authenticated)
 
     def test_set_bad_credential_file(self):
         with utils.SelfDeletingTempfile() as tmpname:
             with open(tmpname, "wb") as tmp:
-                tmp.write("[rackspace_cloud]\n")
+                tmp.write("[keystone]\n")
                 tmp.write("username = bad\n")
-                tmp.write("api_key = creds\n")
+                tmp.write("password = creds\n")
+                tmp.write("tenant_id = stuff\n")
             self.assertRaises(exc.AuthenticationFailed,
                     pyrax.set_credential_file, tmpname)
-            self.assertIsNone(pyrax.identity)
+        self.assertFalse(pyrax.identity.authenticated)
 
     def test_keyring_auth_no_module(self):
         pyrax.keyring = None
@@ -247,7 +250,7 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.cloud_loadbalancers = object()
         pyrax.cloud_databases = object()
         default_region = object()
-        self.assert_(pyrax.identity.authenticated)
+        self.assertTrue(pyrax.identity.authenticated)
         self.assertIsNotNone(pyrax.cloudfiles)
         pyrax.clear_credentials()
         self.assertIsNone(pyrax.identity)
@@ -325,8 +328,8 @@ class PyraxInitTest(unittest.TestCase):
     def test_make_agent_name(self):
         test_agent = "TEST"
         ret = pyrax._make_agent_name(test_agent)
-        self.assert_(ret.endswith(test_agent))
-        self.assert_(ret.startswith(pyrax.USER_AGENT))
+        self.assertTrue(ret.endswith(test_agent))
+        self.assertTrue(ret.startswith(pyrax.USER_AGENT))
 
     def test_connect_to_services(self):
         pyrax.connect_to_services()

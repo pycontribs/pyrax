@@ -45,6 +45,7 @@ class BaseClient(object):
     user_agent = None
     # Each client subclass should set their own name.
     name = "base"
+
     def __init__(self, identity, region_name=None, endpoint_type=None,
             management_url=None, service_name=None, timings=False,
             verify_ssl=True, http_log_debug=False, timeout=None):

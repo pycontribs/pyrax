@@ -386,15 +386,18 @@ def create_context(id_type=None):
     Returns an instance of the specified identity class, or if none is
     specified, an instance of the current setting for 'identity_class'.
     """
-    return _create_identity(return_context=True)
+    return _create_identity(id_type=id_type, return_context=True)
 
 
-def _create_identity(return_context=False):
+def _create_identity(id_type=None, return_context=False):
     """
     Creates an instance of the current identity_class and assigns it to the
     module-level name 'identity'.
     """
-    cls = settings.get("identity_class")
+    if id_type:
+        cls = _import_identity(id_type)
+    else:
+        cls = settings.get("identity_class")
     if not cls:
         raise exc.IdentityClassNotDefined("No identity class has "
                 "been defined for the current environment.")
@@ -469,6 +472,7 @@ def set_credentials(username, api_key=None, password=None, region=None,
     tenant_id = tenant_id or settings.get("tenant_id")
     identity.set_credentials(username=username, password=pw_key,
             tenant_id=tenant_id, region=region, authenticate=authenticate)
+    connect_to_services(region=region)
 
 
 @_assure_identity
@@ -495,6 +499,7 @@ def set_credential_file(cred_file, region=None, authenticate=True):
     region = _safe_region(region)
     identity.set_credential_file(cred_file, region=region,
             authenticate=authenticate)
+    connect_to_services(region=region)
 
 
 def keyring_auth(username=None, region=None, authenticate=True):
@@ -628,7 +633,6 @@ def _get_service_endpoint(context, svc, region=None, public=True):
     return ep
 
 
-@_require_auth
 def connect_to_cloudservers(region=None, context=None, **kwargs):
     """Creates a client for working with cloud servers."""
     context = context or identity
@@ -645,15 +649,15 @@ def connect_to_cloudservers(region=None, context=None, **kwargs):
         # Service is not available
         return
     insecure = not get_setting("verify_ssl")
-    cloudservers = _cs_client.Client(identity.username, identity.password,
-            project_id=identity.tenant_id, auth_url=identity.auth_endpoint,
+    cloudservers = _cs_client.Client(context.username, context.password,
+            project_id=context.tenant_id, auth_url=context.auth_endpoint,
             auth_system=id_type, region_name=region, service_type="compute",
             auth_plugin=auth_plugin, insecure=insecure,
             http_log_debug=_http_debug, **kwargs)
     agt = cloudservers.client.USER_AGENT
     cloudservers.client.USER_AGENT = _make_agent_name(agt)
     cloudservers.client.management_url = mgt_url
-    cloudservers.client.auth_token = identity.token
+    cloudservers.client.auth_token = context.token
     cloudservers.exceptions = _cs_exceptions
     # Add some convenience methods
     cloudservers.list_images = cloudservers.images.list
@@ -681,7 +685,6 @@ def connect_to_cloudservers(region=None, context=None, **kwargs):
     return cloudservers
 
 
-#@_require_auth
 def connect_to_cloudfiles(region=None, public=None, context=None):
     """
     Creates a client for working with cloud files. The default is to connect
@@ -725,8 +728,8 @@ def _create_client(ep_name, region, public=True):
         return
     verify_ssl = get_setting("verify_ssl")
     cls = _client_classes[ep_name]
-    client = cls(region_name=region, management_url=ep, verify_ssl=verify_ssl,
-            http_log_debug=_http_debug)
+    client = cls(identity, region_name=region, management_url=ep,
+            verify_ssl=verify_ssl, http_log_debug=_http_debug)
     client.user_agent = _make_agent_name(client.user_agent)
     return client
 

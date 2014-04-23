@@ -15,9 +15,10 @@ import six
 from mock import patch
 from mock import MagicMock as Mock
 
-import pyrax.utils as utils
+from pyrax import base_identity
 import pyrax.exceptions as exc
 from pyrax import fakes
+import pyrax.utils as utils
 
 FAKE_CONTENT = "x" * 100
 
@@ -192,7 +193,8 @@ class UtilsTest(unittest.TestCase):
         self.assertTrue(utils.isunauthenticated(dummy))
 
     def test_safe_issubclass_good(self):
-        ret = utils.safe_issubclass(fakes.FakeIdentity, fakes.RaxIdentity)
+        ret = utils.safe_issubclass(fakes.FakeIdentity,
+                base_identity.BaseIdentity)
         self.assertTrue(ret)
 
     def test_safe_issubclass_bad(self):

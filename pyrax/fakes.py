@@ -56,6 +56,9 @@ from pyrax.queueing import QueueClient
 from pyrax.queueing import QueueManager
 
 import pyrax.exceptions as exc
+from pyrax.base_identity import BaseIdentity
+from pyrax.base_identity import Endpoint
+from pyrax.base_identity import Service
 from pyrax.identity.rax_identity import RaxIdentity
 from pyrax.identity.keystone_identity import KeystoneIdentity
 import pyrax.utils as utils
@@ -165,7 +168,8 @@ class FakeService(object):
 
 class FakeCSClient(FakeService):
     def __init__(self, *args, **kwargs):
-        super(FakeCSClient, self).__init__(*args, **kwargs)
+        ident = FakeIdentity()
+        super(FakeCSClient, self).__init__(ident, *args, **kwargs)
 
         def dummy(self):
             pass
@@ -315,7 +319,8 @@ class FakeDatabaseClient(CloudDatabaseClient):
     def __init__(self, *args, **kwargs):
         self._manager = FakeDatabaseManager(self)
         self._flavor_manager = FakeManager()
-        super(FakeDatabaseClient, self).__init__("fakeuser",
+        ident = FakeIdentity()
+        super(FakeDatabaseClient, self).__init__(ident, "fakeuser",
                 "fakepassword", *args, **kwargs)
 
 
@@ -326,8 +331,9 @@ class FakeNovaVolumeClient(BaseClient):
 
 class FakeBlockStorageManager(CloudBlockStorageManager):
     def __init__(self, api=None, *args, **kwargs):
+        ident = FakeIdentity()
         if api is None:
-            api = FakeBlockStorageClient()
+            api = FakeBlockStorageClient(ident)
         super(FakeBlockStorageManager, self).__init__(api, *args, **kwargs)
 
 
@@ -350,13 +356,15 @@ class FakeBlockStorageClient(CloudBlockStorageClient):
     def __init__(self, *args, **kwargs):
         self._types_manager = FakeManager()
         self._snapshot_manager = FakeManager()
-        super(FakeBlockStorageClient, self).__init__("fakeuser",
+        ident = FakeIdentity()
+        super(FakeBlockStorageClient, self).__init__(ident, "fakeuser",
                 "fakepassword", *args, **kwargs)
 
 
 class FakeLoadBalancerClient(CloudLoadBalancerClient):
     def __init__(self, *args, **kwargs):
-        super(FakeLoadBalancerClient, self).__init__("fakeuser",
+        ident = FakeIdentity()
+        super(FakeLoadBalancerClient, self).__init__(ident, "fakeuser",
                 "fakepassword", *args, **kwargs)
 
 
@@ -409,7 +417,8 @@ class FakeStatusChanger(object):
 
 class FakeDNSClient(CloudDNSClient):
     def __init__(self, *args, **kwargs):
-        super(FakeDNSClient, self).__init__("fakeuser",
+        ident = FakeIdentity()
+        super(FakeDNSClient, self).__init__(ident, "fakeuser",
                 "fakepassword", *args, **kwargs)
 
 
@@ -447,7 +456,8 @@ class FakeDNSDevice(FakeLoadBalancer):
 
 class FakeCloudNetworkClient(CloudNetworkClient):
     def __init__(self, *args, **kwargs):
-        super(FakeCloudNetworkClient, self).__init__("fakeuser",
+        ident = FakeIdentity()
+        super(FakeCloudNetworkClient, self).__init__(ident, "fakeuser",
                 "fakepassword", *args, **kwargs)
 
 
@@ -463,8 +473,9 @@ class FakeCloudNetwork(CloudNetwork):
 
 class FakeAutoScaleClient(AutoScaleClient):
     def __init__(self, *args, **kwargs):
+        ident = FakeIdentity()
         self._manager = FakeManager()
-        super(FakeAutoScaleClient, self).__init__(*args, **kwargs)
+        super(FakeAutoScaleClient, self).__init__(ident, *args, **kwargs)
 
 
 class FakeAutoScalePolicy(AutoScalePolicy):
@@ -500,7 +511,8 @@ class FakeScalingGroup(ScalingGroup):
 
 class FakeCloudMonitorClient(CloudMonitorClient):
     def __init__(self, *args, **kwargs):
-        super(FakeCloudMonitorClient, self).__init__("fakeuser",
+        ident = FakeIdentity()
+        super(FakeCloudMonitorClient, self).__init__(ident, "fakeuser",
                 "fakepassword", *args, **kwargs)
 
 
@@ -560,7 +572,8 @@ class FakeQueueMessage(QueueMessage):
 
 class FakeQueueClient(QueueClient):
     def __init__(self, *args, **kwargs):
-        super(FakeQueueClient, self).__init__("fakeuser",
+        ident = FakeIdentity()
+        super(FakeQueueClient, self).__init__(ident, "fakeuser",
                 "fakepassword", *args, **kwargs)
 
 
@@ -615,7 +628,23 @@ class FakeImageManager(ImageManager):
         self.id = utils.random_ascii()
 
 
-class FakeIdentity(RaxIdentity):
+class FakeIdentityService(Service):
+    def __init__(self, *args, **kwargs):
+        self.identity = FakeIdentity()
+        self.name = "fake"
+        self.prefix = ""
+        self.service_type = "fake"
+        self.clients = {}
+        self.endpoints = utils.DotDict()
+
+
+class FakeEndpoint(Endpoint):
+    pass
+
+class FakeRaxIdentity(RaxIdentity):
+    pass
+
+class FakeIdentity(BaseIdentity):
     """Class that returns canned authentication responses."""
     def __init__(self, *args, **kwargs):
         super(FakeIdentity, self).__init__(*args, **kwargs)

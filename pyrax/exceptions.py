@@ -248,6 +248,12 @@ class NetworkLabelNotUnique(PyraxException):
 class NoClientForService(PyraxException):
     pass
 
+class NoEndpointForRegion(PyraxException):
+    pass
+
+class NoEndpointForService(PyraxException):
+    pass
+
 class NoMoreResults(PyraxException):
     pass
 

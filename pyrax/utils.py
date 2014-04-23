@@ -132,8 +132,8 @@ class DotDict(dict):
                     (self.__class__.__name__, att))
         return ret
 
-    __setattr__= dict.__setitem__
-    __delattr__= dict.__delitem__
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
 
 
 

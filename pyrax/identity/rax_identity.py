@@ -86,16 +86,16 @@ class RaxIdentity(BaseIdentity):
         # object_store endpoints. We can then add these to the initial
         # endpoints returned by the primary tenant ID, and then continue with
         # the auth process.
-        main_resp = self._call_token_auth(token, tenant_id, tenant_name)
-        main_body = main_resp.json()
+        main_resp, main_body = self._call_token_auth(token, tenant_id,
+                tenant_name)
         # Get the swift tenant ID
         roles = main_body["access"]["user"]["roles"]
         ostore = [role for role in roles
                 if role["name"] == "object-store:default"]
         if ostore:
             ostore_tenant_id = ostore[0]["tenantId"]
-            ostore_resp = self._call_token_auth(token, ostore_tenant_id, None)
-            ostore_body = ostore_resp.json()
+            ostore_resp, ostore_body = self._call_token_auth(token,
+                    ostore_tenant_id, None)
             ostore_cat = ostore_body["access"]["serviceCatalog"]
             main_cat = main_body["access"]["serviceCatalog"]
             main_cat.extend(ostore_cat)

@@ -35,7 +35,7 @@ class IdentityTest(unittest.TestCase):
         super(IdentityTest, self).__init__(*args, **kwargs)
         self.username = "TESTUSER"
         self.password = "TESTPASSWORD"
-        self.base_identity_class = pyrax.base_identity.BaseAuth
+        self.base_identity_class = base_identity.BaseIdentity
         self.keystone_identity_class = pyrax.keystone_identity.KeystoneIdentity
         self.rax_identity_class = pyrax.rax_identity.RaxIdentity
         self.id_classes = {"keystone": self.keystone_identity_class,
@@ -45,10 +45,261 @@ class IdentityTest(unittest.TestCase):
         return self.rax_identity_class()
 
     def setUp(self):
-        pass
+        self.identity = fakes.FakeIdentity()
+        self.service = fakes.FakeIdentityService()
 
     def tearDown(self):
         pass
+
+    def test_svc_repr(self):
+        svc = self.service
+        rep = svc.__repr__()
+        self.assertTrue(svc.service_type in rep)
+
+    def test_svc_ep_for_region(self):
+        svc = self.service
+        region = utils.random_unicode().upper()
+        bad_region = utils.random_unicode().upper()
+        good_url = utils.random_unicode()
+        bad_url = utils.random_unicode()
+        good_ep = fakes.FakeEndpoint({"public_url": good_url}, svc.service_type,
+                region, self.identity)
+        bad_ep = fakes.FakeEndpoint({"public_url": bad_url}, svc.service_type,
+                bad_region, self.identity)
+        svc.endpoints = utils.DotDict({region: good_ep, bad_region: bad_ep})
+        ep = svc._ep_for_region(region)
+        self.assertEqual(ep, good_ep)
+
+    def test_svc_ep_for_region_all(self):
+        svc = self.service
+        region = "ALL"
+        good_url = utils.random_unicode()
+        bad_url = utils.random_unicode()
+        good_ep = fakes.FakeEndpoint({"public_url": good_url}, svc.service_type,
+                region, self.identity)
+        bad_ep = fakes.FakeEndpoint({"public_url": bad_url}, svc.service_type,
+                region, self.identity)
+        svc.endpoints = utils.DotDict({region: good_ep, "other": bad_ep})
+        ep = svc._ep_for_region("notthere")
+        self.assertEqual(ep, good_ep)
+
+    def test_svc_ep_for_region_not_found(self):
+        svc = self.service
+        region = utils.random_unicode().upper()
+        good_url = utils.random_unicode()
+        bad_url = utils.random_unicode()
+        good_ep = fakes.FakeEndpoint({"public_url": good_url}, svc.service_type,
+                region, self.identity)
+        bad_ep = fakes.FakeEndpoint({"public_url": bad_url}, svc.service_type,
+                region, self.identity)
+        svc.endpoints = utils.DotDict({region: good_ep, "other": bad_ep})
+        ep = svc._ep_for_region("notthere")
+        self.assertIsNone(ep)
+
+    def test_svc_get_client(self):
+        svc = self.service
+        clt = utils.random_unicode()
+        region = utils.random_unicode()
+
+        class FakeEPForRegion(object):
+            client = clt
+
+        svc._ep_for_region = Mock(return_value=FakeEPForRegion())
+        ret = svc.get_client(region)
+        self.assertEqual(ret, clt)
+
+    def test_svc_get_client_none(self):
+        svc = self.service
+        region = utils.random_unicode()
+        svc._ep_for_region = Mock(return_value=None)
+        self.assertRaises(exc.NoEndpointForRegion, svc.get_client, region)
+
+    def test_svc_regions(self):
+        svc = self.service
+        key1 = utils.random_unicode()
+        val1 = utils.random_unicode()
+        key2 = utils.random_unicode()
+        val2 = utils.random_unicode()
+        svc.endpoints = {key1: val1, key2: val2}
+        regions = svc.regions
+        self.assertEqual(len(regions), 2)
+        self.assertTrue(key1 in regions)
+        self.assertTrue(key2 in regions)
+
+    def test_ep_get_client_already_failed(self):
+        svc = self.service
+        ep_dict = {"publicURL": "http://example.com", "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        ep._client = exc.NoClientForService()
+        self.assertRaises(exc.NoClientForService, ep._get_client)
+
+    def test_ep_get_client_exists(self):
+        svc = self.service
+        ep_dict = {"publicURL": "http://example.com", "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        clt = utils.random_unicode()
+        ep._client = clt
+        ret = ep._get_client()
+        self.assertEqual(ret, clt)
+
+    def test_ep_get_client_none(self):
+        svc = self.service
+        ep_dict = {"publicURL": "http://example.com", "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        sav = pyrax.client_class_for_service
+        pyrax.client_class_for_service = Mock(return_value=None)
+        self.assertRaises(exc.NoClientForService, ep._get_client)
+        pyrax.client_class_for_service = sav
+
+    def test_ep_get_client_no_url(self):
+        svc = self.service
+        ep_dict = {"publicURL": "http://example.com", "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        sav = pyrax.client_class_for_service
+        ep.public_url = None
+        pyrax.client_class_for_service = Mock(return_value=object)
+        self.assertRaises(exc.NoEndpointForService, ep._get_client)
+        pyrax.client_class_for_service = sav
+
+    def test_ep_get_client(self):
+        svc = self.service
+        ep_dict = {"publicURL": "http://example.com", "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        sav = pyrax.client_class_for_service
+        ep.public_url = utils.random_unicode()
+        pyrax.client_class_for_service = Mock(return_value=object)
+        fake = utils.random_unicode()
+        ep._create_client = Mock(return_value=fake)
+        ret = ep._get_client()
+        self.assertEqual(ret, fake)
+        self.assertEqual(ep._client, fake)
+        pyrax.client_class_for_service = sav
+
+    def test_ep_get(self):
+        svc = self.service
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        ret = ep.get("public")
+        self.assertEqual(ret, pub)
+        ret = ep.get("private")
+        self.assertEqual(ret, priv)
+        self.assertRaises(ValueError, ep.get, "invalid")
+
+    def test_ep_getattr(self):
+        svc = self.service
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        svc_att = "exists"
+        att_val = utils.random_unicode()
+        setattr(svc, svc_att, att_val)
+        ep._get_client = Mock(return_value=svc)
+        ret = ep.exists
+        self.assertEqual(ret, att_val)
+        self.assertRaises(AttributeError, getattr, ep, "bogus")
+
+    def test_ep_client_prop(self):
+        svc = self.service
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        clt = utils.random_unicode()
+        ep._get_client = Mock(return_value=clt)
+        ret = ep.client
+        self.assertEqual(ret, clt)
+
+    def test_ep_client_private_prop(self):
+        svc = self.service
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        clt = utils.random_unicode()
+        ep._get_client = Mock(return_value=clt)
+        ret = ep.client_private
+        self.assertEqual(ret, clt)
+
+    def test_ep_create_client_obj_store(self):
+        svc = self.service
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        vssl = random.choice((True, False))
+        public = random.choice((True, False))
+        sav_gs = pyrax.get_setting
+        pyrax.get_setting = Mock(return_value=vssl)
+        sav_conn = pyrax.connect_to_cloudfiles
+        fake_client = object()
+        pyrax.connect_to_cloudfiles = Mock(return_value=fake_client)
+        ep.service = "object_store"
+        ret = ep._create_client(None, None, public)
+        self.assertEqual(ret, fake_client)
+        pyrax.connect_to_cloudfiles.assert_called_once_with(region=ep.region,
+                public=public, context=ep.identity)
+        pyrax.connect_to_cloudfiles = sav_conn
+        pyrax.get_setting = sav_gs
+
+    def test_ep_create_client_compute(self):
+        svc = self.service
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        vssl = random.choice((True, False))
+        public = random.choice((True, False))
+        sav_gs = pyrax.get_setting
+        pyrax.get_setting = Mock(return_value=vssl)
+        sav_conn = pyrax.connect_to_cloudservers
+        fake_client = object()
+        pyrax.connect_to_cloudservers = Mock(return_value=fake_client)
+        ep.service = "compute"
+        ret = ep._create_client(None, None, public)
+        self.assertEqual(ret, fake_client)
+        pyrax.connect_to_cloudservers.assert_called_once_with(region=ep.region,
+                context=ep.identity)
+        pyrax.connect_to_cloudservers = sav_conn
+        pyrax.get_setting = sav_gs
+
+    def test_ep_create_client_all_other(self):
+        svc = self.service
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        vssl = random.choice((True, False))
+        public = random.choice((True, False))
+        url = utils.random_unicode()
+        sav_gs = pyrax.get_setting
+        pyrax.get_setting = Mock(return_value=vssl)
+
+        class FakeClientClass(object):
+            def __init__(self, identity, region_name, management_url,
+                    verify_ssl):
+                self.identity = identity
+                self.region_name = region_name
+                self.management_url = management_url
+                self.verify_ssl = verify_ssl
+
+        ret = ep._create_client(FakeClientClass, url, public)
+        self.assertTrue(isinstance(ret, FakeClientClass))
+        pyrax.get_setting = sav_gs
 
     def test_init(self):
         for cls in self.id_classes.values():
@@ -149,15 +400,15 @@ class IdentityTest(unittest.TestCase):
                 return self.info
 
         resp_main = FakeResp()
-        resp_main.info = {"access": {
-                "serviceCatalog": [{"a": "a", "name": "a", "type": "a"}],
+        resp_main_body = {"access": {
+                "serviceCatalog": [{"a": "a", "name": "a", "type": "a"},
+                        {"b": "b", "name": "b", "type": "b"}],
                 "user": {"roles":
                         [{"tenantId": oid, "name": "object-store:default"}],
                 }}}
-        resp_obj = FakeResp()
-        resp_obj.info = {"access": {
-                "serviceCatalog": [{"b": "b", "name": "b", "type": "b"}]}}
-        ident._call_token_auth = Mock(side_effect=(resp_main, resp_obj))
+#        resp_main_body = {"access": {
+#                "serviceCatalog": [{"b": "b", "name": "b", "type": "b"}]}}
+        ident._call_token_auth = Mock(return_value=(resp_main, resp_main_body))
 
         def fake_parse(dct):
             svcs = dct.get("access", {}).get("serviceCatalog", {})
@@ -244,7 +495,7 @@ class IdentityTest(unittest.TestCase):
 
     def test_get_credentials_rax(self):
         ident = self.rax_identity_class(username=self.username,
-                password=self.password)
+                api_key=self.password)
         ident._creds_style = "apikey"
         creds = ident._get_credentials()
         user = creds["auth"]["RAX-KSKEY:apiKeyCredentials"]["username"]
@@ -299,16 +550,44 @@ class IdentityTest(unittest.TestCase):
         savrequest = pyrax.http.request
         fake_resp = fakes.FakeIdentityResponse()
         fake_resp.status_code = 500
-        fake_body = fakes.fake_identity_response
-        fake_resp.json = Mock(return_value={u'unauthorized': {
-                u'message': u'Username or api key is invalid', u'code': 500}})
+        fake_body = {u'unauthorized': {
+                u'message': u'Username or api key is invalid', u'code': 500}}
         pyrax.http.request = Mock(return_value=(fake_resp, fake_body))
         self.assertRaises(exc.InternalServerError, ident.authenticate)
         pyrax.http.request = savrequest
 
-    def test_endpoint_defined(self):
-        ident = self.base_identity_class()
-        self.assertRaises(NotImplementedError, ident._get_auth_endpoint)
+    def test_authenticate_fail_no_message(self):
+        ident = self.rax_identity_class(username="BAD", password="BAD")
+        savrequest = pyrax.http.request
+        fake_resp = fakes.FakeIdentityResponse()
+        fake_resp.status_code = 500
+        fake_body = {u'unauthorized': {
+                u'bogus': u'Username or api key is invalid', u'code': 500}}
+        pyrax.http.request = Mock(return_value=(fake_resp, fake_body))
+        self.assertRaises(exc.InternalServerError, ident.authenticate)
+        pyrax.http.request = savrequest
+
+    def test_authenticate_fail_gt_299(self):
+        ident = self.rax_identity_class(username="BAD", password="BAD")
+        savrequest = pyrax.http.request
+        fake_resp = fakes.FakeIdentityResponse()
+        fake_resp.status_code = 444
+        fake_body = {u'unauthorized': {
+                u'message': u'Username or api key is invalid', u'code': 500}}
+        pyrax.http.request = Mock(return_value=(fake_resp, fake_body))
+        self.assertRaises(exc.AuthenticationFailed, ident.authenticate)
+        pyrax.http.request = savrequest
+
+    def test_authenticate_fail_gt_299ino_message(self):
+        ident = self.rax_identity_class(username="BAD", password="BAD")
+        savrequest = pyrax.http.request
+        fake_resp = fakes.FakeIdentityResponse()
+        fake_resp.status_code = 444
+        fake_body = {u'unauthorized': {
+                u'bogus': u'Username or api key is invalid', u'code': 500}}
+        pyrax.http.request = Mock(return_value=(fake_resp, fake_body))
+        self.assertRaises(exc.AuthenticationFailed, ident.authenticate)
+        pyrax.http.request = savrequest
 
     def test_rax_endpoints(self):
         ident = self.rax_identity_class()
@@ -322,14 +601,66 @@ class IdentityTest(unittest.TestCase):
             ident.token = test_token
             self.assertEqual(ident.auth_token, test_token)
 
+    def test_auth_endpoint(self):
+        for cls in self.id_classes.values():
+            ident = cls()
+            test_ep = utils.random_unicode()
+            ident._get_auth_endpoint = Mock(return_value=test_ep)
+            self.assertEqual(ident.auth_endpoint, test_ep)
+
+    def test_set_auth_endpoint(self):
+        for cls in self.id_classes.values():
+            ident = cls()
+            test_ep = utils.random_unicode()
+            ident.auth_endpoint = test_ep
+            self.assertEqual(ident._auth_endpoint, test_ep)
+        
     def test_regions(self):
         ident = self.base_identity_class()
         fake_resp = fakes.FakeIdentityResponse()
         ident._parse_response(fake_resp.json())
         expected = ("DFW", "ORD", "SYD", "FAKE")
-        self.assertEqual(len(pyrax.regions), len(expected))
+        self.assertEqual(len(ident.regions), len(expected))
         for rgn in expected:
-            self.assert_(rgn in pyrax.regions)
+            self.assert_(rgn in ident.regions)
+
+    def test_getattr_service(self):
+        ident = self.base_identity_class()
+        svc = self.service
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = "FOO"
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        self.service.endpoints = {rgn: ep}
+        ident.services = {"fake": self.service}
+        ret = ident.fake
+        self.assertEqual(ret, self.service.endpoints)
+
+    def test_getattr_region(self):
+        ident = self.base_identity_class()
+        svc = self.service
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = "FOO"
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        self.service.endpoints = {rgn: ep}
+        ident.services = {"fake": self.service}
+        ret = ident.FOO
+        self.assertEqual(ret, {"fake": ep})
+
+    def test_getattr_fail(self):
+        ident = self.base_identity_class()
+        svc = self.service
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = "FOO"
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        self.service.endpoints = {rgn: ep}
+        ident.services = {"fake": self.service}
+        self.assertRaises(AttributeError, getattr, ident, "BAR")
 
     def test_http_methods(self):
         ident = self.base_identity_class()
@@ -359,6 +690,10 @@ class IdentityTest(unittest.TestCase):
         ident.method_delete(uri, admin=False, data=data, headers=headers,
                 std_headers=std_headers)
         ident._call.assert_called_with("DELETE", uri, False, data,
+                headers, std_headers)
+        ident.method_patch(uri, admin=False, data=data, headers=headers,
+                std_headers=std_headers)
+        ident._call.assert_called_with("PATCH", uri, False, data,
                 headers, std_headers)
 
     def test_call(self):

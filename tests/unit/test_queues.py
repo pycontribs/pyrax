@@ -45,7 +45,8 @@ class QueuesTest(unittest.TestCase):
         super(QueuesTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
-        self.client = fakes.FakeQueueClient()
+        self.identity = fakes.FakeIdentity()
+        self.client = fakes.FakeQueueClient(self.identity)
         self.client._manager = fakes.FakeQueueManager(self.client)
         self.queue = fakes.FakeQueue()
         self.queue.manager = self.client._manager
@@ -562,7 +563,7 @@ class QueuesTest(unittest.TestCase):
         fake_body = utils.random_ascii()
         clt._time_request = Mock(return_value=(fake_resp, fake_body))
         clt.management_url = utils.random_unicode()
-        id_svc = pyrax.identity
+        id_svc = clt.identity
         sav = id_svc.authenticate
         id_svc.authenticate = Mock()
         ret = clt._api_request(uri, method, **kwargs)
@@ -577,7 +578,7 @@ class QueuesTest(unittest.TestCase):
         err = exc.BadRequest("400", 'The "Client-ID" header is required.')
         clt._time_request = Mock(side_effect=err)
         clt.management_url = utils.random_unicode()
-        id_svc = pyrax.identity
+        id_svc = clt.identity
         sav = id_svc.authenticate
         id_svc.authenticate = Mock()
         self.assertRaises(exc.QueueClientIDNotDefined, clt._api_request, uri,
@@ -592,7 +593,7 @@ class QueuesTest(unittest.TestCase):
         err = exc.BadRequest("400", "Some other message")
         clt._time_request = Mock(side_effect=err)
         clt.management_url = utils.random_unicode()
-        id_svc = pyrax.identity
+        id_svc = clt.identity
         sav = id_svc.authenticate
         id_svc.authenticate = Mock()
         self.assertRaises(exc.BadRequest, clt._api_request, uri,
