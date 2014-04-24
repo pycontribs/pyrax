@@ -130,7 +130,9 @@ class CloudBlockStorageVolume(BaseResource):
     def __init__(self, *args, **kwargs):
         super(CloudBlockStorageVolume, self).__init__(*args, **kwargs)
         region = self.manager.api.region_name
-        self._nova_volumes = pyrax.connect_to_cloudservers(region).volumes
+        context = self.manager.api.identity
+        cs = pyrax.connect_to_cloudservers(region=region, context=context)
+        self._nova_volumes = cs.volumes
 
 
     def attach_to_instance(self, instance, mountpoint):
