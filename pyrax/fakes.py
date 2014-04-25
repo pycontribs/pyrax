@@ -101,6 +101,10 @@ class FakeClient(object):
     user_agent = "Fake"
     USER_AGENT = "Fake"
 
+    def __init__(self, *args, **kwargs):
+        super(FakeClient, self).__init__(*args, **kwargs)
+        self.identity = FakeIdentity()
+
 
 class FakeContainer(Container):
     def _fetch_cdn_data(self):
@@ -220,7 +224,9 @@ fakeEntryPoints = [FakeEntryPoint("a"), FakeEntryPoint("b"),
 
 
 class FakeManager(object):
-    api = FakeClient()
+    def __init__(self, *args, **kwargs):
+        super(FakeManager, self).__init__(*args, **kwargs)
+        self.api = FakeClient()
 
     def list(self):
         pass

@@ -705,6 +705,18 @@ class BaseIdentity(object):
         return 200 <= resp.status_code < 300
 
 
+    def revoke_token(self, token):
+        """
+        ADMIN ONLY. Returns True or False, depending on whether deletion of the
+        specified token was successful.
+        """
+        resp, resp_body = self.method_delete("tokens/%s" % token, admin=True)
+        if resp.status_code in (401, 403):
+            raise exc.AuthorizationFailure("You must be an admin to make this "
+                    "call.")
+        return 200 <= resp.status_code < 300
+
+
     def get_token_endpoints(self):
         """
         ADMIN ONLY. Returns a list of all endpoints for the current auth token.
@@ -732,7 +744,7 @@ class BaseIdentity(object):
         if "users" in resp_body:
             users = resp_body["users"]
         else:
-            users = [resp_body]
+            users = resp_body
         # The returned values may contain password data. Strip that out.
         for user in users:
             bad_keys = [key for key in list(user.keys())

@@ -157,6 +157,9 @@ class RaxIdentity(BaseIdentity):
             upd["enabled"] = enabled
         data = {"user": upd}
         resp, resp_body = self.method_put(uri, data=data)
+        if resp.status_code in (401, 403, 404):
+            raise exc.AuthorizationFailure("You are not authorized to update "
+                    "users.")
         return User(self, resp_body)
 
 
