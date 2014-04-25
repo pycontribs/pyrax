@@ -942,8 +942,7 @@ class CFClient(object):
         # hitting the service
         if verbose:
             log = logging.getLogger("pyrax")
-            log.info("Loading remote object list (prefix=%s)\n",
-                    object_prefix)
+            log.info("Loading remote object list (prefix=%s)", object_prefix)
         data = cont.get_objects(prefix=object_prefix, full_listing=True)
         self._remote_files = dict((d.name, d) for d in data)
         self._sync_folder_to_container(folder_path, cont, prefix="",
@@ -1004,16 +1003,16 @@ class CFClient(object):
                         # Remote object is newer
                         if verbose:
                             log.info("%s NOT UPLOADED because remote object is "
-                                    "newer\n", fullname)
+                                    "newer", fullname)
                         continue
                 cont.upload_file(pth, obj_name=fullname_with_prefix,
                     etag=local_etag, return_none=True)
                 if verbose:
-                    log.info("%s UPLOADED\n", fullname)
+                    log.info("%s UPLOADED", fullname)
             else:
                 if verbose:
-                    log.info("%s NOT UPLOADED because it already "
-                            "exists\n", fullname)
+                    log.info("%s NOT UPLOADED because it already exists",
+                            fullname)
         if delete and not prefix:
             self._delete_objects_not_in_list(cont, object_prefix)
 
