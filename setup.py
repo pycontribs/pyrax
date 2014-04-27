@@ -32,6 +32,7 @@ setup(
         "Programming Language :: Python :: 2",
     ],
     install_requires=[
+        "pbr==0.5.21",
         "python-novaclient>=2.13.0",
         "rackspace-novaclient",
         "python-swiftclient>=1.5.0",
