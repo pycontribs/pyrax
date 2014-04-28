@@ -550,7 +550,7 @@ class IdentityTest(unittest.TestCase):
         ident = self.rax_identity_class(username=self.username,
                 api_key=self.password)
         ident._creds_style = "apikey"
-        creds = ident._get_credentials()
+        creds = ident._format_credentials()
         user = creds["auth"]["RAX-KSKEY:apiKeyCredentials"]["username"]
         key = creds["auth"]["RAX-KSKEY:apiKeyCredentials"]["apiKey"]
         self.assertEqual(self.username, user)
@@ -560,7 +560,7 @@ class IdentityTest(unittest.TestCase):
         ident = self.rax_identity_class(username=self.username,
                 password=self.password)
         ident._creds_style = "password"
-        creds = ident._get_credentials()
+        creds = ident._format_credentials()
         user = creds["auth"]["passwordCredentials"]["username"]
         key = creds["auth"]["passwordCredentials"]["password"]
         self.assertEqual(self.username, user)
@@ -569,7 +569,7 @@ class IdentityTest(unittest.TestCase):
     def test_get_credentials_keystone(self):
         ident = self.keystone_identity_class(username=self.username,
                 password=self.password)
-        creds = ident._get_credentials()
+        creds = ident._format_credentials()
         user = creds["auth"]["passwordCredentials"]["username"]
         key = creds["auth"]["passwordCredentials"]["password"]
         self.assertEqual(self.username, user)
@@ -832,42 +832,26 @@ class IdentityTest(unittest.TestCase):
         ident.method_get = Mock(return_value=(resp, resp.json()))
         self.assertRaises(exc.AuthorizationFailure, ident.list_users)
 
-    def test_find_user(self):
-        ident = self.rax_identity_class()
-        resp = fakes.FakeIdentityResponse()
-        resp.response_type = "users"
-        ident._call = Mock(return_value=(resp, resp.json()))
-        fake_uri = utils.random_unicode()
-        ret = ident._find_user(fake_uri)
-        self.assertTrue(isinstance(ret, pyrax.rax_identity.User))
-
     def test_find_user_by_name(self):
         ident = self.rax_identity_class()
-        ident._find_user = Mock()
+        ident.get_user = Mock()
         fake_name = utils.random_unicode()
         ret = ident.find_user_by_name(fake_name)
-        ident._find_user.assert_called_with("users?name=%s" % fake_name)
+        ident.get_user.assert_called_with(username=fake_name)
+
+    def test_find_user_by_email(self):
+        ident = self.rax_identity_class()
+        ident.get_user = Mock()
+        fake_email = utils.random_unicode()
+        ret = ident.find_user_by_email(fake_email)
+        ident.get_user.assert_called_with(email=fake_email)
 
     def test_find_user_by_id(self):
         ident = self.rax_identity_class()
-        ident._find_user = Mock()
+        ident.get_user = Mock()
         fake_id = utils.random_unicode()
         ret = ident.find_user_by_id(fake_id)
-        ident._find_user.assert_called_with("users/%s" % fake_id)
-
-    def test_find_user_by_name(self):
-        ident = self.rax_identity_class()
-        ident._find_user = Mock()
-        fake_name = utils.random_unicode()
-        ret = ident.find_user_by_name(fake_name)
-        ident._find_user.assert_called_with("users?name=%s" % fake_name)
-
-    def test_find_user_by_id(self):
-        ident = self.rax_identity_class()
-        ident._find_user = Mock()
-        fake_id = utils.random_unicode()
-        ret = ident.find_user_by_id(fake_id)
-        ident._find_user.assert_called_with("users/%s" % fake_id)
+        ident.get_user.assert_called_with(user_id=fake_id)
 
     def test_find_user_fail(self):
         ident = self.rax_identity_class()
@@ -875,9 +859,58 @@ class IdentityTest(unittest.TestCase):
         resp.response_type = "users"
         resp.status_code = 404
         ident.method_get = Mock(return_value=(resp, resp.json()))
-        fake_uri = utils.random_unicode()
-        ret = ident._find_user(fake_uri)
-        self.assertIsNone(ret)
+        fake_user = utils.random_unicode()
+        self.assertRaises(exc.NotFound, ident.get_user, username=fake_user)
+
+    def test_get_user_by_id(self):
+        ident = self.rax_identity_class()
+        resp = fakes.FakeIdentityResponse()
+        resp.response_type = "users"
+        resp_body = resp.json().copy()
+        del resp_body["users"]
+        fake = utils.random_unicode()
+        ident.method_get = Mock(return_value=(resp, resp_body))
+        ret = ident.get_user(user_id=fake)
+        self.assertTrue(isinstance(ret, base_identity.User))
+
+    def test_get_user_by_username(self):
+        ident = self.rax_identity_class()
+        resp = fakes.FakeIdentityResponse()
+        resp.response_type = "users"
+        resp_body = resp.json().copy()
+        del resp_body["users"]
+        fake = utils.random_unicode()
+        ident.method_get = Mock(return_value=(resp, resp_body))
+        ret = ident.get_user(username=fake)
+        self.assertTrue(isinstance(ret, base_identity.User))
+
+    def test_get_user_by_email(self):
+        ident = self.rax_identity_class()
+        resp = fakes.FakeIdentityResponse()
+        resp.response_type = "users"
+        resp_body = resp.json()
+        fake = utils.random_unicode()
+        ident.method_get = Mock(return_value=(resp, resp_body))
+        ret = ident.get_user(email=fake)
+        self.assertTrue(isinstance(ret[0], base_identity.User))
+
+    def test_get_user_missing_params(self):
+        ident = self.rax_identity_class()
+        resp = fakes.FakeIdentityResponse()
+        resp.response_type = "users"
+        ident.method_get = Mock(return_value=(resp, resp.json()))
+        self.assertRaises(ValueError, ident.get_user)
+
+    def test_get_user_not_found(self):
+        ident = self.rax_identity_class()
+        resp = fakes.FakeIdentityResponse()
+        resp.response_type = "users"
+        resp_body = resp.json().copy()
+        del resp_body["users"]
+        del resp_body["user"]
+        fake = utils.random_unicode()
+        ident.method_get = Mock(return_value=(resp, resp_body))
+        self.assertRaises(exc.NotFound, ident.get_user, username=fake)
 
     def test_create_user(self):
         for cls in self.id_classes.values():
@@ -1077,16 +1110,6 @@ class IdentityTest(unittest.TestCase):
         ident.method_get = Mock(return_value=(resp, resp.json()))
         fake_name = utils.random_unicode()
         ident.list_credentials(fake_name)
-        cargs = ident.method_get.call_args
-        called_uri = cargs[0][0]
-        self.assertTrue("/credentials" in called_uri)
-        self.assertTrue("users/%s/" % fake_name in called_uri)
-
-    def test_get_user_credentials(self):
-        ident = self.rax_identity_class()
-        ident.method_get = Mock(return_value=(None, None))
-        fake_name = utils.random_unicode()
-        ident.get_user_credentials(fake_name)
         cargs = ident.method_get.call_args
         called_uri = cargs[0][0]
         self.assertTrue("/credentials" in called_uri)

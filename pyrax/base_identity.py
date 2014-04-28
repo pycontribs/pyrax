@@ -247,6 +247,8 @@ class BaseIdentity(object):
     This class handles all of the basic authentication requirements for working
     with an OpenStack Cloud system.
     """
+    _creds_style = "password"
+
     def __init__(self, username=None, password=None, tenant_id=None,
             tenant_name=None, auth_endpoint=None, api_key=None, token=None,
             credential_file=None, region=None, timeout=None, verify_ssl=True):
@@ -443,7 +445,7 @@ class BaseIdentity(object):
         self.tenant_id = cfg.get("keystone", "tenant_id")
 
 
-    def _get_credentials(self):
+    def _format_credentials(self):
         """
         Returns the current credentials in the format expected by
         the authentication service.
@@ -528,7 +530,7 @@ class BaseIdentity(object):
         self.api_key = api_key or self.api_key or self.password
         self.tenant_id = tenant_id or self.tenant_id or pyrax.get_setting(
                 "tenant_id")
-        creds = self._get_credentials()
+        creds = self._format_credentials()
         headers = {"Content-Type": "application/json",
                 "Accept": "application/json",
                 }
@@ -777,7 +779,7 @@ class BaseIdentity(object):
             data["user"]["OS-KSADM:password"] = password
         resp, resp_body = self.method_post("users", data=data, admin=True)
         if resp.status_code == 201:
-            return User(self, resp_body)
+            return User(self, resp_body.get("user", resp_body))
         elif resp.status_code in (401, 403, 404):
             raise exc.AuthorizationFailure("You are not authorized to create "
                     "users.")
@@ -789,6 +791,45 @@ class BaseIdentity(object):
                 raise exc.InvalidEmail("%s is not valid" % email)
             else:
                 raise exc.BadRequest(message)
+
+
+    def find_user_by_name(self, name):
+        """
+        Returns a User object by searching for the supplied user name. Returns
+        None if there is no match for the given name.
+        """
+        raise NotImplementedError("This method is not supported.")
+
+
+    def find_user_by_email(self, email):
+        """
+        Returns a User object by searching for the supplied user's email
+        address. Returns None if there is no match for the given ID.
+        """
+        raise NotImplementedError("This method is not supported.")
+
+
+    def find_user_by_id(self, uid):
+        """
+        Returns a User object by searching for the supplied user ID. Returns
+        None if there is no match for the given ID.
+        """
+        raise NotImplementedError("This method is not supported.")
+
+
+    def get_user(self, user_id=None, username=None, email=None):
+        """
+        Returns the user specified by either ID, username or email.
+
+        Since more than user can have the same email address, searching by that
+        term will return a list of 1 or more User objects. Searching by
+        username or ID will return a single User.
+
+        If a user_id that doesn't belong to the current account is searched
+        for, a Forbidden exception is raised. When searching by username or
+        email, a NotFound exception is raised if there is no matching user.
+        """
+        raise NotImplementedError("This method is not supported.")
 
 
     # Can we really update the ID? Docs seem to say we can
@@ -845,6 +886,38 @@ class BaseIdentity(object):
         roles = resp_body.get("roles")
         return roles
 
+
+    def list_credentials(self, user=None):
+        """
+        Returns a user's non-password credentials. If no user is specified, the
+        credentials for the currently authenticated user are returned.
+
+        You cannot retrieve passwords by this or any other means.
+        """
+        if not user:
+            user = self.user
+        user_id = utils.get_id(user)
+        uri = "users/%s/OS-KSADM/credentials" % user_id
+        resp, resp_body = self.method_get(uri)
+        return resp_body.get("credentials")
+
+
+    def reset_api_key(self, user=None):
+        """
+        Resets the API key for the specified user, or if no user is specified,
+        for the current user. Returns the newly-created API key.
+
+        Resetting an API key does not invalidate any authenticated sessions,
+        nor does it revoke any tokens.
+        """
+        if user is None:
+            user_id = utils.get_id(self)
+        else:
+            user_id = utils.get_id(user)
+        uri = "users/%s/OS-KSADM/credentials/" % user_id
+        uri += "RAX-KSKEY:apiKeyCredentials/RAX-AUTH/reset"
+        resp, resp_body = self.method_post(uri)
+        print resp_body
 
     def get_tenant(self):
         """

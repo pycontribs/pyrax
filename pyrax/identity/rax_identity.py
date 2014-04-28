@@ -39,7 +39,7 @@ class RaxIdentity(BaseIdentity):
             self.password = cfg.get("rackspace_cloud", "password", raw=True)
 
 
-    def _get_credentials(self):
+    def _format_credentials(self):
         """
         Returns the current credentials in the format expected by the
         authentication service. Note that by default Rackspace credentials
@@ -53,7 +53,7 @@ class RaxIdentity(BaseIdentity):
                     "apiKey": "%s" % self.api_key}}}
         else:
             # Return in the default password-style
-            return super(RaxIdentity, self)._get_credentials()
+            return super(RaxIdentity, self)._format_credentials()
 
 
     def authenticate(self, username=None, password=None, api_key=None,
@@ -117,8 +117,15 @@ class RaxIdentity(BaseIdentity):
         Returns a User object by searching for the supplied user name. Returns
         None if there is no match for the given name.
         """
-        uri = "users?name=%s" % name
-        return self._find_user(uri)
+        return self.get_user(username=name)
+
+
+    def find_user_by_email(self, email):
+        """
+        Returns a User object by searching for the supplied user's email
+        address. Returns None if there is no match for the given ID.
+        """
+        return self.get_user(email=email)
 
 
     def find_user_by_id(self, uid):
@@ -126,17 +133,42 @@ class RaxIdentity(BaseIdentity):
         Returns a User object by searching for the supplied user ID. Returns
         None if there is no match for the given ID.
         """
-        uri = "users/%s" % uid
-        return self._find_user(uri)
+        return self.get_user(user_id=uid)
 
 
-    def _find_user(self, uri):
-        """Handles the 'find' code for both name and ID searches."""
+    def get_user(self, user_id=None, username=None, email=None):
+        """
+        Returns the user specified by either ID, username or email.
+
+        Since more than user can have the same email address, searching by that
+        term will return a list of 1 or more User objects. Searching by
+        username or ID will return a single User.
+
+        If a user_id that doesn't belong to the current account is searched
+        for, a Forbidden exception is raised. When searching by username or
+        email, a NotFound exception is raised if there is no matching user.
+        """
+        if user_id:
+            uri = "/users/%s" % user_id
+        elif username:
+            uri = "/users?name=%s" % username
+        elif email:
+            uri = "/users?email=%s" % email
+        else:
+            raise ValueError("You must include one of 'user_id', "
+                    "'username', or 'email' when calling get_user().")
         resp, resp_body = self.method_get(uri)
-        if resp.status_code in (403, 404):
-            return None
-        user_info = resp_body["user"]
-        return User(self, user_info)
+        if resp.status_code == 404:
+            raise exc.NotFound("No such user exists.")
+        users = resp_body.get("users", [])
+        if users:
+            return [User(self, user) for user in users]
+        else:
+            user = resp_body.get("user", {})
+            if user:
+                return User(self, user)
+            else:
+                raise exc.NotFound("No such user exists.")
 
 
     def update_user(self, user, email=None, username=None,
@@ -161,24 +193,3 @@ class RaxIdentity(BaseIdentity):
             raise exc.AuthorizationFailure("You are not authorized to update "
                     "users.")
         return User(self, resp_body)
-
-
-    def list_credentials(self, user):
-        """
-        Returns a user's non-password credentials.
-        """
-        user_id = utils.get_id(user)
-        uri = "users/%s/OS-KSADM/credentials" % user_id
-        resp, resp_body = self.method_get(uri)
-        return resp_body.get("credentials")
-
-
-    def get_user_credentials(self, user):
-        """
-        Returns a user's non-password credentials.
-        """
-        user_id = utils.get_id(user)
-        base_uri = "users/%s/OS-KSADM/credentials/RAX-KSKEY:apiKeyCredentials"
-        uri = base_uri % user_id
-        resp, resp_body = self.method_get(uri)
-        return resp_body
