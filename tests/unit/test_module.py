@@ -45,6 +45,7 @@ class PyraxInitTest(unittest.TestCase):
                     "tenant_name": None,
                     "user_agent": "pyrax/%s" % vers,
                     "use_servicenet": False,
+                    "verify_ssl": False,
                 },
                 "alternate": {
                     "auth_endpoint": "ALT_AUTH",
@@ -58,6 +59,7 @@ class PyraxInitTest(unittest.TestCase):
                     "tenant_name": None,
                     "user_agent": "pyrax/%s" % vers,
                     "use_servicenet": False,
+                    "verify_ssl": False,
                 }}
         pyrax.identity = fakes.FakeIdentity()
         pyrax.identity.authenticated = True
@@ -148,6 +150,47 @@ class PyraxInitTest(unittest.TestCase):
         ret = pyrax.get_setting("identity_class")
         pyrax._import_identity = sav_imp
         os.environ = sav_env
+
+    def test_settings_set_bad_env(self):
+        key = utils.random_unicode()
+        val = utils.random_unicode()
+        self.assertRaises(exc.EnvironmentNotFound, pyrax.settings.set, key,
+                val, "bad_env")
+
+    def test_settings_set_bad_key(self):
+        key = utils.random_unicode()
+        val = utils.random_unicode()
+        self.assertRaises(exc.InvalidSetting, pyrax.settings.set, key, val)
+
+    def test_settings_set_region(self):
+        key = "region"
+        val = utils.random_unicode()
+        pyrax.settings.set(key, val)
+        self.assertEqual(pyrax.get_setting(key), val)
+
+    def test_settings_set_region_no_identity(self):
+        key = "region"
+        val = utils.random_unicode()
+        sav = pyrax.identity
+        pyrax.identity = None
+        ret = pyrax.settings.set(key, val)
+        self.assertIsNone(ret)
+        pyrax.identity = sav
+
+    def test_settings_set_verify_ssl(self):
+        key = "verify_ssl"
+        val = utils.random_unicode()
+        pyrax.settings.set(key, val)
+        self.assertEqual(pyrax.get_setting(key), val)
+
+    def test_settings_set_verify_ssl_no_identity(self):
+        key = "verify_ssl"
+        val = utils.random_unicode()
+        sav = pyrax.identity
+        pyrax.identity = None
+        ret = pyrax.settings.set(key, val)
+        self.assertIsNone(ret)
+        pyrax.identity = sav
 
     def test_read_config(self):
         dummy_cfg = fakes.fake_config_file
@@ -344,6 +387,24 @@ class PyraxInitTest(unittest.TestCase):
         self.assertEqual(reg, ret)
         pyrax.identity.get_default_region = orig_defreg
         pyrax.set_setting("region", orig_reg)
+
+    def test_safe_region_no_context(self):
+        reg = None
+        sav_ident = pyrax.identity
+        sav_create = pyrax._create_identity
+
+        def set_ident():
+            pyrax.identity = sav_ident
+
+        pyrax._create_identity = Mock(side_effect=set_ident)
+        sav_get = pyrax.settings.get
+        pyrax.settings.get = Mock(return_value=None)
+        pyrax.identity = None
+        ret = pyrax._safe_region(reg)
+        self.assertIsNotNone(ret)
+        pyrax._create_identity = sav_create
+        pyrax.identity = sav_ident
+        pyrax.settings.get = sav_get
 
     def test_make_agent_name(self):
         test_agent = "TEST"

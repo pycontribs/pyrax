@@ -213,7 +213,7 @@ class Settings(object):
         else:
             if env not in self._settings:
                 raise exc.EnvironmentNotFound("There is no environment named "
-                "'%s'." % env)
+                        "'%s'." % env)
         dct = self._settings[env]
         if key not in dct:
             raise exc.InvalidSetting("The setting '%s' is not defined." % key)
@@ -439,13 +439,16 @@ def _require_auth(fnc):
     return _wrapped
 
 
-@_assure_identity
-def _safe_region(region=None):
+def _safe_region(region=None, context=None):
     """Value to use when no region is specified."""
     ret = region or settings.get("region")
+    context = context or identity
     if not ret:
         # Nothing specified; get the default from the identity object.
-        ret = identity.get_default_region()
+        if not context:
+            _create_identity()
+            context = identity
+        ret = context.get_default_region()
     if not ret:
         # Use the first available region
         try:
@@ -650,7 +653,7 @@ def connect_to_cloudservers(region=None, context=None, **kwargs):
         auth_plugin = _cs_auth_plugin.load_plugin(id_type)
     else:
         auth_plugin = None
-    region = _safe_region(region)
+    region = _safe_region(region, context=context)
     mgt_url = _get_service_endpoint(context, "compute", region)
     cloudservers = None
     if not mgt_url:
@@ -706,7 +709,7 @@ def connect_to_cloudfiles(region=None, public=None, context=None):
     # If a specific context is passed, use that. Otherwise, use the global
     # identity reference.
     context = context or identity
-    region = _safe_region(region)
+    region = _safe_region(region, context=context)
     cf_url = _get_service_endpoint(context, "object_store", region,
             public=is_public)
     cloudfiles = None
@@ -799,12 +802,12 @@ def get_http_debug():
     return _http_debug
 
 
-@_assure_identity
 def set_http_debug(val):
     global _http_debug
     _http_debug = val
     # Set debug on the various services
-    identity.http_log_debug = val
+    if identity:
+        identity.http_log_debug = val
     for svc in (cloudservers, cloudfiles, cloud_loadbalancers,
             cloud_blockstorage, cloud_databases, cloud_dns, cloud_networks,
             autoscale, images, queues):
