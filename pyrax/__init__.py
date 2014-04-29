@@ -381,18 +381,24 @@ def set_default_region(region):
     default_region = region
 
 
-def create_context(id_type=None):
+def create_context(id_type=None, username=None, password=None, tenant_id=None,
+            tenant_name=None, api_key=None, verify_ssl=None):
     """
     Returns an instance of the specified identity class, or if none is
     specified, an instance of the current setting for 'identity_class'.
     """
-    return _create_identity(id_type=id_type, return_context=True)
+    return _create_identity(id_type=id_type, username=username,
+            password=password, tenant_id=tenant_id, tenant_name=tenant_name,
+            api_key=api_key, verify_ssl=verify_ssl, return_context=True)
 
 
-def _create_identity(id_type=None, return_context=False):
+def _create_identity(id_type=None, username=None, password=None, tenant_id=None,
+            tenant_name=None, api_key=None, verify_ssl=None,
+            return_context=False):
     """
     Creates an instance of the current identity_class and assigns it to the
-    module-level name 'identity'.
+    module-level name 'identity' by default. If 'return_context' is True, the
+    module-level 'identity' is untouched, and instead the instance is returned.
     """
     if id_type:
         cls = _import_identity(id_type)
@@ -401,8 +407,10 @@ def _create_identity(id_type=None, return_context=False):
     if not cls:
         raise exc.IdentityClassNotDefined("No identity class has "
                 "been defined for the current environment.")
-    verify_ssl = get_setting("verify_ssl")
-    context = cls(verify_ssl=verify_ssl)
+    if verify_ssl is None:
+        verify_ssl = get_setting("verify_ssl")
+    context = cls(username=username, password=password, tenant_id=tenant_id,
+            tenant_name=tenant_name, api_key=api_key, verify_ssl=verify_ssl)
     if return_context:
         return context
     else:

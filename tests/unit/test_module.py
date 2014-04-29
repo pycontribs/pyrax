@@ -110,6 +110,26 @@ class PyraxInitTest(unittest.TestCase):
         self.assertEqual(ret, cls)
         pyrax.utils.import_class = sav
 
+    def test_create_context(self):
+        sav = pyrax._create_identity
+        pyrax._create_identity = Mock()
+        id_type = utils.random_unicode()
+        username = utils.random_unicode()
+        password = utils.random_unicode()
+        tenant_id = utils.random_unicode()
+        tenant_name = utils.random_unicode()
+        api_key = utils.random_unicode()
+        verify_ssl = utils.random_unicode()
+        pyrax.create_context(id_type=id_type, username=username,
+                password=password, tenant_id=tenant_id,
+                tenant_name=tenant_name, api_key=api_key,
+                verify_ssl=verify_ssl)
+        pyrax._create_identity.assert_called_once_with(id_type=id_type,
+                username=username, password=password, tenant_id=tenant_id,
+                tenant_name=tenant_name, api_key=api_key,
+                verify_ssl=verify_ssl, return_context=True)
+        pyrax._create_identity = sav
+
     def test_settings_get(self):
         def_ep = pyrax.get_setting("auth_endpoint", "default")
         alt_ep = pyrax.get_setting("auth_endpoint", "alternate")
