@@ -263,6 +263,9 @@ class NoReloadError(PyraxException):
 class NoSSLTerminationConfiguration(PyraxException):
     pass
 
+class NoSuchClient(PyraxException):
+    pass
+
 class NoSuchContainer(PyraxException):
     pass
 

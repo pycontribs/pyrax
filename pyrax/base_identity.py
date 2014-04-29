@@ -276,16 +276,24 @@ class BaseIdentity(object):
         self._default_region = None
         self.service_mapping = {
                 "cloudservers": "compute",
+                "nova": "compute",
                 "cloudfiles": "object_store",
+                "swift": "object_store",
                 "cloud_loadbalancers": "load_balancer",
                 "cloud_databases": "database",
+                "trove": "database",
                 "cloud_blockstorage": "volume",
+                "cinder": "volume",
                 "cloud_dns": "dns",
+                "designate": "dns",
                 "cloud_networks": "network",
+                "neutron": "network",
                 "cloud_monitoring": "monitor",
                 "autoscale": "autoscale",
                 "images": "image",
+                "glance": "image",
                 "queues": "queues",
+                "marconi": "queues",
                 }
 
 
@@ -348,6 +356,23 @@ class BaseIdentity(object):
             return ret
         # Invalid attribute
         raise AttributeError("No such attribute '%s'." % att)
+
+
+    def get_client(self, service, region):
+        """
+        Returns the client object for the specified service and region.
+        """
+        clt = ep = None
+        mapped_service = self.service_mapping.get(service) or service
+        svc = self.services.get(mapped_service)
+        if svc:
+            ep = svc.endpoints.get(region)
+        if ep:
+            clt = ep.client
+        if not clt:
+            raise exc.NoSuchClient("There is no client available for the "
+                    "service '%s' in the region '%s'." % (service, region))
+        return clt
 
 
     def set_credentials(self, username, password=None, region=None,
