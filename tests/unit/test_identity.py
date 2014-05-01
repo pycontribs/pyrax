@@ -679,6 +679,7 @@ class IdentityTest(unittest.TestCase):
 
     def test_getattr_service(self):
         ident = self.base_identity_class()
+        ident.authenticated = True
         svc = self.service
         pub = utils.random_unicode()
         priv = utils.random_unicode()
@@ -692,6 +693,7 @@ class IdentityTest(unittest.TestCase):
 
     def test_getattr_region(self):
         ident = self.base_identity_class()
+        ident.authenticated = True
         svc = self.service
         pub = utils.random_unicode()
         priv = utils.random_unicode()
@@ -705,6 +707,7 @@ class IdentityTest(unittest.TestCase):
 
     def test_getattr_fail(self):
         ident = self.base_identity_class()
+        ident.authenticated = True
         svc = self.service
         pub = utils.random_unicode()
         priv = utils.random_unicode()
@@ -714,6 +717,19 @@ class IdentityTest(unittest.TestCase):
         self.service.endpoints = {rgn: ep}
         ident.services = {"fake": self.service}
         self.assertRaises(AttributeError, getattr, ident, "BAR")
+
+    def test_getattr_not_authed(self):
+        ident = self.base_identity_class()
+        ident.authenticated = False
+        svc = self.service
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = "FOO"
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        self.service.endpoints = {rgn: ep}
+        ident.services = {"fake": self.service}
+        self.assertRaises(exc.NotAuthenticated, getattr, ident, "BAR")
 
     def test_http_methods(self):
         ident = self.base_identity_class()

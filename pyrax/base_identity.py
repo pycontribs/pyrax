@@ -343,7 +343,7 @@ class BaseIdentity(object):
         region should be returned.
         """
         if not self.authenticated:
-            raise exc.NotAuthenticated( "Authentication required before "
+            raise exc.NotAuthenticated("Authentication required before "
                     "accessing the context.")
         # First see if it's a service
         att = self.service_mapping.get(att) or att
