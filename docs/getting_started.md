@@ -38,6 +38,9 @@ Please note that **all versions of pyrax beginning with 1.4.0 require that you d
 1. **Environment Variable** - If you don't have a configuration file, pyrax checks for the environment variable `CLOUD_ID_TYPE`. Set this by executing `export CLOUD_ID_TYPE=keystone` in a bash shell, or by setting it in the System section of the Control Panel in Windows.
 1. **Set in Code** - if you can't do either of the above, change the import statement to add `pyrax.set_setting("identity_type", "keystone")` immediately after the `import pyrax` statement.
 
+Note that if you are using the Rackspace Cloud, you would replace "keystone" in the above examples with "rackspace".
+
+
 ## Authenticating
 You can authenticate in any one of three ways:
 
@@ -160,6 +163,7 @@ Setting | Affects | Default | Notes | Env. Variable
 **custom_user_agent** | Customizes the User-agent string sent to the server. | -none- | | CLOUD_USER_AGENT
 **debug** | When True, causes all HTTP requests and responses to be output to the console to aid in debugging. | False | Previous versions called this setting 'http_debug'. | CLOUD_DEBUG
 **verify_ssl** | Set this to False to bypass SSL certificate verification. | True |  | CLOUD_VERIFY_SSL
+**use_servicenet** | By default your connection to Cloud Files uses the public internet. If you're connecting from a cloud server in the same region, though, you have the option of using the internal **Service Net** network connection, which is not only faster, but does not incur bandwidth charges for transfers within the datacenter. | False |  | USE_SERVICENET
 
 Here is a sample:
 
@@ -216,6 +220,8 @@ The important point to keep in mind when dealing with multiple regions is that a
 
 ## The `Identity` Class
 pyrax has an `Identity` class that is used to handle authentication and cache credentials. You can access it in your code using the reference `pyrax.identity`.  Once authenticated, it stores your credentials and authentication token information. In most cases you do not need to interact with this object directly; pyrax uses it to handle authentication tasks for you. But it is available in case you need more fine-grained control of the authentication process, such as querying endpoints in different regions, or getting a list of user roles.
+
+As of Version 1.9.0 of pyrax, the concept of **context objects** that encapsulate all of the identity and clients for a given login can be used. They are discussed in much more detail [in this document](https://github.com/rackspace/pyrax/docs/context_objects.md).
 
 You can check its `authenticated` attribute to determine if authentication was successful; if so, its `token` and `expires` attributes contain the returned authentication information, and its `services` attribute contains a dict with all the service endpoint information. Here is an example of the contents of `services` after authentication (with identifying information obscured):
 
