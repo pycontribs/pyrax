@@ -122,3 +122,5 @@ Another use of this notation is to get an object with all the services in a give
     syd_svcs = ctx.SYD
     server_clt = syd_svcs.compute.client
     db_clt = syd_svcs.database.client
+
+Note that the context object _must_ be authenticated before you attempt to access it using dot notation as described here. If the context has not been authenticated, a **`NotAuthenticated`** exception is raised.
