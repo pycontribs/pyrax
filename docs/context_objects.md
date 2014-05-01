@@ -1,6 +1,6 @@
 # Context Objects
 
-Context objects represent a single authenticated session. You can work with many context objects as you like at the same time without worrying about logging in or out of each one to work with the other. Earlier versions of pyrax (before 1.9.0) only allowed you to work with one authenticated session at a time.
+Context objects represent a single authenticated session. You can work with as many context objects as you like at the same time without worrying about logging in or out of each one to work with the other. Earlier versions of pyrax (before 1.9.0) only allowed you to work with one authenticated session at a time.
 
 This ability is useful if you ever need to work with multiple projects (accounts) at the same time, or with multiple users within the same project.
 
@@ -14,7 +14,7 @@ where `id_type` is either "keystone" or "rackspace". If you've defined the ident
 
     ctx = pyrax.create_context()
 
-If you have multiple environments defined, you set the environment you want before the context is created by specifying that name in the `env` parameter:
+If you have multiple **[environments](https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md#configuration-environments)** defined, you set the environment you want before the context is created by specifying that name in the `env` parameter:
 
     ctx = pyrax.create_context(env="{my_special_environment}")
 
@@ -29,7 +29,7 @@ At this point you have an unauthenticated context; to authenticate you need to p
     ctx.username = {your_user_name}
     ctx.password = {your_password}
 
-or if you have them stored in a file (see the information on [credential files](https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md#authenticating) for how to set one up), you can call:
+or if you have them stored in a file (see the information on **[credential files](https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md#authenticating)** for how to set one up), you can call:
 
     ctx.set_credential_file({path/to/your/file})
 
@@ -47,7 +47,7 @@ If you have your password stored in your system's keychain, you can set your cre
 
 ## Working With Context Objects
 
-Once you have an authenticated context object, you can work with the various services (e.g., object storage, compute, databases) for each region that your provider offers. Examples of regions for Rackspace are "DFW", "LON", "SYD", while HP offers regions such as "region-a.geo-1" and "region-b.geo-1". 
+Once you have an authenticated context object, you can work with the various services (e.g., object storage, compute, databases) for each region that your provider offers. Examples of regions for Rackspace are **"DFW"**, **"LON"**, **"SYD"**, while HP offers regions such as **"region-a.geo-1"** and **"region-b.geo-1"**. 
 
 ### Service Names
 
@@ -123,4 +123,6 @@ Another use of this notation is to get an object with all the services in a give
     server_clt = syd_svcs.compute.client
     db_clt = syd_svcs.database.client
 
-Note that the context object _must_ be authenticated before you attempt to access it using dot notation as described here. If the context has not been authenticated, a **`NotAuthenticated`** exception is raised.
+Note that the context object _must_ be authenticated before you attempt to access it using dot notation as described here. If the context has not been authenticated, a **`NotAuthenticated`** exception is raised. Also, regions containing periods in their name will not work as shortcuts, since those periods are interpreted by Python as object dot notation. If you're working with a region such as "**region-a.geo-1**", which is one of HP Cloud's regions, you will have to use standard dict syntax to access it:
+
+    compute_client = ctx.compute["region-a.geo-1"].client
