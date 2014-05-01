@@ -381,12 +381,17 @@ def set_default_region(region):
     default_region = region
 
 
-def create_context(id_type=None, username=None, password=None, tenant_id=None,
-            tenant_name=None, api_key=None, verify_ssl=None):
+def create_context(id_type=None, env=None, username=None, password=None,
+        tenant_id=None, tenant_name=None, api_key=None, verify_ssl=None):
     """
     Returns an instance of the specified identity class, or if none is
     specified, an instance of the current setting for 'identity_class'.
+
+    You may optionally set the environment by passing the name of that
+    environment in the 'env' parameter.
     """
+    if env:
+        set_environment(env)
     return _create_identity(id_type=id_type, username=username,
             password=password, tenant_id=tenant_id, tenant_name=tenant_name,
             api_key=api_key, verify_ssl=verify_ssl, return_context=True)
