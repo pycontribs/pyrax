@@ -358,9 +358,12 @@ class BaseIdentity(object):
         raise AttributeError("No such attribute '%s'." % att)
 
 
-    def get_client(self, service, region):
+    def get_client(self, service, region, public=True):
         """
         Returns the client object for the specified service and region.
+
+        By default the public endpoint is used. If you wish to work with a
+        services internal endpoints, specify `public=False`.
         """
         clt = ep = None
         mapped_service = self.service_mapping.get(service) or service
@@ -368,7 +371,7 @@ class BaseIdentity(object):
         if svc:
             ep = svc.endpoints.get(region)
         if ep:
-            clt = ep.client
+            clt = ep.client if public else ep.client_private
         if not clt:
             raise exc.NoSuchClient("There is no client available for the "
                     "service '%s' in the region '%s'." % (service, region))
@@ -642,6 +645,9 @@ class BaseIdentity(object):
             raise exc.KeyringPasswordNotFound("No password was found for the "
                     "username '%s'." % username)
         style = self._creds_style or self._default_creds_style
+        # Keyring username may be different than the credentials. Use the
+        # existing username, if present; otherwise, use the supplied username.
+        username = self.username or username
         if style == "apikey":
             return self.authenticate(username=username, api_key=password)
         else:
