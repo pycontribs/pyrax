@@ -37,42 +37,42 @@ Note that this is a list of `Image` *objects*, not just a bunch of name strings.
 
 This is the output:
 
-    Windows Server 2012 (with updates) + SQL Server 2012 Web   -- ID: b762ee1d-11b5-4ae7-aa68-dcc1b6f6e24a
-    Windows Server 2012 (with updates) + SQL Server 2012 Standard   -- ID: f86eae6d-09ea-42e6-a5b2-422649edcfa1
-    Windows Server 2012 + SQL Server 2012 Web   -- ID: 057d2670-68bc-4e28-b7b1-b9bc72245683
-    Windows Server 2012 + SQL Server 2012 Standard   -- ID: d226f189-f83f-4569-95b8-622133d71f02
-    Windows Server 2012 (with updates)   -- ID: 2748ee06-ff35-4518-9759-4acb57bad4c3
-    CentOS 5.8   -- ID: acf05b3c-5403-4cf0-900c-9b12b0db0644
-    Arch 2012.08   -- ID: c94f5e59-0760-467a-ae70-9a37cfa6b94e
-    Gentoo 12.3   -- ID: 110d5bd8-a0dc-4cf5-8e75-149a58c17bbf
-    Windows Server 2008 R2 SP1 + SharePoint Foundation 2010 SP1 & SQL Server 2008 R2 SP1 Std   -- ID: 9eb71a23-2c7e-479c-a6b1-b38aa64f172e
-    Windows Server 2008 R2 SP1 + SharePoint Foundation 2010 SP1 & SQL Server 2008 R2 SP1 Express   -- ID: 7f7183b0-856c-4894-afae-9e52839ce197
-    Windows Server 2012   -- ID: ae49b64d-9d68-4b36-98ed-b1ce84944680
-    Ubuntu 10.04 LTS (Lucid Lynx)   -- ID: d531a2dd-7ae9-4407-bb5a-e5ea03303d98
-    Windows Server 2008 R2 SP1 + SQL Server 2008 R2 Standard   -- ID: 2a4a02aa-523a-4649-9802-3a09de8e5f1b
-    Windows Server 2008 R2 SP1 (with updates) + SQL Server 2008 R2 SP1 Web   -- ID: 80599479-b5a2-49f2-bb46-2bc75a8be98b
-    Windows Server 2008 R2 SP1 (with updates) + SQL Server 2008 R2 SP1 Standard   -- ID: 535d5453-79dd-4635-bbd6-d87b1f1cd717
-    Windows Server 2008 R2 SP1 (with updates) + SQL Server 2012 Web   -- ID: 6f8ab5a1-42ff-433b-be40-e17374f2fff4
-    Windows Server 2008 R2 SP1 + SQL Server 2008 R2 Web   -- ID: d6153e86-f4e0-4053-a711-d35632e512cd
-    Windows Server 2008 R2 SP1 + SQL Server 2012 Web   -- ID: e7a11eed-d348-44da-8210-f136d4256e81
-    Windows Server 2008 R2 SP1 (with updates) + SQL Server 2012 Standard   -- ID: e4589dc6-b972-482f-91ef-67feb891b559
-    Windows Server 2008 R2 SP1 + SQL Server 2012 Standard   -- ID: f7d06722-2b30-4c02-b74d-da5a7337f357
-    Windows Server 2008 R2 SP1 (with updates)   -- ID: 7957e53d-b3b9-41fe-8e0d-5252bf20a5bf
-    Windows Server 2008 R2 SP1   -- ID: b9ea8426-8f43-4224-a182-7cdb2bb897c8
-    CentOS 6.3   -- ID: c195ef3b-9195-4474-b6f7-16e5bd86acd0
-    FreeBSD 9   -- ID: c79fecf7-2c37-4c51-a240-e9fa913c90a3
-    Red Hat Enterprise Linux 6.1   -- ID: d6dd6c70-a122-4391-91a8-decb1a356549
-    Ubuntu 11.10 (Oneiric Oncelot)   -- ID: 3afe97b2-26dc-49c5-a2cc-a2fc8d80c001
-    Ubuntu 12.04 LTS (Precise Pangolin)   -- ID: 5cebb13a-f783-4f8c-8058-c4182c724ccd
-    Fedora 17 (Beefy Miracle)   -- ID: d42f821e-c2d1-4796-9f07-af5ed7912d0e
-    CentOS 6.2   -- ID: 0cab6212-f231-4abd-9c70-608d0d0e04ba
-    CentOS 6.0   -- ID: a3a2c42f-575f-4381-9c6d-fcd3b7d07d17
-    CentOS 5.6   -- ID: 03318d19-b6e6-4092-9b5c-4758ee0ada60
-    Ubuntu 11.04 (Natty Narwhal)   -- ID: 8bf22129-8483-462b-a020-1754ec822770
-    Red Hat Enterprise Linux 5.5   -- ID: 644be485-411d-4bac-aba5-5f60641d92b5
-    openSUSE 12.1   -- ID: 096c55e5-39f3-48cf-a413-68d9377a3ab6
-    Fedora 16 (Verne)   -- ID: bca91446-e60e-42e7-9e39-0582e7e20fb9
-    Debian 6 (Squeeze)   -- ID: a10eacf7-ac15-4225-b533-5744f1fe47c1
+    FreeBSD 10.0   -- ID: e5d7ca78-a487-4d7e-9dd1-73165df3f9fd
+    Arch 2014.4 (PVHVM)   -- ID: 8a605fb2-57c5-43eb-9bd3-4f990802e478
+    Ubuntu 14.04 LTS (Trusty Tahr)   -- ID: 5cc098a5-7286-4b96-b3a2-49f4c4f82537
+    Ubuntu 14.04 LTS (Trusty Tahr) (PVHVM)   -- ID: bb02b1a3-bc77-4d17-ab5b-421d89850fca
+    Windows Server 2012 + SharePoint 2013 with SQL Server 2012 SP1 Standard   -- ID: 51ddbe81-9e2b-492f-a031-a3577bf1016a
+    Windows Server 2008 R2 SP1 + SQL Server 2012 SP1 Web   -- ID: 0d58b7da-0664-4a71-b89f-68115771a948
+    Windows Server 2012 + SQL Server 2012 SP1 Standard   -- ID: ecd8f832-299c-4711-9763-06f81cf3058a
+    Windows Server 2008 R2 SP1 + SharePoint 2010 Foundation with SQL Server 2008 R2 SP1 Standard   -- ID: fe2162fe-8d3c-4c1d-8b83-71ff09321fb2
+    Windows Server 2008 R2 SP1 + SharePoint 2010 Foundation with SQL Server 2008 R2 Express   -- ID: 9f8329b4-1985-4be0-b263-31e728a046fc
+    Windows Server 2008 R2 SP1 + SQL Server 2012 SP1 Standard   -- ID: cf44eaf2-844a-4bc5-af91-e7ceb021cac9
+    Windows Server 2008 R2 SP1 + SQL Server 2008 R2 SP2 Web   -- ID: d1519521-bb03-42ce-b25c-34b72f10cc26
+    Windows Server 2008 R2 SP1 + SQL Server 2008 R2 SP2 Standard   -- ID: 427f2199-c441-4bff-95e0-4cba19b8839d
+    Windows Server 2012 + SQL Server 2012 SP1 Web   -- ID: 5906d9c5-7a3a-437f-872a-51b0db539f9b
+    Windows Server 2012   -- ID: c50f70fc-79ec-4c71-bd4a-a4ac8f1641e1
+    Windows Server 2008 R2 SP1   -- ID: 8f39aeb0-79d6-45eb-9505-fb0bf31556d7
+    Gentoo 14.2 (PVHVM)   -- ID: 6c031e2c-0d2c-4fa0-aadb-70265957a37d
+    Ubuntu 13.10 (Saucy Salamander)   -- ID: 7b8abc3f-5fd2-4d02-9e9a-16d43fc7128e
+    OpenSUSE 13.1 (PVHVM)   -- ID: 6ae8a615-57f1-4a19-83d4-e09f8ae25327
+    Scientific Linux 6.5 (PVHVM)   -- ID: dbb59b04-bd50-4eef-b05e-6a6451ef9bf2
+    Ubuntu 12.04 LTS (Precise Pangolin)   -- ID: ffa476b1-9b14-46bd-99a8-862d1d94eb7a
+    Fedora 20 (Heisenbug) (PVHVM)   -- ID: c21acd84-a6c5-44df-ba7d-2483cd5b3ccb
+    CentOS 6.5   -- ID: 042395fc-728c-4763-86f9-9b0cacb00701
+    Fedora 19 (Schrodinger's Cat) (PVHVM)   -- ID: 4b81c45a-90d6-4654-972c-73972b1d0aea
+    Red Hat Enterprise Linux 6.5 (PVHVM)   -- ID: 271e1090-77ad-4400-a1f7-73a922aca8e2
+    Red Hat Enterprise Linux 6.5   -- ID: d1b6eba3-aece-407c-8ef3-4488b452336b
+    CentOS 6.5 (PVHVM)   -- ID: 592c879e-f37d-43e6-8b54-8c2d97cf04d4
+    Debian 7 (Wheezy) (PVHVM)   -- ID: 77e32de8-3304-44f3-b230-436d95fceb19
+    Ubuntu 13.10 (Saucy Salamander) (PVHVM)   -- ID: aca656d3-dd70-4d7e-a9e5-f12182871cde
+    Ubuntu 12.04 LTS (Precise Pangolin) (PVHVM)   -- ID: a4286a42-137c-46ce-a796-dbd2b12a078c
+    Windows Server 2012 (base install without updates)   -- ID: c30b4407-da75-4291-a1fb-edd8e6e037de
+    Windows Server 2008 R2 SP1 (base install without updates)   -- ID: 2d4ee06e-d567-47f8-b745-8d281fe5729a
+    CentOS 5.10   -- ID: 9522c27d-51d9-44ee-8eb3-fb7b14fd4042
+    Red Hat Enterprise Linux 5.10   -- ID: 56ad2db2-d9cd-462e-a2a4-7f3a4fc91ee8
+    Debian 6.06 (Squeeze)   -- ID: 695ca76e-fc0d-4e36-82e0-8ed66480a999
+    Ubuntu 10.04 LTS (Lucid Lynx)   -- ID: aab63bcf-89aa-440f-b0c7-c7a1c611914b
+    Vyatta Network OS 6.5R2   -- ID: 59b394f6-b2e0-4f11-b7d1-7fea4abc60a0
 
 ### Different Image Types
 There are two types of images: the base images supplied by your cloud provider, and the images created from your cloud servers (commonly referred to as _snapshots_). You can get a list containing just a single type using one of the following calls:
@@ -140,10 +140,11 @@ This returns:
       Disk: 40
       VCPUs: 24
 
-So you now have the available images and flavors. Suppose you want to create a **1GB Performance-1 Ubuntu 12.04** server: to do this, you can use the `find()` method and the exact name of the image. This is difficult, since the exact name is 'Ubuntu 12.04 LTS (Precise Pangolin)', which you probably would not have guessed. So the easiest way to do this is to check in a less restrictive manner:
+So you now have the available images and flavors. Suppose you want to create a **1GB Performance-1 Ubuntu 14.04** server: to do this, you can use the `find()` method and the exact name of the image. This is difficult, since the exact name is 'Ubuntu 14.04 LTS (Trusty Tahr)', which you probably would not have guessed. So the easiest way to do this is to check in a less restrictive manner:
 
     ubu_image = [img for img in cs.images.list()
-            if "Ubuntu 12.04" in img.name][0]
+            if "Ubuntu 14.04" in img.name
+            and "PVHVM" in img.name][0]
 
 You can do something similar to get the 1GB Performance-1 flavor:
 
