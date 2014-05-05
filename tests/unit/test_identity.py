@@ -1327,7 +1327,7 @@ class IdentityTest(unittest.TestCase):
     def test_reset_api_key_rax_no_user(self, mock_get_id):
         ident = self.rax_identity_class()
         user = utils.random_unicode()
-        mock_get_id.return_value=user
+        mock_get_id.return_value = user
         ident.authenticated = True
         nm = utils.random_unicode()
         key = utils.random_unicode()
