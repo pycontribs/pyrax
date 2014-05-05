@@ -8,28 +8,32 @@ This ability is useful if you ever need to work with multiple projects (accounts
 
 To create a context object, you call:
 
-    ctx = pyrax.create_context(id_type)
+    ctx = pyrax.create_context({id_type})
 
 where `id_type` is either "keystone" or "rackspace". If you've defined the identity type you wish to use in either your `~/.pyrax.cfg` file, or in environment variables, you can omit the id_type from the call:
 
     ctx = pyrax.create_context()
 
-If you have multiple **[environments](https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md#configuration-environments)** defined, you set the environment you want before the context is created by specifying that name in the `env` parameter:
+If you have multiple **[environments](https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md#configuration-environments)** defined, you may specify the environment to use when creating the context by specifying that name in the `env` parameter:
 
     ctx = pyrax.create_context(env="{my_special_environment}")
 
-You may also populate the context object with login credential information, as well as the `verify_ssl` setting. The full call with all available parameters is:
+If you don't specify an environment, the current environment is used. You may also populate the context object with login credential information, as well as the `verify_ssl` setting. The full call with all available parameters is:
 
     ctx = pyrax.create_context(id_type=None, env=None, username=None,
             password=None, tenant_id=None, tenant_name=None, api_key=None,
             verify_ssl=None)
 
-At this point you have an unauthenticated context; to authenticate you need to provide your credentials if you haven't already when you created the object. You can either set them directly:
+At this point you have an unauthenticated context. You must authenticate before you can do anything useful with a context object. To authenticate you need to provide your credentials if you haven't already when you created the object. You can either set them individually:
 
     ctx.username = {your_user_name}
     ctx.password = {your_password}
 
-or if you have them stored in a file (see the information on **[credential files](https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md#authenticating)** for how to set one up), you can call:
+...or you can set them together:
+
+    ctx.set_credentials({your_user_name}, {your_password})
+
+...or if you have them stored in a file (see the information on **[credential files](https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md#authenticating)** for how to set one up), you can call:
 
     ctx.set_credential_file({path/to/your/file})
 
@@ -37,17 +41,18 @@ After you have set your credentials, you call:
 
     ctx.authenticate()
 
-This submits your credentials, and assuming that they are valid, get back a Service Catalog that contains all of the services and regions that your account is authorized to use.
+This submits your credentials, and assuming that they are valid, get back a Service Catalog that contains all of the services and regions that the authenticated user is authorized to use.
 
 If you have your password stored in your system's keychain, you can set your credentials and authenticate with a single call:
 
     ctx.keyring_auth({username})
 
 
-
 ## Working With Context Objects
 
-Once you have an authenticated context object, you can work with the various services (e.g., object storage, compute, databases) for each region that your provider offers. Examples of regions for Rackspace are **"DFW"**, **"LON"**, **"SYD"**, while HP offers regions such as **"region-a.geo-1"** and **"region-b.geo-1"**. 
+Once you have an authenticated context object, you can work with the various services (e.g., object storage, compute, databases) for each region that your provider offers. Examples of regions for Rackspace are **"DFW"**, **"LON"**, **"SYD"**, while HP offers regions such as **"region-a.geo-1"** and **"region-b.geo-1"**.
+
+Many OpenStack installations only have a single region. In those cases it might seem a little annoying to have to include that.
 
 ### Service Names
 
