@@ -10,8 +10,8 @@ import sys
 import unittest
 import urllib2
 
-from mock import patch
 from mock import MagicMock as Mock
+from mock import patch
 
 import pyrax
 import pyrax.utils as utils
