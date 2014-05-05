@@ -51,6 +51,10 @@ class User(BaseResource):
     pass
 
 
+class Role(BaseResource):
+    pass
+
+
 class Service(object):
     """
     Represents an available service from the service catalog.
@@ -91,7 +95,7 @@ class Service(object):
         """
         Given a region, returns the Endpoint for that region, or the Endpoint
         for the ALL region if no match is found. If no match is found, None
-        will be returned, and it is up to the calling method to handle it
+        is returned, and it is up to the calling method to handle it
         appropriately.
         """
         rgn = region.upper()
@@ -409,8 +413,8 @@ class BaseIdentity(object):
         cfg = ConfigParser.SafeConfigParser()
         try:
             if not cfg.read(credential_file):
-                # If the specified file does not exist, the parser will
-                # return an empty list
+                # If the specified file does not exist, the parser returns an
+                # empty list.
                 raise exc.FileNotFound("The specified credential file '%s' "
                         "does not exist" % credential_file)
         except ConfigParser.MissingSectionHeaderError as e:
@@ -428,8 +432,8 @@ class BaseIdentity(object):
 
     def auth_with_token(self, token, tenant_id=None, tenant_name=None):
         """
-        If a valid token is already known, this call will use it to generate
-        the service catalog.
+        If a valid token is already known, this call uses it to generate the
+        service catalog.
         """
         resp, resp_body = self._call_token_auth(token, tenant_id, tenant_name)
         self._parse_response(resp_body)
@@ -697,8 +701,8 @@ class BaseIdentity(object):
     def get_token(self, force=False):
         """
         Returns the auth token, if it is valid. If not, calls the auth endpoint
-        to get a new token. Passing 'True' to 'force' will force a call for a
-        new token, even if there already is a valid token.
+        to get a new token. Passing 'True' to 'force' forces a call for a new
+        token, even if there already is a valid token.
         """
         self.authenticated = self._has_valid_token()
         if force or not self.authenticated:
@@ -775,7 +779,7 @@ class BaseIdentity(object):
         if resp.status_code in (401, 403, 404):
             raise exc.AuthorizationFailure("You are not authorized to list "
                     "users.")
-        # The API is inconsistent; if only one user exists, it will not return
+        # The API is inconsistent; if only one user exists, it does not return
         # a list.
         if "users" in resp_body:
             users = resp_body["users"]
@@ -794,10 +798,10 @@ class BaseIdentity(object):
         """
         ADMIN ONLY. Creates a new user for this tenant (account). The username
         and email address must be supplied. You may optionally supply the
-        password for this user; if not, the API server will generate a password
-        and return it in the 'password' attribute of the resulting User object.
-        NOTE: this is the ONLY time the password will be returned; after the
-        initial user creation, there is NO WAY to retrieve the user's password.
+        password for this user; if not, the API server generates a password and
+        return it in the 'password' attribute of the resulting User object.
+        NOTE: this is the ONLY time the password is returned; after the initial
+        user creation, there is NO WAY to retrieve the user's password.
 
         You may also specify that the user should be created but not active by
         passing False to the enabled parameter.
@@ -856,8 +860,8 @@ class BaseIdentity(object):
         Returns the user specified by either ID, username or email.
 
         Since more than user can have the same email address, searching by that
-        term will return a list of 1 or more User objects. Searching by
-        username or ID will return a single User.
+        term returns a list of 1 or more User objects. Searching by username or
+        ID returns a single User.
 
         If a user_id that doesn't belong to the current account is searched
         for, a Forbidden exception is raised. When searching by username or
@@ -938,20 +942,11 @@ class BaseIdentity(object):
 
     def reset_api_key(self, user=None):
         """
-        Resets the API key for the specified user, or if no user is specified,
-        for the current user. Returns the newly-created API key.
-
-        Resetting an API key does not invalidate any authenticated sessions,
-        nor does it revoke any tokens.
+        Not available in basic Keystone identity.
         """
-        if user is None:
-            user_id = utils.get_id(self)
-        else:
-            user_id = utils.get_id(user)
-        uri = "users/%s/OS-KSADM/credentials/" % user_id
-        uri += "RAX-KSKEY:apiKeyCredentials/RAX-AUTH/reset"
-        resp, resp_body = self.method_post(uri)
-        print resp_body
+        raise NotImplementedError("The reset_api_key method is not "
+                "implemented.")
+
 
     def get_tenant(self):
         """
@@ -1029,14 +1024,75 @@ class BaseIdentity(object):
             raise exc.TenantNotFound("Tenant '%s' does not exist." % tenant)
 
 
+    def list_roles(self, service_id=None, limit=None, marker=None):
+        """
+        Returns a list of all global roles for users, optionally limited by
+        service. Pagination can be handled through the standard 'limit' and
+        'marker' parameters.
+        """
+        uri = "OS-KSADM/roles"
+        pagination_items = []
+        if service_id is not None:
+            pagination_items.append("serviceId=%s" % service_id)
+        if limit is not None:
+            pagination_items.append("limit=%s" % limit)
+        if marker is not None:
+            pagination_items.append("marker=%s" % marker)
+        pagination = "&".join(pagination_items)
+        if pagination:
+            uri = "%s?%s" % (uri, pagination)
+        resp, resp_body = self.method_get(uri)
+        roles = resp_body.get("roles", [])
+        return [Role(self, role) for role in roles]
+
+
+    def get_role(self, role):
+        """
+        Returns a Role object representing the specified parameter. The 'role'
+        parameter can be either an existing Role object, or the ID of the role.
+
+        If an invalid role is passed, a NotFound exception is raised.
+        """
+        uri = "OS-KSADM/roles/%s" % utils.get_id(role)
+        resp, resp_body = self.method_get(uri)
+        role = Role(self, resp_body.get("role"))
+        return role
+
+
+    def add_role_to_user(self, role, user):
+        """
+        Adds the specified role to the specified user.
+
+        There is no return value upon success. Passing a non-existent role or
+        user raises a NotFound exception.
+        """
+        uri = "users/%s/roles/OS-KSADM/%s" % (utils.get_id(user),
+                utils.get_id(role))
+        resp, resp_body = self.method_put(uri)
+
+
+    def delete_role_from_user(self, role, user):
+        """
+        Deletes the specified role from the specified user.
+
+        There is no return value upon success. Passing a non-existent role or
+        user raises a NotFound exception.
+        """
+        uri = "users/%s/roles/OS-KSADM/%s" % (utils.get_id(user),
+                utils.get_id(role))
+        resp, resp_body = self.method_delete(uri)
+
+
     @staticmethod
     def _parse_api_time(timestr):
         """
-        Typical expiration times returned from the auth server are in this format:
+        Typical expiration times returned from the auth server are in this
+        format:
             2012-05-02T14:27:40.000-05:00
         They can also be returned as a UTC value in this format:
             2012-05-02T14:27:40.000Z
-        This method returns a proper datetime object from either of these formats.
+        This method returns a proper datetime object from either of these
+        formats.
         """
         try:
             reg_groups = API_DATE_PATTERN.match(timestr).groups()

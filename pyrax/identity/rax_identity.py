@@ -193,3 +193,21 @@ class RaxIdentity(BaseIdentity):
             raise exc.AuthorizationFailure("You are not authorized to update "
                     "users.")
         return User(self, resp_body)
+
+
+    def reset_api_key(self, user=None):
+        """
+        Resets the API key for the specified user, or if no user is specified,
+        for the current user. Returns the newly-created API key.
+
+        Resetting an API key does not invalidate any authenticated sessions,
+        nor does it revoke any tokens.
+        """
+        if user is None:
+            user_id = utils.get_id(self)
+        else:
+            user_id = utils.get_id(user)
+        uri = "users/%s/OS-KSADM/credentials/" % user_id
+        uri += "RAX-KSKEY:apiKeyCredentials/RAX-AUTH/reset"
+        resp, resp_body = self.method_post(uri)
+        return resp_body.get("RAX-KSKEY:apiKeyCredentials", {}).get("apiKey")

@@ -848,28 +848,28 @@ class IdentityTest(unittest.TestCase):
         ident.method_get = Mock(return_value=(resp, resp.json()))
         self.assertRaises(exc.AuthorizationFailure, ident.list_users)
 
-    def test_find_user_by_name(self):
+    def test_find_user_by_name_rax(self):
         ident = self.rax_identity_class()
         ident.get_user = Mock()
         fake_name = utils.random_unicode()
         ret = ident.find_user_by_name(fake_name)
         ident.get_user.assert_called_with(username=fake_name)
 
-    def test_find_user_by_email(self):
+    def test_find_user_by_email_rax(self):
         ident = self.rax_identity_class()
         ident.get_user = Mock()
         fake_email = utils.random_unicode()
         ret = ident.find_user_by_email(fake_email)
         ident.get_user.assert_called_with(email=fake_email)
 
-    def test_find_user_by_id(self):
+    def test_find_user_by_id_rax(self):
         ident = self.rax_identity_class()
         ident.get_user = Mock()
         fake_id = utils.random_unicode()
         ret = ident.find_user_by_id(fake_id)
         ident.get_user.assert_called_with(user_id=fake_id)
 
-    def test_find_user_fail(self):
+    def test_find_user_fail_rax(self):
         ident = self.rax_identity_class()
         resp = fakes.FakeIdentityResponse()
         resp.response_type = "users"
@@ -877,6 +877,14 @@ class IdentityTest(unittest.TestCase):
         ident.method_get = Mock(return_value=(resp, resp.json()))
         fake_user = utils.random_unicode()
         self.assertRaises(exc.NotFound, ident.get_user, username=fake_user)
+
+    def test_find_user_fail_base(self):
+        ident = self.identity
+        fake = utils.random_unicode()
+        self.assertRaises(NotImplementedError, ident.find_user_by_name, fake)
+        self.assertRaises(NotImplementedError, ident.find_user_by_email, fake)
+        self.assertRaises(NotImplementedError, ident.find_user_by_id, fake)
+        self.assertRaises(NotImplementedError, ident.get_user, fake)
 
     def test_get_user_by_id(self):
         ident = self.rax_identity_class()
@@ -1131,6 +1139,19 @@ class IdentityTest(unittest.TestCase):
         self.assertTrue("/credentials" in called_uri)
         self.assertTrue("users/%s/" % fake_name in called_uri)
 
+    def test_list_credentials_no_user(self):
+        ident = self.identity
+        ident.user = fakes.FakeEntity()
+        resp = fakes.FakeIdentityResponse()
+        resp.response_type = "users"
+        resp.status_code = 200
+        ident.method_get = Mock(return_value=(resp, resp.json()))
+        ident.list_credentials()
+        cargs = ident.method_get.call_args
+        called_uri = cargs[0][0]
+        self.assertTrue("/credentials" in called_uri)
+        self.assertTrue("users/%s/" % ident.user.id in called_uri)
+
     def test_get_keystone_endpoint(self):
         ident = self.keystone_identity_class()
         fake_ep = utils.random_unicode()
@@ -1283,6 +1304,43 @@ class IdentityTest(unittest.TestCase):
             self.assertRaises(exc.AuthorizationFailure,
                     ident.get_token_endpoints)
 
+    def test_reset_api_key(self):
+        ident = self.identity
+        self.assertRaises(NotImplementedError, ident.reset_api_key)
+
+    def test_reset_api_key_rax(self):
+        ident = self.rax_identity_class()
+        user = utils.random_unicode()
+        nm = utils.random_unicode()
+        key = utils.random_unicode()
+        resp = fakes.FakeResponse()
+        resp_body = {"RAX-KSKEY:apiKeyCredentials": {
+                "username": nm, "apiKey": key}}
+        ident.method_post = Mock(return_value=(resp, resp_body))
+        exp_uri = "users/%s/OS-KSADM/credentials/" % user
+        exp_uri += "RAX-KSKEY:apiKeyCredentials/RAX-AUTH/reset"
+        ret = ident.reset_api_key(user)
+        self.assertEqual(ret, key)
+        ident.method_post.assert_called_once_with(exp_uri)
+
+    @patch("pyrax.utils.get_id")
+    def test_reset_api_key_rax_no_user(self, mock_get_id):
+        ident = self.rax_identity_class()
+        user = utils.random_unicode()
+        mock_get_id.return_value=user
+        ident.authenticated = True
+        nm = utils.random_unicode()
+        key = utils.random_unicode()
+        resp = fakes.FakeResponse()
+        resp_body = {"RAX-KSKEY:apiKeyCredentials": {
+                "username": nm, "apiKey": key}}
+        ident.method_post = Mock(return_value=(resp, resp_body))
+        exp_uri = "users/%s/OS-KSADM/credentials/" % user
+        exp_uri += "RAX-KSKEY:apiKeyCredentials/RAX-AUTH/reset"
+        ret = ident.reset_api_key()
+        self.assertEqual(ret, key)
+        ident.method_post.assert_called_once_with(exp_uri)
+
     def test_get_tenant(self):
         for cls in self.id_classes.values():
             ident = cls()
@@ -1386,6 +1444,57 @@ class IdentityTest(unittest.TestCase):
             ident.method_delete = Mock(return_value=(resp, resp.json()))
             fake_id = utils.random_unicode()
             self.assertRaises(exc.TenantNotFound, ident.delete_tenant, fake_id)
+
+    def test_list_roles(self):
+        ident = self.identity
+        nm = utils.random_unicode()
+        id_ = utils.random_unicode()
+        svcid = utils.random_unicode()
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        resp = fakes.FakeResponse()
+        resp_body = {"roles": [{"name": nm, "id": id_}]}
+        ident.method_get = Mock(return_value=(resp, resp_body))
+        exp_uri = "OS-KSADM/roles?serviceId=%s&limit=%s&marker=%s" % (svcid,
+                limit, marker)
+        ret = ident.list_roles(service_id=svcid, limit=limit, marker=marker)
+        ident.method_get.assert_called_once_with(exp_uri)
+        self.assertEqual(len(ret), 1)
+        role = ret[0]
+        self.assertTrue(isinstance(role, base_identity.Role))
+
+    def test_get_role(self):
+        ident = self.identity
+        role = utils.random_unicode()
+        nm = utils.random_unicode()
+        id_ = utils.random_unicode()
+        resp = fakes.FakeResponse()
+        resp_body = {"role": {"name": nm, "id": id_}}
+        ident.method_get = Mock(return_value=(resp, resp_body))
+        exp_uri = "OS-KSADM/roles/%s" % role
+        ret = ident.get_role(role)
+        ident.method_get.assert_called_once_with(exp_uri)
+        self.assertTrue(isinstance(ret, base_identity.Role))
+        self.assertEqual(ret.name, nm)
+        self.assertEqual(ret.id, id_)
+
+    def test_add_role_to_user(self):
+        ident = self.identity
+        role = utils.random_unicode()
+        user = utils.random_unicode()
+        ident.method_put = Mock(return_value=(None, None))
+        exp_uri = "users/%s/roles/OS-KSADM/%s" % (user, role)
+        ident.add_role_to_user(role, user)
+        ident.method_put.assert_called_once_with(exp_uri)
+
+    def test_delete_role_from_user(self):
+        ident = self.identity
+        role = utils.random_unicode()
+        user = utils.random_unicode()
+        ident.method_delete = Mock(return_value=(None, None))
+        exp_uri = "users/%s/roles/OS-KSADM/%s" % (user, role)
+        ident.delete_role_from_user(role, user)
+        ident.method_delete.assert_called_once_with(exp_uri)
 
     def test_parse_api_time_us(self):
         test_date = "2012-01-02T05:20:30.000-05:00"
