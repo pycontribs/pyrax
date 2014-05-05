@@ -210,19 +210,6 @@ class FakeBulkDeleter(BulkDeleter):
         self.completed = True
 
 
-class FakeEntryPoint(object):
-    def __init__(self, name):
-        self.name = name
-
-    def load(self):
-        def dummy(*args, **kwargs):
-            return self.name
-        return dummy
-
-fakeEntryPoints = [FakeEntryPoint("a"), FakeEntryPoint("b"),
-        FakeEntryPoint("c")]
-
-
 class FakeManager(object):
     def __init__(self, *args, **kwargs):
         super(FakeManager, self).__init__(*args, **kwargs)
@@ -249,25 +236,6 @@ class FakeManager(object):
 
 class FakeException(BaseException):
     pass
-
-
-class FakeServiceCatalog(object):
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def get_token(self):
-        return "fake_token"
-
-    def url_for(self, attr=None, filter_value=None,
-            service_type=None, endpoint_type="publicURL",
-            service_name=None, volume_service_name=None):
-        if filter_value == "ALL":
-            raise exc.AmbiguousEndpoints
-        elif filter_value == "KEY":
-            raise KeyError
-        elif filter_value == "EP":
-            raise exc.EndpointNotFound
-        return "http://example.com"
 
 
 class FakeKeyring(object):
@@ -562,17 +530,6 @@ class FakeQueueClaim(QueueClaim):
         info["name"] = utils.random_unicode()
         mgr = kwargs.pop("manager", FakeQueueManager())
         super(FakeQueueClaim, self).__init__(manager=mgr, info=info, *args,
-                **kwargs)
-
-
-class FakeQueueMessage(QueueMessage):
-    def __init__(self, *args, **kwargs):
-        id_ = utils.random_unicode()
-        href = "http://example.com/%s" % id_
-        info = kwargs.pop("info", {"href": href})
-        info["name"] = utils.random_unicode()
-        mgr = kwargs.pop("manager", FakeQueueManager())
-        super(FakeQueueMessage, self).__init__(manager=mgr, info=info, *args,
                 **kwargs)
 
 
