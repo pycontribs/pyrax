@@ -1,6 +1,6 @@
 # Context Objects
 
-Context objects represent a single authenticated session. You can work with as many context objects as you like at the same time without worrying about logging in or out of each one to work with the other. Earlier versions of pyrax (before 1.9.0) only allowed you to work with one authenticated session at a time.
+Context objects represent a single authenticated session. You can work with as many context objects as you like at the same time without worrying about logging in or out of each one to work with the other. Earlier versions of pyrax (before 1.8.0) only allowed you to work with one authenticated session at a time.
 
 This ability is useful if you ever need to work with multiple projects (accounts) at the same time, or with multiple users within the same project.
 
@@ -56,7 +56,7 @@ Many OpenStack installations only have a single region. In those cases it might 
 
 ### Service Names
 
-The various services are known by several types of names: descriptive names, project code names, and vendor product names. For example, the **compute** service is known within OpenStack as project **nova**, at Rackspace as the **Cloud Servers** product, and at HP as the **Cloud Compute** product. The descriptive name is the one that is used in these docs, but it is common for developers to use the other variations. The older versions of pyrax (before 1.9.0) primarily used the Rackspace-branded name for the service.
+The various services are known by several types of names: descriptive names, project code names, and vendor product names. For example, the **compute** service is known within OpenStack as project **nova**, at Rackspace as the **Cloud Servers** product, and at HP as the **Cloud Compute** product. The descriptive name is the one that is used in these docs, but it is common for developers to use the other variations. The older versions of pyrax (before 1.8.0) primarily used the Rackspace-branded name for the service.
 
 Pyrax accepts any of these different names as aliases for the services. Here is a partial list of these aliases for many of the current services:
 

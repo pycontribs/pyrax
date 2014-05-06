@@ -217,7 +217,7 @@ As of this writing, Rackspace has three cloud regions in the US: "DFW" (Dallas-F
 
 The important point to keep in mind when dealing with multiple regions is that all of pyrax's `connect_to_*` methods take a region parameter, and return a region-specific object. If you do not explicitly include a region, the default region you defined in your config file is used. If you did not define a default region, pyrax defaults to the "DFW" region.
 
-**Update as of Version 1.9.0**: Pyrax's new [*context objects*](https://github.com/rackspace/pyrax/blob/master/docs/context_objects.md) make it even easier to work with multiple regions. See that document for more in-depth information, but here is the code listed above re-written to use context objects to handle multiple regions:
+**Update as of Version 1.8.0**: Pyrax's new [*context objects*](https://github.com/rackspace/pyrax/blob/master/docs/context_objects.md) make it even easier to work with multiple regions. See that document for more in-depth information, but here is the code listed above re-written to use context objects to handle multiple regions:
 
     import pyrax
     ctx = pyrax.create_context()
@@ -234,7 +234,7 @@ The important point to keep in mind when dealing with multiple regions is that a
 ## The `Identity` Class
 pyrax has an `Identity` class that is used to handle authentication and cache credentials. You can access it in your code using the reference `pyrax.identity`.  Once authenticated, it stores your credentials and authentication token information. In most cases you do not need to interact with this object directly; pyrax uses it to handle authentication tasks for you. But it is available in case you need more fine-grained control of the authentication process, such as querying endpoints in different regions, or getting a list of user roles.
 
-As of Version 1.9.0 of pyrax, the concept of [**context objects**](https://github.com/rackspace/pyrax/docs/context_objects.md) that encapsulate all of the identity and clients for a given login can be used.
+As of Version 1.8.0 of pyrax, the concept of [**context objects**](https://github.com/rackspace/pyrax/docs/context_objects.md) that encapsulate all of the identity and clients for a given login can be used.
 
 You can check its `authenticated` attribute to determine if authentication was successful; if so, its `token` and `expires` attributes contain the returned authentication information, and its `services` attribute contains a dict with all the service endpoint information. Here is an example of the contents of `services` after authentication (with identifying information obscured):
 
