@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['keyring',['keyring',['../namespacepyrax.html#ad8e19fa572a32fe5e0d5497072f4b242',1,'pyrax']]],
-  ['keyring_5fauth',['keyring_auth',['../namespacepyrax.html#a6b0a7da6189b998c14aad23517c03d1e',1,'pyrax']]],
+  ['keyring',['keyring',['../namespacepyrax.html#ad8e19fa572a32fe5e0d5497072f4b242',1,'pyrax.keyring()'],['../namespacepyrax_1_1base__identity.html#ad8e19fa572a32fe5e0d5497072f4b242',1,'pyrax::base_identity.keyring()']]],
+  ['keyring_5fauth',['keyring_auth',['../classpyrax_1_1base__identity_1_1BaseIdentity.html#a685477d115810b2a8a17d5208498e175',1,'pyrax::base_identity::BaseIdentity.keyring_auth()'],['../namespacepyrax.html#a6b0a7da6189b998c14aad23517c03d1e',1,'pyrax.keyring_auth()']]],
   ['keyringmodulenotinstalled',['KeyringModuleNotInstalled',['../classpyrax_1_1exceptions_1_1KeyringModuleNotInstalled.html',1,'pyrax::exceptions']]],
   ['keyringpasswordnotfound',['KeyringPasswordNotFound',['../classpyrax_1_1exceptions_1_1KeyringPasswordNotFound.html',1,'pyrax::exceptions']]],
   ['keyringusernamemissing',['KeyringUsernameMissing',['../classpyrax_1_1exceptions_1_1KeyringUsernameMissing.html',1,'pyrax::exceptions']]],

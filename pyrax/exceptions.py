@@ -245,6 +245,15 @@ class NetworkNotFound(PyraxException):
 class NetworkLabelNotUnique(PyraxException):
     pass
 
+class NoClientForService(PyraxException):
+    pass
+
+class NoEndpointForRegion(PyraxException):
+    pass
+
+class NoEndpointForService(PyraxException):
+    pass
+
 class NoMoreResults(PyraxException):
     pass
 
@@ -252,6 +261,9 @@ class NoReloadError(PyraxException):
     pass
 
 class NoSSLTerminationConfiguration(PyraxException):
+    pass
+
+class NoSuchClient(PyraxException):
     pass
 
 class NoSuchContainer(PyraxException):

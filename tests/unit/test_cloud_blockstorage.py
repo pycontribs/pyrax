@@ -189,6 +189,27 @@ class CloudBlockStorageTest(unittest.TestCase):
                 name=name, description=desc, force=False)
         BaseManager.create = sav
 
+    def test_update_volume(self):
+        clt = self.client
+        vol = self.volume
+        mgr = clt._manager
+        mgr.api.method_put = Mock(return_value=(None, None))
+        name = utils.random_unicode()
+        desc = utils.random_unicode()
+        exp_uri = "/%s/%s" % (mgr.uri_base, vol.id)
+        exp_body = {"volume": {"display_name": name,
+                "display_description": desc}}
+        mgr.update(vol, display_name=name, display_description=desc)
+        mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
+
+    def test_update_volume_empty(self):
+        clt = self.client
+        vol = self.volume
+        mgr = clt._manager
+        mgr.api.method_put = Mock(return_value=(None, None))
+        mgr.update(vol)
+        self.assertEqual(mgr.api.method_put.call_count, 0)
+
     def test_list_types(self):
         clt = self.client
         clt._types_manager.list = Mock()
@@ -468,6 +489,55 @@ class CloudBlockStorageTest(unittest.TestCase):
         nm = utils.random_unicode()
         snap.description = nm
         self.assertEqual(snap.description, snap.display_description)
+
+    def test_update_snapshot(self):
+        clt = self.client
+        snap = self.snapshot
+        mgr = clt._snapshot_manager
+        mgr.api.method_put = Mock(return_value=(None, None))
+        name = utils.random_unicode()
+        desc = utils.random_unicode()
+        exp_uri = "/%s/%s" % (mgr.uri_base, snap.id)
+        exp_body = {"snapshot": {"display_name": name,
+                "display_description": desc}}
+        mgr.update(snap, display_name=name, display_description=desc)
+        mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
+
+    def test_update_snapshot_empty(self):
+        clt = self.client
+        snap = self.snapshot
+        mgr = clt._snapshot_manager
+        mgr.api.method_put = Mock(return_value=(None, None))
+        mgr.update(snap)
+        self.assertEqual(mgr.api.method_put.call_count, 0)
+
+    def test_clt_update_volume(self):
+        clt = self.client
+        vol = self.volume
+        name = utils.random_unicode()
+        desc = utils.random_unicode()
+        clt._manager.update = Mock()
+        clt.update(vol, display_name=name, display_description=desc)
+        clt._manager.update.assert_called_once_with(vol, display_name=name,
+                display_description=desc)
+
+    def test_clt_update_snapshot(self):
+        clt = self.client
+        snap = self.snapshot
+        name = utils.random_unicode()
+        desc = utils.random_unicode()
+        clt._snapshot_manager.update = Mock()
+        clt.update_snapshot(snap, display_name=name, display_description=desc)
+        clt._snapshot_manager.update.assert_called_once_with(snap,
+                display_name=name, display_description=desc)
+
+    def test_get_snapshot(self):
+        clt = self.client
+        mgr = clt._snapshot_manager
+        mgr.get = Mock()
+        snap = utils.random_unicode()
+        clt.get_snapshot(snap)
+        mgr.get.assert_called_once_with(snap)
 
 
 if __name__ == "__main__":

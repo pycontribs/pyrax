@@ -38,6 +38,9 @@ Please note that **all versions of pyrax beginning with 1.4.0 require that you d
 1. **Environment Variable** - If you don't have a configuration file, pyrax checks for the environment variable `CLOUD_ID_TYPE`. Set this by executing `export CLOUD_ID_TYPE=keystone` in a bash shell, or by setting it in the System section of the Control Panel in Windows.
 1. **Set in Code** - if you can't do either of the above, change the import statement to add `pyrax.set_setting("identity_type", "keystone")` immediately after the `import pyrax` statement.
 
+Note that if you are using the Rackspace Cloud, you would replace "keystone" in the above examples with "rackspace".
+
+
 ## Authenticating
 You can authenticate in any one of three ways:
 
@@ -122,7 +125,7 @@ Please note that if you used `auth_with_token()` to authenticate originally, pyr
 ## Pyrax Configuration
 You can control how pyrax behaves through the configuration file. It should be named `~/.pyrax.cfg`. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Alternatively, you may set these values using environment variables in the OS. Note that the configuration file values take precendence over any environment variables. Environment variables also do not support multiple configurations.
 
-Do **not** include login credentials, such as passwords, in the configuration file. As this is a defined file in a known location, it is a security risk to have your login information stored in clear text. You may use a [credential file](#authenticating) if you wish to store your credentials on disk; this can be named whatever you wish, and placed anywhere on disk, since you pass the full path to the file when authenticating this way. Please note that credentials stored in the configuration file will be ignored, and a warning will be issued if they are found.
+**Do not include login credentials**, such as passwords, in the configuration file. As this is a defined file in a known location, it is a security risk to have your login information stored in clear text. You may use a [credential file](#authenticating) if you wish to store your credentials on disk; this can be named whatever you wish, and placed anywhere on disk, since you pass the full path to the file when authenticating this way. Please note that credentials stored in the configuration file will be ignored, and a warning will be issued if they are found.
 
 **NOTE**: At the very least, you *must* set the `identity_type` setting so that can use the correct identity class. Prior versions only worked with Rackspace identity, but that is no longer the case. If you don't want to use a configuration file or an environment variable, you can do this in code:
 
@@ -160,6 +163,7 @@ Setting | Affects | Default | Notes | Env. Variable
 **custom_user_agent** | Customizes the User-agent string sent to the server. | -none- | | CLOUD_USER_AGENT
 **debug** | When True, causes all HTTP requests and responses to be output to the console to aid in debugging. | False | Previous versions called this setting 'http_debug'. | CLOUD_DEBUG
 **verify_ssl** | Set this to False to bypass SSL certificate verification. | True |  | CLOUD_VERIFY_SSL
+**use_servicenet** | By default your connection to Cloud Files uses the public internet. If you're connecting from a cloud server in the same region, though, you have the option of using the internal **Service Net** network connection, which is not only faster, but does not incur bandwidth charges for transfers within the datacenter. | False |  | USE_SERVICENET
 
 Here is a sample:
 
@@ -206,16 +210,31 @@ As of this writing, Rackspace has three cloud regions in the US: "DFW" (Dallas-F
     cs_dfw = pyrax.connect_to_cloudservers(region="DFW")
     cs_ord = pyrax.connect_to_cloudservers(region="ORD")
     cs_iad = pyrax.connect_to_cloudservers(region="IAD")
-    dfw_servers = cs_dfw.servers.list()
-    ord_servers = cs_ord.servers.list()
-    iad_servers = cs_iad.servers.list()
+    dfw_servers = cs_dfw.list()
+    ord_servers = cs_ord.list()
+    iad_servers = cs_iad.list()
     all_servers = dfw_servers + ord_servers + iad_servers
 
 The important point to keep in mind when dealing with multiple regions is that all of pyrax's `connect_to_*` methods take a region parameter, and return a region-specific object. If you do not explicitly include a region, the default region you defined in your config file is used. If you did not define a default region, pyrax defaults to the "DFW" region.
 
+**Update as of Version 1.8.0**: Pyrax's new [*context objects*](https://github.com/rackspace/pyrax/blob/master/docs/context_objects.md) make it even easier to work with multiple regions. See that document for more in-depth information, but here is the code listed above re-written to use context objects to handle multiple regions:
+
+    import pyrax
+    ctx = pyrax.create_context()
+    ctx.keyring_auth()
+    cs_dfw = ctx.DFW.compute.client
+    cs_ord = ctx.ORD.compute.client
+    cs_iad = ctx.IAD.compute.client
+    dfw_servers = cs_dfw.list()
+    ord_servers = cs_ord.list()
+    iad_servers = cs_iad.list()
+    all_servers = dfw_servers + ord_servers + iad_servers
+
 
 ## The `Identity` Class
 pyrax has an `Identity` class that is used to handle authentication and cache credentials. You can access it in your code using the reference `pyrax.identity`.  Once authenticated, it stores your credentials and authentication token information. In most cases you do not need to interact with this object directly; pyrax uses it to handle authentication tasks for you. But it is available in case you need more fine-grained control of the authentication process, such as querying endpoints in different regions, or getting a list of user roles.
+
+As of Version 1.8.0 of pyrax, the concept of [**context objects**](https://github.com/rackspace/pyrax/docs/context_objects.md) that encapsulate all of the identity and clients for a given login can be used.
 
 You can check its `authenticated` attribute to determine if authentication was successful; if so, its `token` and `expires` attributes contain the returned authentication information, and its `services` attribute contains a dict with all the service endpoint information. Here is an example of the contents of `services` after authentication (with identifying information obscured):
 

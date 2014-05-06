@@ -15,9 +15,10 @@ import six
 from mock import patch
 from mock import MagicMock as Mock
 
-import pyrax.utils as utils
+from pyrax import base_identity
 import pyrax.exceptions as exc
 from pyrax import fakes
+import pyrax.utils as utils
 
 FAKE_CONTENT = "x" * 100
 
@@ -53,6 +54,14 @@ class UtilsTest(unittest.TestCase):
             self.assert_(os.path.isdir(tmp))
         # Directory shoud be deleted after exiting the block
         self.assertFalse(os.path.exists(tmp))
+
+    def test_dot_dict(self):
+        key = "fake"
+        val = utils.random_unicode()
+        dct = {key: val}
+        dd = utils.DotDict(dct)
+        self.assertEqual(dd.fake, val)
+        self.assertRaises(AttributeError, getattr, dd, "bogus")
 
     def test_get_checksum_from_string(self):
         test = utils.random_ascii()
@@ -192,7 +201,8 @@ class UtilsTest(unittest.TestCase):
         self.assertTrue(utils.isunauthenticated(dummy))
 
     def test_safe_issubclass_good(self):
-        ret = utils.safe_issubclass(fakes.FakeIdentity, fakes.RaxIdentity)
+        ret = utils.safe_issubclass(fakes.FakeIdentity,
+                base_identity.BaseIdentity)
         self.assertTrue(ret)
 
     def test_safe_issubclass_bad(self):
@@ -325,6 +335,19 @@ class UtilsTest(unittest.TestCase):
         now = {}
         fmtd = utils.rfc2822_format(now)
         self.assertEqual(fmtd, now)
+
+    def test_dict_to_qs(self):
+        k1 = utils.random_unicode()
+        v1 = utils.random_unicode()
+        k2 = utils.random_unicode()
+        v2 = None
+        k3 = utils.random_unicode()
+        v3 = utils.random_unicode()
+        dct = {k1: v1, k2: v2, k3: v3}
+        qs = utils.dict_to_qs(dct)
+        self.assertTrue("%s=%s" % (k1, v1) in qs)
+        self.assertFalse("%s=%s" % (k2, v2) in qs)
+        self.assertTrue("%s=%s" % (k3, v3) in qs)
 
     def test_match_pattern(self):
         ignore_pat = "*.bad"

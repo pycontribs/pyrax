@@ -29,16 +29,23 @@ class ManagerTest(unittest.TestCase):
 
     def test_list(self):
         mgr = self.manager
-        sav = mgr._list
         mgr._list = Mock()
         mgr.uri_base = "test"
         mgr.list()
         mgr._list.assert_called_once_with("/test", return_raw=False)
-        mgr._list = sav
+
+    def test_under_list_return_raw(self):
+        mgr = self.manager
+        uri = utils.random_unicode()
+        resp = utils.random_unicode()
+        resp_body = utils.random_unicode()
+        mgr.api.method_get = Mock(return_value=(resp, resp_body))
+        ret = mgr._list(uri, return_raw=True)
+        mgr.api.method_get.assert_called_once_with(uri)
+        self.assertEqual(ret, (resp, resp_body))
 
     def test_list_paged(self):
         mgr = self.manager
-        sav = mgr._list
         mgr._list = Mock()
         mgr.uri_base = "test"
         fake_limit = random.randint(10, 20)
@@ -46,11 +53,9 @@ class ManagerTest(unittest.TestCase):
         mgr.list(limit=fake_limit, marker=fake_marker)
         expected_uri = "/test?limit=%s&marker=%s" % (fake_limit, fake_marker)
         mgr._list.assert_called_once_with(expected_uri, return_raw=False)
-        mgr._list = sav
 
     def test_head(self):
         mgr = self.manager
-        sav = mgr._head
         mgr._head = Mock()
         mgr.uri_base = "test"
         x = fakes.FakeException()
@@ -58,11 +63,19 @@ class ManagerTest(unittest.TestCase):
         mgr.head(x)
         expected = "/%s/%s" % ("test", x.id)
         mgr._head.assert_called_once_with(expected)
-        mgr._head = sav
+
+    def test_under_head(self):
+        mgr = self.manager
+        uri = utils.random_unicode()
+        resp = utils.random_unicode()
+        resp_body = utils.random_unicode()
+        mgr.api.method_head = Mock(return_value=(resp, resp_body))
+        ret = mgr._head(uri)
+        mgr.api.method_head.assert_called_once_with(uri)
+        self.assertEqual(ret, resp)
 
     def test_get(self):
         mgr = self.manager
-        sav = mgr._get
         mgr._get = Mock()
         mgr.uri_base = "test"
         x = fakes.FakeException()
@@ -70,7 +83,6 @@ class ManagerTest(unittest.TestCase):
         mgr.get(x)
         expected = "/%s/%s" % ("test", x.id)
         mgr._get.assert_called_once_with(expected)
-        mgr._get = sav
 
     def test_api_get(self):
         mgr = self.manager
@@ -82,7 +94,6 @@ class ManagerTest(unittest.TestCase):
 
     def test_create(self):
         mgr = self.manager
-        sav = mgr._create
         mgr._create = Mock()
         mgr.uri_base = "test"
         mgr._create_body = Mock(return_value="body")
@@ -90,11 +101,9 @@ class ManagerTest(unittest.TestCase):
         mgr.create(nm)
         mgr._create.assert_called_once_with("/test", "body", return_none=False,
                 return_raw=False, return_response=False)
-        mgr._create = sav
 
     def test_delete(self):
         mgr = self.manager
-        sav = mgr._delete
         mgr._delete = Mock()
         mgr.uri_base = "test"
         x = fakes.FakeException()
@@ -102,7 +111,6 @@ class ManagerTest(unittest.TestCase):
         mgr.delete(x)
         expected = "/%s/%s" % ("test", x.id)
         mgr._delete.assert_called_once_with(expected)
-        mgr._delete = sav
 
     def test_under_list_post(self):
         mgr = self.manager
@@ -132,7 +140,6 @@ class ManagerTest(unittest.TestCase):
 
     def test_under_create_return_none(self):
         mgr = self.manager
-        sav_rh = mgr.run_hooks
         mgr.run_hooks = Mock()
         mgr.api.method_post = Mock()
         resp = fakes.FakeResponse()
@@ -141,11 +148,9 @@ class ManagerTest(unittest.TestCase):
         ret = mgr._create(fake_url, "", return_none=True, return_raw=False)
         self.assertIsNone(ret)
         mgr.api.method_post.assert_called_once_with(fake_url, body="")
-        mgr.run_hooks = sav_rh
 
     def test_under_create_return_raw(self):
         mgr = self.manager
-        sav_rh = mgr.run_hooks
         mgr.run_hooks = Mock()
         mgr.api.method_post = Mock()
         resp = object()
@@ -155,11 +160,9 @@ class ManagerTest(unittest.TestCase):
         ret = mgr._create(fake_url, "", return_none=False, return_raw=True)
         self.assertEqual(ret, body["fakes"])
         mgr.api.method_post.assert_called_once_with(fake_url, body="")
-        mgr.run_hooks = sav_rh
 
     def test_under_create_return_resource(self):
         mgr = self.manager
-        sav_rh = mgr.run_hooks
         mgr.run_hooks = Mock()
         mgr.api.method_post = Mock()
         resp = fakes.FakeResponse()
@@ -170,7 +173,6 @@ class ManagerTest(unittest.TestCase):
         ret = mgr._create(fake_url, "", return_none=False, return_raw=False)
         self.assertTrue(isinstance(ret, fakes.FakeEntity))
         mgr.api.method_post.assert_called_once_with(fake_url, body="")
-        mgr.run_hooks = sav_rh
 
     def test_under_delete(self):
         mgr = self.manager
@@ -180,7 +182,6 @@ class ManagerTest(unittest.TestCase):
 
     def test_under_update(self):
         mgr = self.manager
-        sav_rh = mgr.run_hooks
         mgr.run_hooks = Mock()
         mgr.api.method_put = Mock()
         resp = fakes.FakeResponse()
@@ -191,7 +192,6 @@ class ManagerTest(unittest.TestCase):
         ret = mgr._update(fake_url, "")
         mgr.api.method_put.assert_called_once_with(fake_url, body="")
         self.assertEqual(ret, body)
-        mgr.run_hooks = sav_rh
 
     def test_action(self):
         mgr = self.manager
@@ -204,30 +204,24 @@ class ManagerTest(unittest.TestCase):
 
     def test_find_no_match(self):
         mgr = self.manager
-        sav_fa = mgr.findall
         mgr.findall = Mock(return_value=[])
         mgr.resource_class = fakes.FakeEntity
         self.assertRaises(exc.NotFound, mgr.find)
-        mgr.findall = sav_fa
 
     def test_find_mult_match(self):
         mgr = self.manager
-        sav_fa = mgr.findall
         mtch = fakes.FakeEntity()
         mgr.resource_class = fakes.FakeEntity
         mgr.findall = Mock(return_value=[mtch, mtch])
         self.assertRaises(exc.NoUniqueMatch, mgr.find)
-        mgr.findall = sav_fa
 
     def test_find_single_match(self):
         mgr = self.manager
-        sav_fa = mgr.findall
         mtch = fakes.FakeEntity()
         mgr.resource_class = fakes.FakeEntity
         mgr.findall = Mock(return_value=[mtch])
         ret = mgr.find()
         self.assertEqual(ret, mtch)
-        mgr.findall = sav_fa
 
     def test_findall(self):
         mgr = self.manager
@@ -237,13 +231,11 @@ class ManagerTest(unittest.TestCase):
         o2.some_att = "bad"
         o3 = fakes.FakeEntity()
         o3.some_att = "ok"
-        sav = mgr.list
         mgr.list = Mock(return_value=[o1, o2, o3])
         ret = mgr.findall(some_att="ok")
         self.assertTrue(o1 in ret)
         self.assertFalse(o2 in ret)
         self.assertTrue(o3 in ret)
-        mgr.list = sav
 
     def test_findall_bad_att(self):
         mgr = self.manager
@@ -253,22 +245,18 @@ class ManagerTest(unittest.TestCase):
         o2.some_att = "bad"
         o3 = fakes.FakeEntity()
         o3.some_att = "ok"
-        sav = mgr.list
         mgr.list = Mock(return_value=[o1, o2, o3])
         ret = mgr.findall(some_att="ok", bad_att="oops")
         self.assertFalse(o1 in ret)
         self.assertFalse(o2 in ret)
         self.assertFalse(o3 in ret)
-        mgr.list = sav
 
     def test_add_hook(self):
         mgr = self.manager
-        sav = mgr._hooks_map
         tfunc = Mock()
         mgr.add_hook("test", tfunc)
         self.assertTrue("test" in mgr._hooks_map)
         self.assertTrue(tfunc in mgr._hooks_map["test"])
-        mgr._hooks_map = sav
 
     def test_run_hooks(self):
         mgr = self.manager

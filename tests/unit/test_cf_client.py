@@ -1326,35 +1326,21 @@ Useless Line: %s
     def test_converted_last_modified_times_head_and_list_match(self):
         head_last_modified_string = "Mon, 7 Apr 2014 17:34:25 UTC"
         list_last_modified_string = "2014-04-07T17:34:24.112333"
-
         converted_head_datetime = _convert_head_object_last_modified_to_local(
-            head_last_modified_string)
-
-        attdict = {
-            "last_modified": list_last_modified_string
-        }
-
+                head_last_modified_string)
+        attdict = {"last_modified": list_last_modified_string}
         converted_list_attributes = _convert_list_last_modified_to_local(
-            attdict=attdict)
-
+                attdict=attdict)
         converted_list_date = converted_list_attributes["last_modified"]
-
         self.assertEqual(converted_head_datetime, converted_list_date)
 
-    def test_list_last_modified_times_does_not_round_up_for_zero_microseconds(self):
+    def test_list_last_mod_does_not_round_up_for_zero_microseconds(self):
         list_last_modified_string = "2014-04-07T17:34:24.000000"
-
-        attdict = {
-            "last_modified": list_last_modified_string
-        }
-
+        attdict = {"last_modified": list_last_modified_string}
         converted_list_attributes = _convert_list_last_modified_to_local(
-            attdict=attdict)
-
+                attdict=attdict)
         converted_list_date = converted_list_attributes["last_modified"]
-
         self.assertTrue(converted_list_date.endswith(":24"))
-
 
 
 if __name__ == "__main__":

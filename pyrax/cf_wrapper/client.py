@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
 import datetime
 from functools import wraps
 import hashlib
@@ -136,6 +137,13 @@ def _convert_list_last_modified_to_local(attdict):
             dttm += datetime.timedelta(seconds=1)
         attdict["last_modified"] = dttm.strftime(DATE_FORMAT)
     return attdict
+
+
+def _quote(val):
+    if isinstance(val, six.text_type):
+        val = val.encode("utf-8")
+    return urllib.quote(val)
+
 
 
 class CFClient(object):
@@ -893,7 +901,8 @@ class CFClient(object):
 
 
     def sync_folder_to_container(self, folder_path, container, delete=False,
-            include_hidden=False, ignore=None, ignore_timestamps=False):
+            include_hidden=False, ignore=None, ignore_timestamps=False,
+            object_prefix="", verbose=False):
         """
         Compares the contents of the specified folder, and checks to make sure
         that the corresponding object is present in the specified container. If
@@ -916,22 +925,43 @@ class CFClient(object):
         file names, and any names that match any of the 'ignore' patterns will
         not be uploaded. The patterns should be standard *nix-style shell
         patterns; e.g., '*pyc' will ignore all files ending in 'pyc', such as
-        'program.pyc' and 'abcpyc'.  """
+        'program.pyc' and 'abcpyc'.
+
+        If `object_prefix` is set it will be appended to the object name when
+        it is checked and uploaded to the container. For example, if you use
+        sync_folder_to_container("folderToSync/", myContainer,
+            object_prefix="imgFolder") it will upload the files to the
+        container/imgFolder/... instead of just container/...
+
+        Set `verbose` to True to make it print what is going on. It will
+        show which files are being uploaded and which ones are not and why.
+        """
         cont = self.get_container(container)
         self._local_files = []
+        # Load a list of all the remote objects so we don't have to keep
+        # hitting the service
+        if verbose:
+            log = logging.getLogger("pyrax")
+            log.info("Loading remote object list (prefix=%s)", object_prefix)
+        data = cont.get_objects(prefix=object_prefix, full_listing=True)
+        self._remote_files = dict((d.name, d) for d in data)
         self._sync_folder_to_container(folder_path, cont, prefix="",
                 delete=delete, include_hidden=include_hidden, ignore=ignore,
-                ignore_timestamps=ignore_timestamps)
+                ignore_timestamps=ignore_timestamps,
+                object_prefix=object_prefix, verbose=verbose)
+        # Unset the _remote_files
+        self._remote_files = None
 
 
     def _sync_folder_to_container(self, folder_path, cont, prefix, delete,
-            include_hidden, ignore, ignore_timestamps):
+            include_hidden, ignore, ignore_timestamps, object_prefix, verbose):
         """
         This is the internal method that is called recursively to handle
         nested folder structures.
         """
         fnames = os.listdir(folder_path)
         ignore = utils.coerce_string_to_list(ignore)
+        log = logging.getLogger("pyrax")
         if not include_hidden:
             ignore.append(".*")
         for fname in fnames:
@@ -944,17 +974,20 @@ class CFClient(object):
                     subprefix = "%s/%s" % (prefix, subprefix)
                 self._sync_folder_to_container(pth, cont, prefix=subprefix,
                         delete=delete, include_hidden=include_hidden,
-                        ignore=ignore, ignore_timestamps=ignore_timestamps)
+                        ignore=ignore, ignore_timestamps=ignore_timestamps,
+                        object_prefix=object_prefix, verbose=verbose)
                 continue
-            self._local_files.append(os.path.join(prefix, fname))
+            self._local_files.append(os.path.join(object_prefix, prefix, fname))
             local_etag = utils.get_checksum(pth)
             fullname = fname
+            fullname_with_prefix = "%s/%s" % (object_prefix, fname)
             if prefix:
                 fullname = "%s/%s" % (prefix, fname)
+                fullname_with_prefix = "%s/%s/%s" % (object_prefix, prefix, fname)
             try:
-                obj = cont.get_object(fullname)
+                obj = self._remote_files[fullname_with_prefix]
                 obj_etag = obj.etag
-            except exc.NoSuchObject:
+            except KeyError:
                 obj = None
                 obj_etag = None
             if local_etag != obj_etag:
@@ -968,19 +1001,29 @@ class CFClient(object):
                     local_mod_str = local_mod.isoformat()
                     if obj_time_str >= local_mod_str:
                         # Remote object is newer
+                        if verbose:
+                            log.info("%s NOT UPLOADED because remote object is "
+                                    "newer", fullname)
                         continue
-                cont.upload_file(pth, obj_name=fullname, etag=local_etag,
-                        return_none=True)
+                cont.upload_file(pth, obj_name=fullname_with_prefix,
+                    etag=local_etag, return_none=True)
+                if verbose:
+                    log.info("%s UPLOADED", fullname)
+            else:
+                if verbose:
+                    log.info("%s NOT UPLOADED because it already exists",
+                            fullname)
         if delete and not prefix:
-            self._delete_objects_not_in_list(cont)
+            self._delete_objects_not_in_list(cont, object_prefix)
 
 
-    def _delete_objects_not_in_list(self, cont):
+    def _delete_objects_not_in_list(self, cont, object_prefix=""):
         """
         Finds all the objects in the specified container that are not present
         in the self._local_files list, and deletes them.
         """
-        objnames = set(cont.get_object_names(full_listing=True))
+        objnames = set(cont.get_object_names(prefix=object_prefix,
+                full_listing=True))
         localnames = set(self._local_files)
         to_delete = list(objnames.difference(localnames))
         # We don't need to wait around for this to complete. Store the thread
@@ -1420,12 +1463,7 @@ class Connection(_swift_client.Connection):
 
         Taken directly from the cloudfiles library and modified for use here.
         """
-        def quote(val):
-            if isinstance(val, six.text_type):
-                val = val.encode("utf-8")
-            return urllib.quote(val)
-
-        pth = "/".join([quote(elem) for elem in path])
+        pth = "/".join([_quote(elem) for elem in path])
         uri_path = urlparse.urlparse(self.uri).path
         path = "%s/%s" % (uri_path.rstrip("/"), pth)
         headers = {"Content-Length": str(len(data)),
@@ -1546,7 +1584,7 @@ class BulkDeleter(threading.Thread):
             this_batch, object_names = (object_names[:MAX_BULK_DELETE],
                     object_names[MAX_BULK_DELETE:])
             obj_paths = ("%s/%s" % (cname, nm) for nm in this_batch)
-            body = "\n".join(obj_paths)
+            body = _quote("\n".join(obj_paths))
             pth = "%s/?bulk-delete=1" % parsed.path
             conn.request(method, pth, body, headers)
             resp = conn.getresponse()

@@ -127,6 +127,8 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the value of the specified key in the current environment, or in another environment if specified.  <a href="#a8a337253c5949ea5d35aefa452c7540c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a5fb3ef963e598bfc25617161b2f2e4df">set_default_region</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the default_region setting.  <a href="#a5fb3ef963e598bfc25617161b2f2e4df"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#addcacb55a21dd0665668678a2dde0271">create_context</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an instance of the specified identity class, or if none is specified, an instance of the current setting for 'identity_class'.  <a href="#addcacb55a21dd0665668678a2dde0271"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a49217af72f2f282731a94b6a6f42823c">auth_with_token</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">If you already have a valid token and either a tenant ID or name, you can call this to configure the identity and available services.  <a href="#a49217af72f2f282731a94b6a6f42823c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a171229a7210ff6cb20c8162b859cb5df">set_credentials</a></td></tr>
@@ -165,6 +167,8 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with Images.  <a href="#a0adcbd0664ff8fb086c10a68d6f9696c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#ac8d659180e8fac04349063827198b196">connect_to_queues</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with Queues.  <a href="#ac8d659180e8fac04349063827198b196"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#af6b6c4cc8a97fc97da7283dc193d8000">client_class_for_service</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the client class registered for the given service, or None if there is no such service, or if no class has been registered.  <a href="#af6b6c4cc8a97fc97da7283dc193d8000"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a2766ee16854adf9575c29ac661f447fd">get_http_debug</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a9d6ec1abac4bb1602676632e096ac945">set_http_debug</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a449ca982d93692884375caa2d609b3b0">get_encoding</a></td></tr>
@@ -258,7 +262,8 @@ Variables</h2></td></tr>
 
 <p>Generally you will not need to call this directly; passing in your credentials via <a class="el" href="namespacepyrax.html#a171229a7210ff6cb20c8162b859cb5df" title="Set the credentials directly, and then try to authenticate.">set_credentials()</a> and <a class="el" href="namespacepyrax.html#a7375be0702b4c4322b674eaf94795c19" title="Read in the credentials from the supplied file path, and then try to authenticate.">set_credential_file()</a> will call <a class="el" href="namespacepyrax.html#a14a943d0bb5ce4bcec385d1b733c6544" title="Generally you will not need to call this directly; passing in your credentials via set_credentials() ...">authenticate()</a> on the identity object by default. </p>
 <p>But for situations where you set your credentials manually or otherwise need finer control over the authentication sequence, this method will call the identity object's <a class="el" href="namespacepyrax.html#a14a943d0bb5ce4bcec385d1b733c6544" title="Generally you will not need to call this directly; passing in your credentials via set_credentials() ...">authenticate()</a> method, and an AuthenticationFailed exception will be raised if your credentials have not been properly set first.</p>
-<p>Normally after successful authentication, connections to the various services will be made. However, passing False to the `connect` parameter will skip the service connection step. </p>
+<p>Normally after successful authentication, connections to the various services will be made. However, passing False to the `connect` parameter will skip the service connection step.</p>
+<p>The 'connect' parameter is retained for backwards compatibility. It no longer has any effect. </p>
 
 </div>
 </div>
@@ -277,6 +282,25 @@ Variables</h2></td></tr>
 <div class="memdoc">
 
 <p>De-authenticate by clearing all the names back to None. </p>
+
+</div>
+</div>
+<a class="anchor" id="af6b6c4cc8a97fc97da7283dc193d8000"></a><!-- doxytag: member="pyrax::client_class_for_service" ref="af6b6c4cc8a97fc97da7283dc193d8000" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax.html#af6b6c4cc8a97fc97da7283dc193d8000">pyrax.client_class_for_service</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>service</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the client class registered for the given service, or None if there is no such service, or if no class has been registered. </p>
 
 </div>
 </div>
@@ -427,7 +451,13 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>public</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>public</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>context</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -452,6 +482,12 @@ Variables</h2></td></tr>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>region</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>context</em> = <code>None</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -548,6 +584,72 @@ Variables</h2></td></tr>
 <div class="memdoc">
 
 <p>Establishes authenticated connections to the various cloud APIs. </p>
+
+</div>
+</div>
+<a class="anchor" id="addcacb55a21dd0665668678a2dde0271"></a><!-- doxytag: member="pyrax::create_context" ref="addcacb55a21dd0665668678a2dde0271" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax.html#addcacb55a21dd0665668678a2dde0271">pyrax.create_context</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>id_type</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>env</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>username</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>password</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>tenant_id</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>tenant_name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>api_key</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>verify_ssl</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns an instance of the specified identity class, or if none is specified, an instance of the current setting for 'identity_class'. </p>
+<p>You may optionally set the environment by passing the name of that environment in the 'env' parameter. </p>
 
 </div>
 </div>
@@ -915,16 +1017,18 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 <b>Initial value:</b><div class="fragment"><pre class="fragment"><a name="l00001"></a><a class="code" href="namespacepyrax.html">00001</a> {
-<a name="l00002"></a>00002         <span class="stringliteral">&quot;database&quot;</span>: CloudDatabaseClient,
-<a name="l00003"></a>00003         <span class="stringliteral">&quot;load_balancer&quot;</span>: CloudLoadBalancerClient,
-<a name="l00004"></a>00004         <span class="stringliteral">&quot;volume&quot;</span>: CloudBlockStorageClient,
-<a name="l00005"></a>00005         <span class="stringliteral">&quot;dns&quot;</span>: CloudDNSClient,
-<a name="l00006"></a>00006         <span class="stringliteral">&quot;compute:network&quot;</span>: CloudNetworkClient,
-<a name="l00007"></a>00007         <span class="stringliteral">&quot;monitor&quot;</span>: CloudMonitorClient,
-<a name="l00008"></a>00008         <span class="stringliteral">&quot;autoscale&quot;</span>: AutoScaleClient,
-<a name="l00009"></a>00009         <span class="stringliteral">&quot;image&quot;</span>: ImageClient,
-<a name="l00010"></a>00010         <span class="stringliteral">&quot;queues&quot;</span>: QueueClient,
-<a name="l00011"></a>00011         }
+<a name="l00002"></a>00002         <span class="stringliteral">&quot;object_store&quot;</span>: _cf.CFClient,
+<a name="l00003"></a>00003         <span class="stringliteral">&quot;compute&quot;</span>: _cs_client.Client,
+<a name="l00004"></a>00004         <span class="stringliteral">&quot;database&quot;</span>: CloudDatabaseClient,
+<a name="l00005"></a>00005         <span class="stringliteral">&quot;load_balancer&quot;</span>: CloudLoadBalancerClient,
+<a name="l00006"></a>00006         <span class="stringliteral">&quot;volume&quot;</span>: CloudBlockStorageClient,
+<a name="l00007"></a>00007         <span class="stringliteral">&quot;dns&quot;</span>: CloudDNSClient,
+<a name="l00008"></a>00008         <span class="stringliteral">&quot;compute:network&quot;</span>: CloudNetworkClient,
+<a name="l00009"></a>00009         <span class="stringliteral">&quot;monitor&quot;</span>: CloudMonitorClient,
+<a name="l00010"></a>00010         <span class="stringliteral">&quot;autoscale&quot;</span>: AutoScaleClient,
+<a name="l00011"></a>00011         <span class="stringliteral">&quot;image&quot;</span>: ImageClient,
+<a name="l00012"></a>00012         <span class="stringliteral">&quot;queues&quot;</span>: QueueClient,
+<a name="l00013"></a>00013         }
 </pre></div>
 </div>
 </div>
@@ -1284,7 +1388,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 28 2014 08:11:50 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 6 2014 11:50:07 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

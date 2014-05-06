@@ -107,7 +107,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">RaxIdentity Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<!-- doxytag: class="pyrax::identity::rax_identity::RaxIdentity" --><!-- doxytag: inherits="pyrax::base_identity::BaseAuth" -->
+<!-- doxytag: class="pyrax::identity::rax_identity::RaxIdentity" --><!-- doxytag: inherits="BaseIdentity" -->
 <p>This class handles all of the authentication requirements for working with the Rackspace Cloud.  
  <a href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#details">More...</a></p>
 <div class="dynheader">
@@ -116,8 +116,7 @@ Inheritance diagram for RaxIdentity:</div>
  <div class="center">
   <img src="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.png" usemap="#RaxIdentity_map" alt=""/>
   <map id="RaxIdentity_map" name="RaxIdentity_map">
-<area href="classpyrax_1_1base__identity_1_1BaseAuth.html" title="This class handles all of the basic authentication requirements for working with an OpenStack Cloud s..." alt="BaseAuth" shape="rect" coords="0,0,80,24"/>
-<area href="classpyrax_1_1fakes_1_1FakeIdentity.html" title="Class that returns canned authentication responses." alt="FakeIdentity" shape="rect" coords="0,112,80,136"/>
+<area href="classpyrax_1_1fakes_1_1FakeRaxIdentity.html" alt="FakeRaxIdentity" shape="rect" coords="0,56,101,80"/>
 </map>
  </div></div>
 
@@ -131,14 +130,16 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">If a valid token is already known, this call will use it to generate the service catalog.  <a href="#a2323e991798b13063610509c2bb4aaf4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#ab0abba97256f91ebca2ded800fcf440d">find_user_by_name</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a User object by searching for the supplied user name.  <a href="#ab0abba97256f91ebca2ded800fcf440d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a7b76b7abe1a446c07c41572021183d78">find_user_by_email</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a User object by searching for the supplied user's email address.  <a href="#a7b76b7abe1a446c07c41572021183d78"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#adf5de79a326a6b6b6eac3cba7e0b8cfb">find_user_by_id</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a User object by searching for the supplied user ID.  <a href="#adf5de79a326a6b6b6eac3cba7e0b8cfb"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a1090fc6dec8ecff76b4f98b2d028401e">get_user</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the user specified by either ID, username or email.  <a href="#a1090fc6dec8ecff76b4f98b2d028401e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a1a7d86495f2e95ce37b02894a6fe85df">update_user</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows you to update settings for a given user.  <a href="#a1a7d86495f2e95ce37b02894a6fe85df"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a752ff9d933b98fdeb87b51a7409f6d4a">list_credentials</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a user's non-password credentials.  <a href="#a752ff9d933b98fdeb87b51a7409f6d4a"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a65208fe274391d93c31231f9729f4d49">get_user_credentials</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a user's non-password credentials.  <a href="#a65208fe274391d93c31231f9729f4d49"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#ab24029edab02dc3a2aafe0b0cddd28f7">reset_api_key</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the API key for the specified user, or if no user is specified, for the current user.  <a href="#ab24029edab02dc3a2aafe0b0cddd28f7"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">username</a></td></tr>
@@ -187,10 +188,6 @@ Public Attributes</h2></td></tr>
 
 <p>If a valid token is already known, this call will use it to generate the service catalog. </p>
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a2323e991798b13063610509c2bb4aaf4">BaseAuth</a>.</p>
-
-<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a2323e991798b13063610509c2bb4aaf4">FakeIdentity</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="ac0665028c611e61881f7e9fd0e752b99"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::authenticate" ref="ac0665028c611e61881f7e9fd0e752b99" args="" -->
@@ -201,8 +198,36 @@ Public Attributes</h2></td></tr>
           <td class="memname">def <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#ac0665028c611e61881f7e9fd0e752b99">authenticate</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>username</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>password</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>api_key</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>tenant_id</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
@@ -211,9 +236,35 @@ Public Attributes</h2></td></tr>
 <p>If the user's credentials include an API key, the default behavior will work. </p>
 <p>But if they are using a password, the initial attempt will fail, so try again, but this time using the standard password format. </p>
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#ac0665028c611e61881f7e9fd0e752b99">BaseAuth</a>.</p>
+</div>
+</div>
+<a class="anchor" id="a7b76b7abe1a446c07c41572021183d78"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::find_user_by_email" ref="a7b76b7abe1a446c07c41572021183d78" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a7b76b7abe1a446c07c41572021183d78">find_user_by_email</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>email</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#ac0665028c611e61881f7e9fd0e752b99">FakeIdentity</a>.</p>
+<p>Returns a User object by searching for the supplied user's email address. </p>
+<p>Returns None if there is no match for the given ID. </p>
 
 </div>
 </div>
@@ -277,12 +328,12 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a65208fe274391d93c31231f9729f4d49"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::get_user_credentials" ref="a65208fe274391d93c31231f9729f4d49" args="" -->
+<a class="anchor" id="a1090fc6dec8ecff76b4f98b2d028401e"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::get_user" ref="a1090fc6dec8ecff76b4f98b2d028401e" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a65208fe274391d93c31231f9729f4d49">get_user_credentials</a> </td>
+          <td class="memname">def <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a1090fc6dec8ecff76b4f98b2d028401e">get_user</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -291,7 +342,19 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>user</em>&#160;</td>
+          <td class="paramname"><em>user_id</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>username</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>email</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -302,16 +365,18 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Returns a user's non-password credentials. </p>
+<p>Returns the user specified by either ID, username or email. </p>
+<p>Since more than user can have the same email address, searching by that term will return a list of 1 or more User objects. Searching by username or ID will return a single User.</p>
+<p>If a user_id that doesn't belong to the current account is searched for, a Forbidden exception is raised. When searching by username or email, a NotFound exception is raised if there is no matching user. </p>
 
 </div>
 </div>
-<a class="anchor" id="a752ff9d933b98fdeb87b51a7409f6d4a"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::list_credentials" ref="a752ff9d933b98fdeb87b51a7409f6d4a" args="" -->
+<a class="anchor" id="ab24029edab02dc3a2aafe0b0cddd28f7"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::reset_api_key" ref="ab24029edab02dc3a2aafe0b0cddd28f7" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a752ff9d933b98fdeb87b51a7409f6d4a">list_credentials</a> </td>
+          <td class="memname">def <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#ab24029edab02dc3a2aafe0b0cddd28f7">reset_api_key</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em>, </td>
@@ -320,7 +385,7 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>user</em>&#160;</td>
+          <td class="paramname"><em>user</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -331,7 +396,9 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Returns a user's non-password credentials. </p>
+<p>Resets the API key for the specified user, or if no user is specified, for the current user. </p>
+<p>Returns the newly-created API key.</p>
+<p>Resetting an API key does not invalidate any authenticated sessions, nor does it revoke any tokens. </p>
 
 </div>
 </div>
@@ -406,10 +473,6 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a48f0dc4cf47cd14cdfda7e8495b0a76b">BaseAuth</a>.</p>
-
-<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a48f0dc4cf47cd14cdfda7e8495b0a76b">FakeIdentity</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="a9dbb300e28bc21c8dab41b01883918eb"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::password" ref="a9dbb300e28bc21c8dab41b01883918eb" args="" -->
@@ -423,10 +486,6 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#ac0d6a26a6e1c25921ff65ba7790ee92d">BaseAuth</a>.</p>
-
-<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a9dbb300e28bc21c8dab41b01883918eb">FakeIdentity</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="a0adcbe0e0e6f64a29b1d205ede9632c1"></a><!-- doxytag: member="pyrax::identity::rax_identity::RaxIdentity::username" ref="a0adcbe0e0e6f64a29b1d205ede9632c1" args="" -->
@@ -439,10 +498,6 @@ Public Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#aad02f271a6536fa078c6d1369ffdadc4">BaseAuth</a>.</p>
-
-<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">FakeIdentity</a>.</p>
 
 </div>
 </div>
@@ -467,7 +522,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 24 2014 11:18:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 6 2014 11:50:12 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -1,9 +1,9 @@
 var searchData=
 [
   ['reason',['reason',['../classpyrax_1_1fakes_1_1FakeResponse.html#a5841dcdf2d3ce6b320e3b4c6ee7f946a',1,'pyrax::fakes::FakeResponse']]],
-  ['region',['region',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a1b9edddb3735d131c67e9e824f07c402',1,'pyrax::base_identity::BaseAuth']]],
+  ['region',['region',['../classpyrax_1_1base__identity_1_1Endpoint.html#a1b9edddb3735d131c67e9e824f07c402',1,'pyrax::base_identity::Endpoint.region()'],['../classpyrax_1_1base__identity_1_1BaseIdentity.html#a1b9edddb3735d131c67e9e824f07c402',1,'pyrax::base_identity::BaseIdentity.region()']]],
   ['region_5fname',['region_name',['../classpyrax_1_1client_1_1BaseClient.html#a326b5b91b887c67a677e2eb509b569b6',1,'pyrax::client::BaseClient']]],
-  ['regions',['regions',['../classpyrax_1_1base__identity_1_1BaseAuth.html#a4c4786354df7358bf12c3c65069dd8b7',1,'pyrax::base_identity::BaseAuth.regions()'],['../namespacepyrax.html#a2b45bebec67926b49ea55f14eb0b8f8e',1,'pyrax.regions()']]],
+  ['regions',['regions',['../classpyrax_1_1base__identity_1_1BaseIdentity.html#a4c4786354df7358bf12c3c65069dd8b7',1,'pyrax::base_identity::BaseIdentity.regions()'],['../namespacepyrax.html#a2b45bebec67926b49ea55f14eb0b8f8e',1,'pyrax.regions()']]],
   ['reload',['reload',['../classpyrax_1_1autoscale_1_1AutoScalePolicy.html#ac5c05266f4f3b5937cefb6a818fc6675',1,'pyrax::autoscale::AutoScalePolicy.reload()'],['../classpyrax_1_1autoscale_1_1AutoScaleWebhook.html#ac5c05266f4f3b5937cefb6a818fc6675',1,'pyrax::autoscale::AutoScaleWebhook.reload()'],['../classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html#ac5c05266f4f3b5937cefb6a818fc6675',1,'pyrax::cloudmonitoring::CloudMonitorCheck.reload()'],['../classpyrax_1_1cloudmonitoring_1_1CloudMonitorAlarm.html#ac5c05266f4f3b5937cefb6a818fc6675',1,'pyrax::cloudmonitoring::CloudMonitorAlarm.reload()'],['../classpyrax_1_1resource_1_1BaseResource.html#ac5c05266f4f3b5937cefb6a818fc6675',1,'pyrax::resource::BaseResource.reload()']]],
   ['req_5fmethods',['req_methods',['../namespacepyrax_1_1http.html#a3dcfd54132333c9f02c8bd73426e98bb',1,'pyrax::http']]],
   ['request_5fid',['request_id',['../classpyrax_1_1exceptions_1_1ClientException.html#a24b613add05b03f7af1be9c4dab66d59',1,'pyrax::exceptions::ClientException']]],

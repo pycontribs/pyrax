@@ -1,5 +1,40 @@
 # Release Notes for pyrax
 
+###2014.05.06 - Version 1.8.0
+  - Identity
+    - Added **Context Objects** as a way to encapsulate an authenticated
+      session.
+    - Context objects remove the limitation in pyrax of only working with a
+      single authenticated session at a time.
+    - Improves the ability to work with multiple providers at once, or across
+      multiple regions for the same provider.
+    - More information in the **context_objects.md** document in the docs/
+      folder.
+
+  - Cloud Files
+    - Fixed missing URL quoting for bulk deletes. GitHub #350
+    - Multiple improvements to sync_folder_to_container in GitHub #355:
+      - Added the ability to specify a prefix to be added to the object name
+        during checking and uploading during a sync
+      - Sped up sync_folder_to_container by having it pull down a list of
+        objects all at once to use to compare against instead of checking once
+        for each file.
+      - Added verbose logging to sync_folder_to_container (Originally requested
+        in GitHub #250)
+
+  - General
+    - Fixed issue where one bad section in the configuration file caused threw
+      an exception that terminated your app. GitHub #346
+    - Removed the need to specify a tenant_id when authenticating with a token.
+      GitHub #345
+
+  - Block Storage
+    - Added missing update methods to Cloud Block Storage.
+
+  - Documentation
+    - Updated the queues docs to include listing of queues. GitHub #353
+
+
 ###2014.04.07 - Version 1.7.3
   - Identity
     - Updated the identity module and tests to work with the new http library.
@@ -77,7 +112,8 @@
 ###2014.02.03 - Version 1.6.3
  - Cloud Monitoring:
    - Added back missing error info. GitHub #285
-   - Added support for Overviews and Changelogs from Cloud Monitoring. GitHub #267
+   - Added support for Overviews and Changelogs from Cloud Monitoring. GitHub
+     #267
  - Autoscale:
    - Corrected how networks are created when none are specified. GitHub #262
    - Added load balancers to sample code for creating a scaling group.
@@ -87,12 +123,16 @@
  - Cloud Files:
    - Add `use_servicenet` setting for Cloud Files. GitHub #273
    - Fixed bug in passing TTL to `delete_in_seconds()`. GitHub #281
-   - Added a fix for GETting 0-byte content with Dynamic Large Objects (multipart files). GitHub #258
-   - Include container name in `X-Object-Manifest` header when creating DLO. GitHub #261
-   - Use `X-Object-Manifest` instead of `X-Object-Meta-Manifest` when creating DLO. GitHub #260
+   - Added a fix for GETting 0-byte content with Dynamic Large Objects
+     (multipart files). GitHub #258
+   - Include container name in `X-Object-Manifest` header when creating DLO.
+     GitHub #261
+   - Use `X-Object-Manifest` instead of `X-Object-Meta-Manifest` when creating
+     DLO. GitHub #260
  - Cloud Load Balancers:
    - Added `httpsRedirect` param for Cloud Load Balancers. GitHub #277
-   - Adding an entry for the `id` attribute to the Node's `to_dict()` method. GitHub #276
+   - Adding an entry for the `id` attribute to the Node's `to_dict()` method.
+     GitHub #276
  - Cloud DNS:
    - Handle empty bodies in GET responses from the Cloud DNS API. GitHub #280
  - Cloud Servers:
@@ -273,7 +313,8 @@
 - Fixed a bug that prevented region from being properly set. Issue #86.
 
 ###2013.06.04 - Version 1.4.4
-- Fixed a bug when using environment variables to set the identity_type. Issue #82.
+- Fixed a bug when using environment variables to set the identity_type. Issue
+  #82.
 
 ###2013.06.03 - Version 1.4.3
 - Added support for having objects automatically deleted from Cloud Files after
@@ -288,22 +329,23 @@
 
 ###2013.05.29 - Version 1.4.0
 - Added support for **all** OpenStack clouds. Previous versions only supported
-    Rackspace authentication methods.
+  Rackspace authentication methods.
 - Configuration files now support multiple cloud environments in the same file.
-    You can switch between environments by calling `pyrax.set_environment("env")`,
-    where `env` is the name of the desired environment.
+  You can switch between environments by calling
+  `pyrax.set_environment("env")`, where `env` is the name of the desired
+  environment.
 - Configuration settings can now be stored in environment variables. These all
-    begin with `CLOUD_`; a full list can be found in the [main pyrax
-    documentation](https://github.com/rackspace/pyrax/tree/master/docs/pyrax_doc.md).
+  begin with `CLOUD_`; a full list can be found in the [main pyrax
+  documentation](https://github.com/rackspace/pyrax/tree/master/docs/pyrax_doc.md).
 - Available regions are now available in the `pyrax.regions` attribute after
-    authentication.
+  authentication.
 - Services that are available for the current cloud provider are now available
-    in the `pyrax.services` attribute.
+  in the `pyrax.services` attribute.
 - Fixed an issue in Cloud Databases in which the `volume` attribute was
-    sometimes a dict and sometimes an instance of `CloudDatabaseVolume`. Now it
-    will always be an instance.
+  sometimes a dict and sometimes an instance of `CloudDatabaseVolume`. Now it
+  will always be an instance.
 - Added a smoke test script to the integrated tests. It currently covers the
-    compute, networking, database, and object_store services.
+  compute, networking, database, and object_store services.
 - Removed unnecessary hack for compute URIs.
 - Cleaned up some naming and formatting inconsistencies.
 
@@ -412,7 +454,7 @@ container class.
 'DRAINING' condition (GitHub #6). Modified the rax_identity to accept
 UTC dates returned from the LON datacenter (GitHub #5). Fixed an
 issue that prevented HTTP debugging from turning off in swiftclient.
-             
+
 
 ###2013.01.15 - Version 1.2.4
 - Added support for keychain storage of credentials for authentication.
@@ -422,7 +464,8 @@ issue that prevented HTTP debugging from turning off in swiftclient.
 - Added the 'halfClosed' parameter to the create() method of load balancers.
 
 ###2013.01.03 - Version 1.2.2
-- Fixed an issue that was causing calls to cloudservers to needlessly re-authenticate.
+- Fixed an issue that was causing calls to cloudservers to needlessly
+  re-authenticate.
 
 ###2012.12.27 - Version 1.2.1
 - Removed old class docs that were no longer needed in this release.
@@ -437,7 +480,7 @@ issue that prevented HTTP debugging from turning off in swiftclient.
 - Added a requirement for python-novaclient>=2.10.0.
 
 ###2012.12.18 - Version 1.1.6b
-- Removed the code that controlled when pyrax connected to services. 
+- Removed the code that controlled when pyrax connected to services.
 - Changed the User-agent format to match the other SDKs.
 
 ###2012.12.17 - Version 1.1.5b
@@ -447,23 +490,28 @@ issue that prevented HTTP debugging from turning off in swiftclient.
 ###2012.12.13 - Version 1.1.4b
 - Added the ability to connect to the internal URL for Cloud Files.
 - Added limit and marker to the base client/manager classes.
-- Added the cloudfiles Container and StorageObject classes to the pyrax namespace.
+- Added the cloudfiles Container and StorageObject classes to the pyrax
+  namespace.
 
 ###2012.12.10 - Version 1.1.2b
 - Added a test that was missing in the previous release.
 
 ###2012.12.07 - Version 1.1.1b
-- Added the ability for developers to customize the User-agent string for their applications.
+- Added the ability for developers to customize the User-agent string for their
+  applications.
 
 ###2012.11.26 - Version 1.1.1b
 - Added Cloud Block Storage support.
-- Added the refactored code for Cloud Load Balancers that removes the dependency on the python-cloudlb library.
+- Added the refactored code for Cloud Load Balancers that removes the
+  dependency on the python-cloudlb library.
 
 ###2012.11.24 - Version 1.0.4b
 - Maintenance fix release.
 
 ###2012.11.20
-- Improved the handling of CDN calls so they don't fail as often, and are more resilient when they do.
+- Improved the handling of CDN calls so they don't fail as often, and are more
+  resilient when they do.
 
 ###2012.11.06
-- Release of the initial beta for pyrax. Supports Cloud Servers, Cloud Files, and Cloud Load Balancers.
+- Release of the initial beta for pyrax. Supports Cloud Servers, Cloud Files,
+  and Cloud Load Balancers.

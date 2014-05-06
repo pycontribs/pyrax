@@ -111,6 +111,32 @@ class SelfDeletingTempDirectory(object):
         shutil.rmtree(self.name)
 
 
+
+class DotDict(dict):
+    """
+    Dictionary subclass that allows accessing keys via dot notation.
+
+    If the key is not present, an AttributeError is raised.
+    """
+    _att_mapper = {}
+    _fail = object()
+
+    def __init__(self, *args, **kwargs):
+        super(DotDict, self).__init__(*args, **kwargs)
+
+    def __getattr__(self, att):
+        att = self._att_mapper.get(att, att)
+        ret = self.get(att, self._fail)
+        if ret is self._fail:
+            raise AttributeError("'%s' object has no attribute '%s'" %
+                    (self.__class__.__name__, att))
+        return ret
+
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
+
+
 def get_checksum(content, encoding="utf8", block_size=8192):
     """
     Returns the MD5 checksum in hex for the given content. If 'content'

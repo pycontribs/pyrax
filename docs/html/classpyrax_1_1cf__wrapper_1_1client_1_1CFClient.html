@@ -2315,7 +2315,19 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>ignore_timestamps</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>ignore_timestamps</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>object_prefix</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>verbose</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2329,7 +2341,9 @@ Properties</h2></td></tr>
 <p>Compares the contents of the specified folder, and checks to make sure that the corresponding object is present in the specified container. </p>
 <p>If there is no remote object matching the local file, it is created. If a matching object exists, the etag is examined to determine if the object in the container matches the local file; if they differ, the container is updated with the local file if the local file is newer when `ignore_timestamps' is False (default). If `ignore_timestamps` is True, the object is overwritten with the local file contents whenever the etags differ. NOTE: the timestamp of a remote object is the time it was uploaded, not the original modification time of the file stored in that object. Unless 'include_hidden' is True, files beginning with an initial period are ignored.</p>
 <p>If the 'delete' option is True, any objects in the container that do not have corresponding files in the local folder are deleted.</p>
-<p>You can selectively ignore files by passing either a single pattern or a list of patterns; these will be applied to the individual folder and file names, and any names that match any of the 'ignore' patterns will not be uploaded. The patterns should be standard *nix-style shell patterns; e.g., '*pyc' will ignore all files ending in 'pyc', such as 'program.pyc' and 'abcpyc'. </p>
+<p>You can selectively ignore files by passing either a single pattern or a list of patterns; these will be applied to the individual folder and file names, and any names that match any of the 'ignore' patterns will not be uploaded. The patterns should be standard *nix-style shell patterns; e.g., '*pyc' will ignore all files ending in 'pyc', such as 'program.pyc' and 'abcpyc'.</p>
+<p>If `object_prefix` is set it will be appended to the object name when it is checked and uploaded to the container. For example, if you use sync_folder_to_container("folderToSync/", myContainer, object_prefix="imgFolder") it will upload the files to the container/imgFolder/... instead of just container/...</p>
+<p>Set `verbose` to True to make it print what is going on. It will show which files are being uploaded and which ones are not and why. </p>
 
 </div>
 </div>
@@ -2668,7 +2682,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 24 2013 09:26:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 6 2014 11:50:08 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

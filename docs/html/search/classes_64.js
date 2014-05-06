@@ -11,6 +11,7 @@ var searchData=
   ['domainrecordupdatefailed',['DomainRecordUpdateFailed',['../classpyrax_1_1exceptions_1_1DomainRecordUpdateFailed.html',1,'pyrax::exceptions']]],
   ['domainresultsiterator',['DomainResultsIterator',['../classpyrax_1_1clouddns_1_1DomainResultsIterator.html',1,'pyrax::clouddns']]],
   ['domainupdatefailed',['DomainUpdateFailed',['../classpyrax_1_1exceptions_1_1DomainUpdateFailed.html',1,'pyrax::exceptions']]],
+  ['dotdict',['DotDict',['../classpyrax_1_1utils_1_1DotDict.html',1,'pyrax::utils']]],
   ['duplicatequeue',['DuplicateQueue',['../classpyrax_1_1exceptions_1_1DuplicateQueue.html',1,'pyrax::exceptions']]],
   ['duplicateuser',['DuplicateUser',['../classpyrax_1_1exceptions_1_1DuplicateUser.html',1,'pyrax::exceptions']]]
 ];

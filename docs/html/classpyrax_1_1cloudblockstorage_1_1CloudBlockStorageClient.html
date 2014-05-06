@@ -134,10 +134,16 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Detaches the volume from whatever device it is attached to.  <a href="#acaedb9678123c696fc17b7d4d46e1a10"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#ab4d507038522284eb9943c4c3a9b64c6">delete_volume</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the volume.  <a href="#ab4d507038522284eb9943c4c3a9b64c6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#abe52b977c101e59f342489ed18140819">update</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the specified values on the specified volume.  <a href="#abe52b977c101e59f342489ed18140819"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a75cc4154491155dec3c34ea545de7d36">create_snapshot</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a snapshot of the volume, with an optional name and description.  <a href="#a75cc4154491155dec3c34ea545de7d36"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a10f46ed85249ae2f94a60635077c8f58">get_snapshot</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the snapshot with the specified snapshot ID value.  <a href="#a10f46ed85249ae2f94a60635077c8f58"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#ad17401ada26477d78dc6b08c99627544">delete_snapshot</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the snapshot.  <a href="#ad17401ada26477d78dc6b08c99627544"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#aaadd800ff1d2b105b80d9744b73475c4">update_snapshot</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the specified values on the specified snapshot.  <a href="#aaadd800ff1d2b105b80d9744b73475c4"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a8ccf841cb59e451791bcb2e1ac4f1edc">name</a> = &quot;Cloud Block Storage&quot;</td></tr>
@@ -327,6 +333,35 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a10f46ed85249ae2f94a60635077c8f58"></a><!-- doxytag: member="pyrax::cloudblockstorage::CloudBlockStorageClient::get_snapshot" ref="a10f46ed85249ae2f94a60635077c8f58" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#a10f46ed85249ae2f94a60635077c8f58">get_snapshot</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>snapshot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns the snapshot with the specified snapshot ID value. </p>
+
+</div>
+</div>
 <a class="anchor" id="a00cc0e02f5f5345225175cad0120c697"></a><!-- doxytag: member="pyrax::cloudblockstorage::CloudBlockStorageClient::list_snapshots" ref="a00cc0e02f5f5345225175cad0120c697" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -362,6 +397,90 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Returns a list of all available volume types. </p>
+
+</div>
+</div>
+<a class="anchor" id="abe52b977c101e59f342489ed18140819"></a><!-- doxytag: member="pyrax::cloudblockstorage::CloudBlockStorageClient::update" ref="abe52b977c101e59f342489ed18140819" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#abe52b977c101e59f342489ed18140819">update</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>volume</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>display_name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>display_description</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Update the specified values on the specified volume. </p>
+<p>You may specify one or more values to update. </p>
+
+</div>
+</div>
+<a class="anchor" id="aaadd800ff1d2b105b80d9744b73475c4"></a><!-- doxytag: member="pyrax::cloudblockstorage::CloudBlockStorageClient::update_snapshot" ref="aaadd800ff1d2b105b80d9744b73475c4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html#aaadd800ff1d2b105b80d9744b73475c4">update_snapshot</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>display_name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>display_description</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Update the specified values on the specified snapshot. </p>
+<p>You may specify one or more values to update. </p>
 
 </div>
 </div>
@@ -402,7 +521,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 24 2014 11:17:58 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 6 2014 11:50:08 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

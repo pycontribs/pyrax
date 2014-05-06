@@ -35,13 +35,14 @@ providing an object-oriented interface to the Swift object store.
 
 It also adds in CDN functionality that is Rackspace-specific.
 """
+
+from __future__ import absolute_import
 from functools import wraps
 import inspect
 import logging
 import os
+import six.moves.configparser as ConfigParser
 import warnings
-
-from six.moves import configparser
 
 # keyring is an optional import
 try:
@@ -59,21 +60,21 @@ try:
     from . import http
     from . import version
 
-    import cf_wrapper.client as _cf
+    from .cf_wrapper import client as _cf
     from novaclient import exceptions as _cs_exceptions
     from novaclient import auth_plugin as _cs_auth_plugin
     from novaclient.v1_1 import client as _cs_client
     from novaclient.v1_1.servers import Server as CloudServer
 
-    from autoscale import AutoScaleClient
-    from clouddatabases import CloudDatabaseClient
-    from cloudloadbalancers import CloudLoadBalancerClient
-    from cloudblockstorage import CloudBlockStorageClient
-    from clouddns import CloudDNSClient
-    from cloudnetworks import CloudNetworkClient
-    from cloudmonitoring import CloudMonitorClient
-    from image import ImageClient
-    from queueing import QueueClient
+    from .autoscale import AutoScaleClient
+    from .clouddatabases import CloudDatabaseClient
+    from .cloudloadbalancers import CloudLoadBalancerClient
+    from .cloudblockstorage import CloudBlockStorageClient
+    from .clouddns import CloudDNSClient
+    from .cloudnetworks import CloudNetworkClient
+    from .cloudmonitoring import CloudMonitorClient
+    from .image import ImageClient
+    from .queueing import QueueClient
 except ImportError:
     # See if this is the result of the importing of version.py in setup.py
     callstack = inspect.stack()
@@ -118,6 +119,8 @@ regions = tuple()
 services = tuple()
 
 _client_classes = {
+        "object_store": _cf.CFClient,
+        "compute": _cs_client.Client,
         "database": CloudDatabaseClient,
         "load_balancer": CloudLoadBalancerClient,
         "volume": CloudBlockStorageClient,
@@ -168,7 +171,7 @@ class Settings(object):
             "verify_ssl": "CLOUD_VERIFY_SSL",
             "use_servicenet": "USE_SERVICENET",
             }
-    _settings = {"default": dict.fromkeys(env_dct.keys())}
+    _settings = {"default": dict.fromkeys(list(env_dct.keys()))}
     _default_set = False
 
 
@@ -210,7 +213,7 @@ class Settings(object):
         else:
             if env not in self._settings:
                 raise exc.EnvironmentNotFound("There is no environment named "
-                "'%s'." % env)
+                        "'%s'." % env)
         dct = self._settings[env]
         if key not in dct:
             raise exc.InvalidSetting("The setting '%s' is not defined." % key)
@@ -257,7 +260,7 @@ class Settings(object):
 
     @property
     def environments(self):
-        return self._settings.keys()
+        return list(self._settings.keys())
 
 
     def read_config(self, config_file):
@@ -265,17 +268,17 @@ class Settings(object):
         Parses the specified configuration file and stores the values. Raises
         an InvalidConfigurationFile exception if the file is not well-formed.
         """
-        cfg = configparser.SafeConfigParser()
+        cfg = ConfigParser.SafeConfigParser()
         try:
             cfg.read(config_file)
-        except configparser.MissingSectionHeaderError as e:
+        except ConfigParser.MissingSectionHeaderError as e:
             # The file exists, but doesn't have the correct format.
             raise exc.InvalidConfigurationFile(e)
 
         def safe_get(section, option, default=None):
             try:
                 return cfg.get(section, option)
-            except (configparser.NoSectionError, configparser.NoOptionError):
+            except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
                 return default
 
         # A common mistake is including credentials in the config file. If any
@@ -297,8 +300,9 @@ class Settings(object):
             dct = self._settings[section_name] = {}
             dct["region"] = safe_get(section, "region", default_region)
             ityp = safe_get(section, "identity_type")
-            dct["identity_type"] = _id_type(ityp)
-            dct["identity_class"] = _import_identity(ityp)
+            if ityp:
+                dct["identity_type"] = _id_type(ityp)
+                dct["identity_class"] = _import_identity(ityp)
             # Handle both the old and new names for this setting.
             debug = safe_get(section, "debug")
             if debug is None:
@@ -377,18 +381,46 @@ def set_default_region(region):
     default_region = region
 
 
-def _create_identity():
+def create_context(id_type=None, env=None, username=None, password=None,
+        tenant_id=None, tenant_name=None, api_key=None, verify_ssl=None):
+    """
+    Returns an instance of the specified identity class, or if none is
+    specified, an instance of the current setting for 'identity_class'.
+
+    You may optionally set the environment by passing the name of that
+    environment in the 'env' parameter.
+    """
+    if env:
+        set_environment(env)
+    return _create_identity(id_type=id_type, username=username,
+            password=password, tenant_id=tenant_id, tenant_name=tenant_name,
+            api_key=api_key, verify_ssl=verify_ssl, return_context=True)
+
+
+def _create_identity(id_type=None, username=None, password=None, tenant_id=None,
+            tenant_name=None, api_key=None, verify_ssl=None,
+            return_context=False):
     """
     Creates an instance of the current identity_class and assigns it to the
-    module-level name 'identity'.
+    module-level name 'identity' by default. If 'return_context' is True, the
+    module-level 'identity' is untouched, and instead the instance is returned.
     """
-    global identity
-    cls = settings.get("identity_class")
+    if id_type:
+        cls = _import_identity(id_type)
+    else:
+        cls = settings.get("identity_class")
     if not cls:
         raise exc.IdentityClassNotDefined("No identity class has "
                 "been defined for the current environment.")
-    verify_ssl = get_setting("verify_ssl")
-    identity = cls(verify_ssl=verify_ssl)
+    if verify_ssl is None:
+        verify_ssl = get_setting("verify_ssl")
+    context = cls(username=username, password=password, tenant_id=tenant_id,
+            tenant_name=tenant_name, api_key=api_key, verify_ssl=verify_ssl)
+    if return_context:
+        return context
+    else:
+        global identity
+        identity = context
 
 
 def _assure_identity(fnc):
@@ -412,13 +444,16 @@ def _require_auth(fnc):
     return _wrapped
 
 
-@_assure_identity
-def _safe_region(region=None):
+def _safe_region(region=None, context=None):
     """Value to use when no region is specified."""
     ret = region or settings.get("region")
+    context = context or identity
     if not ret:
         # Nothing specified; get the default from the identity object.
-        ret = identity.get_default_region()
+        if not context:
+            _create_identity()
+            context = identity
+        ret = context.get_default_region()
     if not ret:
         # Use the first available region
         try:
@@ -452,9 +487,8 @@ def set_credentials(username, api_key=None, password=None, region=None,
     region = _safe_region(region)
     tenant_id = tenant_id or settings.get("tenant_id")
     identity.set_credentials(username=username, password=pw_key,
-            tenant_id=tenant_id, region=region)
-    if authenticate:
-        _auth_and_connect(region=region)
+            tenant_id=tenant_id, region=region, authenticate=authenticate)
+    connect_to_services(region=region)
 
 
 @_assure_identity
@@ -479,9 +513,9 @@ def set_credential_file(cred_file, region=None, authenticate=True):
     for that region, and set the default region for connections.
     """
     region = _safe_region(region)
-    identity.set_credential_file(cred_file, region=region)
-    if authenticate:
-        _auth_and_connect(region=region)
+    identity.set_credential_file(cred_file, region=region,
+            authenticate=authenticate)
+    connect_to_services(region=region)
 
 
 def keyring_auth(username=None, region=None, authenticate=True):
@@ -514,23 +548,6 @@ def keyring_auth(username=None, region=None, authenticate=True):
             authenticate=authenticate)
 
 
-def _auth_and_connect(region=None, connect=True):
-    """
-    Handles the call to authenticate, and if successful, connects to the
-    various services.
-    """
-    global default_region
-    identity.authenticated = False
-    default_region = region or default_region
-    try:
-        identity.authenticate()
-    except exc.AuthenticationFailed:
-        clear_credentials()
-        raise
-    if connect:
-        connect_to_services(region=region)
-
-
 @_assure_identity
 def authenticate(connect=True):
     """
@@ -545,8 +562,11 @@ def authenticate(connect=True):
     Normally after successful authentication, connections to the various
     services will be made. However, passing False to the `connect` parameter
     will skip the service connection step.
+
+    The 'connect' parameter is retained for backwards compatibility. It no
+    longer has any effect.
     """
-    _auth_and_connect(connect=connect)
+    identity.authenticate()
 
 
 def plug_hole_in_swiftclient_auth(clt, url):
@@ -610,46 +630,50 @@ def connect_to_services(region=None):
     queues = connect_to_queues(region=region)
 
 
-def _get_service_endpoint(svc, region=None, public=True):
+def _get_service_endpoint(context, svc, region=None, public=True):
     """
     Parses the services dict to get the proper endpoint for the given service.
     """
     region = _safe_region(region)
-    url_type = {True: "public_url", False: "internal_url"}[public]
-    ep = identity.services.get(svc, {}).get("endpoints", {}).get(
-            region, {}).get(url_type)
+    # If a specific context is passed, use that. Otherwise, use the global
+    # identity reference.
+    context = context or identity
+    url_type = {True: "public", False: "private"}[public]
+    svc_obj = context.services.get(svc)
+    if not svc_obj:
+        return None
+    ep = svc_obj.endpoints.get(region, {}).get(url_type)
     if not ep:
         # Try the "ALL" region, and substitute the actual region
-        ep = identity.services.get(svc, {}).get("endpoints", {}).get(
-                "ALL", {}).get(url_type)
+        ep = svc_obj.endpoints.get("ALL", {}).get(url_type)
     return ep
 
 
-@_require_auth
-def connect_to_cloudservers(region=None, **kwargs):
+def connect_to_cloudservers(region=None, context=None, **kwargs):
     """Creates a client for working with cloud servers."""
+    context = context or identity
     _cs_auth_plugin.discover_auth_systems()
     id_type = get_setting("identity_type")
     if id_type != "keystone":
         auth_plugin = _cs_auth_plugin.load_plugin(id_type)
     else:
         auth_plugin = None
-    region = _safe_region(region)
-    mgt_url = _get_service_endpoint("compute", region)
+    region = _safe_region(region, context=context)
+    mgt_url = _get_service_endpoint(context, "compute", region)
     cloudservers = None
     if not mgt_url:
         # Service is not available
         return
     insecure = not get_setting("verify_ssl")
-    cloudservers = _cs_client.Client(identity.username, identity.password,
-            project_id=identity.tenant_id, auth_url=identity.auth_endpoint,
+    cloudservers = _cs_client.Client(context.username, context.password,
+            project_id=context.tenant_id, auth_url=context.auth_endpoint,
             auth_system=id_type, region_name=region, service_type="compute",
             auth_plugin=auth_plugin, insecure=insecure,
             http_log_debug=_http_debug, **kwargs)
     agt = cloudservers.client.USER_AGENT
     cloudservers.client.USER_AGENT = _make_agent_name(agt)
     cloudservers.client.management_url = mgt_url
-    cloudservers.client.auth_token = identity.token
+    cloudservers.client.auth_token = context.token
     cloudservers.exceptions = _cs_exceptions
     # Add some convenience methods
     cloudservers.list_images = cloudservers.images.list
@@ -677,8 +701,7 @@ def connect_to_cloudservers(region=None, **kwargs):
     return cloudservers
 
 
-@_require_auth
-def connect_to_cloudfiles(region=None, public=None):
+def connect_to_cloudfiles(region=None, public=None, context=None):
     """
     Creates a client for working with cloud files. The default is to connect
     to the public URL; if you need to work with the ServiceNet connection, pass
@@ -688,23 +711,26 @@ def connect_to_cloudfiles(region=None, public=None):
         is_public = not bool(get_setting("use_servicenet"))
     else:
         is_public = public
-
-    region = _safe_region(region)
-    cf_url = _get_service_endpoint("object_store", region, public=is_public)
+    # If a specific context is passed, use that. Otherwise, use the global
+    # identity reference.
+    context = context or identity
+    region = _safe_region(region, context=context)
+    cf_url = _get_service_endpoint(context, "object_store", region,
+            public=is_public)
     cloudfiles = None
     if not cf_url:
         # Service is not available
         return
-    cdn_url = _get_service_endpoint("object_cdn", region)
+    cdn_url = _get_service_endpoint(context, "object_cdn", region)
     ep_type = {True: "publicURL", False: "internalURL"}[is_public]
-    opts = {"tenant_id": identity.tenant_name, "auth_token": identity.token,
-            "endpoint_type": ep_type, "tenant_name": identity.tenant_name,
+    opts = {"tenant_id": context.tenant_name, "auth_token": context.token,
+            "endpoint_type": ep_type, "tenant_name": context.tenant_name,
             "object_storage_url": cf_url, "object_cdn_url": cdn_url,
             "region_name": region}
     verify_ssl = get_setting("verify_ssl")
-    cloudfiles = _cf.CFClient(identity.auth_endpoint, identity.username,
-            identity.password, tenant_name=identity.tenant_name,
-            preauthurl=cf_url, preauthtoken=identity.token, auth_version="2",
+    cloudfiles = _cf.CFClient(context.auth_endpoint, context.username,
+            context.password, tenant_name=context.tenant_name,
+            preauthurl=cf_url, preauthtoken=context.token, auth_version="2",
             os_options=opts, verify_ssl=verify_ssl, http_log_debug=_http_debug)
     cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)
     return cloudfiles
@@ -713,13 +739,13 @@ def connect_to_cloudfiles(region=None, public=None):
 @_require_auth
 def _create_client(ep_name, region, public=True):
     region = _safe_region(region)
-    ep = _get_service_endpoint(ep_name.split(":")[0], region, public=public)
+    ep = _get_service_endpoint(None, ep_name.split(":")[0], region, public=public)
     if not ep:
         return
     verify_ssl = get_setting("verify_ssl")
     cls = _client_classes[ep_name]
-    client = cls(region_name=region, management_url=ep, verify_ssl=verify_ssl,
-            http_log_debug=_http_debug)
+    client = cls(identity, region_name=region, management_url=ep,
+            verify_ssl=verify_ssl, http_log_debug=_http_debug)
     client.user_agent = _make_agent_name(client.user_agent)
     return client
 
@@ -769,16 +795,24 @@ def connect_to_queues(region=None, public=True):
     return _create_client(ep_name="queues", region=region, public=public)
 
 
+def client_class_for_service(service):
+    """
+    Returns the client class registered for the given service, or None if there
+    is no such service, or if no class has been registered.
+    """
+    return _client_classes.get(service)
+
+
 def get_http_debug():
     return _http_debug
 
 
-@_assure_identity
 def set_http_debug(val):
     global _http_debug
     _http_debug = val
     # Set debug on the various services
-    identity.http_log_debug = val
+    if identity:
+        identity.http_log_debug = val
     for svc in (cloudservers, cloudfiles, cloud_loadbalancers,
             cloud_blockstorage, cloud_databases, cloud_dns, cloud_networks,
             autoscale, images, queues):
