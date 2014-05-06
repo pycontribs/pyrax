@@ -106,7 +106,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">FakeIdentity Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<!-- doxytag: class="pyrax::fakes::FakeIdentity" --><!-- doxytag: inherits="pyrax::identity::rax_identity::RaxIdentity" -->
+<!-- doxytag: class="pyrax::fakes::FakeIdentity" --><!-- doxytag: inherits="pyrax::base_identity::BaseIdentity" -->
 <p>Class that returns canned authentication responses.  
  <a href="classpyrax_1_1fakes_1_1FakeIdentity.html#details">More...</a></p>
 <div class="dynheader">
@@ -115,8 +115,7 @@ Inheritance diagram for FakeIdentity:</div>
  <div class="center">
   <img src="classpyrax_1_1fakes_1_1FakeIdentity.png" usemap="#FakeIdentity_map" alt=""/>
   <map id="FakeIdentity_map" name="FakeIdentity_map">
-<area href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html" title="This class handles all of the authentication requirements for working with the Rackspace Cloud..." alt="RaxIdentity" shape="rect" coords="0,56,80,80"/>
-<area href="classpyrax_1_1base__identity_1_1BaseAuth.html" title="This class handles all of the basic authentication requirements for working with an OpenStack Cloud s..." alt="BaseAuth" shape="rect" coords="0,0,80,24"/>
+<area href="classpyrax_1_1base__identity_1_1BaseIdentity.html" title="This class handles all of the basic authentication requirements for working with an OpenStack Cloud s..." alt="BaseIdentity" shape="rect" coords="0,0,80,24"/>
 </map>
  </div></div>
 
@@ -126,9 +125,8 @@ Inheritance diagram for FakeIdentity:</div>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#ac0665028c611e61881f7e9fd0e752b99">authenticate</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">If the user's credentials include an API key, the default behavior will work.  <a href="#ac0665028c611e61881f7e9fd0e752b99"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a2323e991798b13063610509c2bb4aaf4">auth_with_token</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">If a valid token is already known, this call will use it to generate the service catalog.  <a href="#a2323e991798b13063610509c2bb4aaf4"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">If a valid token is already known, this call uses it to generate the service catalog.  <a href="#a2323e991798b13063610509c2bb4aaf4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#ab99f34de8275c77cf5ff09b1d7d0a04a">get_token</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the auth token, if it is valid.  <a href="#ab99f34de8275c77cf5ff09b1d7d0a04a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#aa3cc0ca395eea5168bbd9033dbf1b8ef">fake_response</a></td></tr>
@@ -215,9 +213,9 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>If a valid token is already known, this call will use it to generate the service catalog. </p>
+<p>If a valid token is already known, this call uses it to generate the service catalog. </p>
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a2323e991798b13063610509c2bb4aaf4">RaxIdentity</a>.</p>
+<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#a2323e991798b13063610509c2bb4aaf4">BaseIdentity</a>.</p>
 
 </div>
 </div>
@@ -235,11 +233,6 @@ Public Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-
-<p>If the user's credentials include an API key, the default behavior will work. </p>
-<p>But if they are using a password, the initial attempt will fail, so try again, but this time using the standard password format. </p>
-
-<p>Reimplemented from <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#ac0665028c611e61881f7e9fd0e752b99">RaxIdentity</a>.</p>
 
 </div>
 </div>
@@ -286,9 +279,9 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Returns the auth token, if it is valid. </p>
-<p>If not, calls the auth endpoint to get a new token. Passing 'True' to 'force' will force a call for a new token, even if there already is a valid token. </p>
+<p>If not, calls the auth endpoint to get a new token. Passing 'True' to 'force' forces a call for a new token, even if there already is a valid token. </p>
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#ab99f34de8275c77cf5ff09b1d7d0a04a">BaseAuth</a>.</p>
+<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#ab99f34de8275c77cf5ff09b1d7d0a04a">BaseIdentity</a>.</p>
 
 </div>
 </div>
@@ -304,7 +297,7 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a48f0dc4cf47cd14cdfda7e8495b0a76b">RaxIdentity</a>.</p>
+<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#a48f0dc4cf47cd14cdfda7e8495b0a76b">BaseIdentity</a>.</p>
 
 </div>
 </div>
@@ -319,7 +312,7 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a9dbb300e28bc21c8dab41b01883918eb">RaxIdentity</a>.</p>
+<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#a9dbb300e28bc21c8dab41b01883918eb">BaseIdentity</a>.</p>
 
 </div>
 </div>
@@ -334,7 +327,7 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#ab2a0abf5d1b1c41d8e6a948bbd484341">BaseAuth</a>.</p>
+<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#a9f8b98f9d8644964bbb15a9fb217ccb7">BaseIdentity</a>.</p>
 
 </div>
 </div>
@@ -349,7 +342,7 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#acff4040d09342f645146af9d59268bb7">BaseAuth</a>.</p>
+<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#a0eda5ccf1b845b56032e5dfb7e536642">BaseIdentity</a>.</p>
 
 </div>
 </div>
@@ -364,7 +357,7 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseAuth.html#a623ef6987ef3bd185c07b28b13e46d34">BaseAuth</a>.</p>
+<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#a87da3d8264af1c9427605148f20dd9c4">BaseIdentity</a>.</p>
 
 </div>
 </div>
@@ -379,7 +372,7 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">RaxIdentity</a>.</p>
+<p>Reimplemented from <a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#a0adcbe0e0e6f64a29b1d205ede9632c1">BaseIdentity</a>.</p>
 
 </div>
 </div>
@@ -404,7 +397,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 24 2014 11:18:02 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 6 2014 11:50:12 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
