@@ -103,6 +103,16 @@ def handle_swiftclient_exception(fnc):
     return _wrapped
 
 
+def ensure_cdn(fnc):
+    @wraps(fnc)
+    def _wrapped(self, *args, **kwargs):
+        if not self.connection.cdn_connection:
+            raise exc.NotCDNEnabled("This service does not support "
+                    "CDN-enabled containers.")
+        return fnc(self, *args, **kwargs)
+    return _wrapped
+
+
 def _convert_head_object_last_modified_to_local(lm_str):
     # Need to convert last modified time to a datetime object.
     # Times are returned in default locale format, so we need to read
@@ -422,6 +432,7 @@ class CFClient(object):
                 response_dict=extra_info)
 
 
+    @ensure_cdn
     @handle_swiftclient_exception
     def get_container_cdn_metadata(self, container):
         """
@@ -436,6 +447,7 @@ class CFClient(object):
         return dict(headers)
 
 
+    @ensure_cdn
     @handle_swiftclient_exception
     def set_container_cdn_metadata(self, container, metadata):
         """
@@ -1266,6 +1278,7 @@ class CFClient(object):
         return conts
 
 
+    @ensure_cdn
     @handle_swiftclient_exception
     def list_public_containers(self):
         """Returns a list of all CDN-enabled containers."""
@@ -1290,6 +1303,7 @@ class CFClient(object):
         return self._cdn_set_access(container, None, False)
 
 
+    @ensure_cdn
     def _cdn_set_access(self, container, ttl, enabled):
         """Used to enable or disable CDN access on a container."""
         if ttl is None:
@@ -1323,6 +1337,7 @@ class CFClient(object):
         cont.cdn_log_retention = enabled
 
 
+    @ensure_cdn
     def _set_cdn_log_retention(self, container, enabled):
         """This does the actual call to the Cloud Files API."""
         hdrs = {"X-Log-Retention": "%s" % enabled}
@@ -1374,6 +1389,7 @@ class CFClient(object):
         return self.set_container_metadata(container, hdr, clear=False)
 
 
+    @ensure_cdn
     @handle_swiftclient_exception
     def purge_cdn_object(self, container, name, email_addresses=None):
         ct = self.get_container(container)
