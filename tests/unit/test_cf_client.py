@@ -345,6 +345,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_get_container_cdn_metadata(self):
         client = self.client
         client.connection.cdn_request = Mock()
+        client.connection.cdn_connection = "fake"
         resp = FakeResponse()
         resp.headers = [("a", "b"), ("c", "d")]
         client.connection.cdn_request.return_value = resp
@@ -357,6 +358,7 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         client.connection.put_container = Mock()
         client.connection.head_container = Mock()
+        client.connection.cdn_connection = "fake"
         meta = {"X-TTL": "9999", "X-NotAllowed": "0"}
         self.assertRaises(exc.InvalidCDNMetadata,
                 client.set_container_cdn_metadata, self.cont_name, meta)
@@ -435,6 +437,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_purge_cdn_object(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.cdn_connection = "fake"
         self.assertRaises(exc.NotCDNEnabled, client.purge_cdn_object,
                 self.cont_name, self.obj_name)
         client.get_container(self.cont_name).cdn_uri = "http://example.com"
@@ -1112,6 +1115,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_list_public_containers(self):
         client = self.client
         client.connection.cdn_request = Mock()
+        client.connection.cdn_connection = "fake"
         resp = FakeResponse()
         resp.headers = [("a", "b"), ("c", "d")]
         resp.status = 500
@@ -1126,6 +1130,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_make_container_public(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.cdn_connection = "fake"
         cont = client.get_container(self.cont_name)
         cont.cdn_uri = None
         client.connection.cdn_request = Mock()
@@ -1146,6 +1151,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_make_container_private(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.cdn_connection = "fake"
         cont = client.get_container(self.cont_name)
         cont.cdn_uri = None
         client.connection.cdn_request = Mock()
@@ -1166,6 +1172,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_set_cdn_log_retention(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.cdn_connection = "fake"
         cont = client.get_container(self.cont_name)
         client.connection.cdn_request = Mock()
         resp = FakeResponse()

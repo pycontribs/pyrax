@@ -57,7 +57,8 @@ class Container(object):
     def _fetch_cdn_data(self):
         """Fetches the object's CDN data from the CDN service"""
         if not self.client.cdn_enabled:
-            return
+            # Not CDN enabled; set the defaults.
+            self._set_cdn_defaults()
         response = self.client.connection.cdn_request("HEAD", [self.name])
         if 200 <= response.status < 300:
             # Set defaults in case not all headers are present.
