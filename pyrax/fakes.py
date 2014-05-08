@@ -560,8 +560,10 @@ class FakeImage(Image):
 
 
 class FakeImageClient(ImageClient):
-    def __init__(self, *args, **kwargs):
-        super(FakeImageClient, self).__init__("fakeuser",
+    def __init__(self, identity=None, *args, **kwargs):
+        if identity is None:
+            identity = FakeIdentity()
+        super(FakeImageClient, self).__init__(identity, "fakeuser",
                 "fakepassword", *args, **kwargs)
 
 
