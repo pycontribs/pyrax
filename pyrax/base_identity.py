@@ -148,6 +148,7 @@ class Endpoint(object):
     _client_private = None
     attr_map = {"publicURL": "public_url",
             "privateURL": "private_url",
+            "internalURL": "private_url",
             "tenantId": "tenant_id",
             }
 
