@@ -523,8 +523,8 @@ class CF_ClientTest(unittest.TestCase):
                 content_type="test/test", etag=etag,
                 content_encoding="gzip", extra_info=response)
         client.connection.put_object.assert_called_with(ANY, ANY,
-                contents=ANY, content_type=ANY, etag=ANY, headers=ANY,
-                response_dict=response)
+                contents=ANY, content_type=ANY, chunk_size=ANY, etag=ANY,
+                headers=ANY, response_dict=response)
 
         client.get_object = gobj
 

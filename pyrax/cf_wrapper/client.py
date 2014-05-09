@@ -656,11 +656,15 @@ class CFClient(object):
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
             etag=None, content_encoding=None, ttl=None, return_none=False,
-            extra_info=None):
+            chunk_size=None, extra_info=None):
         """
         Creates a new object in the specified container, and populates it with
         the given data. A StorageObject reference to the uploaded file
         will be returned, unless 'return_none' is set to True.
+
+        'chunk_size' represents the number of bytes of data to write; it
+        defaults to 65536. It is used only if the the 'data' parameter is an
+        object with a 'read' method; otherwise, it is ignored.
 
         'extra_info' is an optional dictionary which will be
         populated with 'status', 'reason', and 'headers' keys from the
@@ -672,17 +676,24 @@ class CFClient(object):
             headers["Content-Encoding"] = content_encoding
         if ttl is not None:
             headers["X-Delete-After"] = ttl
-        with utils.SelfDeletingTempfile() as tmp:
-            with open(tmp, "wb") as tmpfile:
-                try:
-                    tmpfile.write(data)
-                except UnicodeEncodeError:
-                    udata = data.encode("utf-8")
-                    tmpfile.write(udata)
-            with open(tmp, "rb") as tmpfile:
-                self.connection.put_object(cont.name, obj_name,
-                        contents=tmpfile, content_type=content_type, etag=etag,
-                        headers=headers, response_dict=extra_info)
+        if chunk_size and hasattr(data, "read"):
+            # Chunked file-like object
+            self.connection.put_object(cont.name, obj_name, contents=data,
+                    content_type=content_type, etag=etag, headers=headers,
+                    chunk_size=chunk_size, response_dict=extra_info)
+        else:
+            with utils.SelfDeletingTempfile() as tmp:
+                with open(tmp, "wb") as tmpfile:
+                    try:
+                        tmpfile.write(data)
+                    except UnicodeEncodeError:
+                        udata = data.encode("utf-8")
+                        tmpfile.write(udata)
+                with open(tmp, "rb") as tmpfile:
+                    self.connection.put_object(cont.name, obj_name,
+                            contents=tmpfile, content_type=content_type,
+                            etag=etag, headers=headers, chunk_size=chunk_size,
+                            response_dict=extra_info)
         if return_none:
             return None
         else:
