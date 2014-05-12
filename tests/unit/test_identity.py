@@ -429,6 +429,7 @@ class IdentityTest(unittest.TestCase):
 
     def test_get_client(self):
         ident = self.identity
+        ident.authenticated = True
         svc = "fake"
         region = utils.random_unicode()
         pub = utils.random_unicode()
@@ -442,8 +443,24 @@ class IdentityTest(unittest.TestCase):
         ret = ident.get_client(svc, region)
         self.assertEqual(ret, clt)
 
+    def test_get_client_unauthenticated(self):
+        ident = self.identity
+        ident.authenticated = False
+        svc = "fake"
+        region = utils.random_unicode()
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = "FOO"
+        clt = fakes.FakeClient()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        ep._get_client = Mock(return_value=clt)
+        ident.services[svc].endpoints = {region: ep}
+        self.assertRaises(exc.NotAuthenticated, ident.get_client, svc, region)
+
     def test_get_client_private(self):
         ident = self.identity
+        ident.authenticated = True
         svc = "fake"
         region = utils.random_unicode()
         pub = utils.random_unicode()
@@ -460,6 +477,7 @@ class IdentityTest(unittest.TestCase):
 
     def test_get_client_no_cache(self):
         ident = self.identity
+        ident.authenticated = True
         svc = "fake"
         region = utils.random_unicode()
         pub = utils.random_unicode()
@@ -476,6 +494,7 @@ class IdentityTest(unittest.TestCase):
 
     def test_get_client_no_client(self):
         ident = self.identity
+        ident.authenticated = True
         svc = "fake"
         region = utils.random_unicode()
         pub = utils.random_unicode()

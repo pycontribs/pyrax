@@ -384,6 +384,9 @@ class BaseIdentity(object):
         region, and public values, that will be returned. To force a new client
         to be created, pass 'cached=False'.
         """
+        if not self.authenticated:
+            raise exc.NotAuthenticated("You must authenticate before trying "
+                    "to create clients.")
         clt = ep = None
         mapped_service = self.service_mapping.get(service) or service
         svc = self.services.get(mapped_service)
