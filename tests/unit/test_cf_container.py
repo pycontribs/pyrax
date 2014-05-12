@@ -295,9 +295,10 @@ class CF_ContainerTest(unittest.TestCase):
         cont = self.container
         cont.client.remove_container_metadata_key = Mock()
         key = utils.random_unicode()
-        cont.remove_metadata_key(key)
+        prefix = utils.random_unicode()
+        cont.remove_metadata_key(key, prefix=prefix)
         cont.client.remove_container_metadata_key.assert_called_once_with(cont,
-                key)
+                key, prefix=prefix)
 
     def test_set_web_index_page(self):
         cont = self.container

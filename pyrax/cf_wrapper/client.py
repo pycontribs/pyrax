@@ -235,12 +235,14 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def get_account_metadata(self):
+    def get_account_metadata(self, prefix=None):
         headers = self.connection.head_account()
-        prfx = self.account_meta_prefix.lower()
+        if prefix is None:
+            prefix = self.account_meta_prefix
+        prefix = prefix.lower()
         ret = {}
         for hkey, hval in headers.iteritems():
-            if hkey.lower().startswith(prfx):
+            if hkey.lower().startswith(prefix):
                 ret[hkey] = hval
         return ret
 
@@ -361,11 +363,7 @@ class CFClient(object):
         specified number of seconds.
         """
         meta = {"X-Delete-After": str(seconds)}
-        self.set_object_metadata(cont, obj, meta, prefix="")
-#        cname = self._resolve_name(cont)
-#        oname = self._resolve_name(obj)
-#        self.connection.post_object(cname, oname, headers=headers,
-#                response_dict=extra_info)
+        self.set_object_metadata(cont, obj, meta, prefix="", clear=True)
 
 
     @handle_swiftclient_exception
@@ -374,7 +372,8 @@ class CFClient(object):
         cname = self._resolve_name(container)
         headers = self.connection.head_container(cname)
         if prefix is None:
-            prefix = self.container_meta_prefix.lower()
+            prefix = self.container_meta_prefix
+        prefix = prefix.lower()
         ret = {}
         for hkey, hval in headers.iteritems():
             if hkey.lower().startswith(prefix):
@@ -419,14 +418,17 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def remove_container_metadata_key(self, container, key,
-            extra_info=None):
+            prefix=None, extra_info=None):
         """
         Removes the specified key from the container's metadata. If the key
         does not exist in the metadata, nothing is done.
         """
+        if prefix is None:
+            prefix = self.container_meta_prefix
+        prefix = prefix.lower()
         meta_dict = {key: ""}
         # Add the metadata prefix, if needed.
-        massaged = self._massage_metakeys(meta_dict, self.container_meta_prefix)
+        massaged = self._massage_metakeys(meta_dict, prefix)
         cname = self._resolve_name(container)
         self.connection.post_container(cname, massaged,
                 response_dict=extra_info)
@@ -476,15 +478,17 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def get_object_metadata(self, container, obj):
+    def get_object_metadata(self, container, obj, prefix=None):
         """Retrieves any metadata for the specified object."""
+        if prefix is None:
+            prefix = self.object_meta_prefix
         cname = self._resolve_name(container)
         oname = self._resolve_name(obj)
         headers = self.connection.head_object(cname, oname)
-        prfx = self.object_meta_prefix.lower()
+        prefix = prefix.lower()
         ret = {}
         for hkey, hval in headers.iteritems():
-            if hkey.lower().startswith(prfx):
+            if hkey.lower().startswith(prefix):
                 ret[hkey] = hval
         return ret
 
@@ -520,8 +524,8 @@ class CFClient(object):
         # whereas for containers you need to set the values to an empty
         # string to delete them.
         if not clear:
-            obj_meta = self.get_object_metadata(cname, oname)
-            new_meta = self._massage_metakeys(obj_meta, self.object_meta_prefix)
+            obj_meta = self.get_object_metadata(cname, oname, prefix=prefix)
+            new_meta = self._massage_metakeys(obj_meta, prefix)
         utils.case_insensitive_update(new_meta, massaged)
         # Remove any empty values, since the object metadata API will
         # store them.
@@ -536,12 +540,12 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def remove_object_metadata_key(self, container, obj, key):
+    def remove_object_metadata_key(self, container, obj, key, prefix=None):
         """
-        Removes the specified key from the storage object's metadata. If the key
-        does not exist in the metadata, nothing is done.
+        Removes the specified key from the storage object's metadata. If the
+        key does not exist in the metadata, nothing is done.
         """
-        self.set_object_metadata(container, obj, {key: ""})
+        self.set_object_metadata(container, obj, {key: ""}, prefix=prefix)
 
 
     @handle_swiftclient_exception

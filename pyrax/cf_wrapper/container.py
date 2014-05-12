@@ -247,11 +247,11 @@ class Container(object):
                 structure=structure)
 
 
-    def get_metadata(self):
+    def get_metadata(self, prefix=None):
         """
         Returns a dictionary containing the metadata for the container.
         """
-        return self.client.get_container_metadata(self)
+        return self.client.get_container_metadata(self, prefix=prefix)
 
 
     def set_metadata(self, metadata, clear=False, prefix=None):
@@ -276,12 +276,13 @@ class Container(object):
                 prefix=prefix)
 
 
-    def remove_metadata_key(self, key):
+    def remove_metadata_key(self, key, prefix=None):
         """
         Removes the specified key from the container's metadata. If the key
         does not exist in the metadata, nothing is done.
         """
-        return self.client.remove_container_metadata_key(self, key)
+        return self.client.remove_container_metadata_key(self, key,
+                prefix=prefix)
 
 
     def set_web_index_page(self, page):

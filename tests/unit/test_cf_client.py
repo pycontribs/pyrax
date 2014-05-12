@@ -296,14 +296,14 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         client.connection.head_object = Mock()
         client.connection.head_object.return_value = {
-                "X-Object-Meta-Foo": "yes", "Some-Other-Key": "no"}
+                "x-object-meta-foo": "yes", "some-other-key": "no"}
         client.connection.post_object = Mock()
         prefix = utils.random_unicode()
         client.set_object_metadata(self.cont_name, self.obj_name,
                 {"newkey": "newval", "emptykey": ""}, prefix=prefix)
         client.connection.post_object.assert_called_with(self.cont_name,
-                self.obj_name, {"%snewkey" % prefix: "newval",
-                "X-Object-Meta-Foo": "yes"}, response_dict=None)
+                self.obj_name, {"%snewkey" % prefix: "newval"},
+                response_dict=None)
 
     def test_remove_object_metadata_key(self):
         client = self.client
@@ -324,7 +324,7 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.post_container = Mock()
         client.remove_container_metadata_key(self.cont_name, "Bar")
         client.connection.post_container.assert_called_with(self.cont_name,
-                {"X-Container-Meta-Bar": ""}, response_dict=None)
+                {"x-container-meta-Bar": ""}, response_dict=None)
 
     def test_massage_metakeys(self):
         prefix = "ABC-"
