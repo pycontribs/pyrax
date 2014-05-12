@@ -469,8 +469,11 @@ def auth_with_token(token, tenant_id=None, tenant_name=None, region=None):
     If you already have a valid token and either a tenant ID or name, you can
     call this to configure the identity and available services.
     """
+    global regions, services
     identity.auth_with_token(token, tenant_id=tenant_id,
             tenant_name=tenant_name)
+    regions = tuple(identity.regions)
+    services = tuple(identity.services.keys())
     connect_to_services(region=region)
 
 
@@ -483,11 +486,14 @@ def set_credentials(username, api_key=None, password=None, region=None,
     If the region is passed, it will authenticate against the proper endpoint
     for that region, and set the default region for connections.
     """
+    global regions, services
     pw_key = password or api_key
     region = _safe_region(region)
     tenant_id = tenant_id or settings.get("tenant_id")
     identity.set_credentials(username=username, password=pw_key,
             tenant_id=tenant_id, region=region, authenticate=authenticate)
+    regions = tuple(identity.regions)
+    services = tuple(identity.services.keys())
     connect_to_services(region=region)
 
 
@@ -512,9 +518,12 @@ def set_credential_file(cred_file, region=None, authenticate=True):
     If the region is passed, it will authenticate against the proper endpoint
     for that region, and set the default region for connections.
     """
+    global regions, services
     region = _safe_region(region)
     identity.set_credential_file(cred_file, region=region,
             authenticate=authenticate)
+    regions = tuple(identity.regions)
+    services = tuple(identity.services.keys())
     connect_to_services(region=region)
 
 
