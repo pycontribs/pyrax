@@ -333,6 +333,15 @@ class CF_ClientTest(unittest.TestCase):
         fixed = self.client._massage_metakeys(orig, prefix)
         self.assertEqual(fixed, expected)
 
+    def test_prefix_read_only(self):
+        client = self.client
+        val = utils.random_unicode()
+
+        def set_prefix(val):
+           client.account_meta_prefix = val
+
+        self.assertRaises(AttributeError, set_prefix, val)
+
     def test_resolve_name(self):
         class Foo(object):
             name = "BAR"

@@ -164,11 +164,6 @@ class CFClient(object):
     These classes allow a developer to work with regular Python objects
     instead of calling functions that return primitive types.
     """
-    # Constants used in metadata headers
-    account_meta_prefix = "X-Account-Meta-"
-    container_meta_prefix = "X-Container-Meta-"
-    object_meta_prefix = "X-Object-Meta-"
-    cdn_meta_prefix = "X-Cdn-"
     # Defaults for CDN
     cdn_enabled = False
     default_cdn_ttl = 86400
@@ -198,6 +193,24 @@ class CFClient(object):
                 preauthtoken=preauthtoken, auth_version=auth_version,
                 os_options=os_options, verify_ssl=verify_ssl,
                 http_log_debug=http_log_debug)
+
+
+    # Constants used in metadata headers
+    @property
+    def account_meta_prefix(self):
+        return "X-Account-Meta-"
+
+    @property
+    def container_meta_prefix(self):
+        return "X-Container-Meta-"
+
+    @property
+    def object_meta_prefix(self):
+        return "X-Object-Meta-"
+
+    @property
+    def cdn_meta_prefix(self):
+        return "X-Cdn-"
 
 
     def _make_connections(self, auth_endpoint, username, api_key, password,
