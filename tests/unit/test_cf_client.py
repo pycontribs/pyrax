@@ -338,7 +338,7 @@ class CF_ClientTest(unittest.TestCase):
         val = utils.random_unicode()
 
         def set_prefix(val):
-           client.account_meta_prefix = val
+            client.account_meta_prefix = val
 
         self.assertRaises(AttributeError, set_prefix, val)
 
