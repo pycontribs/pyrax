@@ -165,13 +165,20 @@ class Endpoint(object):
             setattr(self, att_name, val)
 
 
-    def _get_client(self, public=True):
+    def get_new_client(self, public=True):
+        """
+        Returns a new instance of the client for this endpoint.
+        """
+        return self._get_client(public=public, cached=False)
+
+
+    def _get_client(self, public=True, cached=True):
         client_att = "_client" if public else "_client_private"
         clt = getattr(self, client_att)
         if isinstance(clt, exc.NoClientForService):
             # Already failed
             raise clt
-        if clt is not None:
+        if cached and clt is not None:
             return clt
         # Create the client
         clt_class = pyrax.client_class_for_service(self.service)
@@ -366,12 +373,16 @@ class BaseIdentity(object):
         raise AttributeError("No such attribute '%s'." % att)
 
 
-    def get_client(self, service, region, public=True):
+    def get_client(self, service, region, public=True, cached=True):
         """
         Returns the client object for the specified service and region.
 
         By default the public endpoint is used. If you wish to work with a
         services internal endpoints, specify `public=False`.
+
+        By default, if a client has already been created for the given service,
+        region, and public values, that will be returned. To force a new client
+        to be created, pass 'cached=False'.
         """
         clt = ep = None
         mapped_service = self.service_mapping.get(service) or service
@@ -379,7 +390,10 @@ class BaseIdentity(object):
         if svc:
             ep = svc.endpoints.get(region)
         if ep:
-            clt = ep.client if public else ep.client_private
+            if cached:
+                clt = ep.client if public else ep.client_private
+            else:
+                clt = ep.get_new_client(public=public)
         if not clt:
             raise exc.NoSuchClient("There is no client available for the "
                     "service '%s' in the region '%s'." % (service, region))

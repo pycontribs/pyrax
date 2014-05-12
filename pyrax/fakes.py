@@ -594,8 +594,8 @@ class FakeImageManager(ImageManager):
 
 
 class FakeIdentityService(Service):
-    def __init__(self, *args, **kwargs):
-        self.identity = FakeIdentity()
+    def __init__(self, identity=None, *args, **kwargs):
+        self.identity = identity or FakeIdentity()
         self.name = "fake"
         self.prefix = ""
         self.service_type = "fake"
@@ -606,8 +606,10 @@ class FakeIdentityService(Service):
 class FakeEndpoint(Endpoint):
     pass
 
+
 class FakeRaxIdentity(RaxIdentity):
     pass
+
 
 class FakeIdentity(BaseIdentity):
     """Class that returns canned authentication responses."""
@@ -616,6 +618,7 @@ class FakeIdentity(BaseIdentity):
         self._good_username = "fakeuser"
         self._good_password = "fakeapikey"
         self._default_region = random.choice(("DFW", "ORD"))
+        self.services = {"fake": FakeIdentityService(self)}
 
     def authenticate(self):
         if ((self.username == self._good_username) and

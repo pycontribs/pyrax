@@ -46,7 +46,7 @@ class IdentityTest(unittest.TestCase):
 
     def setUp(self):
         self.identity = fakes.FakeIdentity()
-        self.service = fakes.FakeIdentityService()
+        self.service = fakes.FakeIdentityService(self.identity)
 
     def tearDown(self):
         pass
@@ -179,6 +179,15 @@ class IdentityTest(unittest.TestCase):
         self.assertEqual(ret, fake)
         self.assertEqual(ep._client, fake)
         pyrax.client_class_for_service = sav
+
+    def test_ep_get_new_client(self):
+        svc = self.service
+        ep_dict = {"publicURL": "http://example.com", "tenantId": "aa"}
+        rgn = utils.random_unicode().upper()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        ep._get_client = Mock()
+        ep.get_new_client()
+        ep._get_client.assert_called_once_with(public=True, cached=False)
 
     def test_ep_get(self):
         svc = self.service
@@ -417,6 +426,66 @@ class IdentityTest(unittest.TestCase):
         ident._call_token_auth.assert_called_with(token, oid, None)
         self.assertTrue("a" in pyrax.services)
         self.assertTrue("b" in pyrax.services)
+
+    def test_get_client(self):
+        ident = self.identity
+        svc = "fake"
+        region = utils.random_unicode()
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = "FOO"
+        clt = fakes.FakeClient()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        ep._get_client = Mock(return_value=clt)
+        ident.services[svc].endpoints = {region: ep}
+        ret = ident.get_client(svc, region)
+        self.assertEqual(ret, clt)
+
+    def test_get_client_private(self):
+        ident = self.identity
+        svc = "fake"
+        region = utils.random_unicode()
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = "FOO"
+        clt = fakes.FakeClient()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        ep._get_client = Mock(return_value=clt)
+        ident.services[svc].endpoints = {region: ep}
+        ret = ident.get_client(svc, region, public=False)
+        self.assertEqual(ret, clt)
+        ep._get_client.assert_called_once_with(public=False)
+
+    def test_get_client_no_cache(self):
+        ident = self.identity
+        svc = "fake"
+        region = utils.random_unicode()
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = "FOO"
+        clt = fakes.FakeClient()
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        ep.get_new_client = Mock(return_value=clt)
+        ident.services[svc].endpoints = {region: ep}
+        ret = ident.get_client(svc, region, cached=False)
+        self.assertEqual(ret, clt)
+        ep.get_new_client.assert_called_once_with(public=True)
+
+    def test_get_client_no_client(self):
+        ident = self.identity
+        svc = "fake"
+        region = utils.random_unicode()
+        pub = utils.random_unicode()
+        priv = utils.random_unicode()
+        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
+        rgn = "FOO"
+        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
+        ep._get_client = Mock(return_value=None)
+        ident.services[svc].endpoints = {region: ep}
+        self.assertRaises(exc.NoSuchClient, ident.get_client, svc, region)
 
     def test_set_credentials(self):
         for cls in self.id_classes.values():
