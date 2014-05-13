@@ -1,5 +1,26 @@
 # Release Notes for pyrax
 
+###2014.05.13 - Version 1.8.1
+  - General
+    - Restored module-level regions and services attributes. GitHub #371
+    - Improved error message when calling get_client when not authenticated. GitHub #369
+
+  - Identity
+    - Added the ability to request multiple clients. GitHub #370
+    - Modified list_tenants() function to take an admin argument. GitHub #352
+    - Fixed service catalog parsing. GitHub #361
+
+  - Cloud Files
+    - Added aliases to make Cloud Files method names more consistent. GitHub #373
+    - Added missing limit/marker parameters. GitHub #349
+    - Added code to check for CDN before making CDN calls.
+    - Made the meta prefixes read-only. GitHub #365
+    - Added 'prefix' parameter to get/set metadata commands. GitHub #367
+    - Added chunking to put_object()
+    - Fixed old cloudfiles reference. GitHub #362
+    - Fixed unit tests for CDN changes.
+
+
 ###2014.05.06 - Version 1.8.0
   - Identity
     - Added **Context Objects** as a way to encapsulate an authenticated
@@ -49,9 +70,11 @@
       the behaviour in https://review.openstack.org/#/c/55488/. GitHub #337
     - Fixed ValueError when handling a bulk delete response. GitHub #335
 
+
 ###2014.03.30 - Version 1.7.2
   - General
     - Fixes a bug that doubly-encoded JSON body content. GitHub #333
+
 
 ###2014.03.28 - Version 1.7.1
   - General
