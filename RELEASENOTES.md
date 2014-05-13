@@ -3,7 +3,8 @@
 ###2014.05.13 - Version 1.8.1
   - General
     - Restored module-level regions and services attributes. GitHub #371
-    - Improved error message when calling get_client when not authenticated. GitHub #369
+    - Improved error message when calling get_client when not authenticated.
+      GitHub #369
 
   - Identity
     - Added the ability to request multiple clients. GitHub #370
@@ -11,7 +12,8 @@
     - Fixed service catalog parsing. GitHub #361
 
   - Cloud Files
-    - Added aliases to make Cloud Files method names more consistent. GitHub #373
+    - Added aliases to make Cloud Files method names more consistent. GitHub
+      #373
     - Added missing limit/marker parameters. GitHub #349
     - Added code to check for CDN before making CDN calls.
     - Made the meta prefixes read-only. GitHub #365
