@@ -673,7 +673,7 @@ class CFClient(object):
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
             etag=None, content_encoding=None, ttl=None, return_none=False,
-            chunk_size=None, extra_info=None):
+            chunk_size=None, headers=None, extra_info=None):
         """
         Creates a new object in the specified container, and populates it with
         the given data. A StorageObject reference to the uploaded file
@@ -683,12 +683,18 @@ class CFClient(object):
         defaults to 65536. It is used only if the the 'data' parameter is an
         object with a 'read' method; otherwise, it is ignored.
 
+        If you wish to specify additional headers to be passed to the PUT
+        request, pass them as a dict in the 'headers' parameter. It is the
+        developer's responsibility to ensure that any headers are valid; pyrax
+        does no checking.
+
         'extra_info' is an optional dictionary which will be
         populated with 'status', 'reason', and 'headers' keys from the
         underlying swiftclient call.
         """
         cont = self.get_container(container)
-        headers = {}
+        if headers is None:
+            headers = {}
         if content_encoding is not None:
             headers["Content-Encoding"] = content_encoding
         if ttl is not None:
@@ -776,7 +782,7 @@ class CFClient(object):
     def upload_file(self, container, file_or_path, obj_name=None,
             content_type=None, etag=None, return_none=False,
             content_encoding=None, ttl=None, extra_info=None,
-            content_length=None):
+            content_length=None, headers=None):
         """
         Uploads the specified file to the container. If no name is supplied,
         the file's name will be used. Either a file path or an open file-like
@@ -788,6 +794,11 @@ class CFClient(object):
         is stored.
 
         If the size of the file is known, it can be passed as `content_length`.
+
+        If you wish to specify additional headers to be passed to the PUT
+        request, pass them as a dict in the 'headers' parameter. It is the
+        developer's responsibility to ensure that any headers are valid; pyrax
+        does no checking.
 
         If you wish for the object to be temporary, specify the time it should
         be stored in seconds in the `ttl` parameter. If this is specified, the
@@ -861,7 +872,8 @@ class CFClient(object):
             raise InvalidUploadID("No filename provided and/or it cannot be "
                     "inferred from context")
 
-        headers = {}
+        if headers is None:
+            headers = {}
         if content_encoding is not None:
             headers["Content-Encoding"] = content_encoding
         if ttl is not None:
