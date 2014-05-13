@@ -948,7 +948,8 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.get_container = Mock()
         client.connection.get_container.return_value = ({}, cont_list)
         conts = client.get_all_containers()
-        client.connection.get_container.assert_called_with("")
+        client.connection.get_container.assert_called_with("", limit=None,
+                marker=None)
         self.assertEqual(len(conts), 2)
         cont_names = [ct.name for ct in conts]
         cont_names.sort()

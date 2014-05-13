@@ -1186,7 +1186,8 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def get_all_containers(self, limit=None, marker=None, **parms):
-        hdrs, conts = self.connection.get_container("")
+        hdrs, conts = self.connection.get_container("", limit=limit,
+                marker=marker)
         ret = [Container(self, name=cont["name"], object_count=cont["count"],
                 total_bytes=cont["bytes"]) for cont in conts]
         return ret
@@ -1279,7 +1280,8 @@ class CFClient(object):
     @handle_swiftclient_exception
     def list(self, limit=None, marker=None, **parms):
         """Returns a list of all container objects."""
-        hdrs, conts = self.connection.get_container("")
+        hdrs, conts = self.connection.get_container("", limit=limit,
+                marker=marker)
         ret = [self.get_container(cont["name"]) for cont in conts]
         return ret
 
@@ -1287,7 +1289,8 @@ class CFClient(object):
     @handle_swiftclient_exception
     def list_containers(self, limit=None, marker=None, **parms):
         """Returns a list of all container names as strings."""
-        hdrs, conts = self.connection.get_container("")
+        hdrs, conts = self.connection.get_container("", limit=limit,
+                marker=marker)
         ret = [cont["name"] for cont in conts]
         return ret
 
@@ -1302,7 +1305,8 @@ class CFClient(object):
             count - the number of objects in the container
             bytes - the total bytes in the container
         """
-        hdrs, conts = self.connection.get_container("")
+        hdrs, conts = self.connection.get_container("", limit=limit,
+                marker=marker)
         return conts
 
 
