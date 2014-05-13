@@ -98,6 +98,7 @@ class Container(object):
                 limit=limit, prefix=prefix, delimiter=delimiter,
                 full_listing=full_listing)
         return objs
+    list = get_objects
 
 
     def get_object(self, name, cached=True):
@@ -116,6 +117,7 @@ class Container(object):
             ret = self.client.get_object(self, name)
             self._object_cache[name] = ret
         return ret
+    get = get_object
 
 
     def get_object_names(self, marker=None, limit=None, prefix=None,
@@ -127,6 +129,7 @@ class Container(object):
         return self.client.get_container_object_names(self.name, marker=marker,
                 limit=limit, prefix=prefix, delimiter=delimiter,
                 full_listing=full_listing)
+    list_object_names = get_object_names
 
 
     def list_subdirs(self, marker=None, limit=None, prefix=None, delimiter=None,

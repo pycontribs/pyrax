@@ -1214,6 +1214,7 @@ class CFClient(object):
                     total_bytes=hdrs.get("x-container-bytes-used"))
             self._container_cache[cname] = cont
         return cont
+    get = get_container
 
 
     @handle_swiftclient_exception
@@ -1236,6 +1237,7 @@ class CFClient(object):
                               attdict=_convert_list_last_modified_to_local(obj))
                 for obj in objs
                 if "name" in obj]
+    list_container_objects = get_container_objects
 
 
     @handle_swiftclient_exception
@@ -1247,6 +1249,7 @@ class CFClient(object):
                 full_listing=full_listing)
         cont = self.get_container(cname)
         return [obj["name"] for obj in objs]
+    list_container_object_names = get_container_object_names
 
 
     @handle_swiftclient_exception
@@ -1284,6 +1287,7 @@ class CFClient(object):
                 marker=marker)
         ret = [self.get_container(cont["name"]) for cont in conts]
         return ret
+    get_all_containers = list
 
 
     @handle_swiftclient_exception
@@ -1293,6 +1297,7 @@ class CFClient(object):
                 marker=marker)
         ret = [cont["name"] for cont in conts]
         return ret
+    list_container_names = list_containers
 
 
     @handle_swiftclient_exception
