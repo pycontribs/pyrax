@@ -673,7 +673,11 @@ class CFClient(object):
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
             etag=None, content_encoding=None, ttl=None, return_none=False,
+<<<<<<< HEAD
             chunk_size=None, headers=None, extra_info=None):
+=======
+            chunk_size=None, extra_info=None):
+>>>>>>> master
         """
         Creates a new object in the specified container, and populates it with
         the given data. A StorageObject reference to the uploaded file
@@ -683,11 +687,14 @@ class CFClient(object):
         defaults to 65536. It is used only if the the 'data' parameter is an
         object with a 'read' method; otherwise, it is ignored.
 
+<<<<<<< HEAD
         If you wish to specify additional headers to be passed to the PUT
         request, pass them as a dict in the 'headers' parameter. It is the
         developer's responsibility to ensure that any headers are valid; pyrax
         does no checking.
 
+=======
+>>>>>>> master
         'extra_info' is an optional dictionary which will be
         populated with 'status', 'reason', and 'headers' keys from the
         underlying swiftclient call.
