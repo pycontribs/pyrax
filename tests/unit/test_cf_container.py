@@ -14,6 +14,7 @@ from pyrax.cf_wrapper.container import Container
 from pyrax.cf_wrapper.container import Fault
 import pyrax.utils as utils
 import pyrax.exceptions as exc
+from pyrax.fakes import example_uri
 from pyrax.fakes import fake_attdict
 from pyrax.fakes import FakeContainer
 from pyrax.fakes import FakeIdentity
@@ -72,6 +73,7 @@ class CF_ContainerTest(unittest.TestCase):
 
     def test_fetch_cdn(self):
         self.client.connection.cdn_request = Mock()
+        self.client.connection.cdn_connection = "fake"
         resp = FakeResponse()
         resp.status = 204
         resp.getheaders = Mock()
@@ -93,6 +95,7 @@ class CF_ContainerTest(unittest.TestCase):
 
     def test_fetch_cdn_not_found(self):
         self.client.connection.cdn_request = Mock()
+        self.client.connection.cdn_connection = "fake"
         resp = FakeResponse()
         resp.status = 404
         resp.getheaders = Mock()
@@ -292,9 +295,10 @@ class CF_ContainerTest(unittest.TestCase):
         cont = self.container
         cont.client.remove_container_metadata_key = Mock()
         key = utils.random_unicode()
-        cont.remove_metadata_key(key)
+        prefix = utils.random_unicode()
+        cont.remove_metadata_key(key, prefix=prefix)
         cont.client.remove_container_metadata_key.assert_called_once_with(cont,
-                key)
+                key, prefix=prefix)
 
     def test_set_web_index_page(self):
         cont = self.container
@@ -316,11 +320,13 @@ class CF_ContainerTest(unittest.TestCase):
         cont = self.container
         cont.cdn_uri = ""
         cont.client.connection.cdn_request = Mock()
+        cont.client.connection.cdn_connection = "fake"
         example = "http://example.com"
         ttl = 6666
         resp = FakeResponse()
         resp.headers = [("x-cdn-uri", example), ("c", "d")]
         cont.client.connection.cdn_request.return_value = resp
+        cont.client.connection.cdn_connection = "fake"
         cont.make_public(ttl)
         cont.client.connection.cdn_request.assert_called_with("PUT",
                 [cont.name], hdrs={"X-TTL": str(ttl), "X-CDN-Enabled": "True"})
@@ -328,11 +334,13 @@ class CF_ContainerTest(unittest.TestCase):
     def test_make_private(self):
         cont = self.container
         cont.client.connection.cdn_request = Mock()
+        cont.client.connection.cdn_connection = "fake"
         example = "http://example.com"
         cont.cdn_uri = example
         resp = FakeResponse()
         resp.headers = [("c", "d")]
         cont.client.connection.cdn_request.return_value = resp
+        cont.client.connection.cdn_connection = "fake"
         cont.make_private()
         cont.client.connection.cdn_request.assert_called_with("PUT",
                 [cont.name], hdrs={"X-CDN-Enabled": "False"})

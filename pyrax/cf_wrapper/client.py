@@ -103,6 +103,16 @@ def handle_swiftclient_exception(fnc):
     return _wrapped
 
 
+def ensure_cdn(fnc):
+    @wraps(fnc)
+    def _wrapped(self, *args, **kwargs):
+        if not self.connection.cdn_connection:
+            raise exc.NotCDNEnabled("This service does not support "
+                    "CDN-enabled containers.")
+        return fnc(self, *args, **kwargs)
+    return _wrapped
+
+
 def _convert_head_object_last_modified_to_local(lm_str):
     # Need to convert last modified time to a datetime object.
     # Times are returned in default locale format, so we need to read
@@ -154,11 +164,6 @@ class CFClient(object):
     These classes allow a developer to work with regular Python objects
     instead of calling functions that return primitive types.
     """
-    # Constants used in metadata headers
-    account_meta_prefix = "X-Account-Meta-"
-    container_meta_prefix = "X-Container-Meta-"
-    object_meta_prefix = "X-Object-Meta-"
-    cdn_meta_prefix = "X-Cdn-"
     # Defaults for CDN
     cdn_enabled = False
     default_cdn_ttl = 86400
@@ -188,6 +193,24 @@ class CFClient(object):
                 preauthtoken=preauthtoken, auth_version=auth_version,
                 os_options=os_options, verify_ssl=verify_ssl,
                 http_log_debug=http_log_debug)
+
+
+    # Constants used in metadata headers
+    @property
+    def account_meta_prefix(self):
+        return "X-Account-Meta-"
+
+    @property
+    def container_meta_prefix(self):
+        return "X-Container-Meta-"
+
+    @property
+    def object_meta_prefix(self):
+        return "X-Object-Meta-"
+
+    @property
+    def cdn_meta_prefix(self):
+        return "X-Cdn-"
 
 
     def _make_connections(self, auth_endpoint, username, api_key, password,
@@ -225,12 +248,14 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def get_account_metadata(self):
+    def get_account_metadata(self, prefix=None):
         headers = self.connection.head_account()
-        prfx = self.account_meta_prefix.lower()
+        if prefix is None:
+            prefix = self.account_meta_prefix
+        prefix = prefix.lower()
         ret = {}
         for hkey, hval in headers.iteritems():
-            if hkey.lower().startswith(prfx):
+            if hkey.lower().startswith(prefix):
                 ret[hkey] = hval
         return ret
 
@@ -351,11 +376,7 @@ class CFClient(object):
         specified number of seconds.
         """
         meta = {"X-Delete-After": str(seconds)}
-        self.set_object_metadata(cont, obj, meta, prefix="")
-#        cname = self._resolve_name(cont)
-#        oname = self._resolve_name(obj)
-#        self.connection.post_object(cname, oname, headers=headers,
-#                response_dict=extra_info)
+        self.set_object_metadata(cont, obj, meta, prefix="", clear=True)
 
 
     @handle_swiftclient_exception
@@ -364,7 +385,8 @@ class CFClient(object):
         cname = self._resolve_name(container)
         headers = self.connection.head_container(cname)
         if prefix is None:
-            prefix = self.container_meta_prefix.lower()
+            prefix = self.container_meta_prefix
+        prefix = prefix.lower()
         ret = {}
         for hkey, hval in headers.iteritems():
             if hkey.lower().startswith(prefix):
@@ -409,19 +431,23 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def remove_container_metadata_key(self, container, key,
-            extra_info=None):
+            prefix=None, extra_info=None):
         """
         Removes the specified key from the container's metadata. If the key
         does not exist in the metadata, nothing is done.
         """
+        if prefix is None:
+            prefix = self.container_meta_prefix
+        prefix = prefix.lower()
         meta_dict = {key: ""}
         # Add the metadata prefix, if needed.
-        massaged = self._massage_metakeys(meta_dict, self.container_meta_prefix)
+        massaged = self._massage_metakeys(meta_dict, prefix)
         cname = self._resolve_name(container)
         self.connection.post_container(cname, massaged,
                 response_dict=extra_info)
 
 
+    @ensure_cdn
     @handle_swiftclient_exception
     def get_container_cdn_metadata(self, container):
         """
@@ -436,6 +462,7 @@ class CFClient(object):
         return dict(headers)
 
 
+    @ensure_cdn
     @handle_swiftclient_exception
     def set_container_cdn_metadata(self, container, metadata):
         """
@@ -464,15 +491,17 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def get_object_metadata(self, container, obj):
+    def get_object_metadata(self, container, obj, prefix=None):
         """Retrieves any metadata for the specified object."""
+        if prefix is None:
+            prefix = self.object_meta_prefix
         cname = self._resolve_name(container)
         oname = self._resolve_name(obj)
         headers = self.connection.head_object(cname, oname)
-        prfx = self.object_meta_prefix.lower()
+        prefix = prefix.lower()
         ret = {}
         for hkey, hval in headers.iteritems():
-            if hkey.lower().startswith(prfx):
+            if hkey.lower().startswith(prefix):
                 ret[hkey] = hval
         return ret
 
@@ -508,8 +537,8 @@ class CFClient(object):
         # whereas for containers you need to set the values to an empty
         # string to delete them.
         if not clear:
-            obj_meta = self.get_object_metadata(cname, oname)
-            new_meta = self._massage_metakeys(obj_meta, self.object_meta_prefix)
+            obj_meta = self.get_object_metadata(cname, oname, prefix=prefix)
+            new_meta = self._massage_metakeys(obj_meta, prefix)
         utils.case_insensitive_update(new_meta, massaged)
         # Remove any empty values, since the object metadata API will
         # store them.
@@ -524,12 +553,12 @@ class CFClient(object):
 
 
     @handle_swiftclient_exception
-    def remove_object_metadata_key(self, container, obj, key):
+    def remove_object_metadata_key(self, container, obj, key, prefix=None):
         """
-        Removes the specified key from the storage object's metadata. If the key
-        does not exist in the metadata, nothing is done.
+        Removes the specified key from the storage object's metadata. If the
+        key does not exist in the metadata, nothing is done.
         """
-        self.set_object_metadata(container, obj, {key: ""})
+        self.set_object_metadata(container, obj, {key: ""}, prefix=prefix)
 
 
     @handle_swiftclient_exception
@@ -644,11 +673,15 @@ class CFClient(object):
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
             etag=None, content_encoding=None, ttl=None, return_none=False,
-            extra_info=None):
+            chunk_size=None, extra_info=None):
         """
         Creates a new object in the specified container, and populates it with
         the given data. A StorageObject reference to the uploaded file
         will be returned, unless 'return_none' is set to True.
+
+        'chunk_size' represents the number of bytes of data to write; it
+        defaults to 65536. It is used only if the the 'data' parameter is an
+        object with a 'read' method; otherwise, it is ignored.
 
         'extra_info' is an optional dictionary which will be
         populated with 'status', 'reason', and 'headers' keys from the
@@ -660,17 +693,24 @@ class CFClient(object):
             headers["Content-Encoding"] = content_encoding
         if ttl is not None:
             headers["X-Delete-After"] = ttl
-        with utils.SelfDeletingTempfile() as tmp:
-            with open(tmp, "wb") as tmpfile:
-                try:
-                    tmpfile.write(data)
-                except UnicodeEncodeError:
-                    udata = data.encode("utf-8")
-                    tmpfile.write(udata)
-            with open(tmp, "rb") as tmpfile:
-                self.connection.put_object(cont.name, obj_name,
-                        contents=tmpfile, content_type=content_type, etag=etag,
-                        headers=headers, response_dict=extra_info)
+        if chunk_size and hasattr(data, "read"):
+            # Chunked file-like object
+            self.connection.put_object(cont.name, obj_name, contents=data,
+                    content_type=content_type, etag=etag, headers=headers,
+                    chunk_size=chunk_size, response_dict=extra_info)
+        else:
+            with utils.SelfDeletingTempfile() as tmp:
+                with open(tmp, "wb") as tmpfile:
+                    try:
+                        tmpfile.write(data)
+                    except UnicodeEncodeError:
+                        udata = data.encode("utf-8")
+                        tmpfile.write(udata)
+                with open(tmp, "rb") as tmpfile:
+                    self.connection.put_object(cont.name, obj_name,
+                            contents=tmpfile, content_type=content_type,
+                            etag=etag, headers=headers, chunk_size=chunk_size,
+                            response_dict=extra_info)
         if return_none:
             return None
         else:
@@ -1146,7 +1186,8 @@ class CFClient(object):
 
     @handle_swiftclient_exception
     def get_all_containers(self, limit=None, marker=None, **parms):
-        hdrs, conts = self.connection.get_container("")
+        hdrs, conts = self.connection.get_container("", limit=limit,
+                marker=marker)
         ret = [Container(self, name=cont["name"], object_count=cont["count"],
                 total_bytes=cont["bytes"]) for cont in conts]
         return ret
@@ -1173,6 +1214,7 @@ class CFClient(object):
                     total_bytes=hdrs.get("x-container-bytes-used"))
             self._container_cache[cname] = cont
         return cont
+    get = get_container
 
 
     @handle_swiftclient_exception
@@ -1195,6 +1237,7 @@ class CFClient(object):
                               attdict=_convert_list_last_modified_to_local(obj))
                 for obj in objs
                 if "name" in obj]
+    list_container_objects = get_container_objects
 
 
     @handle_swiftclient_exception
@@ -1206,6 +1249,7 @@ class CFClient(object):
                 full_listing=full_listing)
         cont = self.get_container(cname)
         return [obj["name"] for obj in objs]
+    list_container_object_names = get_container_object_names
 
 
     @handle_swiftclient_exception
@@ -1239,17 +1283,21 @@ class CFClient(object):
     @handle_swiftclient_exception
     def list(self, limit=None, marker=None, **parms):
         """Returns a list of all container objects."""
-        hdrs, conts = self.connection.get_container("")
+        hdrs, conts = self.connection.get_container("", limit=limit,
+                marker=marker)
         ret = [self.get_container(cont["name"]) for cont in conts]
         return ret
+    get_all_containers = list
 
 
     @handle_swiftclient_exception
     def list_containers(self, limit=None, marker=None, **parms):
         """Returns a list of all container names as strings."""
-        hdrs, conts = self.connection.get_container("")
+        hdrs, conts = self.connection.get_container("", limit=limit,
+                marker=marker)
         ret = [cont["name"] for cont in conts]
         return ret
+    list_container_names = list_containers
 
 
     @handle_swiftclient_exception
@@ -1262,10 +1310,12 @@ class CFClient(object):
             count - the number of objects in the container
             bytes - the total bytes in the container
         """
-        hdrs, conts = self.connection.get_container("")
+        hdrs, conts = self.connection.get_container("", limit=limit,
+                marker=marker)
         return conts
 
 
+    @ensure_cdn
     @handle_swiftclient_exception
     def list_public_containers(self):
         """Returns a list of all CDN-enabled containers."""
@@ -1290,6 +1340,7 @@ class CFClient(object):
         return self._cdn_set_access(container, None, False)
 
 
+    @ensure_cdn
     def _cdn_set_access(self, container, ttl, enabled):
         """Used to enable or disable CDN access on a container."""
         if ttl is None:
@@ -1323,6 +1374,7 @@ class CFClient(object):
         cont.cdn_log_retention = enabled
 
 
+    @ensure_cdn
     def _set_cdn_log_retention(self, container, enabled):
         """This does the actual call to the Cloud Files API."""
         hdrs = {"X-Log-Retention": "%s" % enabled}
@@ -1374,6 +1426,7 @@ class CFClient(object):
         return self.set_container_metadata(container, hdr, clear=False)
 
 
+    @ensure_cdn
     @handle_swiftclient_exception
     def purge_cdn_object(self, container, name, email_addresses=None):
         ct = self.get_container(container)

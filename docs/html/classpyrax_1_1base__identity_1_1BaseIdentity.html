@@ -191,7 +191,7 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#a5032718366de2e9b6b60077fdf882ce7">get_tenant</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the tenant for the current user.  <a href="#a5032718366de2e9b6b60077fdf882ce7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#a41a5da9da4ac2bd23d06aa7f7c812da5">list_tenants</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">ADMIN ONLY.  <a href="#a41a5da9da4ac2bd23d06aa7f7c812da5"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Lists all tenants associated with the currently authenticated user (admin=False), or all tenants (admin=True).  <a href="#a41a5da9da4ac2bd23d06aa7f7c812da5"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#afb882c0e80402ee17bf29c7af13d2a38">create_tenant</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">ADMIN ONLY.  <a href="#afb882c0e80402ee17bf29c7af13d2a38"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#a25f2b401ee3068816e774d648abd83de">update_tenant</a></td></tr>
@@ -874,7 +874,13 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>public</em> = <code>True</code>&#160;</td>
+          <td class="paramname"><em>public</em> = <code>True</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>cached</em> = <code>True</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -886,7 +892,8 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Returns the client object for the specified service and region. </p>
-<p>By default the public endpoint is used. If you wish to work with a services internal endpoints, specify `public=False`. </p>
+<p>By default the public endpoint is used. If you wish to work with a services internal endpoints, specify `public=False`.</p>
+<p>By default, if a client has already been created for the given service, region, and public values, that will be returned. To force a new client to be created, pass 'cached=False'. </p>
 
 </div>
 </div>
@@ -1214,15 +1221,24 @@ Public Attributes</h2></td></tr>
           <td class="memname">def <a class="el" href="classpyrax_1_1base__identity_1_1BaseIdentity.html#a41a5da9da4ac2bd23d06aa7f7c812da5">list_tenants</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>admin</em> = <code>True</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>ADMIN ONLY. </p>
-<p>Returns a list of all tenants. </p>
+<p>Lists all tenants associated with the currently authenticated user (admin=False), or all tenants (admin=True). </p>
 
 </div>
 </div>
@@ -1987,6 +2003,8 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeIdentity.html#a0bf3c8aa9017e52dd041b7e2c3327621">FakeIdentity</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="a9f8b98f9d8644964bbb15a9fb217ccb7"></a><!-- doxytag: member="pyrax::base_identity::BaseIdentity::tenant_id" ref="a9f8b98f9d8644964bbb15a9fb217ccb7" args="" -->
@@ -2109,7 +2127,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 6 2014 11:50:08 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 13 2014 11:03:41 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

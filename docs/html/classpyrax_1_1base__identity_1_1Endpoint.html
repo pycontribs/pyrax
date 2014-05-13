@@ -126,6 +126,8 @@ Inheritance diagram for Endpoint:</div>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1Endpoint.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Set local attributes from the supplied dictionary.  <a href="#ac775ee34451fdfa742b318538164070e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1Endpoint.html#abe2beeef432d491e9f4148e80707b0f4">get_new_client</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new instance of the client for this endpoint.  <a href="#abe2beeef432d491e9f4148e80707b0f4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1Endpoint.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepts either 'public' or 'private' as a parameter, and returns the corresponding value for 'public_url' or 'private_url', respectively.  <a href="#a444a1328efb32d5d9d2dcb2efe855d3b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1base__identity_1_1Endpoint.html#a0a990b3ec3889d40889daca9ee5e4695">__getattr__</a></td></tr>
@@ -284,6 +286,35 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="abe2beeef432d491e9f4148e80707b0f4"></a><!-- doxytag: member="pyrax::base_identity::Endpoint::get_new_client" ref="abe2beeef432d491e9f4148e80707b0f4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1base__identity_1_1Endpoint.html#abe2beeef432d491e9f4148e80707b0f4">get_new_client</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>public</em> = <code>True</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a new instance of the client for this endpoint. </p>
+
+</div>
+</div>
 <hr/><h2>Member Data Documentation</h2>
 <a class="anchor" id="abe24abfdb59c83fe062d8473359014d6"></a><!-- doxytag: member="pyrax::base_identity::Endpoint::attr_map" ref="abe24abfdb59c83fe062d8473359014d6" args="" -->
 <div class="memitem">
@@ -297,6 +328,7 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 <b>Initial value:</b><div class="fragment"><pre class="fragment">{<span class="stringliteral">&quot;publicURL&quot;</span>: <span class="stringliteral">&quot;public_url&quot;</span>,
             <span class="stringliteral">&quot;privateURL&quot;</span>: <span class="stringliteral">&quot;private_url&quot;</span>,
+            <span class="stringliteral">&quot;internalURL&quot;</span>: <span class="stringliteral">&quot;private_url&quot;</span>,
             <span class="stringliteral">&quot;tenantId&quot;</span>: <span class="stringliteral">&quot;tenant_id&quot;</span>,
             }
 </pre></div>
@@ -401,7 +433,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 6 2014 11:50:08 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 13 2014 11:03:41 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

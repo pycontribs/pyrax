@@ -28,7 +28,8 @@ cs = pyrax.cloudservers
 server_name = pyrax.utils.random_ascii(8)
 
 ubu_image = [img for img in cs.images.list()
-        if "12.04" in img.name][0]
+        if "14.04" in img.name
+        and "PVHVM" in img.name][0]
 print("Ubuntu Image:", ubu_image)
 flavor_1GB = [flavor for flavor in cs.flavors.list()
         if flavor.ram == 1024][0]

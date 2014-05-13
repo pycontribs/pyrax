@@ -148,6 +148,7 @@ class Endpoint(object):
     _client_private = None
     attr_map = {"publicURL": "public_url",
             "privateURL": "private_url",
+            "internalURL": "private_url",
             "tenantId": "tenant_id",
             }
 
@@ -164,13 +165,20 @@ class Endpoint(object):
             setattr(self, att_name, val)
 
 
-    def _get_client(self, public=True):
+    def get_new_client(self, public=True):
+        """
+        Returns a new instance of the client for this endpoint.
+        """
+        return self._get_client(public=public, cached=False)
+
+
+    def _get_client(self, public=True, cached=True):
         client_att = "_client" if public else "_client_private"
         clt = getattr(self, client_att)
         if isinstance(clt, exc.NoClientForService):
             # Already failed
             raise clt
-        if clt is not None:
+        if cached and clt is not None:
             return clt
         # Create the client
         clt_class = pyrax.client_class_for_service(self.service)
@@ -365,20 +373,30 @@ class BaseIdentity(object):
         raise AttributeError("No such attribute '%s'." % att)
 
 
-    def get_client(self, service, region, public=True):
+    def get_client(self, service, region, public=True, cached=True):
         """
         Returns the client object for the specified service and region.
 
         By default the public endpoint is used. If you wish to work with a
         services internal endpoints, specify `public=False`.
+
+        By default, if a client has already been created for the given service,
+        region, and public values, that will be returned. To force a new client
+        to be created, pass 'cached=False'.
         """
+        if not self.authenticated:
+            raise exc.NotAuthenticated("You must authenticate before trying "
+                    "to create clients.")
         clt = ep = None
         mapped_service = self.service_mapping.get(service) or service
         svc = self.services.get(mapped_service)
         if svc:
             ep = svc.endpoints.get(region)
         if ep:
-            clt = ep.client if public else ep.client_private
+            if cached:
+                clt = ep.client if public else ep.client_private
+            else:
+                clt = ep.get_new_client(public=public)
         if not clt:
             raise exc.NoSuchClient("There is no client available for the "
                     "service '%s' in the region '%s'." % (service, region))
@@ -958,11 +976,12 @@ class BaseIdentity(object):
         return None
 
 
-    def list_tenants(self):
+    def list_tenants(self, admin=True):
         """
-        ADMIN ONLY. Returns a list of all tenants.
+        Lists all tenants associated with the currently authenticated
+        user (admin=False), or all tenants (admin=True).
         """
-        return self._list_tenants(admin=True)
+        return self._list_tenants(admin)
 
 
     def _list_tenants(self, admin):

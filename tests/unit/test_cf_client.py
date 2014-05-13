@@ -296,14 +296,14 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         client.connection.head_object = Mock()
         client.connection.head_object.return_value = {
-                "X-Object-Meta-Foo": "yes", "Some-Other-Key": "no"}
+                "x-object-meta-foo": "yes", "some-other-key": "no"}
         client.connection.post_object = Mock()
         prefix = utils.random_unicode()
         client.set_object_metadata(self.cont_name, self.obj_name,
                 {"newkey": "newval", "emptykey": ""}, prefix=prefix)
         client.connection.post_object.assert_called_with(self.cont_name,
-                self.obj_name, {"%snewkey" % prefix: "newval",
-                "X-Object-Meta-Foo": "yes"}, response_dict=None)
+                self.obj_name, {"%snewkey" % prefix: "newval"},
+                response_dict=None)
 
     def test_remove_object_metadata_key(self):
         client = self.client
@@ -324,7 +324,7 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.post_container = Mock()
         client.remove_container_metadata_key(self.cont_name, "Bar")
         client.connection.post_container.assert_called_with(self.cont_name,
-                {"X-Container-Meta-Bar": ""}, response_dict=None)
+                {"x-container-meta-Bar": ""}, response_dict=None)
 
     def test_massage_metakeys(self):
         prefix = "ABC-"
@@ -332,6 +332,15 @@ class CF_ClientTest(unittest.TestCase):
         expected = {"ABC-yyy": "ok", "ABC-zzz": "change"}
         fixed = self.client._massage_metakeys(orig, prefix)
         self.assertEqual(fixed, expected)
+
+    def test_prefix_read_only(self):
+        client = self.client
+        val = utils.random_unicode()
+
+        def set_prefix(val):
+            client.account_meta_prefix = val
+
+        self.assertRaises(AttributeError, set_prefix, val)
 
     def test_resolve_name(self):
         class Foo(object):
@@ -345,6 +354,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_get_container_cdn_metadata(self):
         client = self.client
         client.connection.cdn_request = Mock()
+        client.connection.cdn_connection = "fake"
         resp = FakeResponse()
         resp.headers = [("a", "b"), ("c", "d")]
         client.connection.cdn_request.return_value = resp
@@ -357,6 +367,7 @@ class CF_ClientTest(unittest.TestCase):
         client = self.client
         client.connection.put_container = Mock()
         client.connection.head_container = Mock()
+        client.connection.cdn_connection = "fake"
         meta = {"X-TTL": "9999", "X-NotAllowed": "0"}
         self.assertRaises(exc.InvalidCDNMetadata,
                 client.set_container_cdn_metadata, self.cont_name, meta)
@@ -435,6 +446,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_purge_cdn_object(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.cdn_connection = "fake"
         self.assertRaises(exc.NotCDNEnabled, client.purge_cdn_object,
                 self.cont_name, self.obj_name)
         client.get_container(self.cont_name).cdn_uri = "http://example.com"
@@ -520,8 +532,8 @@ class CF_ClientTest(unittest.TestCase):
                 content_type="test/test", etag=etag,
                 content_encoding="gzip", extra_info=response)
         client.connection.put_object.assert_called_with(ANY, ANY,
-                contents=ANY, content_type=ANY, etag=ANY, headers=ANY,
-                response_dict=response)
+                contents=ANY, content_type=ANY, chunk_size=ANY, etag=ANY,
+                headers=ANY, response_dict=response)
 
         client.get_object = gobj
 
@@ -936,7 +948,8 @@ class CF_ClientTest(unittest.TestCase):
         client.connection.get_container = Mock()
         client.connection.get_container.return_value = ({}, cont_list)
         conts = client.get_all_containers()
-        client.connection.get_container.assert_called_with("")
+        client.connection.get_container.assert_called_with("", limit=None,
+                marker=None)
         self.assertEqual(len(conts), 2)
         cont_names = [ct.name for ct in conts]
         cont_names.sort()
@@ -1112,6 +1125,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_list_public_containers(self):
         client = self.client
         client.connection.cdn_request = Mock()
+        client.connection.cdn_connection = "fake"
         resp = FakeResponse()
         resp.headers = [("a", "b"), ("c", "d")]
         resp.status = 500
@@ -1126,6 +1140,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_make_container_public(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.cdn_connection = "fake"
         cont = client.get_container(self.cont_name)
         cont.cdn_uri = None
         client.connection.cdn_request = Mock()
@@ -1146,6 +1161,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_make_container_private(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.cdn_connection = "fake"
         cont = client.get_container(self.cont_name)
         cont.cdn_uri = None
         client.connection.cdn_request = Mock()
@@ -1166,6 +1182,7 @@ class CF_ClientTest(unittest.TestCase):
     def test_set_cdn_log_retention(self):
         client = self.client
         client.connection.head_container = Mock()
+        client.connection.cdn_connection = "fake"
         cont = client.get_container(self.cont_name)
         client.connection.cdn_request = Mock()
         resp = FakeResponse()

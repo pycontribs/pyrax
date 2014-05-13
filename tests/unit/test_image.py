@@ -27,7 +27,8 @@ class ImageTest(unittest.TestCase):
         super(ImageTest, self).__init__(*args, **kwargs)
 
     def setUp(self):
-        self.client = fakes.FakeImageClient()
+        self.identity = fakes.FakeIdentity()
+        self.client = fakes.FakeImageClient(self.identity)
         self.client._manager = fakes.FakeImageManager(self.client)
         self.image = fakes.FakeImage()
         super(ImageTest, self).setUp()
@@ -195,15 +196,13 @@ class ImageTest(unittest.TestCase):
         mgr = clt._manager
         img = self.image
         status = random.choice(("pending", "accepted", "rejected"))
-        sav = pyrax.identity.tenant_id
         project_id = utils.random_unicode()
-        pyrax.identity.tenant_id = project_id
+        clt.identity.tenant_id = project_id
         exp_uri = "/%s/%s/members/%s" % (mgr.uri_base, img.id, project_id)
         exp_body = {"status": status}
         mgr.api.method_put = Mock(return_value=(None, None))
         mgr.update_image_member(img.id, status)
         mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
-        pyrax.identity.tenant_id = sav
 
     def test_imgmgr_update_member_bad(self):
         clt = self.client
@@ -218,15 +217,13 @@ class ImageTest(unittest.TestCase):
         mgr = clt._manager
         img = self.image
         status = random.choice(("pending", "accepted", "rejected"))
-        sav = pyrax.identity.tenant_id
         project_id = utils.random_unicode()
-        pyrax.identity.tenant_id = project_id
+        clt.identity.tenant_id = project_id
         exp_uri = "/%s/%s/members/%s" % (mgr.uri_base, img.id, project_id)
         exp_body = {"status": status}
         mgr.api.method_put = Mock(side_effect=exc.NotFound(""))
         self.assertRaises(exc.InvalidImageMember, mgr.update_image_member,
                 img.id, status)
-        pyrax.identity.tenant_id = sav
 
     def test_img_member_mgr_create_body(self):
         img = self.image
@@ -314,24 +311,25 @@ class ImageTest(unittest.TestCase):
                 "import_from_format": img_format}}
         self.assertEqual(ret, exp)
 
-    def test_img_tasks_mgr_create(self):
+    @patch("pyrax.manager.BaseManager.create")
+    def test_img_tasks_mgr_create(self, mock_create):
         clt = self.client
         mgr = clt._tasks_manager
         nm = utils.random_unicode()
         cont = utils.random_unicode()
-        sav = pyrax.cloudfiles
-        sav_create = BaseManager.create
-        BaseManager.create = Mock()
 
         class FakeCF(object):
             def get_container(self, cont):
                 return cont
 
-        pyrax.cloudfiles = FakeCF()
+        class FakeRegion(object):
+            client = FakeCF()
+
+        api = mgr.api
+        rgn = api.region_name
+        api.identity.object_store = {rgn: FakeRegion()}
         mgr.create(nm, cont=cont)
-        BaseManager.create.assert_called_once_with(nm, cont=cont)
-        pyrax.cloudfiles = sav
-        BaseManager.create = sav_create
+        mock_create.assert_called_once_with(nm, cont=cont)
 
     def test_jsonscheme_mgr(self):
         mgr = JSONSchemaManager(self.client)

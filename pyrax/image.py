@@ -294,7 +294,8 @@ class ImageManager(BaseManager):
             raise exc.InvalidImageMemberStatus("The status value must be one "
                     "of 'accepted', 'rejected', or 'pending'. Received: '%s'" %
                     status)
-        project_id = pyrax.identity.tenant_id
+        api = self.api
+        project_id = api.identity.tenant_id
         uri = "/%s/%s/members/%s" % (self.uri_base, img_id, project_id)
         body = {"status": status}
         try:
@@ -385,7 +386,10 @@ class ImageTasksManager(BaseManager):
         if cont:
             # Verify that it exists. If it doesn't, a NoSuchContainer exception
             # will be raised.
-            pyrax.cloudfiles.get_container(cont)
+            api = self.api
+            rgn = api.region_name
+            cf = api.identity.object_store[rgn].client
+            cf.get_container(cont)
         return super(ImageTasksManager, self).create(name, *args, **kwargs)
 
 

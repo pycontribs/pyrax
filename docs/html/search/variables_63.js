@@ -5,7 +5,6 @@ var searchData=
   ['catalog',['catalog',['../classpyrax_1_1service__catalog_1_1ServiceCatalog.html#a6be3d84fa45e3612e5d22f1015b288af',1,'pyrax::service_catalog::ServiceCatalog']]],
   ['cdn_5fconnection',['cdn_connection',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a9ebd30d3926b0fe246ca66e564caf148',1,'pyrax::cf_wrapper::client::CFClient.cdn_connection()'],['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html#a9ebd30d3926b0fe246ca66e564caf148',1,'pyrax::cf_wrapper::client::Connection.cdn_connection()']]],
   ['cdn_5fenabled',['cdn_enabled',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a15b27a248ed9133d6a84543a420fe2f9',1,'pyrax::cf_wrapper::client::CFClient']]],
-  ['cdn_5fmeta_5fprefix',['cdn_meta_prefix',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a2952143e08d5da585f27b1b2271c03be',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['cdn_5furl',['cdn_url',['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html#af8614020022a9bd864339bd42b8fceb4',1,'pyrax::cf_wrapper::client::Connection']]],
   ['check_5fcount',['check_count',['../classpyrax_1_1fakes_1_1FakeStatusChanger.html#ad7691a5628dc61210d03d85bb1752829',1,'pyrax::fakes::FakeStatusChanger']]],
   ['cidr',['cidr',['../classpyrax_1_1cloudnetworks_1_1CloudNetwork.html#a22262d03c6a363b1f41f4dffd3b1c797',1,'pyrax::cloudnetworks::CloudNetwork']]],
@@ -31,7 +30,6 @@ var searchData=
   ['connection_5fretries',['CONNECTION_RETRIES',['../namespacepyrax_1_1cf__wrapper_1_1client.html#a19074fb0e7d33e5cb6f2fc49877e64c1',1,'pyrax::cf_wrapper::client']]],
   ['connection_5ftimeout',['CONNECTION_TIMEOUT',['../namespacepyrax_1_1cf__wrapper_1_1client.html#a32d68802775b5e101a259fb6f3edf5d7',1,'pyrax::cf_wrapper::client']]],
   ['container',['container',['../classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html#a030ecaa2a61b422a8ca7422403ad8c77',1,'pyrax::cf_wrapper::client::FolderUploader.container()'],['../classpyrax_1_1cf__wrapper_1_1client_1_1BulkDeleter.html#a030ecaa2a61b422a8ca7422403ad8c77',1,'pyrax::cf_wrapper::client::BulkDeleter.container()'],['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a030ecaa2a61b422a8ca7422403ad8c77',1,'pyrax::cf_wrapper::storage_object::StorageObject.container()'],['../classpyrax_1_1fakes_1_1FakeStorageObject.html#a030ecaa2a61b422a8ca7422403ad8c77',1,'pyrax::fakes::FakeStorageObject.container()']]],
-  ['container_5fmeta_5fprefix',['container_meta_prefix',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a9b5995b5ab3392bd65e1fcaf722b6707',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['content',['content',['../classpyrax_1_1fakes_1_1FakeResponse.html#aaa48247c6e717970fa828bc18b7a1a16',1,'pyrax::fakes::FakeResponse']]],
   ['content_5ftype',['content_type',['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a221623422ea72de630e7e446a84e9f1f',1,'pyrax::cf_wrapper::storage_object::StorageObject.content_type()'],['../classpyrax_1_1fakes_1_1FakeStorageObject.html#a221623422ea72de630e7e446a84e9f1f',1,'pyrax::fakes::FakeStorageObject.content_type()']]]
 ];

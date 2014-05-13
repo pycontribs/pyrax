@@ -22,7 +22,7 @@ var searchData=
   ['servicecatalog',['ServiceCatalog',['../classpyrax_1_1service__catalog_1_1ServiceCatalog.html',1,'pyrax::service_catalog']]],
   ['servicenotavailable',['ServiceNotAvailable',['../classpyrax_1_1exceptions_1_1ServiceNotAvailable.html',1,'pyrax::exceptions']]],
   ['serviceresponsefailure',['ServiceResponseFailure',['../classpyrax_1_1exceptions_1_1ServiceResponseFailure.html',1,'pyrax::exceptions']]],
-  ['services',['services',['../classpyrax_1_1base__identity_1_1BaseIdentity.html#a0bf3c8aa9017e52dd041b7e2c3327621',1,'pyrax::base_identity::BaseIdentity.services()'],['../namespacepyrax.html#af615dc60ad41afcddd9dfa11de351b5c',1,'pyrax.services()']]],
+  ['services',['services',['../classpyrax_1_1base__identity_1_1BaseIdentity.html#a0bf3c8aa9017e52dd041b7e2c3327621',1,'pyrax::base_identity::BaseIdentity.services()'],['../classpyrax_1_1fakes_1_1FakeIdentity.html#a0bf3c8aa9017e52dd041b7e2c3327621',1,'pyrax::fakes::FakeIdentity.services()'],['../namespacepyrax.html#af615dc60ad41afcddd9dfa11de351b5c',1,'pyrax.services()']]],
   ['session_5fpersistence',['session_persistence',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a403633aa5d6c48d2ad993873bdbd4e2e',1,'pyrax::cloudloadbalancers::CloudLoadBalancer']]],
   ['set',['set',['../classpyrax_1_1Settings.html#a621bd5e22d03cc48dbb784427b1c0fd8',1,'pyrax::Settings']]],
   ['set_5faccount_5fmetadata',['set_account_metadata',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ab38bbe7b6c0330ae9d0a768197b36a6c',1,'pyrax::cf_wrapper::client::CFClient']]],

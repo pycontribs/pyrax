@@ -1,6 +1,7 @@
 var searchData=
 [
   ['enable_5froot_5fuser',['enable_root_user',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseInstance.html#a9c5207c3983e465d9880d89e890d8bfc',1,'pyrax::clouddatabases::CloudDatabaseInstance.enable_root_user()'],['../classpyrax_1_1clouddatabases_1_1CloudDatabaseClient.html#a9c5207c3983e465d9880d89e890d8bfc',1,'pyrax::clouddatabases::CloudDatabaseClient.enable_root_user()']]],
+  ['ensure_5fcdn',['ensure_cdn',['../namespacepyrax_1_1cf__wrapper_1_1client.html#ac4b8c34dc2906a3e5f7a79ab765d4b59',1,'pyrax::cf_wrapper::client']]],
   ['env',['env',['../namespacepyrax_1_1utils.html#a9790d3a239a8e290bffbeef17c48f017',1,'pyrax::utils']]],
   ['environments',['environments',['../classpyrax_1_1Settings.html#a989dd2f2e43c5e8b53cfd5933054c2ea',1,'pyrax::Settings']]],
   ['execute',['execute',['../classpyrax_1_1autoscale_1_1AutoScalePolicy.html#ad4a3a293739ba23e084f19c685303590',1,'pyrax::autoscale::AutoScalePolicy']]],
