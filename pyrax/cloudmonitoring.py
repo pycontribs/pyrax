@@ -948,9 +948,9 @@ class CloudMonitorClient(BaseClient):
         resp = self._entity_manager.create(label=label, name=name, agent=agent,
                 ip_addresses=ip_addresses, metadata=metadata,
                 return_response=True)
-        status = resp["status"]
+        status = resp.status_code
         if status == "201":
-            ent_id = resp["x-object-id"]
+            ent_id = resp.headers["x-object-id"]
             return self.get_entity(ent_id)
 
 
