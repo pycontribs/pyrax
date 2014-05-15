@@ -945,11 +945,11 @@ class CloudMonitorClient(BaseClient):
         # the _create_body() method can distinguish this as a request for a
         # body dict for entities.
         ip_addresses = ip_addresses or {}
-        resp, test = self._entity_manager.create(label=label, name=name,
-                                                      agent=agent,
-                                                      ip_addresses=ip_addresses,
-                                                      metadata=metadata,
-                                                      return_response=True)
+        resp = self._entity_manager.create(label=label, name=name,
+                                           agent=agent,
+                                           ip_addresses=ip_addresses,
+                                           metadata=metadata,
+                                           return_response=True)
         
         if resp.status_code == 201:
             ent_id = resp.headers["x-object-id"]
