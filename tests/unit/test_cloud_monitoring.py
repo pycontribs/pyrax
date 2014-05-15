@@ -302,7 +302,9 @@ class CloudMonitoringTest(unittest.TestCase):
         target_receiver = utils.random_unicode()
         test_only = True
         include_debug = True
-        fake_resp = {"x-object-id": {}, "status": "201"}
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status_code = 201
+        fake_resp.headers["x-object-id"] = {}
         clt.method_post = Mock(return_value=(fake_resp, None))
         mgr.get_check = Mock()
         mgr.get = Mock(return_value=fakes.FakeEntity)
@@ -341,7 +343,9 @@ class CloudMonitoringTest(unittest.TestCase):
         target_receiver = utils.random_unicode()
         test_only = True
         include_debug = False
-        fake_resp = {"x-object-id": {}, "status": "201"}
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status_code = 201
+        fake_resp.headers["x-object-id"] = {}
         clt.method_post = Mock(return_value=(fake_resp, None))
         mgr.get_check = Mock()
         mgr.get = Mock(return_value=fakes.FakeEntity)
@@ -380,7 +384,9 @@ class CloudMonitoringTest(unittest.TestCase):
         target_receiver = utils.random_unicode()
         test_only = False
         include_debug = False
-        fake_resp = {"x-object-id": {}, "status": "201"}
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status_code = 201
+        fake_resp.headers["x-object-id"] = {}
         clt.method_post = Mock(return_value=(fake_resp, None))
         mgr.get_check = Mock()
         mgr.get = Mock(return_value=fakes.FakeEntity)
@@ -667,8 +673,10 @@ class CloudMonitoringTest(unittest.TestCase):
         name = utils.random_unicode()
         metadata = utils.random_unicode()
         obj_id = utils.random_unicode()
-        resp = ({"status": "201", "x-object-id": {}}, None)
-        clt.method_post = Mock(return_value=resp)
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status_code = 201
+        fake_resp.headers["x-object-id"] = {}
+        clt.method_post = Mock(return_value=fake_resp)
         mgr.get_alarm = Mock()
         exp_uri = "/%s/%s/alarms" % (mgr.uri_base, ent.id)
         exp_body = {"check_id": check, "notification_plan_id": np, "criteria":
