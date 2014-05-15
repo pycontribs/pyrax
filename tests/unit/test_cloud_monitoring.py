@@ -1038,8 +1038,12 @@ class CloudMonitoringTest(unittest.TestCase):
         ent = self.entity
         mgr = clt._entity_manager
         obj_id = utils.random_unicode()
-        resp = {"status": "201", "x-object-id": obj_id}
-        mgr.create = Mock(return_value=resp)
+
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status_code = 201
+        fake_resp.headers["x-object-id"] = obj_id
+
+        mgr.create = Mock(return_value=fake_resp)
         clt.get_entity = Mock(return_value=ent)
         label = utils.random_unicode()
         name = utils.random_unicode()
