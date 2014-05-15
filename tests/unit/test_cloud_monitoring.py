@@ -675,7 +675,7 @@ class CloudMonitoringTest(unittest.TestCase):
         obj_id = utils.random_unicode()
         fake_resp = fakes.FakeResponse()
         fake_resp.status_code = 201
-        fake_resp.headers["x-object-id"] = {}
+        fake_resp.headers["x-object-id"] = {obj_id}
         clt.method_post = Mock(return_value=fake_resp)
         mgr.get_alarm = Mock()
         exp_uri = "/%s/%s/alarms" % (mgr.uri_base, ent.id)
