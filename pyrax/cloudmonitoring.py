@@ -564,7 +564,7 @@ class CloudMonitorEntityManager(BaseManager):
             body["metadata"] = metadata
         resp = self.api.method_post(uri, body=body)
 
-        if resp.status_code == "201":
+        if resp.status_code == 201:
             alarm_id = resp.headers["x-object-id"]
             return self.get_alarm(entity, alarm_id)
 

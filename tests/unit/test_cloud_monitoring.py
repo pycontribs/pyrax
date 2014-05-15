@@ -682,8 +682,9 @@ class CloudMonitoringTest(unittest.TestCase):
         exp_body = {"check_id": check, "notification_plan_id": np, "criteria":
                 criteria, "disabled": disabled, "label": label,
                 "metadata": metadata}
-        mgr.create_alarm(ent, check, np, criteria=criteria, disabled=disabled,
+        alarm = mgr.create_alarm(ent, check, np, criteria=criteria, disabled=disabled,
                 label=label, name=name, metadata=metadata)
+        alarm.assertEqual(alarm.entity, ent)
         clt.method_post.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_entity_mgr_update_alarm(self):
