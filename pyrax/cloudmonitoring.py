@@ -950,7 +950,6 @@ class CloudMonitorClient(BaseClient):
                                            ip_addresses=ip_addresses,
                                            metadata=metadata,
                                            return_response=True)
-        
         if resp.status_code == 201:
             ent_id = resp.headers["x-object-id"]
             return self.get_entity(ent_id)
