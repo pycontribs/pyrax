@@ -8,9 +8,9 @@ import hashlib
 import hmac
 # Use eventlet if available
 try:
-    import eventlet.green.httplib as httplib
+    import eventlet.green.httplib as http_client
 except ImportError:
-    import httplib
+    from six.moves import http_client
 import locale
 import math
 import os
@@ -1516,7 +1516,7 @@ class Connection(_swift_client.Connection):
             port = 443 if is_ssl else 80
         port = int(port)
         path = parsed.path.strip("/")
-        conn_class = httplib.HTTPSConnection if is_ssl else httplib.HTTPConnection
+        conn_class = http_client.HTTPSConnection if is_ssl else http_client.HTTPConnection
         self.cdn_connection = conn_class(host, port, timeout=CONNECTION_TIMEOUT)
         self.cdn_connection.is_ssl = is_ssl
 
@@ -1546,7 +1546,7 @@ class Connection(_swift_client.Connection):
             try:
                 self.cdn_connection.request(method, path, data, headers)
                 response = self.cdn_connection.getresponse()
-            except (socket.error, IOError, httplib.HTTPException) as e:
+            except (socket.error, IOError, http_client.HTTPException) as e:
                 response = None
             if response:
                 if response.status == 401:
