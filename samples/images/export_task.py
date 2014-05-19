@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 
 pyrax.set_setting("identity_type", "rackspace")
@@ -34,7 +35,7 @@ print()
 print("Select an image to export:")
 for pos, image in enumerate(images):
     print("[%s] %s" % (pos, image.name))
-snum = raw_input("Enter the number of the image you want to share: ")
+snum = six.moves.input("Enter the number of the image you want to share: ")
 if not snum:
     exit()
 try:
@@ -52,7 +53,7 @@ print()
 print("Select the target container to place the exported image:")
 for pos, cont in enumerate(conts):
     print("[%s] %s" % (pos, cont.name))
-snum = raw_input("Enter the number of the container: ")
+snum = six.moves.input("Enter the number of the container: ")
 if not snum:
     exit()
 try:
@@ -68,8 +69,8 @@ cont = conts[num]
 task = imgs.export_task(image, cont)
 print("Task ID=%s" % task.id)
 print()
-answer = raw_input("Do you want to track the task until completion? This may "
-        "take several minutes. [y/N]: ")
+answer = six.moves.input("Do you want to track the task until completion? This "
+        "may take several minutes. [y/N]: ")
 if answer and answer[0].lower() == "y":
     pyrax.utils.wait_until(task, "status", ["success", "failure"],
             verbose=True, interval=30)
