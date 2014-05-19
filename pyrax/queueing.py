@@ -21,7 +21,8 @@ from functools import wraps
 import json
 import os
 import re
-import urlparse
+
+import six
 
 import pyrax
 from pyrax.client import BaseClient
@@ -247,7 +248,7 @@ class QueueMessage(BaseResource):
         super(QueueMessage, self)._add_details(info)
         if self.href is None:
             return
-        parsed = urlparse.urlparse(self.href)
+        parsed = urllib.parse.urlparse(self.href)
         self.id = parsed.path.rsplit("/", 1)[-1]
         query = parsed.query
         if query:
@@ -279,7 +280,7 @@ class QueueClaim(BaseResource):
         """
         msg_dicts = info.pop("messages", [])
         super(QueueClaim, self)._add_details(info)
-        parsed = urlparse.urlparse(self.href)
+        parsed = urllib.parse.urlparse(self.href)
         self.id = parsed.path.rsplit("/", 1)[-1]
         self.messages = [QueueMessage(self.manager._message_manager, item)
                 for item in msg_dicts]
