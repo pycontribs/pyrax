@@ -18,12 +18,11 @@ import re
 import socket
 import threading
 import time
-import urllib
-import urlparse
 import uuid
 import mimetypes
 
 import six
+from six.moves import urllib
 
 from swiftclient import client as _swift_client
 import pyrax
@@ -152,7 +151,7 @@ def _convert_list_last_modified_to_local(attdict):
 def _quote(val):
     if isinstance(val, six.text_type):
         val = val.encode("utf-8")
-    return urllib.quote(val)
+    return urllib.parse.quote(val)
 
 
 
@@ -1502,7 +1501,7 @@ class Connection(_swift_client.Connection):
     def _make_cdn_connection(self, cdn_url=None):
         if cdn_url is not None:
             self.cdn_url = cdn_url
-        parsed = urlparse.urlparse(self.cdn_url)
+        parsed = urllib.parse.urlparse(self.cdn_url)
         is_ssl = parsed.scheme == "https"
 
         # Verify hostnames are valid and parse a port spec (if any)
@@ -1529,7 +1528,7 @@ class Connection(_swift_client.Connection):
         Taken directly from the cloudfiles library and modified for use here.
         """
         pth = "/".join([_quote(elem) for elem in path])
-        uri_path = urlparse.urlparse(self.uri).path
+        uri_path = urllib.parse.urlparse(self.uri).path
         path = "%s/%s" % (uri_path.rstrip("/"), pth)
         headers = {"Content-Length": str(len(data)),
                 "User-Agent": self.user_agent,

@@ -8,7 +8,6 @@ import random
 import StringIO
 import sys
 import unittest
-import urllib2
 
 from mock import MagicMock as Mock
 from mock import patch
