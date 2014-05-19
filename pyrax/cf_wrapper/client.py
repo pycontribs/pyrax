@@ -1515,7 +1515,8 @@ class Connection(_swift_client.Connection):
             port = 443 if is_ssl else 80
         port = int(port)
         path = parsed.path.strip("/")
-        conn_class = http_client.HTTPSConnection if is_ssl else http_client.HTTPConnection
+        conn_class = (http_client.HTTPSConnection if is_ssl
+            else http_client.HTTPConnection)
         self.cdn_connection = conn_class(host, port, timeout=CONNECTION_TIMEOUT)
         self.cdn_connection.is_ssl = is_ssl
 
