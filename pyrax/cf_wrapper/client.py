@@ -45,6 +45,7 @@ CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
 AUTH_ATTEMPTS = 2
 MAX_BULK_DELETE = 10000
+DEFAULT_CHUNKSIZE = 65536
 
 no_such_container_pattern = re.compile(
         r"Container (?:GET|HEAD) failed: .+/(.+) 404")
@@ -1167,6 +1168,52 @@ class CFClient(object):
         ret = gen.next()
         _close_swiftclient_conn(self.connection)
         return ret
+
+
+    def fetch_dlo(self, cont, name, chunk_size=None):
+        """
+        Returns a list of 2-tuples in the form of (object_name,
+        fetch_generator) representing the components of a multi-part DLO
+        (Dynamic Large Object).  Each fetch_generator object can be interated
+        to retrieve its contents.
+
+        This is useful when transferring a DLO from one object storage system
+        to another. Examples would be copying DLOs from one region of a
+        provider to another, or copying a DLO from one provider to another.
+        """
+        if chunk_size is None:
+            chunk_size = DEFAULT_CHUNKSIZE
+
+        class FetchChunker(object):
+            """
+            Class that takes the generator objects returned by a chunked
+            fetch_object() call and wraps them to behave as file-like objects for
+            uploading.
+            """
+            def __init__(self, gen, verbose=False):
+                self.gen = gen
+                self.verbose = verbose
+                self.processed = 0
+                self.interval = 0
+
+            def read(self, size=None):
+                self.interval += 1
+                if self.verbose:
+                    if self.interval > 1024:
+                        self.interval = 0
+                        logit(".")
+                ret = self.gen.next()
+                self.processed += len(ret)
+                return ret
+
+        parts = self.get_container_objects(cont, prefix=name)
+        fetches = [(part.name, self.fetch_object(cont, part.name,
+                    chunk_size=chunk_size))
+                for part in parts
+                if part.name != name]
+        job = [(fetch[0], FetchChunker(fetch[1], verbose=False))
+                for fetch in fetches]
+        return job
 
 
     @handle_swiftclient_exception

@@ -20,6 +20,7 @@
 from functools import wraps
 
 import pyrax
+from pyrax.cf_wrapper.storage_object import StorageObject
 from pyrax.client import BaseClient
 import pyrax.exceptions as exc
 from pyrax.manager import BaseManager
@@ -249,6 +250,45 @@ class ImageManager(BaseManager):
             ret.extend([obj_class(manager=self, info=res)
                     for res in data if res])
         return ret
+
+
+    def create(self, name, img_format=None, img_container_format=None,
+            data=None, container=None, obj=None, metadata=None):
+        """
+        Creates a new image with the specified name. The image data can either
+        be supplied directly in the 'data' parameter, or it can be an image
+        stored in the object storage service. In the case of the latter, you
+        can either supply the container and object names, or simply a
+        StorageObject reference.
+
+        You may specify the image and image container formats; if unspecified,
+        the default of "vhd" for image format and "bare" for image container
+        format will be used.
+
+        NOTE: This is blocking, and may take a while to complete.
+        """
+        if img_format is None:
+            img_format = "vhd"
+        if img_container_format is None:
+            img_container_format = "bare"
+        headers = {
+                "X-Image-Meta-name": name,
+                "X-Image-Meta-disk_format": img_format,
+                "X-Image-Meta-container_format": img_container_format,
+                }
+        if data:
+            img_data = data
+        else:
+            ident = self.api.identity
+            region = self.api.region_name
+            clt = ident.get_client("object_store", region)
+            if not isinstance(obj, StorageObject):
+                obj = clt.get_object(container, obj)
+            img_data = obj.fetch()
+        uri = "%s/images" % self.uri_base
+        resp, resp_body = self.api.method_post(uri, headers=headers,
+                data=img_data)
+
 
 
     def update(self, img, value_dict):
@@ -520,6 +560,19 @@ class ImageClient(BaseClient):
         desired new value for that image.
         """
         return self._manager.update(img, value_dict)
+
+
+    def create(self, name, img_format=None, data=None, container=None,
+            obj=None, metadata=None):
+        """
+        Creates a new image with the specified name. The image data can either
+        be supplied directly in the 'data' parameter, or it can be an image
+        stored in the object storage service. In the case of the latter, you
+        can either supply the container and object names, or simply a
+        StorageObject reference.
+        """
+        return self._manager.create(name, img_format, data=data,
+                container=container, obj=obj)
 
 
     def change_image_name(self, img, newname):
