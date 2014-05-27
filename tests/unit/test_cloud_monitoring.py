@@ -148,8 +148,8 @@ class CloudMonitoringTest(unittest.TestCase):
     def test_notif_manager_create(self):
         clt = self.client
         mgr = clt._notification_manager
-        clt.method_post = Mock(
-                return_value=({"x-object-id": utils.random_unicode()}, None))
+        obj_id = utils.random_unicode()
+        clt.method_post = Mock(return_value=({"x-object-id": obj_id}, None))
         mgr.get = Mock()
         ntyp = utils.random_unicode()
         label = utils.random_unicode()
@@ -235,8 +235,8 @@ class CloudMonitoringTest(unittest.TestCase):
     def test_notif_plan_manager_create(self):
         clt = self.client
         mgr = clt._notification_plan_manager
-        clt.method_post = Mock(
-                return_value=({"x-object-id": utils.random_unicode()}, None))
+        obj_id = utils.random_unicode()
+        clt.method_post = Mock(return_value=({"x-object-id": obj_id}, None))
         mgr.get = Mock()
         label = utils.random_unicode()
         name = utils.random_unicode()
@@ -302,7 +302,9 @@ class CloudMonitoringTest(unittest.TestCase):
         target_receiver = utils.random_unicode()
         test_only = True
         include_debug = True
-        fake_resp = {"x-object-id": {}, "status": "201"}
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status_code = 201
+        fake_resp.headers["x-object-id"] = utils.random_unicode()
         clt.method_post = Mock(return_value=(fake_resp, None))
         mgr.get_check = Mock()
         mgr.get = Mock(return_value=fakes.FakeEntity)
@@ -341,7 +343,9 @@ class CloudMonitoringTest(unittest.TestCase):
         target_receiver = utils.random_unicode()
         test_only = True
         include_debug = False
-        fake_resp = {"x-object-id": {}, "status": "201"}
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status_code = 201
+        fake_resp.headers["x-object-id"] = utils.random_unicode()
         clt.method_post = Mock(return_value=(fake_resp, None))
         mgr.get_check = Mock()
         mgr.get = Mock(return_value=fakes.FakeEntity)
@@ -380,7 +384,9 @@ class CloudMonitoringTest(unittest.TestCase):
         target_receiver = utils.random_unicode()
         test_only = False
         include_debug = False
-        fake_resp = {"x-object-id": {}, "status": "201"}
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status_code = 201
+        fake_resp.headers["x-object-id"] = utils.random_unicode()
         clt.method_post = Mock(return_value=(fake_resp, None))
         mgr.get_check = Mock()
         mgr.get = Mock(return_value=fakes.FakeEntity)
@@ -667,15 +673,19 @@ class CloudMonitoringTest(unittest.TestCase):
         name = utils.random_unicode()
         metadata = utils.random_unicode()
         obj_id = utils.random_unicode()
-        resp = ({"status": "201", "x-object-id": {}}, None)
-        clt.method_post = Mock(return_value=resp)
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status_code = 201
+        fake_resp.headers["x-object-id"] = obj_id
+        fake_respbody = utils.random_unicode()
+        clt.method_post = Mock(return_value=(fake_resp, fake_respbody))
         mgr.get_alarm = Mock()
         exp_uri = "/%s/%s/alarms" % (mgr.uri_base, ent.id)
         exp_body = {"check_id": check, "notification_plan_id": np, "criteria":
                 criteria, "disabled": disabled, "label": label,
                 "metadata": metadata}
-        mgr.create_alarm(ent, check, np, criteria=criteria, disabled=disabled,
-                label=label, name=name, metadata=metadata)
+        alarm = mgr.create_alarm(ent, check, np, criteria=criteria,
+                disabled=disabled, label=label, name=name, metadata=metadata)
+        alarm.assertEqual(alarm.entity, ent)
         clt.method_post.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_entity_mgr_update_alarm(self):
@@ -1038,8 +1048,10 @@ class CloudMonitoringTest(unittest.TestCase):
         ent = self.entity
         mgr = clt._entity_manager
         obj_id = utils.random_unicode()
-        resp = {"status": "201", "x-object-id": obj_id}
-        mgr.create = Mock(return_value=resp)
+        fake_resp = fakes.FakeResponse()
+        fake_resp.status_code = 201
+        fake_resp.headers["x-object-id"] = obj_id
+        mgr.create = Mock(return_value=fake_resp)
         clt.get_entity = Mock(return_value=ent)
         label = utils.random_unicode()
         name = utils.random_unicode()
