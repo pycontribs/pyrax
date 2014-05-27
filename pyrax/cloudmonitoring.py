@@ -562,11 +562,11 @@ class CloudMonitorEntityManager(BaseManager):
             body["label"] = label_name
         if metadata:
             body["metadata"] = metadata
-        resp = self.api.method_post(uri, body=body)
-
+        resp, resp_body = self.api.method_post(uri, body=body)
         if resp.status_code == 201:
             alarm_id = resp.headers["x-object-id"]
             return self.get_alarm(entity, alarm_id)
+
 
     def update_alarm(self, entity, alarm, criteria=None, disabled=False,
             label=None, name=None, metadata=None):
@@ -943,11 +943,9 @@ class CloudMonitorClient(BaseClient):
         # the _create_body() method can distinguish this as a request for a
         # body dict for entities.
         ip_addresses = ip_addresses or {}
-        resp = self._entity_manager.create(label=label, name=name,
-                                           agent=agent,
-                                           ip_addresses=ip_addresses,
-                                           metadata=metadata,
-                                           return_response=True)
+        resp = self._entity_manager.create(label=label, name=name, agent=agent,
+                ip_addresses=ip_addresses, metadata=metadata,
+                return_response=True)
         if resp.status_code == 201:
             ent_id = resp.headers["x-object-id"]
             return self.get_entity(ent_id)
