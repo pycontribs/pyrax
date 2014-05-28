@@ -443,6 +443,21 @@ class IdentityTest(unittest.TestCase):
         ret = ident.get_client(svc, region)
         self.assertEqual(ret, clt)
 
+    @patch("pyrax.base_identity.BaseIdentity.get_client")
+    def test_get_client_rax(self, mock_get_client):
+        from pyrax.cloudnetworks import CloudNetworkClient
+        ident = self.rax_identity_class()
+        region = utils.random_unicode()
+        service = "networks"
+        ident.get_client(service, region)
+        mock_get_client.assert_called_with("compute", region, public=True,
+                cached=True, client_class=CloudNetworkClient)
+        # Check with any other service
+        service = utils.random_unicode()
+        ident.get_client(service, region)
+        mock_get_client.assert_called_with(service, region, public=True,
+                cached=True, client_class=None)
+
     def test_get_client_unauthenticated(self):
         ident = self.identity
         ident.authenticated = False
@@ -473,9 +488,11 @@ class IdentityTest(unittest.TestCase):
         ident.services[svc].endpoints = {region: ep}
         ret = ident.get_client(svc, region, public=False)
         self.assertEqual(ret, clt)
-        ep._get_client.assert_called_once_with(public=False)
+        ep._get_client.assert_called_once_with(cached=True, public=False,
+                client_class=None)
 
-    def test_get_client_no_cache(self):
+    @patch("pyrax.client_class_for_service")
+    def test_get_client_no_cache(self, mock_ccfs):
         ident = self.identity
         ident.authenticated = True
         svc = "fake"
@@ -484,13 +501,13 @@ class IdentityTest(unittest.TestCase):
         priv = utils.random_unicode()
         ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
         rgn = "FOO"
-        clt = fakes.FakeClient()
+        clt_class = fakes.FakeClient
         ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
-        ep.get_new_client = Mock(return_value=clt)
+        mock_ccfs.return_value = clt_class
         ident.services[svc].endpoints = {region: ep}
         ret = ident.get_client(svc, region, cached=False)
-        self.assertEqual(ret, clt)
-        ep.get_new_client.assert_called_once_with(public=True)
+        self.assertTrue(isinstance(ret, clt_class))
+        mock_ccfs.assert_called_once_with(svc)
 
     def test_get_client_no_client(self):
         ident = self.identity

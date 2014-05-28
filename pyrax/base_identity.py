@@ -172,7 +172,7 @@ class Endpoint(object):
         return self._get_client(public=public, cached=False)
 
 
-    def _get_client(self, public=True, cached=True):
+    def _get_client(self, public=True, cached=True, client_class=None):
         client_att = "_client" if public else "_client_private"
         clt = getattr(self, client_att)
         if isinstance(clt, exc.NoClientForService):
@@ -181,7 +181,11 @@ class Endpoint(object):
         if cached and clt is not None:
             return clt
         # Create the client
-        clt_class = pyrax.client_class_for_service(self.service)
+        special_class = bool(client_class)
+        if special_class:
+            clt_class = client_class
+        else:
+            clt_class = pyrax.client_class_for_service(self.service)
         if clt_class is None:
             noclass = exc.NoClientForService("No client for the '%s' service "
                     "has been registered." % self.service)
@@ -194,7 +198,8 @@ class Endpoint(object):
                     "the '%s' service." % (url_att, self.service))
             setattr(self, client_att, nourl)
             raise nourl
-        clt = self._create_client(clt_class, url, public=public)
+        clt = self._create_client(clt_class, url, public=public,
+                special=special_class)
         setattr(self, client_att, clt)
         return clt
 
@@ -234,16 +239,16 @@ class Endpoint(object):
         return self._get_client(public=False)
 
 
-    def _create_client(self, clt_class, url, public=True):
+    def _create_client(self, clt_class, url, public=True, special=False):
         """
         Creates a client instance for the service.
         """
         verify_ssl = pyrax.get_setting("verify_ssl")
-        if self.service == "object_store":
+        if not special and self.service == "object_store":
             # Swiftclient requires different parameters.
             client = pyrax.connect_to_cloudfiles(region=self.region,
                     public=public, context=self.identity)
-        elif self.service == "compute":
+        elif not special and self.service == "compute":
             # Novaclient also requires special handling.
             client = pyrax.connect_to_cloudservers(region=self.region,
                     context=self.identity)
@@ -298,7 +303,7 @@ class BaseIdentity(object):
                 "cinder": "volume",
                 "cloud_dns": "dns",
                 "designate": "dns",
-                "cloud_networks": "network",
+                "cloud_networks": "raxnetwork",
                 "neutron": "network",
                 "cloud_monitoring": "monitor",
                 "autoscale": "autoscale",
@@ -373,7 +378,8 @@ class BaseIdentity(object):
         raise AttributeError("No such attribute '%s'." % att)
 
 
-    def get_client(self, service, region, public=True, cached=True):
+    def get_client(self, service, region, public=True, cached=True,
+            client_class=None):
         """
         Returns the client object for the specified service and region.
 
@@ -393,10 +399,8 @@ class BaseIdentity(object):
         if svc:
             ep = svc.endpoints.get(region)
         if ep:
-            if cached:
-                clt = ep.client if public else ep.client_private
-            else:
-                clt = ep.get_new_client(public=public)
+            clt = ep._get_client(public=public, cached=cached,
+                    client_class=client_class)
         if not clt:
             raise exc.NoSuchClient("There is no client available for the "
                     "service '%s' in the region '%s'." % (service, region))
