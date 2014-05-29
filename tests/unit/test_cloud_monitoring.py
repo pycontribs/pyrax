@@ -149,7 +149,11 @@ class CloudMonitoringTest(unittest.TestCase):
         clt = self.client
         mgr = clt._notification_manager
         obj_id = utils.random_unicode()
-        clt.method_post = Mock(return_value=({"x-object-id": obj_id}, None))
+
+        fake_resp = fakes.FakeResponse()
+        fake_resp.headers = {"x-object-id": obj_id}
+
+        clt.method_post = Mock(return_value=(fake_resp, None))
         mgr.get = Mock()
         ntyp = utils.random_unicode()
         label = utils.random_unicode()
@@ -236,7 +240,12 @@ class CloudMonitoringTest(unittest.TestCase):
         clt = self.client
         mgr = clt._notification_plan_manager
         obj_id = utils.random_unicode()
-        clt.method_post = Mock(return_value=({"x-object-id": obj_id}, None))
+
+        fake_resp = fakes.FakeResponse()
+        fake_resp.headers = {"x-object-id": obj_id}
+
+        clt.method_post = Mock(return_value=(fake_resp, None))
+
         mgr.get = Mock()
         label = utils.random_unicode()
         name = utils.random_unicode()
