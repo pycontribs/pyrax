@@ -57,6 +57,17 @@ class RaxIdentity(BaseIdentity):
             return super(RaxIdentity, self)._format_credentials()
 
 
+    def set_credentials(self, username, password=None, region=None,
+            tenant_id=None, authenticate=False):
+        """
+        Sets the username and password directly. Because Rackspace auth uses
+        the api_key, make sure that any old values are cleared.
+        """
+        self.api_key = None
+        super(RaxIdentity, self).set_credentials(username, password=password,
+                region=region, tenant_id=tenant_id, authenticate=authenticate)
+
+
     def authenticate(self, username=None, password=None, api_key=None,
             tenant_id=None):
         """
