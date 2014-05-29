@@ -162,7 +162,7 @@ class CloudMonitorNotificationManager(BaseManager):
                 "details": details,
                 }
         resp, resp_body = self.api.method_post(uri, body=body)
-        return self.get(resp["x-object-id"])
+        return self.get(resp.headers["x-object-id"])
 
 
     def test_notification(self, notification=None, notification_type=None,
@@ -259,7 +259,7 @@ class CloudMonitorNotificationPlanManager(BaseManager):
             ok_state = utils.coerce_string_to_list(ok_state)
             body["ok_state"] = make_list_of_ids(ok_state)
         resp, resp_body = self.api.method_post(uri, body=body)
-        return self.get(resp["x-object-id"])
+        return self.get(resp.headers["x-object-id"])
 
 
 class CloudMonitorEntityManager(BaseManager):
