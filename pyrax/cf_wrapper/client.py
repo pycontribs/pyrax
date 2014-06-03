@@ -1342,18 +1342,19 @@ class CFClient(object):
     def list_container_subdirs(self, container, marker=None, limit=None,
             prefix=None, delimiter=None, full_listing=False):
         """
-        Return a list of StorageObjects representing the pseudo-subdirectories
+        Returns a list of StorageObjects representing the pseudo-subdirectories
         in the specified container. You can use the marker and limit params to
-        handle pagination, and the prefix and delimiter params to filter the
-        objects returned.
+        handle pagination, and the prefix param to filter the objects returned.
+        The 'delimiter' parameter is ignored, as the only meaningful value is
+        '/'.
         """
         cname = self._resolve_name(container)
         hdrs, objs = self.connection.get_container(cname, marker=marker,
-                limit=limit, prefix=prefix, delimiter=delimiter,
+                limit=limit, prefix=prefix, delimiter="/",
                 full_listing=full_listing)
         cont = self.get_container(cname)
         return [StorageObject(self, container=cont, attdict=obj) for obj in objs
-                if obj.get("content_type") == "application/directory"]
+                if "subdir" in obj]
 
 
     @handle_swiftclient_exception
@@ -1716,7 +1717,7 @@ class BulkDeleter(threading.Thread):
         cname = client._resolve_name(container)
         parsed, conn = client.connection.http_connection()
         method = "DELETE"
-        headers = {"X-Auth-Token": self.identity.token,
+        headers = {"X-Auth-Token": self.client.identity.token,
                 "Content-type": "text/plain",
                 }
         while object_names:

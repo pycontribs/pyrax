@@ -253,7 +253,8 @@ class IdentityTest(unittest.TestCase):
         sav_gs = pyrax.get_setting
         pyrax.get_setting = Mock(return_value=vssl)
         sav_conn = pyrax.connect_to_cloudfiles
-        fake_client = object()
+        fake_client = fakes.FakeClient()
+        fake_client.identity = self.identity
         pyrax.connect_to_cloudfiles = Mock(return_value=fake_client)
         ep.service = "object_store"
         ret = ep._create_client(None, None, public)
@@ -275,7 +276,8 @@ class IdentityTest(unittest.TestCase):
         sav_gs = pyrax.get_setting
         pyrax.get_setting = Mock(return_value=vssl)
         sav_conn = pyrax.connect_to_cloudservers
-        fake_client = object()
+        fake_client = fakes.FakeClient()
+        fake_client.identity = self.identity
         pyrax.connect_to_cloudservers = Mock(return_value=fake_client)
         ep.service = "compute"
         ret = ep._create_client(None, None, public)

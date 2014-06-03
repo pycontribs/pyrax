@@ -13,9 +13,9 @@ from mock import ANY, call, patch
 from mock import MagicMock as Mock
 
 import pyrax
-from pyrax.cf_wrapper.client import _swift_client, \
-    _convert_head_object_last_modified_to_local, \
-    _convert_list_last_modified_to_local
+from pyrax.cf_wrapper.client import _swift_client
+from pyrax.cf_wrapper.client import _convert_head_object_last_modified_to_local
+from pyrax.cf_wrapper.client import _convert_list_last_modified_to_local
 from pyrax.cf_wrapper.container import Container
 import pyrax.utils as utils
 import pyrax.exceptions as exc
@@ -1040,16 +1040,18 @@ class CF_ClientTest(unittest.TestCase):
     def test_list_container_subdirs(self):
         client = self.client
         client.connection.head_container = Mock()
-        objs = [{"name": "subdir1", "content_type": "application/directory"},
+        sd1 = utils.random_unicode()
+        sd2 = utils.random_unicode()
+        objs = [{"subdir": sd1},
                 {"name": "file1", "content_type": "text/plain"},
-                {"name": "subdir2", "content_type": "application/directory"},
+                {"subdir": sd2},
                 {"name": "file2", "content_type": "text/plain"}]
         client.connection.get_container = Mock(return_value=(None, objs))
         ret = client.list_container_subdirs("fake")
         self.assertEqual(len(ret), 2)
         obj_names = [obj.name for obj in ret]
-        self.assert_("subdir1" in obj_names)
-        self.assert_("subdir2" in obj_names)
+        self.assert_(sd1 in obj_names)
+        self.assert_(sd2 in obj_names)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_get_info(self):

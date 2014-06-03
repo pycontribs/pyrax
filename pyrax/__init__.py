@@ -696,6 +696,7 @@ def connect_to_cloudservers(region=None, context=None, **kwargs):
 
     cloudservers.list_base_images = list_base_images
     cloudservers.list_snapshots = list_snapshots
+    cloudservers.identity = identity
     return cloudservers
 
 
@@ -731,13 +732,15 @@ def connect_to_cloudfiles(region=None, public=None, context=None):
             preauthurl=cf_url, preauthtoken=context.token, auth_version="2",
             os_options=opts, verify_ssl=verify_ssl, http_log_debug=_http_debug)
     cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)
+    cloudfiles.identity = identity
     return cloudfiles
 
 
 @_require_auth
 def _create_client(ep_name, region, public=True):
     region = _safe_region(region)
-    ep = _get_service_endpoint(None, ep_name.split(":")[0], region, public=public)
+    ep = _get_service_endpoint(None, ep_name.split(":")[0], region,
+            public=public)
     if not ep:
         return
     verify_ssl = get_setting("verify_ssl")
