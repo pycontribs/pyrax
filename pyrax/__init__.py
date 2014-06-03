@@ -578,17 +578,6 @@ def authenticate(connect=True):
     identity.authenticate()
 
 
-def plug_hole_in_swiftclient_auth(clt, url):
-    """
-    This is necessary because swiftclient has an issue when a token expires and
-    it needs to re-authenticate against Rackspace auth. It is a temporary
-    workaround until we can fix swiftclient.
-    """
-    conn = clt.connection
-    conn.token = identity.token
-    conn.url = url
-
-
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, regions, services, cloudservers, cloudfiles

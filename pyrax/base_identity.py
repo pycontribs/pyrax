@@ -248,10 +248,12 @@ class Endpoint(object):
             # Swiftclient requires different parameters.
             client = pyrax.connect_to_cloudfiles(region=self.region,
                     public=public, context=self.identity)
+            client.identity = self.identity
         elif not special and self.service == "compute":
             # Novaclient also requires special handling.
             client = pyrax.connect_to_cloudservers(region=self.region,
                     context=self.identity)
+            client.identity = self.identity
         else:
             client = clt_class(self.identity, region_name=self.region,
                     management_url=url, verify_ssl=verify_ssl)

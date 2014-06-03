@@ -78,6 +78,17 @@ def _close_swiftclient_conn(conn):
         pass
 
 
+def plug_hole_in_swiftclient_auth(clt, url):
+    """
+    This is necessary because swiftclient has an issue when a token expires and
+    it needs to re-authenticate against Rackspace auth. It is a temporary
+    workaround until we can fix swiftclient.
+    """
+    conn = clt.connection
+    conn.token = clt.identity.token
+    conn.url = url
+
+
 def handle_swiftclient_exception(fnc):
     @wraps(fnc)
     def _wrapped(self, *args, **kwargs):
@@ -97,9 +108,9 @@ def handle_swiftclient_exception(fnc):
                         # Assume it is an auth failure. Re-auth and retry.
                         # NOTE: This is a hack to get around an apparent bug
                         # in python-swiftclient when using Rackspace auth.
-                        pyrax.authenticate(connect=False)
-                        if pyrax.identity.authenticated:
-                            pyrax.plug_hole_in_swiftclient_auth(self, clt_url)
+                        self.identity.authenticate(connect=False)
+                        if self.identity.authenticated:
+                            self.plug_hole_in_swiftclient_auth(self, clt_url)
                         continue
                 elif e.http_status == 404:
                     bad_container = no_such_container_pattern.search(str_error)
@@ -1613,8 +1624,8 @@ class Connection(_swift_client.Connection):
                 response = None
             if response:
                 if response.status == 401:
-                    pyrax.identity.authenticate()
-                    headers["X-Auth-Token"] = pyrax.identity.token
+                    self.identity.authenticate()
+                    headers["X-Auth-Token"] = self.identity.token
                 else:
                     break
             attempt += 1
@@ -1705,7 +1716,7 @@ class BulkDeleter(threading.Thread):
         cname = client._resolve_name(container)
         parsed, conn = client.connection.http_connection()
         method = "DELETE"
-        headers = {"X-Auth-Token": pyrax.identity.token,
+        headers = {"X-Auth-Token": self.identity.token,
                 "Content-type": "text/plain",
                 }
         while object_names:
