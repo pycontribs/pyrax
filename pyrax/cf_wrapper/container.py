@@ -59,6 +59,7 @@ class Container(object):
         if not self.client.cdn_enabled:
             # Not CDN enabled; set the defaults.
             self._set_cdn_defaults()
+            return
         response = self.client.connection.cdn_request("HEAD", [self.name])
         if 200 <= response.status < 300:
             # Set defaults in case not all headers are present.
