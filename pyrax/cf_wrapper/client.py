@@ -1,6 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Copyright (c)2012 Rackspace US, Inc.
+
+# All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
 import logging
 import datetime
 from functools import wraps
@@ -45,6 +61,7 @@ CONNECTION_TIMEOUT = 20
 CONNECTION_RETRIES = 5
 AUTH_ATTEMPTS = 2
 MAX_BULK_DELETE = 10000
+DEFAULT_CHUNKSIZE = 65536
 
 no_such_container_pattern = re.compile(
         r"Container (?:GET|HEAD) failed: .+/(.+) 404")
@@ -59,6 +76,17 @@ def _close_swiftclient_conn(conn):
         conn.http_conn[1].close()
     except Exception:
         pass
+
+
+def plug_hole_in_swiftclient_auth(clt, url):
+    """
+    This is necessary because swiftclient has an issue when a token expires and
+    it needs to re-authenticate against Rackspace auth. It is a temporary
+    workaround until we can fix swiftclient.
+    """
+    conn = clt.connection
+    conn.token = clt.identity.token
+    conn.url = url
 
 
 def handle_swiftclient_exception(fnc):
@@ -80,9 +108,9 @@ def handle_swiftclient_exception(fnc):
                         # Assume it is an auth failure. Re-auth and retry.
                         # NOTE: This is a hack to get around an apparent bug
                         # in python-swiftclient when using Rackspace auth.
-                        pyrax.authenticate(connect=False)
-                        if pyrax.identity.authenticated:
-                            pyrax.plug_hole_in_swiftclient_auth(self, clt_url)
+                        self.identity.authenticate(connect=False)
+                        if self.identity.authenticated:
+                            self.plug_hole_in_swiftclient_auth(self, clt_url)
                         continue
                 elif e.http_status == 404:
                     bad_container = no_such_container_pattern.search(str_error)
@@ -673,7 +701,7 @@ class CFClient(object):
     @handle_swiftclient_exception
     def store_object(self, container, obj_name, data, content_type=None,
             etag=None, content_encoding=None, ttl=None, return_none=False,
-            chunk_size=None, extra_info=None):
+            chunk_size=None, headers=None, extra_info=None):
         """
         Creates a new object in the specified container, and populates it with
         the given data. A StorageObject reference to the uploaded file
@@ -683,12 +711,18 @@ class CFClient(object):
         defaults to 65536. It is used only if the the 'data' parameter is an
         object with a 'read' method; otherwise, it is ignored.
 
+        If you wish to specify additional headers to be passed to the PUT
+        request, pass them as a dict in the 'headers' parameter. It is the
+        developer's responsibility to ensure that any headers are valid; pyrax
+        does no checking.
+
         'extra_info' is an optional dictionary which will be
         populated with 'status', 'reason', and 'headers' keys from the
         underlying swiftclient call.
         """
         cont = self.get_container(container)
-        headers = {}
+        if headers is None:
+            headers = {}
         if content_encoding is not None:
             headers["Content-Encoding"] = content_encoding
         if ttl is not None:
@@ -776,7 +810,7 @@ class CFClient(object):
     def upload_file(self, container, file_or_path, obj_name=None,
             content_type=None, etag=None, return_none=False,
             content_encoding=None, ttl=None, extra_info=None,
-            content_length=None):
+            content_length=None, headers=None):
         """
         Uploads the specified file to the container. If no name is supplied,
         the file's name will be used. Either a file path or an open file-like
@@ -788,6 +822,11 @@ class CFClient(object):
         is stored.
 
         If the size of the file is known, it can be passed as `content_length`.
+
+        If you wish to specify additional headers to be passed to the PUT
+        request, pass them as a dict in the 'headers' parameter. It is the
+        developer's responsibility to ensure that any headers are valid; pyrax
+        does no checking.
 
         If you wish for the object to be temporary, specify the time it should
         be stored in seconds in the `ttl` parameter. If this is specified, the
@@ -861,7 +900,8 @@ class CFClient(object):
             raise InvalidUploadID("No filename provided and/or it cannot be "
                     "inferred from context")
 
-        headers = {}
+        if headers is None:
+            headers = {}
         if content_encoding is not None:
             headers["Content-Encoding"] = content_encoding
         if ttl is not None:
@@ -1157,6 +1197,52 @@ class CFClient(object):
         return ret
 
 
+    def fetch_dlo(self, cont, name, chunk_size=None):
+        """
+        Returns a list of 2-tuples in the form of (object_name,
+        fetch_generator) representing the components of a multi-part DLO
+        (Dynamic Large Object).  Each fetch_generator object can be interated
+        to retrieve its contents.
+
+        This is useful when transferring a DLO from one object storage system
+        to another. Examples would be copying DLOs from one region of a
+        provider to another, or copying a DLO from one provider to another.
+        """
+        if chunk_size is None:
+            chunk_size = DEFAULT_CHUNKSIZE
+
+        class FetchChunker(object):
+            """
+            Class that takes the generator objects returned by a chunked
+            fetch_object() call and wraps them to behave as file-like objects for
+            uploading.
+            """
+            def __init__(self, gen, verbose=False):
+                self.gen = gen
+                self.verbose = verbose
+                self.processed = 0
+                self.interval = 0
+
+            def read(self, size=None):
+                self.interval += 1
+                if self.verbose:
+                    if self.interval > 1024:
+                        self.interval = 0
+                        logit(".")
+                ret = self.gen.next()
+                self.processed += len(ret)
+                return ret
+
+        parts = self.get_container_objects(cont, prefix=name)
+        fetches = [(part.name, self.fetch_object(cont, part.name,
+                    chunk_size=chunk_size))
+                for part in parts
+                if part.name != name]
+        job = [(fetch[0], FetchChunker(fetch[1], verbose=False))
+                for fetch in fetches]
+        return job
+
+
     @handle_swiftclient_exception
     def download_object(self, container, obj, directory, structure=True):
         """
@@ -1256,18 +1342,19 @@ class CFClient(object):
     def list_container_subdirs(self, container, marker=None, limit=None,
             prefix=None, delimiter=None, full_listing=False):
         """
-        Return a list of StorageObjects representing the pseudo-subdirectories
+        Returns a list of StorageObjects representing the pseudo-subdirectories
         in the specified container. You can use the marker and limit params to
-        handle pagination, and the prefix and delimiter params to filter the
-        objects returned.
+        handle pagination, and the prefix param to filter the objects returned.
+        The 'delimiter' parameter is ignored, as the only meaningful value is
+        '/'.
         """
         cname = self._resolve_name(container)
         hdrs, objs = self.connection.get_container(cname, marker=marker,
-                limit=limit, prefix=prefix, delimiter=delimiter,
+                limit=limit, prefix=prefix, delimiter="/",
                 full_listing=full_listing)
         cont = self.get_container(cname)
         return [StorageObject(self, container=cont, attdict=obj) for obj in objs
-                if obj.get("content_type") == "application/directory"]
+                if "subdir" in obj]
 
 
     @handle_swiftclient_exception
@@ -1538,8 +1625,8 @@ class Connection(_swift_client.Connection):
                 response = None
             if response:
                 if response.status == 401:
-                    pyrax.identity.authenticate()
-                    headers["X-Auth-Token"] = pyrax.identity.token
+                    self.identity.authenticate()
+                    headers["X-Auth-Token"] = self.identity.token
                 else:
                     break
             attempt += 1
@@ -1630,7 +1717,7 @@ class BulkDeleter(threading.Thread):
         cname = client._resolve_name(container)
         parsed, conn = client.connection.http_connection()
         method = "DELETE"
-        headers = {"X-Auth-Token": pyrax.identity.token,
+        headers = {"X-Auth-Token": self.client.identity.token,
                 "Content-type": "text/plain",
                 }
         while object_names:

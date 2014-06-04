@@ -102,7 +102,6 @@ class FakeClient(object):
     USER_AGENT = "Fake"
 
     def __init__(self, *args, **kwargs):
-        super(FakeClient, self).__init__(*args, **kwargs)
         self.identity = FakeIdentity()
 
 

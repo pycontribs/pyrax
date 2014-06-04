@@ -1,5 +1,24 @@
 # Release Notes for pyrax
 
+###2014.06.04 - Version 1.8.2
+
+  - General
+    - Changed copyright notices to match the standard by Rackspace Legal.
+    - Clear old api_key values when re-authenticating. GitHub #383
+
+  - Cloud Files
+    - Fixes issue with non-CDN containers. GitHub #254
+    - Fixed the subdir listing for Cloud Files. GitHub #342
+    - Added a method to fetch DLOs from object storage.
+    - Added option for specifying headers. GitHub #374
+
+  - Cloud Monitoring
+    - Updated the code to use the pyrax.http module.
+
+  - Cloud Networks
+    - Added special handling for RAX networks. GitHub #381
+
+
 ###2014.05.13 - Version 1.8.1
   - General
     - Restored module-level regions and services attributes. GitHub #371

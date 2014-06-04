@@ -4,7 +4,7 @@
 # Copyright 2010 Jacob Kaplan-Moss
 # Copyright 2011 OpenStack LLC.
 # Copyright 2011 Piston Cloud Computing, Inc.
-# Copyright 2012 Rackspace
+# Copyright (c)2012 Rackspace US, Inc.
 
 # All Rights Reserved.
 #
