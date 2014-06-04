@@ -2,6 +2,7 @@ var searchData=
 [
   ['fake_5fresponse',['fake_response',['../classpyrax_1_1fakes_1_1FakeIdentity.html#aa3cc0ca395eea5168bbd9033dbf1b8ef',1,'pyrax::fakes::FakeIdentity']]],
   ['fake_5frun',['fake_run',['../classpyrax_1_1fakes_1_1FakeFolderUploader.html#a303328b2517541ce3b1f8bf994f180eb',1,'pyrax::fakes::FakeFolderUploader.fake_run()'],['../classpyrax_1_1fakes_1_1FakeBulkDeleter.html#a303328b2517541ce3b1f8bf994f180eb',1,'pyrax::fakes::FakeBulkDeleter.fake_run()']]],
+  ['fetch_5fdlo',['fetch_dlo',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aaef0d2bdb7e63ca8f1f0c619cad80253',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['fetch_5fobject',['fetch_object',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1c274968ef395c2b88a4d67c24f30f8e',1,'pyrax::cf_wrapper::client::CFClient.fetch_object()'],['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html#a1c274968ef395c2b88a4d67c24f30f8e',1,'pyrax::cf_wrapper::container::Container.fetch_object()']]],
   ['fetch_5fpartial',['fetch_partial',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ad1e7a72f5953d9a66e17bbe53b38fdc2',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['field_5fnames',['field_names',['../classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheckType.html#a0b9c1a726225d02b85a31d2fc7508352',1,'pyrax::cloudmonitoring::CloudMonitorCheckType']]],

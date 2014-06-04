@@ -7,6 +7,6 @@ var searchData=
   ['in_5fsetup',['in_setup',['../namespacepyrax.html#aee18dc40b08b618d107a4dc24a9e0459',1,'pyrax']]],
   ['install_5frequires',['install_requires',['../namespacesetup.html#af13461461c50ae271e468b6b20d1f831',1,'setup']]],
   ['instance',['instance',['../classpyrax_1_1clouddatabases_1_1CloudDatabaseVolume.html#a5ffaf17e178b3a6fa2012fe3050ede22',1,'pyrax::clouddatabases::CloudDatabaseVolume::instance()'],['../classpyrax_1_1fakes_1_1FakeDatabaseVolume.html#a5ffaf17e178b3a6fa2012fe3050ede22',1,'pyrax::fakes::FakeDatabaseVolume::instance()']]],
-  ['interval',['interval',['../classpyrax_1_1utils_1_1__WaitThread.html#a943af1103d1f1365d6c7f31b331119bf',1,'pyrax::utils::_WaitThread']]],
+  ['interval',['interval',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a943af1103d1f1365d6c7f31b331119bf',1,'pyrax::cf_wrapper::client::CFClient.interval()'],['../classpyrax_1_1utils_1_1__WaitThread.html#a943af1103d1f1365d6c7f31b331119bf',1,'pyrax::utils::_WaitThread.interval()']]],
   ['ip_5fversion',['ip_version',['../classpyrax_1_1cloudloadbalancers_1_1VirtualIP.html#a34b83b8852b7ca0e7e93cbf0034ed69d',1,'pyrax::cloudloadbalancers::VirtualIP']]]
 ];

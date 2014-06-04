@@ -31,7 +31,7 @@ var searchData=
   ['ambiguousendpoints',['AmbiguousEndpoints',['../classpyrax_1_1exceptions_1_1AmbiguousEndpoints.html',1,'pyrax::exceptions']]],
   ['api',['api',['../classpyrax_1_1fakes_1_1FakeManager.html#a6da13b696f737097e0146e47cc0d0985',1,'pyrax::fakes::FakeManager::api()'],['../classpyrax_1_1manager_1_1BaseManager.html#a6da13b696f737097e0146e47cc0d0985',1,'pyrax::manager::BaseManager::api()']]],
   ['api_5fdate_5fpattern',['API_DATE_PATTERN',['../namespacepyrax_1_1base__identity.html#abc3f00c435af9a25ee98b025c8df847e',1,'pyrax::base_identity']]],
-  ['api_5fkey',['api_key',['../classpyrax_1_1base__identity_1_1BaseIdentity.html#a70651ad93f531b836bca3257d615c95e',1,'pyrax::base_identity::BaseIdentity']]],
+  ['api_5fkey',['api_key',['../classpyrax_1_1base__identity_1_1BaseIdentity.html#a70651ad93f531b836bca3257d615c95e',1,'pyrax::base_identity::BaseIdentity.api_key()'],['../classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html#a70651ad93f531b836bca3257d615c95e',1,'pyrax::identity::rax_identity::RaxIdentity::api_key()']]],
   ['assure_5fdomain',['assure_domain',['../namespacepyrax_1_1clouddns.html#ae456353f0a4abcc4b605b5eeac0656d1',1,'pyrax::clouddns']]],
   ['assure_5fimage',['assure_image',['../namespacepyrax_1_1image.html#a5e61997540ac52a2c90c2363b3bef66f',1,'pyrax::image']]],
   ['assure_5finstance',['assure_instance',['../namespacepyrax_1_1clouddatabases.html#a8f8b217553a66a79f0135899e14964b4',1,'pyrax::clouddatabases']]],
