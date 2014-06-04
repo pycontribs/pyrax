@@ -35,12 +35,15 @@ class Container(object):
         self.name = name
         self.object_count = int(object_count)
         self.total_bytes = int(total_bytes)
-        self._cdn_uri = FAULT
-        self._cdn_ttl = FAULT
-        self._cdn_ssl_uri = FAULT
-        self._cdn_streaming_uri = FAULT
-        self._cdn_ios_uri = FAULT
-        self._cdn_log_retention = FAULT
+        if client.cdn_connection is not None:
+            self._cdn_uri = FAULT
+            self._cdn_ttl = FAULT
+            self._cdn_ssl_uri = FAULT
+            self._cdn_streaming_uri = FAULT
+            self._cdn_ios_uri = FAULT
+            self._cdn_log_retention = FAULT
+        else:
+            self._set_cdn_defaults()
         self._object_cache = {}
 
 
