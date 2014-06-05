@@ -83,7 +83,12 @@ class CloudLoadBalancer(BaseResource):
         "YYYY-MM-DD HH:MM:SS" or "YYYY-MM-DD".
         """
         return self.manager.get_usage(self, start=start, end=end)
-
+    
+    def get_stats(self):
+        """
+        Return the stats for this loadbalancer
+        """
+        return self.manager.get_stats(self)
 
     def _add_details(self, info):
         """Override the base behavior to add Nodes, VirtualIPs, etc."""
@@ -956,7 +961,7 @@ class CloudLoadBalancerManager(BaseManager):
         return body
 
 
-    def get_stats(self, loadbalancer):
+    def get_stats(self, loadbalancer=None):
         """
         Returns statistics for the given load balancer.
         """
