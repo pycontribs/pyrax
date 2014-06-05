@@ -83,7 +83,8 @@ class CloudLoadBalancer(BaseResource):
         "YYYY-MM-DD HH:MM:SS" or "YYYY-MM-DD".
         """
         return self.manager.get_usage(self, start=start, end=end)
-    
+
+
     def get_stats(self):
         """
         Return the stats for this loadbalancer
