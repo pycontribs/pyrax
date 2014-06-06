@@ -441,7 +441,7 @@ class ScalingGroupManager(BaseManager):
         largs = scaling_group.launchConfiguration.get("args", {})
         srv_args = largs.get("server", {})
         lb_args = largs.get("loadBalancers", {})
-        flav = "%s" % flavor or srv_args.get("flavorRef")
+        flav = "%s" % flavor if flavor else srv_args.get("flavorRef")
         dconf = disk_config or srv_args.get("OS-DCF:diskConfig")
         pers = personality or srv_args.get("personality")
         body = {"type": "launch_server",
