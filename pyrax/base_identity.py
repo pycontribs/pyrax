@@ -9,6 +9,7 @@ import datetime
 import json
 import re
 import requests
+import warnings
 
 try:
     import keyring
@@ -572,7 +573,7 @@ class BaseIdentity(object):
 
 
     def authenticate(self, username=None, password=None, api_key=None,
-            tenant_id=None):
+            tenant_id=None, connect=False):
         """
         Using the supplied credentials, connects to the specified
         authentication endpoint and attempts to log in.
@@ -581,6 +582,9 @@ class BaseIdentity(object):
         previously-stored credentials can be used. If authentication is
         successful, the token and service catalog information is stored, and
         clients for each service and region are created.
+
+        The 'connect' parameter is retained for backwards compatibility. It no
+        longer has any effect.
         """
         self.username = username or self.username or pyrax.get_setting(
                 "username")
