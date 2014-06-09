@@ -1286,6 +1286,19 @@ class CF_ClientTest(unittest.TestCase):
                 "some_container", "some_object")
         client.get_container = gc
 
+    def test_handle_swiftclient_exception_reauth(self):
+        client = self.client
+        client.get_container = Mock()
+        side_effect = (
+            _swift_client.ClientException(
+                "Object GET failed: "
+                "https://example.com/cont/some_object 401", http_status=401),
+            fake_attdict,
+        )
+        client.connection.head_object = Mock(side_effect=side_effect)
+        self.assertEqual(client.get_object("some_container", "o1").name, "o1")
+        self.assertEqual(client.connection.head_object.call_count, 2)
+
     def test_bulk_deleter(self):
         client = self.client
         container = self.cont_name
