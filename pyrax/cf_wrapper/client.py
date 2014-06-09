@@ -110,7 +110,7 @@ def handle_swiftclient_exception(fnc):
                         # in python-swiftclient when using Rackspace auth.
                         self.identity.authenticate(connect=False)
                         if self.identity.authenticated:
-                            self.plug_hole_in_swiftclient_auth(self, clt_url)
+                            plug_hole_in_swiftclient_auth(self, clt_url)
                         continue
                 elif e.http_status == 404:
                     bad_container = no_such_container_pattern.search(str_error)
