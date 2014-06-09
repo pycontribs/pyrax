@@ -1444,9 +1444,15 @@ class CFClient(object):
                     response.reason))
         ct.cdn_ttl = ttl
         for hdr in response.getheaders():
-            if hdr[0].lower() == "x-cdn-uri":
+            low_hdr = hdr[0].lower()
+            if low_hdr == "x-cdn-uri":
                 ct.cdn_uri = hdr[1]
-                break
+            elif low_hdr == "x-cdn-ssl-uri":
+                ct.cdn_ssl_uri = hdr[1]
+            elif low_hdr == "x-cdn-streaming-uri":
+                ct.cdn_streaming_uri = hdr[1]
+            elif low_hdr == "x-cdn-ios-uri":
+                ct.cdn_ios_uri = hdr[1]
         self.remove_container_from_cache(container)
         # Read the response to force it to close for the next request.
         response.read()
