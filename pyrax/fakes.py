@@ -619,7 +619,7 @@ class FakeIdentity(BaseIdentity):
         self._default_region = random.choice(("DFW", "ORD"))
         self.services = {"fake": FakeIdentityService(self)}
 
-    def authenticate(self):
+    def authenticate(self, connect=False):
         if ((self.username == self._good_username) and
                 (self.password == self._good_password)):
             self._parse_response(self.fake_response())
