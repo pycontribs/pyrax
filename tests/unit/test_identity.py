@@ -749,6 +749,19 @@ class IdentityTest(unittest.TestCase):
         self.assertRaises(exc.AuthenticationFailed, ident.authenticate)
         pyrax.http.request = savrequest
 
+    def test_authenticate_backwards_compatibility_connect_param(self):
+        savrequest = pyrax.http.request
+        fake_resp = fakes.FakeIdentityResponse()
+        fake_body = fakes.fake_identity_response
+        pyrax.http.request = Mock(return_value=(fake_resp, fake_body))
+        for cls in self.id_classes.values():
+            ident = cls()
+            if cls is self.keystone_identity_class:
+                # Necessary for testing to avoid NotImplementedError.
+                utils.add_method(ident, lambda self: "", "_get_auth_endpoint")
+            ident.authenticate(connect=False)
+        pyrax.http.request = savrequest
+
     def test_rax_endpoints(self):
         ident = self.rax_identity_class()
         ep = ident._get_auth_endpoint()
