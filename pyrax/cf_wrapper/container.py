@@ -200,7 +200,7 @@ class Container(object):
             errors - a list of any errors returned by the bulk delete call
         """
         nms = self.get_object_names(full_listing=True)
-        self.client.bulk_delete(self, nms, async=False)
+        return self.client.bulk_delete(self, nms, async=async)
 
 
     def remove_from_cache(self, obj):
