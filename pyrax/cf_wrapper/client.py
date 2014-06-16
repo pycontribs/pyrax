@@ -221,6 +221,7 @@ class CFClient(object):
                 preauthtoken=preauthtoken, auth_version=auth_version,
                 os_options=os_options, verify_ssl=verify_ssl,
                 http_log_debug=http_log_debug)
+        self.cdn_enabled = bool(self.connection.cdn_url)
 
 
     # Constants used in metadata headers
@@ -1570,7 +1571,7 @@ class Connection(_swift_client.Connection):
     def __init__(self, *args, **kwargs):
         self.http_log_debug = kwargs.pop("http_log_debug", False)
         self._http_log = _swift_client.http_log
-        self.url = None
+        self.url = self.cdn_url = None
         super(Connection, self).__init__(*args, **kwargs)
         # Add the user_agent, if not defined
         try:
