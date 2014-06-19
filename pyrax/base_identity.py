@@ -180,7 +180,10 @@ class Endpoint(object):
             # Already failed
             raise clt
         if cached and clt is not None:
-            return clt
+            if client_class and not isinstance(clt, client_class):
+                clt = None
+            else:
+                return clt
         # Create the client
         special_class = bool(client_class)
         if special_class:
