@@ -833,6 +833,68 @@ class CF_ClientTest(unittest.TestCase):
         clt.upload_file = up
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_sync_folder_to_container_object_prefix(self):
+        clt = self.client
+        clt._local_files = []
+        clt._remote_files = {}
+        clt.upload_file = Mock()
+        clt.connection.head_container = Mock()
+        clt.connection.put_container = Mock()
+        clt.connection.head_object = Mock(return_value=fake_attdict)
+        clt.get_container_objects = Mock(return_value=[])
+        cont_name = utils.random_unicode()
+        cont = clt.create_container(cont_name)
+        num_files = random.randint(5, 10)
+        object_prefix = utils.random_unicode()
+        prefix = ""
+        with utils.SelfDeletingTempDirectory() as tmpdir:
+            for idx in six.moves.range(num_files):
+                nm = "file%s" % idx
+                pth = os.path.join(tmpdir, nm)
+                open(pth, "w").write("test")
+            cont.upload_file = Mock()
+            # Check the last file
+            exp_pth = os.path.join(tmpdir, nm)
+            exp_etag = utils.get_checksum("test")
+            exp_nm = os.path.join(object_prefix, prefix, nm)
+            clt._sync_folder_to_container(tmpdir, cont, prefix, False, False,
+                    None, False, object_prefix, False)
+            self.assertEqual(cont.upload_file.call_count, num_files)
+            cont.upload_file.assert_called_with(exp_pth, etag=exp_etag,
+                    return_none=True, obj_name=exp_nm)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
+    def test_sync_folder_to_container_object_prefix_and_prefix(self):
+        clt = self.client
+        clt._local_files = []
+        clt._remote_files = {}
+        clt.upload_file = Mock()
+        clt.connection.head_container = Mock()
+        clt.connection.put_container = Mock()
+        clt.connection.head_object = Mock(return_value=fake_attdict)
+        clt.get_container_objects = Mock(return_value=[])
+        cont_name = utils.random_unicode()
+        cont = clt.create_container(cont_name)
+        num_files = random.randint(5, 10)
+        object_prefix = utils.random_unicode()
+        prefix = utils.random_unicode()
+        with utils.SelfDeletingTempDirectory() as tmpdir:
+            for idx in six.moves.range(num_files):
+                nm = "file%s" % idx
+                pth = os.path.join(tmpdir, nm)
+                open(pth, "w").write("test")
+            cont.upload_file = Mock()
+            # Check the last file
+            exp_pth = os.path.join(tmpdir, nm)
+            exp_etag = utils.get_checksum("test")
+            exp_nm = os.path.join(object_prefix, prefix, nm)
+            clt._sync_folder_to_container(tmpdir, cont, prefix, False, False,
+                    None, False, object_prefix, False)
+            self.assertEqual(cont.upload_file.call_count, num_files)
+            cont.upload_file.assert_called_with(exp_pth, etag=exp_etag,
+                    return_none=True, obj_name=exp_nm)
+
+    @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
     def test_delete_objects_not_in_list(self):
         client = self.client
         client.connection.head_container = Mock()

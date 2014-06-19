@@ -1060,11 +1060,13 @@ class CFClient(object):
                 continue
             self._local_files.append(os.path.join(object_prefix, prefix, fname))
             local_etag = utils.get_checksum(pth)
-            fullname = fname
-            fullname_with_prefix = "%s/%s" % (object_prefix, fname)
+            fullname = fullname_with_prefix = fname
+            if object_prefix:
+                fullname_with_prefix = "%s/%s" % (object_prefix, fname)
             if prefix:
                 fullname = "%s/%s" % (prefix, fname)
-                fullname_with_prefix = "%s/%s/%s" % (object_prefix, prefix, fname)
+                fullname_with_prefix = "%s/%s/%s" % (object_prefix, prefix,
+                        fname)
             try:
                 obj = self._remote_files[fullname_with_prefix]
                 obj_etag = obj.etag
