@@ -891,7 +891,7 @@ class CF_ClientTest(unittest.TestCase):
             clt._sync_folder_to_container(tmpdir, cont, prefix, False, False,
                     None, False, object_prefix, False)
             self.assertEqual(cont.upload_file.call_count, num_files)
-            cont.upload_file.assert_called_with(exp_pth, etag=exp_etag,
+            cont.upload_file.assert_any_call(exp_pth, etag=exp_etag,
                     return_none=True, obj_name=exp_nm)
 
     @patch('pyrax.cf_wrapper.client.Container', new=FakeContainer)
