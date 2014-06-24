@@ -149,7 +149,7 @@ class Container(object):
 
     def store_object(self, obj_name, data, content_type=None, etag=None,
             content_encoding=None, ttl=None, return_none=False,
-            extra_info=None):
+            extra_info=None, headers=None):
         """
         Creates a new object in this container, and populates it with
         the given data.
@@ -157,12 +157,12 @@ class Container(object):
         return self.client.store_object(self, obj_name, data,
                 content_type=content_type, etag=etag,
                 content_encoding=content_encoding, ttl=ttl,
-                return_none=return_none, extra_info=extra_info)
+                return_none=return_none, extra_info=extra_info, headers=headers)
 
 
     def upload_file(self, file_or_path, obj_name=None, content_type=None,
             etag=None, return_none=False, content_encoding=None, ttl=None,
-            content_length=None):
+            content_length=None, headers=None):
         """
         Uploads the specified file to this container. If no name is supplied,
         the file's name will be used. Either a file path or an open file-like
@@ -172,7 +172,7 @@ class Container(object):
         return self.client.upload_file(self, file_or_path, obj_name=obj_name,
                 content_type=content_type, etag=etag, return_none=return_none,
                 content_encoding=content_encoding, ttl=ttl,
-                content_length=content_length)
+                content_length=content_length, headers=headers)
 
 
     def delete_object(self, obj):
