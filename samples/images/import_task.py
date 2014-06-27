@@ -59,7 +59,7 @@ try:
 except ValueError:
     print("'%s' is not a valid number." % snum)
     exit()
-if not 0 <= num < len(objs):
+if not 0 <= num < len(conts):
     print("'%s' is not a valid object number." % snum)
     exit()
 obj = objs[num]
