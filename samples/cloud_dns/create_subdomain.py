@@ -33,7 +33,7 @@ dns = pyrax.cloud_dns
 domain_name = "abc.example.edu"
 try:
     dom = dns.find(name=domain_name)
-except exc.DomainCreationFailed as e:
+except exc.NotFound as e:
     answer = raw_input("The domain '%s' was not found. Do you want to create "
             "it? [y/n]" % domain_name)
     if not answer.lower().startswith("y"):
