@@ -501,6 +501,39 @@ class AutoscaleTest(unittest.TestCase):
                 personality=personality, networks=networks, load_balancers=lbs)
         mgr.api.method_put.assert_called_once_with(uri, body=body)
 
+    def test_mgr_update_launch_config_no_personality(self):
+        sg = self.scaling_group
+        mgr = sg.manager
+        mgr.get = Mock(return_value=sg)
+        typ = utils.random_unicode()
+        lbs = utils.random_unicode()
+        name = utils.random_unicode()
+        flv = utils.random_unicode()
+        img = utils.random_unicode()
+        dconfig = utils.random_unicode()
+        metadata = utils.random_unicode()
+        networks = utils.random_unicode()
+        sg.launchConfiguration = {}
+        body = {"type": "launch_server",
+                "args": {
+                    "server": {
+                        "name": name,
+                        "imageRef": img,
+                        "flavorRef": flv,
+                        "OS-DCF:diskConfig": dconfig,
+                        "networks": networks,
+                        "metadata": metadata,
+                    },
+                    "loadBalancers": lbs,
+                },
+            }
+        mgr.api.method_put = Mock(return_value=(None, None))
+        uri = "/%s/%s/launch" % (mgr.uri_base, sg.id)
+        mgr.update_launch_config(sg.id, server_name=name, flavor=flv, image=img,
+                disk_config=dconfig, metadata=metadata,
+                networks=networks, load_balancers=lbs)
+        mgr.api.method_put.assert_called_once_with(uri, body=body)
+
     def test_mgr_update_launch_config_key_name(self):
         sg = self.scaling_group
         mgr = sg.manager
