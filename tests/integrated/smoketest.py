@@ -3,38 +3,58 @@
 
 from __future__ import print_function
 
-try:
-    import eventlet
-    eventlet.patcher.monkey_patch(all=False, socket=True, time=True,
-            thread=True)
-except ImportError:
-    pass
+#try:
+#    import eventlet
+#    eventlet.patcher.monkey_patch(all=False, socket=True, time=True,
+#            thread=True)
+#except ImportError:
+#    pass
 
 import argparse
+import datetime
+import logging
 import os
+import random
 import sys
+import threading
 import time
 import unittest
 
 import pyrax
 import pyrax.exceptions as exc
+import pyrax.utils as utils
 
 
 class SmokeTester(object):
-    def __init__(self, region):
+    def __init__(self, context, region, logname=None, nolog=False):
+        self.context = context
+        self.region = region
         self.failures = []
         self.cleanup_items = []
-        self.auth(region)
-        self.cs = pyrax.cloudservers
-        self.cf = pyrax.cloudfiles
-        self.cbs = pyrax.cloud_blockstorage
-        self.cdb = pyrax.cloud_databases
-        self.clb = pyrax.cloud_loadbalancers
-        self.dns = pyrax.cloud_dns
-        self.cnw = pyrax.cloud_networks
-        self.cmn = pyrax.cloud_monitoring
-        self.au = pyrax.autoscale
-        self.pq = pyrax.queues
+        self.smoke_server = None
+        self.smoke_volume = None
+        self.smoke_snapshot = None
+        logname = "%s-%s" % (logname or "smoketest", self.region)
+        self.log = logging.getLogger(logname)
+        if nolog:
+            handler = logging.NullHandler()
+        else:
+            handler = logging.FileHandler(filename=logname, mode="w",
+                    encoding="utf-8")
+            formatter = logging.Formatter("%(asctime)s - %(message)s")
+            handler.setFormatter(formatter)
+        self.log.addHandler(handler)
+        self.log.setLevel(logging.DEBUG)
+        self.cs = self.context.get_client("cloudservers", self.region)
+        self.cf = self.context.get_client("cloudfiles", self.region)
+        self.cbs = self.context.get_client("cloud_blockstorage", self.region)
+        self.cdb = self.context.get_client("cloud_databases", self.region)
+        self.clb = self.context.get_client("cloud_loadbalancers", self.region)
+        self.dns = self.context.get_client("cloud_dns", self.region)
+        self.cnw = self.context.get_client("cloud_networks", self.region)
+        self.cmn = self.context.get_client("cloud_monitoring", self.region)
+        self.au = self.context.get_client("autoscale", self.region)
+        self.pq = self.context.get_client("queues", self.region)
         self.services = ({"service": self.cs, "name": "Cloud Servers"},
                 {"service": self.cf, "name": "Cloud Files"},
                 {"service": self.cbs, "name": "Cloud Block Storage"},
@@ -47,30 +67,24 @@ class SmokeTester(object):
                 {"service": self.pq, "name": "Cloud Queues"},
                 )
 
-    def auth(self, region):
-        # Make sure that keyring has been set up with the account credentials.
-        print("Authenticating for region '%s'..." % region)
-        try:
-            pyrax.keyring_auth(region=region)
-            print("Success!")
-        except Exception as e:
-            print("FAIL!", e)
-            self.failures.append("AUTHENTICATION")
-        print()
+    def logit(self, *args, **kwargs):
+        txtargs = ["%s" % arg for arg in args]
+        msg = " ".join(txtargs)
+        print("%s - %s" % (self.region, msg), **kwargs)
+        self.log.debug(msg)
 
     def check_services(self):
         for service in self.services:
-            print("SERVICE:", service["name"], end=' ')
+            self.logit("SERVICE:", service["name"], end=' ')
             if service["service"]:
-                print("Success!")
+                self.logit("Success!")
             else:
-                print("FAIL!")
+                self.logit("FAIL!")
                 self.failures.append("Service=%s" % service["name"])
-        print()
 
     def run_tests(self):
         if self.cs:
-            print("Running 'compute' tests...")
+            self.logit("Running 'compute' tests...")
             self.cs_list_flavors()
             self.cs_list_images()
             self.cs_create_server()
@@ -78,25 +92,25 @@ class SmokeTester(object):
             self.cs_list_servers()
 
         if self.cnw:
-            print("Running 'network' tests...")
+            self.logit("Running 'network' tests...")
             try:
                 self.cnw_create_network()
                 self.cnw_list_networks()
             except exc.NotFound:
                 # Networking not supported
-                print(" - Networking not supported.")
+                self.logit(" - Networking not supported.")
             except exc.NetworkCountExceeded:
-                print(" - Too many networks already exist.")
+                self.logit(" - Too many networks already exist.")
 
         if self.cdb:
-            print("Running 'database' tests...")
+            self.logit("Running 'database' tests...")
             self.cdb_list_flavors()
             self.cdb_create_instance()
             self.cdb_create_db()
             self.cdb_create_user()
 
         if self.cf:
-            print("Running 'object_store' tests...")
+            self.logit("Running 'object_store' tests...")
             self.cf_create_container()
             self.cf_list_containers()
             self.cf_make_container_public()
@@ -104,19 +118,19 @@ class SmokeTester(object):
             self.cf_upload_file()
 
         if self.clb:
-            print("Running 'load_balancer' tests...")
+            self.logit("Running 'load_balancer' tests...")
             self.lb_list()
             self.lb_create()
 
         if self.dns:
-            print("Running 'DNS' tests...")
+            self.logit("Running 'DNS' tests...")
             self.dns_list()
             self.dns_create_domain()
             self.dns_create_record()
 
         if self.cmn:
             if not self.smoke_server:
-                print("Server not available; skipping Monitoring tests.")
+                self.logit("Server not available; skipping Monitoring tests.")
                 return
             self.cmn_create_entity()
             self.cmn_list_check_types()
@@ -126,283 +140,289 @@ class SmokeTester(object):
             self.cmn_create_notification_plan()
             self.cmn_create_alarm()
 
+        if self.cbs:
+            self.cbs_list_volumes()
+            self.cbs_list_types()
+            self.cbs_list_snapshots()
+            self.cbs_create_volume()
+            self.cbs_attach_to_instance()
+            self.cbs_detach_from_instance()
+            self.cbs_create_snapshot()
+            self.cbs_delete_snapshot()
 
     # Specific tests start here ##
     def cs_list_flavors(self):
-        print("Listing Flavors:", end=' ')
+        self.logit("Listing Flavors:", end=' ')
         self.cs_flavors = self.cs.list_flavors()
         if self.cs_flavors:
-            print()
+            self.logit()
             for flavor in self.cs_flavors:
-                print(" -", flavor)
+                self.logit(" -", flavor)
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("FLAVORS")
-        print()
+        self.logit()
 
     def cs_list_images(self):
-        print("Listing Images:", end=' ')
+        self.logit("Listing Images:", end=' ')
         self.cs_images = self.cs.list_base_images()
         if self.cs_images:
-            print()
             for image in self.cs_images:
-                print(" -", image)
+                self.logit(" -", image)
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("IMAGES")
-        print()
 
     def cnw_create_network(self):
-        print("Creating network...")
+        self.logit("Creating network...")
         new_network_name = "SMOKETEST_NW"
         new_network_cidr = "192.168.0.0/24"
-        print("CREATE NETWORK:", end=' ')
+        self.logit("CREATE NETWORK:", end=' ')
+        self.logit("CNW", self.cnw)
         self.smoke_network = self.cnw.create(new_network_name,
                 cidr=new_network_cidr)
         self.cleanup_items.append(self.smoke_network)
         if self.smoke_network:
-            print("Success!")
+            self.logit("Success!")
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("CREATE NETWORK")
-        print()
 
     def cnw_list_networks(self):
-        print("Listing networks...")
+        self.logit("Listing networks...")
         try:
             networks = self.cnw.list()
         except exc.NotFound:
             # Many non-rax system do no support networking.
-            print("Networking not available")
+            self.logit("Networking not available")
             return
         for network in networks:
-            print(" - %s: %s (%s)" % (network.id, network.name, network.cidr))
+            self.logit(" - %s: %s (%s)" % (network.id, network.name,
+                    network.cidr))
         if not networks:
             self.failures.append("LIST NETWORKS")
-        print()
+
+    def log_wait(self, obj, att="status", desired=None, verbose_atts=None):
+        start = time.time()
+        self.logit("Beginning wait for", obj.name, obj)
+        if not desired:
+            desired = ["ACTIVE", "ERROR"]
+        ret = utils.wait_until(obj, "status", desired=desired, interval=10,
+                verbose=True, verbose_atts="progress")
+        end = time.time()
+        duration = str(datetime.timedelta(seconds=(end - start)))
+        self.logit("Completed wait for", obj.name, obj)
+        self.logit("It took %s to complete" % duration)
+        return ret
 
     def cs_create_server(self):
-        print("Creating server...")
+        self.logit("Creating server...")
         img = [img for img in self.cs_images
                 if "12.04" in img.name][0]
         flavor = self.cs_flavors[0]
         self.smoke_server = self.cs.servers.create("SMOKETEST_SERVER",
                 img.id, flavor.id)
         self.cleanup_items.append(self.smoke_server)
-        self.smoke_server = pyrax.utils.wait_until(self.smoke_server, "status",
-                ["ACTIVE", "ERROR"], interval=10, verbose=True,
-                verbose_atts="progress")
+        self.smoke_server = self.log_wait(self.smoke_server)
         if self.smoke_server.status == "ERROR":
-            print("Server creation failed!")
+            self.logit("Server creation failed!")
             self.failures.append("SERVER CREATION")
         else:
-            print("Success!")
-        print()
+            self.logit("Success!")
 
     def cs_reboot_server(self):
-        print("Rebooting server...")
+        self.logit("Rebooting server...")
         self.smoke_server.reboot()
-        self.smoke_server = pyrax.utils.wait_until(self.smoke_server, "status",
-                ["ACTIVE", "ERROR"], interval=10, verbose=True,
-                verbose_atts="progress")
+        self.smoke_server = self.log_wait(self.smoke_server)
         if self.smoke_server.status == "ERROR":
-            print("Server reboot failed!")
+            self.logit("Server reboot failed!")
             self.failures.append("SERVER REBOOT")
         else:
-            print("Success!")
-        print()
+            self.logit("Success!")
 
     def cs_list_servers(self):
-        print("Listing servers...")
+        self.logit("Listing servers...")
         servers = self.cs.servers.list()
         if not servers:
-            print("Server listing failed!")
+            self.logit("Server listing failed!")
             self.failures.append("SERVER LISTING")
         else:
             for server in servers:
-                print(" -", server.id, server.name)
-        print()
+                self.logit(" -", server.id, server.name)
 
     def cdb_list_flavors(self):
-        print("Listing Database Flavors:", end=' ')
+        self.logit("Listing Database Flavors:", end=' ')
         try:
             self.cdb_flavors = self.cdb.list_flavors()
         except Exception as e:
+            self.logit("FAIL! List DB Flavors:", e)
             self.cdb_flavors = None
         if self.cdb_flavors:
-            print()
             for flavor in self.cdb_flavors:
-                print(" -", flavor)
+                self.logit(" -", flavor)
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("DB FLAVORS")
-        print()
 
     def cdb_create_instance(self):
         if not self.cdb_flavors:
             # Skip this test
-            print("Skipping database instance creation...")
+            self.logit("Skipping database instance creation...")
             self.smoke_instance = None
             return
-        print("Creating database instance...")
+        self.logit("Creating database instance...")
         self.smoke_instance = self.cdb.create("SMOKETEST_DB_INSTANCE",
                 flavor=self.cdb_flavors[0], volume=1)
         self.cleanup_items.append(self.smoke_instance)
-        self.smoke_instance = pyrax.utils.wait_until(self.smoke_instance,
-                "status", ["ACTIVE", "ERROR"], interval=10, verbose=True,
-                verbose_atts="progress")
+        self.smoke_instance = self.log_wait(self.smoke_instance)
         if self.smoke_instance.status == "ACTIVE":
-            print("Success!")
+            self.logit("Success!")
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("DB INSTANCE CREATION")
-        print()
 
     def cdb_create_db(self):
         if not self.smoke_instance:
             # Skip this test
-            print("Skipping database creation...")
+            self.logit("Skipping database creation...")
             return
-        print("Creating database...")
+        self.logit("Creating database...")
         self.smoke_db = self.smoke_instance.create_database("SMOKETEST_DB")
         self.cleanup_items.append(self.smoke_db)
         dbs = self.smoke_instance.list_databases()
         if self.smoke_db in dbs:
-            print("Success!")
+            self.logit("Success!")
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("DB DATABASE CREATION")
-        print()
 
     def cdb_create_user(self):
         if not self.smoke_instance:
             # Skip this test
-            print("Skipping database user creation...")
+            self.logit("Skipping database user creation...")
             return
-        print("Creating database user...")
+        self.logit("Creating database user...")
         self.smoke_user = self.smoke_instance.create_user("SMOKETEST_USER",
                 "SMOKETEST_PW", database_names=[self.smoke_db])
         self.cleanup_items.append(self.smoke_user)
         users = self.smoke_instance.list_users()
         if self.smoke_user in users:
-            print("Success!")
+            self.logit("Success!")
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("DB USER CREATION")
-        print()
 
     def cf_create_container(self):
-        print("Creating a Cloud Files Container...")
+        self.logit("Creating a Cloud Files Container...")
         self.smoke_cont = self.cf.create_container("SMOKETEST_CONTAINER")
         self.cleanup_items.append(self.smoke_cont)
         if self.smoke_cont:
-            print("Success!")
+            self.logit("Success!")
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("CONTAINER CREATION")
-        print()
 
     def cf_list_containers(self):
-        print("Listing the Cloud Files Containers...")
+        self.logit("Listing the Cloud Files Containers...")
         conts = self.cf.get_all_containers()
         if conts:
             for cont in conts:
-                print("%s - %s files, %s bytes" % (cont.name,
-                        cont.object_count, cont.total_bytes))
+                try:
+                    nm = cont.name
+                    num = cont.object_count
+                    size = cont.total_bytes
+                    self.logit("%s - %s files, %s bytes" % (nm, num, size))
+                except Exception as e:
+                    self.logit("FAIL! Container description", e)
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("CONTAINER LISTING")
-        print()
 
     def cf_make_container_public(self):
-        print("Publishing the Cloud Files Container to CDN...")
+        self.logit("Publishing the Cloud Files Container to CDN...")
         self.smoke_cont.make_public()
         uri = self.smoke_cont.cdn_uri
         if uri:
-            print("Success!")
+            self.logit("Success!")
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("PUBLISHING CDN")
-        print()
 
     def cf_make_container_private(self):
-        print("Removing the Cloud Files Container from CDN...")
+        self.logit("Removing the Cloud Files Container from CDN...")
         try:
             self.smoke_cont.make_private()
-            print("Success!")
+            self.logit("Success!")
         except Exception as e:
-            print("FAIL!")
+            self.logit("FAIL!", e)
             self.failures.append("UNPUBLISHING CDN")
-        print()
 
     def cf_upload_file(self):
-        print("Uploading a Cloud Files object...")
+        self.logit("Uploading a Cloud Files object...")
         cont = self.smoke_cont
-        text = pyrax.utils.random_unicode(1024)
+        text = utils.random_ascii(1024)
         obj = cont.store_object("SMOKETEST_OBJECT", text)
         # Make sure it is deleted before the container
         self.cleanup_items.insert(0, obj)
         all_objs = cont.get_object_names()
         if obj.name in all_objs:
-            print("Success!")
+            self.logit("Success!")
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("UPLOAD FILE")
-        print()
 
     def lb_list(self):
-        print("Listing Load Balancers...")
+        self.logit("Listing Load Balancers...")
         lbs = self.clb.list()
         if not lbs:
-            print(" - No load balancers to list!")
+            self.logit(" - No load balancers to list!")
         else:
             for lb in lbs:
-                print(" -", lb.name)
+                self.logit(" -", lb.name)
 
     def lb_create(self):
-        print("Creating a Load Balancer...")
+        self.logit("Creating a Load Balancer...")
         node = self.clb.Node(address="10.177.1.1", port=80, condition="ENABLED")
         vip = self.clb.VirtualIP(type="PUBLIC")
         lb = self.clb.create("SMOKETEST_LB", port=80, protocol="HTTP",
                 nodes=[node], virtual_ips=[vip])
         self.cleanup_items.append(lb)
-        pyrax.utils.wait_until(lb, "status", ["ACTIVE", "ERROR"], interval=10,
-                verbose=True)
+        lb = self.log_wait(lb)
         if lb:
-            print("Success!")
+            self.logit("Success!")
         else:
-            print("FAIL!")
+            self.logit("FAIL!")
             self.failures.append("LOAD_BALANCERS")
 
     def dns_list(self):
-        print("Listing DNS Domains...")
+        self.logit("Listing DNS Domains...")
         doms = self.dns.list()
         if not doms:
-            print(" - No domains to list!")
+            self.logit(" - No domains to list!")
         else:
             for dns in doms:
-                print(" -", dns.name)
+                self.logit(" -", dns.name)
 
     def dns_create_domain(self):
-        print("Creating a DNS Domain...")
+        self.logit("Creating a DNS Domain...")
         domain_name = "SMOKETEST.example.edu"
         try:
             dom = self.dns.create(name=domain_name,
                     emailAddress="sample@example.edu", ttl=900,
                     comment="SMOKETEST sample domain")
-            print("Success!")
+            self.logit("Success!")
             self.cleanup_items.append(dom)
-        except exc.DomainCreationFailed:
-            print("FAIL!")
+        except exc.DomainCreationFailed as e:
+            self.logit("FAIL!", e)
             self.failures.append("DNS DOMAIN CREATION")
 
     def dns_create_record(self):
-        print("Creating a DNS Record...")
+        self.logit("Creating a DNS Record...")
         domain_name = "SMOKETEST.example.edu"
         try:
             dom = self.dns.find(name=domain_name)
         except exc.NotFound:
-            print("Smoketest domain not found; skipping record test.")
+            self.logit("Smoketest domain not found; skipping record test.")
             self.failures.append("DNS RECORD CREATION")
             return
         a_rec = {"type": "A",
@@ -411,44 +431,41 @@ class SmokeTester(object):
                 "ttl": 6000}
         try:
             recs = dom.add_records(a_rec)
-            print("Success!")
+            self.logit("Success!")
             # No need to cleanup, since domain deletion also deletes the recs.
             # self.cleanup_items.extend(recs)
-        except exc.DomainRecordAdditionFailed:
-            print("FAIL!")
+        except exc.DomainRecordAdditionFailed as e:
+            self.logit("FAIL!", e)
             self.failures.append("DNS RECORD CREATION")
 
     def cmn_list_check_types(self):
-        print("Listing Monitoring Check Types...")
+        self.logit("Listing Monitoring Check Types...")
         cts = self.cmn.list_check_types()
         for ct in cts:
-            print(" -", ct.id, ct.type)
-        print()
+            self.logit(" -", ct.id, ct.type)
 
     def cmn_list_monitoring_zones(self):
-        print("Listing Monitoring Zones...")
+        self.logit("Listing Monitoring Zones...")
         zones = self.cmn.list_monitoring_zones()
         for zone in zones:
-            print(" -", zone.id, zone.name)
-        print()
+            self.logit(" -", zone.id, zone.name)
 
     def cmn_create_entity(self):
-        print("Creating a Monitoring Entity...")
+        self.logit("Creating a Monitoring Entity...")
         srv = self.smoke_server
         ip = srv.networks["public"][0]
         try:
             self.smoke_entity = self.cmn.create_entity(name="SMOKETEST_entity",
                     ip_addresses={"main": ip})
             self.cleanup_items.append(self.smoke_entity)
-            print("Success!")
-        except Exception:
-            print("FAIL!")
+            self.logit("Success!")
+        except Exception as e:
+            self.logit("FAIL!", e)
             self.smoke_entity = None
             self.failures.append("MONITORING CREATE ENTITY")
-        print()
 
     def cmn_create_check(self):
-        print("Creating a Monitoring Check...")
+        self.logit("Creating a Monitoring Check...")
         ent = self.smoke_entity
         alias = ent.ip_addresses.keys()[0]
         try:
@@ -456,79 +473,198 @@ class SmokeTester(object):
                     label="SMOKETEST_check", check_type="remote.ping",
                     details={"count": 5}, monitoring_zones_poll=["mzdfw"],
                     period=60, timeout=20, target_alias=alias)
-            print("Success!")
+            self.logit("Success!")
             self.cleanup_items.append(self.smoke_check)
-        except Exception:
-            print("FAIL!")
+        except Exception as e:
+            self.logit("FAIL!", e)
             self.smoke_check = None
             self.failures.append("MONITORING CREATE CHECK")
-        print()
 
     def cmn_create_notification(self):
-        print("Creating a Monitoring Notification...")
+        self.logit("Creating a Monitoring Notification...")
         email = "smoketest@example.com"
         try:
             self.smoke_notification = self.cmn.create_notification("email",
                     label="smoketest", details={"address": email})
-            print("Success!")
+            self.logit("Success!")
             self.cleanup_items.append(self.smoke_notification)
-        except Exception:
-            print("FAIL!")
+        except Exception as e:
+            self.logit("FAIL!", e)
             self.smoke_notification = None
             self.failures.append("MONITORING CREATE NOTIFICATION")
-        print()
 
     def cmn_create_notification_plan(self):
         if not self.smoke_notification:
-            print("No monitoring notification found; skipping notification "
-                    "creation...")
+            self.logit("No monitoring notification found; skipping "
+                    "notification creation...")
             return
-        print("Creating a Monitoring Notification Plan...")
+        self.logit("Creating a Monitoring Notification Plan...")
         try:
             self.smoke_notification_plan = self.cmn.create_notification_plan(
                     label="smoketest plan", ok_state=self.smoke_notification)
-            print("Success!")
+            self.logit("Success!")
             self.cleanup_items.append(self.smoke_notification_plan)
         except Exception as e:
-            print("FAIL!", e)
+            self.logit("FAIL!", e)
             self.smoke_notification_plan = None
             self.failures.append("MONITORING CREATE NOTIFICATION PLAN")
-        print()
 
     def cmn_create_alarm(self):
         if not self.smoke_notification_plan:
-            print("No monitoring plan found; skipping alarm creation...")
+            self.logit("No monitoring plan found; skipping alarm creation...")
             return
-        print("Creating a Monitoring Alarm...")
+        self.logit("Creating a Monitoring Alarm...")
         try:
             self.smoke_alarm = self.cmn.create_alarm(self.smoke_entity,
                     self.smoke_check, self.smoke_notification_plan,
                     label="smoke alarm")
-            print("Success!")
+            self.logit("Success!")
             self.cleanup_items.append(self.smoke_alarm)
-        except Exception:
-            print("FAIL!")
+        except Exception as e:
+            self.logit("FAIL!", e)
             self.failures.append("MONITORING CREATE ALARM")
-        print()
+
+    def cbs_list_volumes(self):
+        self.logit("Listing Block Storage Volumes...")
+        vols = self.cbs.list()
+        for vol in vols:
+            self.logit(" -", vol.name, "(%s)" % vol.volume_type, "Size:",
+                    vol.size)
+
+    def cbs_list_types(self):
+        self.logit("Listing Block Storage Volume Types...")
+        typs = self.cbs.list_types()
+        for typ in typs:
+            self.logit(" -", typ.name)
+
+    def cbs_list_snapshots(self):
+        self.logit("Listing Block Storage Snapshots...")
+        snaps = self.cbs.list_snapshots()
+        for snap in snaps:
+            self.logit(" -", snap.name, "(%s)" % snap.status, "Size:",
+                    snap.size)
+
+    def cbs_create_volume(self):
+        self.logit("Creating Volume...")
+        typ = random.choice(self.cbs.list_types())
+        self.smoke_volume = self.cbs.create("SMOKETEST_VOLUME", size=100,
+                volume_type="SATA", description="SMOKETEST_VOLUME_DESCRIPTION")
+        self.cleanup_items.append(self.smoke_volume)
+        self.smoke_volume = self.log_wait(self.smoke_volume,
+                desired=["available", "error"])
+        if self.smoke_volume.status == "ERROR":
+            self.logit("Volume creation failed!")
+            self.failures.append("VOLUME CREATION")
+        else:
+            self.logit("Success!")
+
+    def cbs_attach_to_instance(self):
+        if not self.smoke_server:
+            self.logit("Server not available; skipping volume attach tests.")
+            return
+        self.logit("Attaching Volume to instance...")
+        try:
+            self.smoke_volume.attach_to_instance(self.smoke_server, "/dev/xvdb")
+        except Exception as e:
+            self.logit("FAIL!", e)
+            return
+        self.smoke_volume = self.log_wait(self.smoke_volume,
+                desired=["in-use", "error"])
+        self.logit("Success!")
+
+    def cbs_detach_from_instance(self):
+        if not self.smoke_server:
+            self.logit("Server not available; skipping volume detach tests.")
+            return
+        self.logit("Detaching Volume from instance...")
+        try:
+            self.smoke_volume.detach()
+        except Exception as e:
+            self.logit("FAIL!", e)
+            return
+        self.smoke_volume = self.log_wait(self.smoke_volume,
+                desired=["available", "error"])
+        self.logit("Success!")
+
+    def cbs_create_snapshot(self):
+        if not self.smoke_volume:
+            self.logit("Volume not available; skipping snapshot tests.")
+            return
+        self.logit("Creating Snapshot...")
+        try:
+            self.smoke_snapshot = self.cbs.create_snapshot(self.smoke_volume,
+                    name="SMOKETEST_SNAPSHOT")
+        except Exception as e:
+            self.logit("FAIL!", e)
+            return
+        self.smoke_snapshot = self.log_wait(self.smoke_snapshot,
+                desired=["available", "error"])
+        self.logit("Success!")
+
+    def cbs_delete_snapshot(self):
+        if not self.smoke_snapshot:
+            self.logit("Snapshot not available; skipping snapshot deletion.")
+            return
+        self.logit("Deleting Snapshot...")
+        try:
+            self.cbs.delete_snapshot(self.smoke_snapshot)
+        except Exception as e:
+            self.logit("FAIL!", e)
+            return
+        # Need to wait until the snapshot is deleted
+        snap_id = self.smoke_snapshot.id
+        self.logit("Waiting for snapshot deletion...")
+        while True:
+            try:
+                snap = self.cbs.get_snapshot(snap_id)
+            except exc.NotFound:
+                break
+            time.sleep(5)
+        self.logit("Success!")
 
 
     def cleanup(self):
-        print("Cleaning up...")
+        self.logit("Cleaning up...")
         for item in self.cleanup_items:
             try:
                 item.delete()
-                print(" - Deleting:", end=' ')
+                self.logit(" - Deleting:", end=' ')
                 try:
-                    print(item.name)
+                    self.logit(item.name)
                 except AttributeError:
-                    print(item)
+                    self.logit(item)
             except exc.NotFound:
                 # Some items are deleted along with others (e.g., DNS records
                 # when a domain is deleted), so don't complain.
                 pass
             except Exception as e:
-                print("Could not delete '%s': %s" % (item, e))
+                self.logit("Could not delete '%s': %s" % (item, e))
 
+
+class TestThread(threading.Thread):
+    def __init__(self, context, region, logname, nolog):
+        self.context = context
+        self.region = region
+        self.tester = SmokeTester(context, region, logname, nolog)
+        threading.Thread.__init__(self)
+
+    def run(self):
+        print()
+        print("=" * 77)
+        print("Starting test for region: %s" % self.region)
+        print("=" * 77)
+        try:
+            self.tester.run_tests()
+        finally:
+            self.tester.cleanup()
+        print()
+        print("=" * 88)
+        if self.tester.failures:
+            print("The following tests failed:")
+            for failure in self.tester.failures:
+                print(" -", failure)
+        else:
+            print("All tests passed!")
 
 
 if __name__ == "__main__":
@@ -540,37 +676,37 @@ if __name__ == "__main__":
     parser.add_argument("--env", "-e", help="""Configuration environment to
             use for the test. If not specified, the `default` environment is
             used.""")
+    parser.add_argument("--logname", "-l", help="""Optional prefix name for the
+            log file created for each region in the smoketest.
+            Default = 'smoketest-REGION'. """)
+    parser.add_argument("--no-log", "-n", action="store_true",
+            help="""Turns off logging. No log files will be created if this
+            parameter is set.""")
     args = parser.parse_args()
-    regions = args.regions
-    if not regions:
-        pyrax.keyring_auth()
-        regions = pyrax.regions
     env = args.env
-    if env:
-        pyrax.set_environment(env)
+    regions = args.regions
+    logname = args.logname or "smoketest"
+    nolog = args.no_log
 
     start = time.time()
-    pyrax.keyring_auth()
+    context = pyrax.create_context(env=env)
+    print("Authenticating...", end=" ")
+    try:
+        context.keyring_auth()
+        print("Success!")
+    except Exception as e:
+        print("FAIL!", e)
+        exit()
+
+    if not regions:
+        regions = context.regions
+    test_threads = []
     for region in regions:
-        print()
-        print("=" * 77)
-        print("Starting test for region: %s" % region)
-        print("=" * 77)
-        smoke_tester = SmokeTester(region)
-        try:
-            smoke_tester.run_tests()
-
-        finally:
-            smoke_tester.cleanup()
-
-        print()
-        print("=" * 88)
-        if smoke_tester.failures:
-            print("The following tests failed:")
-            for failure in smoke_tester.failures:
-                print(" -", failure)
-        else:
-            print("All tests passed!")
+        test = TestThread(context, region, logname, nolog)
+        test_threads.append(test)
+        test.start()
+    for test_thread in test_threads:
+        test_thread.join()
     end = time.time()
     print()
     print("Running the smoketests took %6.1f seconds." % (end - start))

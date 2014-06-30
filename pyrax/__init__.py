@@ -184,8 +184,10 @@ class Settings(object):
         if env is None:
             env = self.environment
         try:
-            return self._settings[env][key]
+            ret = self._settings[env][key]
         except KeyError:
+            ret = None
+        if ret is None:
             # See if it's set in the environment
             if key == "identity_class":
                 # This is defined via the identity_type
