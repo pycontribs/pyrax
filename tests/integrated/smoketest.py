@@ -3,13 +3,6 @@
 
 from __future__ import print_function
 
-#try:
-#    import eventlet
-#    eventlet.patcher.monkey_patch(all=False, socket=True, time=True,
-#            thread=True)
-#except ImportError:
-#    pass
-
 import argparse
 import datetime
 import logging
@@ -212,7 +205,7 @@ class SmokeTester(object):
         end = time.time()
         duration = str(datetime.timedelta(seconds=(end - start)))
         self.logit("Completed wait for", obj.name, obj)
-        self.logit("It took %s to complete" % duration)
+        self.logit("  It took %s to complete" % duration)
         return ret
 
     def cs_create_server(self):
