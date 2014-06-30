@@ -451,13 +451,14 @@ class ScalingGroupManager(BaseManager):
                         "imageRef": image or srv_args.get("imageRef"),
                         "flavorRef": flav,
                         "OS-DCF:diskConfig": dconf,
-                        "personality": pers,
                         "networks": networks or srv_args.get("networks"),
                         "metadata": metadata or srv_args.get("metadata"),
                     },
                     "loadBalancers": load_balancers or lb_args,
                 },
             }
+        if pers:
+            body["args"]["server"]["personality"] = pers
         key_name = key_name or srv_args.get("key_name")
         if key_name:
             body["args"]["server"] = key_name
