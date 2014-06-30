@@ -198,9 +198,10 @@ class Settings(object):
             else:
                 env_var = self.env_dct.get(key)
             try:
-                return os.environ[env_var]
+                ret = os.environ[env_var]
             except KeyError:
-                return None
+                ret = None
+        return ret
 
 
     def set(self, key, val, env=None):
