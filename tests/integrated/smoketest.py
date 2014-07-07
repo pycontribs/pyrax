@@ -19,9 +19,11 @@ import pyrax.utils as utils
 
 
 class SmokeTester(object):
-    def __init__(self, context, region, logname=None, nolog=False):
+    def __init__(self, context, region, logname=None, nolog=False,
+            clean=False):
         self.context = context
         self.region = region
+        self.clean = clean
         self.failures = []
         self.cleanup_items = []
         self.smoke_server = None
@@ -75,7 +77,53 @@ class SmokeTester(object):
                 self.logit("FAIL!")
                 self.failures.append("Service=%s" % service["name"])
 
+    def run_clean(self):
+
+        def cleanup_smoke(svc, list_method=None, *list_params):
+            list_method = list_method or "list"
+            mthd = getattr(svc, list_method)
+            try:
+                svcname = svc.name
+            except AttributeError:
+                svcname = "%s" % svc
+            try:
+                ents = [ent for ent in mthd(*list_params)
+                        if ent.name.startswith("SMOKE")]
+            except Exception as e:
+                self.logit("Error listing for service", svcname)
+                self.logit("  Exception:", e)
+                return
+            if ents:
+                try:
+                    ent.delete()
+                    self.logit("Deleting", svcname, "resource", ent.id)
+                except Exception as e:
+                    self.logit("Error deleting", svcname, "resource", ent.id)
+                    self.logit("  Exception:", e)
+            else:
+                self.logit("No smoketest resources found in region",
+                        self.region, "for service", svcname)
+
+        cleanup_smoke(self.cnw)
+        cleanup_smoke(self.cs)
+        cleanup_smoke(self.cdb)
+        cleanup_smoke(self.cf, "list_container_objects", "SMOKETEST_CONTAINER")
+        cleanup_smoke(self.cf)
+        cleanup_smoke(self.clb)
+        cleanup_smoke(self.dns, "list_records", "SMOKETEST.example.edu")
+        cleanup_smoke(self.dns)
+        cleanup_smoke(self.cmn, "list_checks", "SMOKETEST_entity")
+        cleanup_smoke(self.cmn, "list_entities")
+        cleanup_smoke(self.cmn, "list_notifications")
+        cleanup_smoke(self.cmn, "list_notification_plans")
+        cleanup_smoke(self.cmn, "list_alarms", "SMOKETEST_entity")
+        cleanup_smoke(self.cbs)
+        return
+
     def run_tests(self):
+        if self.clean:
+            return self.run_clean()
+
         if self.cs:
             self.logit("Running 'compute' tests...")
             self.cs_list_flavors()
@@ -478,7 +526,7 @@ class SmokeTester(object):
         email = "smoketest@example.com"
         try:
             self.smoke_notification = self.cmn.create_notification("email",
-                    label="smoketest", details={"address": email})
+                    label="SMOKETEST_NOTIFICATION", details={"address": email})
             self.logit("Success!")
             self.cleanup_items.append(self.smoke_notification)
         except Exception as e:
@@ -494,7 +542,7 @@ class SmokeTester(object):
         self.logit("Creating a Monitoring Notification Plan...")
         try:
             self.smoke_notification_plan = self.cmn.create_notification_plan(
-                    label="smoketest plan", ok_state=self.smoke_notification)
+                    label="SMOKETEST_PLAN", ok_state=self.smoke_notification)
             self.logit("Success!")
             self.cleanup_items.append(self.smoke_notification_plan)
         except Exception as e:
@@ -510,7 +558,7 @@ class SmokeTester(object):
         try:
             self.smoke_alarm = self.cmn.create_alarm(self.smoke_entity,
                     self.smoke_check, self.smoke_notification_plan,
-                    label="smoke alarm")
+                    label="SMOKETEST_ALARM")
             self.logit("Success!")
             self.cleanup_items.append(self.smoke_alarm)
         except Exception as e:
@@ -635,16 +683,20 @@ class SmokeTester(object):
 
 
 class TestThread(threading.Thread):
-    def __init__(self, context, region, logname, nolog):
+    def __init__(self, context, region, logname, nolog, clean):
         self.context = context
         self.region = region
-        self.tester = SmokeTester(context, region, logname, nolog)
+        self.clean = clean
+        self.tester = SmokeTester(context, region, logname, nolog, clean)
         threading.Thread.__init__(self)
 
     def run(self):
         print()
         print("=" * 77)
-        print("Starting test for region: %s" % self.region)
+        if self.clean:
+            print("Starting cleanup for region: %s" % self.region)
+        else:
+            print("Starting test for region: %s" % self.region)
         print("=" * 77)
         try:
             self.tester.run_tests()
@@ -657,33 +709,7 @@ class TestThread(threading.Thread):
             for failure in self.tester.failures:
                 print(" -", failure)
         else:
-            print("All tests passed!")
-
-
-class TestThread(threading.Thread):
-    def __init__(self, context, region, logname, nolog):
-        self.context = context
-        self.region = region
-        self.tester = SmokeTester(context, region, logname, nolog)
-        threading.Thread.__init__(self)
-
-    def run(self):
-        print()
-        print("=" * 77)
-        print("Starting test for region: %s" % self.region)
-        print("=" * 77)
-        try:
-            self.tester.run_tests()
-        finally:
-            self.tester.cleanup()
-        print()
-        print("=" * 88)
-        if self.tester.failures:
-            print("The following tests failed:")
-            for failure in self.tester.failures:
-                print(" -", failure)
-        else:
-            print("All tests passed!")
+            print(self.region, "- all tests passed!")
 
 
 if __name__ == "__main__":
@@ -701,11 +727,15 @@ if __name__ == "__main__":
     parser.add_argument("--no-log", "-n", action="store_true",
             help="""Turns off logging. No log files will be created if this
             parameter is set.""")
+    parser.add_argument("--clean", "-c", action="store_true", help="""Don't
+            run the tests; instead, go through the account and delete any
+            resources that begin with 'SMOKE'.""")
     args = parser.parse_args()
     env = args.env
     regions = args.regions
     logname = args.logname or "smoketest"
     nolog = args.no_log
+    clean = args.clean
 
     start = time.time()
     context = pyrax.create_context(env=env)
@@ -721,7 +751,11 @@ if __name__ == "__main__":
         regions = context.regions
     test_threads = []
     for region in regions:
-        test = TestThread(context, region, logname, nolog)
+        try:
+            test = TestThread(context, region, logname, nolog, clean)
+        except exc.NoSuchClient:
+            print("ERROR - no client for region '%s'" % region)
+            continue
         test_threads.append(test)
         test.start()
     for test_thread in test_threads:
