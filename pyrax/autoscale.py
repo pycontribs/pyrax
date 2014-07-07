@@ -17,6 +17,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import base64
+
 import pyrax
 from pyrax.client import BaseClient
 from pyrax.cloudloadbalancers import CloudLoadBalancer
@@ -766,6 +768,10 @@ class ScalingGroupManager(BaseManager):
             metadata = {}
         if personality is None:
             personality = []
+        else:
+            for file in personality:
+                if "contents" in file:
+                    file["contents"] = base64.b64encode(file["contents"])
         if scaling_policies is None:
             scaling_policies = []
         group_config = self._create_group_config_body(name, cooldown,
