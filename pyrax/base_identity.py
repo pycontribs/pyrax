@@ -17,9 +17,9 @@ except ImportError:
     keyring = None
 
 import pyrax
-from . import exceptions as exc
+from pyrax import exceptions as exc
 from .resource import BaseResource
-from . import utils
+from . import utils as utils
 
 
 _pat = r"""
@@ -248,13 +248,8 @@ class Endpoint(object):
         Creates a client instance for the service.
         """
         verify_ssl = pyrax.get_setting("verify_ssl")
-        if not special and self.service == "object_store":
-            # Swiftclient requires different parameters.
-            client = pyrax.connect_to_cloudfiles(region=self.region,
-                    public=public, context=self.identity)
-            client.identity = self.identity
-        elif not special and self.service == "compute":
-            # Novaclient also requires special handling.
+        if self.service == "compute" and not special:
+            # Novaclient requires different parameters.
             client = pyrax.connect_to_cloudservers(region=self.region,
                     context=self.identity)
             client.identity = self.identity

@@ -20,7 +20,7 @@
 from functools import wraps
 
 import pyrax
-from pyrax.cf_wrapper.storage_object import StorageObject
+from pyrax.object_storage import StorageObject
 from pyrax.client import BaseClient
 import pyrax.exceptions as exc
 from pyrax.manager import BaseManager

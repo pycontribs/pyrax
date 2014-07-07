@@ -12,10 +12,6 @@ from pyrax.autoscale import AutoScalePolicy
 from pyrax.autoscale import AutoScaleWebhook
 from pyrax.autoscale import ScalingGroup
 from pyrax.autoscale import ScalingGroupManager
-from pyrax.cf_wrapper.client import BulkDeleter
-from pyrax.cf_wrapper.client import FolderUploader
-from pyrax.cf_wrapper.container import Container
-from pyrax.cf_wrapper.storage_object import StorageObject
 from pyrax.client import BaseClient
 from pyrax.clouddatabases import CloudDatabaseClient
 from pyrax.clouddatabases import CloudDatabaseDatabaseManager
@@ -49,6 +45,13 @@ from pyrax.image import ImageClient
 from pyrax.image import ImageManager
 from pyrax.image import ImageMemberManager
 from pyrax.image import ImageTagManager
+from pyrax.object_storage import BulkDeleter
+from pyrax.object_storage import Container
+from pyrax.object_storage import ContainerManager
+from pyrax.object_storage import FolderUploader
+from pyrax.object_storage import StorageClient
+from pyrax.object_storage import StorageObject
+from pyrax.object_storage import StorageObjectManager
 from pyrax.queueing import Queue
 from pyrax.queueing import QueueClaim
 from pyrax.queueing import QueueMessage
@@ -91,10 +94,15 @@ class FakeResponse(object):
         return "Line1\nLine2"
 
     def get(self, arg):
-        pass
+        return self.headers.get(arg)
 
     def json(self):
         return self.content
+
+
+class FakeIterator(utils.ResultsIterator):
+    def _init_methods(self):
+        pass
 
 
 class FakeClient(object):
@@ -105,30 +113,53 @@ class FakeClient(object):
         self.identity = FakeIdentity()
 
 
+class FakeStorageClient(StorageClient):
+    def __init__(self, identity=None, *args, **kwargs):
+        if identity is None:
+            identity = FakeIdentity()
+        super(FakeStorageClient, self).__init__(identity, *args, **kwargs)
+
+    def create(self, name):
+        return FakeContainer(self._manager, {"name": name})
+
+
+class FakeContainerManager(ContainerManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeStorageClient()
+        super(FakeContainerManager, self).__init__(api, *args, **kwargs)
+
+
 class FakeContainer(Container):
-    def _fetch_cdn_data(self):
-        self._cdn_uri = None
-        self._cdn_ttl = self.client.default_cdn_ttl
-        self._cdn_ssl_uri = None
-        self._cdn_streaming_uri = None
-        self._cdn_ios_uri = None
-        self._cdn_log_retention = False
+    def __init__(self, *args, **kwargs):
+        super(FakeContainer, self).__init__(*args, **kwargs)
+        self.object_manager = FakeStorageObjectManager(self.manager.api,
+                uri_base=self.name)
+        self.object_manager._container = self
+
+
+class FakeStorageObjectManager(StorageObjectManager):
+    def __init__(self, api=None, *args, **kwargs):
+        if api is None:
+            api = FakeStorageClient()
+        if "uri_base" not in kwargs:
+            kwargs["uri_base"] = utils.random_ascii()
+        super(FakeStorageObjectManager, self).__init__(api, *args, **kwargs)
 
 
 class FakeStorageObject(StorageObject):
-    def __init__(self, client, container, name=None, total_bytes=None,
-            content_type=None, last_modified=None, etag=None, attdict=None):
+    def __init__(self, manager, name=None, total_bytes=None, content_type=None,
+            last_modified=None, etag=None, attdict=None):
         """
         The object can either be initialized with individual params, or by
         passing the dict that is returned by swiftclient.
         """
-        self.client = client
-        self.container = container
+        self.manager = manager
         self.name = name
-        self.total_bytes = total_bytes
+        self.bytes = total_bytes or 0
         self.content_type = content_type
         self.last_modified = last_modified
-        self.etag = etag
+        self.hash = etag
         if attdict:
             self._read_attdict(attdict)
 
@@ -603,7 +634,16 @@ class FakeIdentityService(Service):
 
 
 class FakeEndpoint(Endpoint):
-    pass
+    def __init__(self, ep_dict=None, service=None, region=None, identity=None):
+        if ep_dict is None:
+            ep_dict = {}
+        if identity is None:
+            identity = FakeIdentity()
+        if service is None:
+            service = FakeIdentityService(identity)
+        if region is None:
+            region = "fake_region"
+        super(FakeEndpoint, self).__init__(ep_dict, service, region, identity)
 
 
 class FakeRaxIdentity(RaxIdentity):

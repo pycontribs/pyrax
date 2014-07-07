@@ -93,7 +93,7 @@ class CloudLoadBalancer(BaseResource):
 
     def _add_details(self, info):
         """Override the base behavior to add Nodes, VirtualIPs, etc."""
-        for (key, val) in info.iteritems():
+        for (key, val) in six.iteritems(info):
             if key == "nodes":
                 val = [Node(parent=self, **nd) for nd in val]
             elif key == "sessionPersistence":

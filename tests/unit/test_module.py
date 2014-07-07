@@ -6,6 +6,8 @@ import os
 import unittest
 import warnings
 
+from six.moves import reload_module as reload
+
 from mock import patch
 from mock import MagicMock as Mock
 
@@ -31,6 +33,7 @@ class PyraxInitTest(unittest.TestCase):
         self.tenant_id = "faketenantid"
 
     def setUp(self):
+        self.identity = fakes.FakeIdentity()
         vers = pyrax.version.version
         pyrax.settings._settings = {
                 "default": {
@@ -71,6 +74,7 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.USER_AGENT = "DUMMY"
 
     def tearDown(self):
+        pyrax.settings._settings = {}
         pyrax.connect_to_cloudservers = self.orig_connect_to_cloudservers
         pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
         octclb = self.orig_connect_to_cloud_loadbalancers
@@ -429,27 +433,25 @@ class PyraxInitTest(unittest.TestCase):
         self.assertIsNotNone(pyrax.cloudservers)
         pyrax.connect_to_cloudservers = sav
 
-    @patch('pyrax._cf.CFClient', new=fakes.FakeService)
+    @patch('pyrax.StorageClient', new=fakes.FakeService)
     def test_connect_to_cloudfiles(self):
         pyrax.cloudfiles = None
         pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
-        pyrax.cloudfiles = pyrax.connect_to_cloudfiles()
+        pyrax.cloudfiles = pyrax.connect_to_cloudfiles(self.identity)
         self.assertIsNotNone(pyrax.cloudfiles)
 
-    @patch('pyrax._cf.CFClient')
-    def test_connect_to_cloudfiles_ServiceNet(self, client):
+    def test_connect_to_cloudfiles_ServiceNet(self):
         orig = pyrax.get_setting("use_servicenet")
         pyrax.set_setting("use_servicenet", True)
         pyrax.cloudfiles = None
         pyrax.connect_to_cloudfiles = self.orig_connect_to_cloudfiles
+        sav = pyrax._create_client
+        pyrax._create_client = Mock()
         cf = pyrax.connect_to_cloudfiles(public=False)
-        # Check the call arguments to see that our setting stuck and we're
-        # sending internalURL on to CFClient.
-        _, kwargs = client.call_args
-        opts = kwargs["os_options"]
-        self.assertEqual(opts["endpoint_type"], "internalURL")
-        self.assertIsNotNone(cf)
+        pyrax._create_client.assert_called_once_with(ep_name="object_store",
+                region=None, public=False)
         pyrax.set_setting("use_servicenet", orig)
+        pyrax._create_client = sav
 
     @patch('pyrax.CloudLoadBalancerClient', new=fakes.FakeService)
     def test_connect_to_cloud_loadbalancers(self):

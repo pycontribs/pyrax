@@ -660,6 +660,32 @@ class TestThread(threading.Thread):
             print("All tests passed!")
 
 
+class TestThread(threading.Thread):
+    def __init__(self, context, region, logname, nolog):
+        self.context = context
+        self.region = region
+        self.tester = SmokeTester(context, region, logname, nolog)
+        threading.Thread.__init__(self)
+
+    def run(self):
+        print()
+        print("=" * 77)
+        print("Starting test for region: %s" % self.region)
+        print("=" * 77)
+        try:
+            self.tester.run_tests()
+        finally:
+            self.tester.cleanup()
+        print()
+        print("=" * 88)
+        if self.tester.failures:
+            print("The following tests failed:")
+            for failure in self.tester.failures:
+                print(" -", failure)
+        else:
+            print("All tests passed!")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the smoke tests!")
     parser.add_argument("--regions", "-r", action="append",

@@ -7,7 +7,8 @@ import os
 import pkg_resources
 import requests
 import unittest
-from urllib import quote
+
+from six.moves.urllib.parse import quote
 
 from mock import patch
 from mock import MagicMock as Mock
