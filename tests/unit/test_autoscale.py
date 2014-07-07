@@ -1094,7 +1094,7 @@ class AutoscaleTest(unittest.TestCase):
         flavor = utils.random_unicode()
         disk_config = None
         metadata = None
-        personality = None
+        personality = [{"path": "/tmp/testing", "contents": "testtest"}]
         scaling_policies = None
         networks = utils.random_unicode()
         lb = fakes.FakeLoadBalancer()
@@ -1119,7 +1119,8 @@ class AutoscaleTest(unittest.TestCase):
                             "imageRef": image,
                             "metadata": {},
                             "name": server_name,
-                            "personality": [],
+                            "personality": [{"path": "/tmp/testing",
+                                             "contents": "dGVzdHRlc3Q="}],
                             "networks": networks,
                             "key_name": key_name}
                         },
