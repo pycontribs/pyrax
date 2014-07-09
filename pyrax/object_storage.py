@@ -169,7 +169,8 @@ class Container(BaseResource):
 
     def _set_cdn_defaults(self):
         """Sets all the CDN-related attributes to default values."""
-        self._cdn_enabled = False
+        if self._cdn_enabled is FAULT:
+            self._cdn_enabled = False
         self._cdn_uri = None
         self._cdn_ttl = DEFAULT_CDN_TTL
         self._cdn_ssl_uri = None
@@ -182,11 +183,15 @@ class Container(BaseResource):
         """Fetches the object's CDN data from the CDN service"""
         if self._cdn_enabled is FAULT:
             headers = self.manager.fetch_cdn_data(self)
+        else:
+            headers = {}
         # Set defaults in case not all headers are present.
         self._set_cdn_defaults()
         if not headers:
             # Not CDN enabled; return
             return
+        else:
+            self._cdn_enabled = True
         for key, value in headers.items():
             low_key = key.lower()
             if low_key == "x-cdn-uri":
