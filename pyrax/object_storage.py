@@ -119,7 +119,7 @@ def _valid_upload_key(fnc):
     return wrapped
 
 
-def _handle_not_found(fnc):
+def _handle_container_not_found(fnc):
     @wraps(fnc)
     def wrapped(self, container, *args, **kwargs):
         try:
@@ -128,6 +128,18 @@ def _handle_not_found(fnc):
             name = utils.get_name(container)
             e.message = "Container '%s' doesn't exist" % name
             raise exc.NoSuchContainer(e)
+    return wrapped
+
+
+def _handle_object_not_found(fnc):
+    @wraps(fnc)
+    def wrapped(self, obj, *args, **kwargs):
+        try:
+            return fnc(self, obj, *args, **kwargs)
+        except exc.NotFound as e:
+            name = utils.get_name(obj)
+            e.message = "Object '%s' doesn't exist" % name
+            raise exc.NoSuchObject(e)
     return wrapped
 
 
@@ -782,7 +794,7 @@ class ContainerManager(BaseManager):
                 for res in resp_body if res]
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def get(self, container):
         """
         Returns a Container matching the specified container name. If no such
@@ -825,7 +837,7 @@ class ContainerManager(BaseManager):
                     resp_body)
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def delete(self, container, del_objects=False):
         """
         Deletes the specified container. If the container contains objects, the
@@ -846,7 +858,7 @@ class ContainerManager(BaseManager):
         return None
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def fetch_cdn_data(self, container):
         """
         Returns a dict containing the CDN information for the specified
@@ -871,7 +883,7 @@ class ContainerManager(BaseManager):
         return resp.headers
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def get_headers(self, container):
         """
         Return the headers for the specified container.
@@ -963,7 +975,7 @@ class ContainerManager(BaseManager):
         return ret
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def set_metadata(self, container, metadata, clear=False, prefix=None):
         """
         Accepts a dictionary of metadata key/value pairs and updates the
@@ -1004,7 +1016,7 @@ class ContainerManager(BaseManager):
         return self.set_metadata(container, meta_dict)
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def delete_metadata(self, container, prefix=None):
         """
         Removes all of the container's metadata.
@@ -1026,7 +1038,7 @@ class ContainerManager(BaseManager):
         return 200 <= resp.status_code <= 299
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def get_cdn_metadata(self, container):
         """
         Returns a dictionary containing the CDN metadata for the container. If
@@ -1044,7 +1056,7 @@ class ContainerManager(BaseManager):
         return ret
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def set_cdn_metadata(self, container, metadata):
         """
         Accepts a dictionary of metadata key/value pairs and updates
@@ -1158,7 +1170,7 @@ class ContainerManager(BaseManager):
         return self._set_cdn_access(container, public=False)
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def _set_cdn_access(self, container, public, ttl=None):
         """
         Enables or disables CDN access for the specified container, and
@@ -1171,7 +1183,7 @@ class ContainerManager(BaseManager):
                 headers=headers)
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def get_cdn_log_retention(self, container):
         """
         Returns the status of the setting for CDN log retention for the
@@ -1182,7 +1194,7 @@ class ContainerManager(BaseManager):
         return resp.headers.get("x-log-retention").lower() == "true"
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def set_cdn_log_retention(self, container, enabled):
         """
         Enables or disables whether CDN access logs for the specified container
@@ -1193,7 +1205,7 @@ class ContainerManager(BaseManager):
                 headers=headers)
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def get_container_streaming_uri(self, container):
         """
         Returns the URI for streaming content, or None if CDN is not enabled.
@@ -1203,7 +1215,7 @@ class ContainerManager(BaseManager):
         return resp.headers.get("x-cdn-streaming-uri")
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def get_container_ios_uri(self, container):
         """
         Returns the iOS URI, or None if CDN is not enabled.
@@ -1213,7 +1225,7 @@ class ContainerManager(BaseManager):
         return resp.headers.get("x-cdn-ios-uri")
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def set_web_index_page(self, container, page):
         """
         Sets the header indicating the index page in a container
@@ -1227,7 +1239,7 @@ class ContainerManager(BaseManager):
                 headers=headers)
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def set_web_error_page(self, container, page):
         """
         Sets the header indicating the error page in a container
@@ -1424,7 +1436,7 @@ class ContainerManager(BaseManager):
         return container.delete_object(obj)
 
 
-    @_handle_not_found
+    @_handle_container_not_found
     def copy_object(self, container, obj, new_container, new_obj_name=None,
             content_type=None):
         """
@@ -1757,6 +1769,7 @@ class StorageObjectManager(BaseManager):
         return objs
 
 
+    @_handle_object_not_found
     def get(self, obj):
         """
         Gets the information about the specified object.
@@ -1920,6 +1933,7 @@ class StorageObjectManager(BaseManager):
                 headers=headers)
 
 
+    @_handle_object_not_found
     def fetch(self, obj, include_meta=False, chunk_size=None, size=None,
             extra_info=None):
         """
@@ -1991,15 +2005,13 @@ class StorageObjectManager(BaseManager):
         return self.fetch(obj, size=size)
 
 
+    @_handle_object_not_found
     def delete(self, obj):
         """
         Deletes the object if it exists; raises NoSuchObject exception if it
         does not exist.
         """
-        try:
-            super(StorageObjectManager, self).delete(obj)
-        except exc.NotFound as e:
-            raise exc.NoSuchObject(e.message)
+        return super(StorageObjectManager, self).delete(obj)
 
 
     def delete_all_objects(self, nms, async=False):
@@ -2025,6 +2037,7 @@ class StorageObjectManager(BaseManager):
         return self.api.bulk_delete(self.name, nms, async=async)
 
 
+    @_handle_object_not_found
     def download(self, obj, directory, structure=True):
         """
         Fetches the object from storage, and writes it to the specified
@@ -2056,6 +2069,7 @@ class StorageObjectManager(BaseManager):
                 dl.write(content.encode(encoding))
 
 
+    @_handle_object_not_found
     def purge(self, obj, email_addresses=None):
         """
         Removes a CDN-enabled object from public access before the TTL expires.
@@ -2076,6 +2090,7 @@ class StorageObjectManager(BaseManager):
                 headers=headers)
 
 
+    @_handle_object_not_found
     def get_metadata(self, obj, prefix=None):
         """
         Returns the metadata for the specified object as a dict.
@@ -2095,6 +2110,7 @@ class StorageObjectManager(BaseManager):
         return ret
 
 
+    @_handle_object_not_found
     def set_metadata(self, obj, metadata, clear=False, prefix=None):
         """
         Accepts a dictionary of metadata key/value pairs and updates the
@@ -2135,6 +2151,7 @@ class StorageObjectManager(BaseManager):
         resp, resp_body = self.api.method_post(uri, headers=new_meta)
 
 
+    @_handle_object_not_found
     def remove_metadata_key(self, obj, key):
         """
         Removes the specified key from the object's metadata. If the key does

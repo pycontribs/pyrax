@@ -24,7 +24,8 @@ from pyrax.object_storage import Fault_cls
 from pyrax.object_storage import FAULT
 from pyrax.object_storage import FolderUploader
 from pyrax.object_storage import get_file_size
-from pyrax.object_storage import _handle_not_found
+from pyrax.object_storage import _handle_container_not_found
+from pyrax.object_storage import _handle_object_not_found
 from pyrax.object_storage import OBJECT_META_PREFIX
 from pyrax.object_storage import _massage_metakeys
 from pyrax.object_storage import StorageClient
@@ -128,16 +129,27 @@ class ObjectStorageTest(unittest.TestCase):
         clt.folder_upload_status = {key: fake_status}
         self.assertRaises(exc.InvalidUploadID, test, clt, bad_key)
 
-    def test_handle_not_found(self):
+    def test_handle_container_not_found(self):
         clt = self.client
         msg = utils.random_unicode()
 
-        @_handle_not_found
+        @_handle_container_not_found
         def test(self, container):
             raise exc.NotFound(msg)
 
         container = utils.random_unicode()
         self.assertRaises(exc.NoSuchContainer, test, self, container)
+
+    def test_handle_object_not_found(self):
+        clt = self.client
+        msg = utils.random_unicode()
+
+        @_handle_object_not_found
+        def test(self, obj):
+            raise exc.NotFound(msg)
+
+        obj = utils.random_unicode()
+        self.assertRaises(exc.NoSuchObject, test, self, obj)
 
     def test_get_file_size(self):
         sz = random.randint(42, 420)
@@ -3266,10 +3278,10 @@ class ObjectStorageTest(unittest.TestCase):
         client.create.assert_called_once_with(container)
 
     def test_folder_uploader_folder_name_from_path(self):
-        pth1 = utils.random_unicode()
-        pth2 = utils.random_unicode()
-        pth3 = utils.random_unicode()
-        fullpath = os.path.join(pth1, pth2, pth3) + "/"
+        pth1 = utils.random_unicode().replace(os.sep, "")
+        pth2 = utils.random_unicode().replace(os.sep, "")
+        pth3 = utils.random_unicode().replace(os.sep, "")
+        fullpath = os.path.join(pth1, pth2, pth3) + os.sep
         ret = FolderUploader.folder_name_from_path(fullpath)
         self.assertEqual(ret, pth3)
 
