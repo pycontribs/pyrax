@@ -34,6 +34,7 @@ from functools import wraps
 import inspect
 import logging
 import os
+import re
 import six.moves.configparser as ConfigParser
 import warnings
 
@@ -690,8 +691,19 @@ def connect_to_cloudservers(region=None, context=None, **kwargs):
         return [image for image in cloudservers.images.list()
                 if hasattr(image, "server")]
 
+    def find_images_by_name(expr):
+        """
+        Returns a list of images whose name contains the specified expression.
+        The value passed is treated as a regular expression, allowing for more
+        specific searches than simple wildcards. The matching is done in a
+        case-insensitive manner.
+        """
+        return [image for image in cloudservers.images.list()
+                if re.search(expr, image.name, re.I)]
+
     cloudservers.list_base_images = list_base_images
     cloudservers.list_snapshots = list_snapshots
+    cloudservers.find_images_by_name = find_images_by_name
     cloudservers.identity = identity
     return cloudservers
 
