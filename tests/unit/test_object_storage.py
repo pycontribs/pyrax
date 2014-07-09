@@ -281,14 +281,32 @@ class ObjectStorageTest(unittest.TestCase):
         prefix = utils.random_unicode()
         delimiter = utils.random_unicode()
         end_marker = utils.random_unicode()
+        full_listing = False
         return_raw = utils.random_unicode()
         cont.object_manager.list = Mock()
         cont.list(marker=marker, limit=limit, prefix=prefix,
                 delimiter=delimiter, end_marker=end_marker,
-                return_raw=return_raw)
+                full_listing=full_listing, return_raw=return_raw)
         cont.object_manager.list.assert_called_once_with(marker=marker,
                 limit=limit, prefix=prefix, delimiter=delimiter,
-                end_marker=end_marker, return_raw=return_raw)
+                end_marker=end_marker, full_listing=full_listing,
+                return_raw=return_raw)
+
+    def test_cont_list_full(self):
+        cont = self.container
+        marker = utils.random_unicode()
+        limit = utils.random_unicode()
+        prefix = utils.random_unicode()
+        delimiter = utils.random_unicode()
+        end_marker = utils.random_unicode()
+        full_listing = True
+        return_raw = utils.random_unicode()
+        cont.manager.object_listing_iterator = Mock()
+        cont.list(marker=marker, limit=limit, prefix=prefix,
+                delimiter=delimiter, end_marker=end_marker,
+                full_listing=full_listing, return_raw=return_raw)
+        cont.manager.object_listing_iterator.assert_called_once_with(cont,
+                prefix=prefix)
 
     def test_cont_list_all(self):
         cont = self.container

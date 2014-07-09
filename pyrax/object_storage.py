@@ -304,7 +304,7 @@ class Container(BaseResource):
 
 
     def list(self, marker=None, limit=None, prefix=None, delimiter=None,
-            end_marker=None, return_raw=False):
+            end_marker=None, full_listing=False, return_raw=False):
         """
         List the objects in this container, using the parameters to control the
         number and content of objects. Note that this is limited by the
@@ -312,9 +312,12 @@ class Container(BaseResource):
         need to list all objects in the container, use the `list_all()` method
         instead.
         """
-        return self.object_manager.list(marker=marker, limit=limit,
-                prefix=prefix, delimiter=delimiter, end_marker=end_marker,
-                return_raw=return_raw)
+        if full_listing:
+            return self.list_all(prefix=prefix)
+        else:
+            return self.object_manager.list(marker=marker, limit=limit,
+                    prefix=prefix, delimiter=delimiter, end_marker=end_marker,
+                    full_listing=full_listing, return_raw=return_raw)
 
 
     def list_all(self, prefix=None):
