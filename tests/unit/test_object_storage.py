@@ -24,6 +24,7 @@ from pyrax.object_storage import Fault_cls
 from pyrax.object_storage import FAULT
 from pyrax.object_storage import FolderUploader
 from pyrax.object_storage import get_file_size
+from pyrax.object_storage import _handle_not_found
 from pyrax.object_storage import OBJECT_META_PREFIX
 from pyrax.object_storage import _massage_metakeys
 from pyrax.object_storage import StorageClient
@@ -127,6 +128,17 @@ class ObjectStorageTest(unittest.TestCase):
         clt.folder_upload_status = {key: fake_status}
         self.assertRaises(exc.InvalidUploadID, test, clt, bad_key)
 
+    def test_handle_not_found(self):
+        clt = self.client
+        msg = utils.random_unicode()
+
+        @_handle_not_found
+        def test(self, container):
+            raise exc.NotFound(msg)
+
+        container = utils.random_unicode()
+        self.assertRaises(exc.NoSuchContainer, test, self, container)
+
     def test_get_file_size(self):
         sz = random.randint(42, 420)
         fobj = StringIO("x" * sz)
@@ -195,6 +207,12 @@ class ObjectStorageTest(unittest.TestCase):
         self.assertEqual(cont.cdn_streaming_uri, cdn_streaming_uri)
         self.assertEqual(cont.cdn_ios_uri, cdn_ios_uri)
         self.assertEqual(cont.cdn_log_retention, bool_retention)
+
+    def test_fetch_cdn_data_no_headers(self):
+        cont = self.container
+        cont._cdn_enabled = True
+        ret = cont._fetch_cdn_data()
+        self.assertTrue(cont._cdn_enabled)
 
     def test_fetch_cdn_data_not_enabled(self):
         cont = self.container
@@ -672,9 +690,9 @@ class ObjectStorageTest(unittest.TestCase):
     def test_cmgr_get_not_found(self):
         cont = self.container
         mgr = cont.manager
-        mgr.api.method_head = Mock(side_effect=exc.NotFound(""))
+        mgr.api.method_head = Mock(side_effect=exc.NoSuchContainer(""))
         name = utils.random_unicode()
-        self.assertRaises(exc.NotFound, mgr.get, name)
+        self.assertRaises(exc.NoSuchContainer, mgr.get, name)
 
     def test_cmgr_create(self):
         cont = self.container
