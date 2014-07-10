@@ -319,8 +319,7 @@ class ObjectStorageTest(unittest.TestCase):
                 full_listing=full_listing, return_raw=return_raw)
         cont.object_manager.list.assert_called_once_with(marker=marker,
                 limit=limit, prefix=prefix, delimiter=delimiter,
-                end_marker=end_marker, full_listing=full_listing,
-                return_raw=return_raw)
+                end_marker=end_marker, return_raw=return_raw)
 
     def test_cont_list_full(self):
         cont = self.container
