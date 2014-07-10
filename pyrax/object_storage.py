@@ -342,7 +342,7 @@ class Container(BaseResource):
         else:
             return self.object_manager.list(marker=marker, limit=limit,
                     prefix=prefix, delimiter=delimiter, end_marker=end_marker,
-                    full_listing=full_listing, return_raw=return_raw)
+                    return_raw=return_raw)
 
 
     def list_all(self, prefix=None):
@@ -3065,6 +3065,8 @@ class StorageClient(BaseClient):
                         if verbose:
                             log.info("%s NOT UPLOADED because remote object is "
                                     "newer", fullname_with_prefix)
+                            log.info("  Local: %s   Remote: %s" % (
+                                    local_mod_str, obj_time_str))
                         continue
                 container.upload_file(pth, obj_name=fullname_with_prefix,
                     etag=local_etag, return_none=True)
