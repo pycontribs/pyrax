@@ -56,6 +56,7 @@ try:
 
     from novaclient import exceptions as _cs_exceptions
     from novaclient import auth_plugin as _cs_auth_plugin
+    from novaclient.shell import OpenStackComputeShell as _cs_shell
     from novaclient.v1_1 import client as _cs_client
     from novaclient.v1_1.servers import Server as CloudServer
 
@@ -660,10 +661,12 @@ def connect_to_cloudservers(region=None, context=None, **kwargs):
         # Service is not available
         return
     insecure = not get_setting("verify_ssl")
+    cs_shell = _cs_shell()
+    extensions = cs_shell._discover_extensions("1.1")
     cloudservers = _cs_client.Client(context.username, context.password,
             project_id=context.tenant_id, auth_url=context.auth_endpoint,
             auth_system=id_type, region_name=region, service_type="compute",
-            auth_plugin=auth_plugin, insecure=insecure,
+            auth_plugin=auth_plugin, insecure=insecure, extensions=extensions,
             http_log_debug=_http_debug, **kwargs)
     agt = cloudservers.client.USER_AGENT
     cloudservers.client.USER_AGENT = _make_agent_name(agt)
