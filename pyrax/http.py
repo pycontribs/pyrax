@@ -91,6 +91,8 @@ def http_log_req(method, uri, args, kwargs):
     log.debug("\nREQ: %s\n" % " ".join(string_parts))
     if "body" in kwargs:
         pyrax._logger.debug("REQ BODY: %s\n" % (kwargs["body"]))
+    if "data" in kwargs:
+        pyrax._logger.debug("REQ DATA: %s\n" % (kwargs["data"]))
 
 
 def http_log_resp(resp, body):
@@ -101,4 +103,6 @@ def http_log_resp(resp, body):
     if not pyrax.get_http_debug():
         return
     log = logging.getLogger("pyrax")
-    log.debug("RESP: %s %s\n", resp, body)
+    log.debug("RESP: %s\n%s", resp, resp.headers)
+    if body:
+        log.debug("RESP BODY: %s", body)

@@ -18,6 +18,7 @@ Once you have authenticated and connected to the Cloud DNS service, you can refe
 All of the code samples in this document assume that you have already imported `pyrax`, authenticated, and created the name `dns` at the top of the script, like this:
 
     import pyrax
+    pyrax.settings.set('identity_type', 'rackspace')
     pyrax.set_credential_file("my_cred_file")
     # or
     # pyrax.set_credentials("my_username", "my_api_key")

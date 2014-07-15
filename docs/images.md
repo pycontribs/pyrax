@@ -98,7 +98,7 @@ success | The task completed successfully
 failure | The task failed. When this happens, the `message` attribute of the task contains the reason for the failure.
 
 ## Importing an Image
-You may import images for your use b first uploading them to a container in your Cloud Files account. Once the image is there, you import it by calling:
+You may import images for your use by first uploading them to a container in your Cloud Files account. Once the image is there, you import it by calling:
 
     task = imgs.import_task(img, cont[, img_format=None[, img_name=None]])
 

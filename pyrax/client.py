@@ -29,13 +29,23 @@ import json
 import logging
 import requests
 import time
-import urllib
-from six.moves.urllib import parse as urlparse
+import six.moves.urllib as urllib
 
 import pyrax
 import pyrax.exceptions as exc
 
-SAFE_QUOTE_CHARS = "/.?&=,"
+
+def _safe_quote(val):
+    """
+    Unicode values will raise a KeyError, so catch those and encode in UTF-8.
+    """
+    SAFE_QUOTE_CHARS = "/.?&=,"
+    try:
+        ret = urllib.parse.quote(val, safe=SAFE_QUOTE_CHARS)
+    except KeyError:
+        ret = urllib.parse.quote(val.encode("utf-8"), safe=SAFE_QUOTE_CHARS)
+    return ret
+
 
 class BaseClient(object):
     """
@@ -165,6 +175,11 @@ class BaseClient(object):
         kwargs.setdefault("headers", kwargs.get("headers", {}))
         kwargs["headers"]["User-Agent"] = self.user_agent
         kwargs["headers"]["Accept"] = "application/json"
+        if ("body" in kwargs) or ("data" in kwargs):
+            if "Content-Type" not in kwargs["headers"]:
+                kwargs["headers"]["Content-Type"] = "application/json"
+            elif kwargs["headers"]["Content-Type"] is None:
+                del kwargs["headers"]["Content-Type"]
         # Allow subclasses to add their own headers
         self._add_custom_headers(kwargs["headers"])
         resp, body = pyrax.http.request(method, uri, *args, **kwargs)
@@ -198,16 +213,15 @@ class BaseClient(object):
             raise exc.ServiceNotAvailable("The '%s' service is not available."
                     % self)
         if uri.startswith("http"):
-            parsed = list(urlparse.urlparse(uri))
+            parsed = list(urllib.parse.urlparse(uri))
             for pos, item in enumerate(parsed):
                 if pos < 2:
                     # Don't escape the scheme or netloc
                     continue
-                parsed[pos] = urllib.quote(parsed[pos], safe=SAFE_QUOTE_CHARS)
-            safe_uri = urlparse.urlunparse(parsed)
+                parsed[pos] = _safe_quote(parsed[pos])
+            safe_uri = urllib.parse.urlunparse(parsed)
         else:
-            safe_uri = "%s%s" % (self.management_url,
-                    urllib.quote(uri, safe=SAFE_QUOTE_CHARS))
+            safe_uri = "%s%s" % (self.management_url, _safe_quote(uri))
         # Perform the request once. If we get a 401 back then it
         # might be because the auth token expired, so try to
         # re-authenticate and try again. If it still fails, bail.

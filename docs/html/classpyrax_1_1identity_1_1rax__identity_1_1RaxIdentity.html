@@ -227,7 +227,13 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>tenant_id</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>tenant_id</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>connect</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -239,7 +245,8 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>If the user's credentials include an API key, the default behavior will work. </p>
-<p>But if they are using a password, the initial attempt will fail, so try again, but this time using the standard password format. </p>
+<p>But if they are using a password, the initial attempt will fail, so try again, but this time using the standard password format.</p>
+<p>The 'connect' parameter is retained for backwards compatibility. It no longer has any effect. </p>
 
 </div>
 </div>
@@ -643,7 +650,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jun 4 2014 11:36:03 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 15 2014 08:26:29 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

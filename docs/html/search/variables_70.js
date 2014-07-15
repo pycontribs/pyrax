@@ -13,7 +13,7 @@ var searchData=
   ['prefix',['prefix',['../classpyrax_1_1base__identity_1_1Service.html#ace96d70a929a737bb705aa0f539decaa',1,'pyrax::base_identity::Service.prefix()'],['../classpyrax_1_1fakes_1_1FakeIdentityService.html#ace96d70a929a737bb705aa0f539decaa',1,'pyrax::fakes::FakeIdentityService.prefix()']]],
   ['priority',['priority',['../classpyrax_1_1clouddns_1_1CloudDNSRecord.html#a6a5183df4c54c3e28dc8dc704f2487d5',1,'pyrax::clouddns::CloudDNSRecord']]],
   ['private_5furl',['private_url',['../classpyrax_1_1base__identity_1_1Endpoint.html#a1e54df6815cad9c3931cf2be1068740a',1,'pyrax::base_identity::Endpoint']]],
-  ['processed',['processed',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aff5b44290b180a195768e1e1a947e1dc',1,'pyrax::cf_wrapper::client::CFClient']]],
+  ['processed',['processed',['../classpyrax_1_1object__storage_1_1StorageClient.html#aff5b44290b180a195768e1e1a947e1dc',1,'pyrax::object_storage::StorageClient']]],
   ['pseudo_5fnetworks',['PSEUDO_NETWORKS',['../classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html#a9222604bace99de894b6f5b7a5ce5b2d',1,'pyrax::cloudnetworks::CloudNetworkClient.PSEUDO_NETWORKS()'],['../namespacepyrax_1_1cloudnetworks.html#a38c15ff4244e5bd8cf394fab766e9d61',1,'pyrax::cloudnetworks.PSEUDO_NETWORKS()']]],
   ['public_5fnet_5fid',['PUBLIC_NET_ID',['../classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html#ad40d8530bc55f06ed9e3c64ddd55b53d',1,'pyrax::cloudnetworks::CloudNetworkClient.PUBLIC_NET_ID()'],['../namespacepyrax_1_1cloudnetworks.html#ab08316ceccd63a9b160cb4b587a3f35d',1,'pyrax::cloudnetworks.PUBLIC_NET_ID()']]],
   ['public_5furl',['public_url',['../classpyrax_1_1base__identity_1_1Endpoint.html#ad89ac698ae744bcb12725ace4c81d246',1,'pyrax::base_identity::Endpoint']]],

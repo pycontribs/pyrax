@@ -90,7 +90,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Packages</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1autoscale.html">autoscale</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1base__identity.html">base_identity</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cf__wrapper.html">cf_wrapper</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1client.html">client</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cloudblockstorage.html">cloudblockstorage</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1clouddatabases.html">clouddatabases</a></td></tr>
@@ -104,6 +103,7 @@ Packages</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1identity.html">identity</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1image.html">image</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1manager.html">manager</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1object__storage.html">object_storage</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1queueing.html">queueing</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1resource.html">resource</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1service__catalog.html">service_catalog</a></td></tr>
@@ -146,7 +146,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a93dcb702dfed414cb32073e78fdff831">connect_to_cloudservers</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with cloud servers.  <a href="#a93dcb702dfed414cb32073e78fdff831"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a34593b67ad113f95973c1c7a6546fa68">connect_to_cloudfiles</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with cloud files.  <a href="#a34593b67ad113f95973c1c7a6546fa68"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with CloudFiles/Swift.  <a href="#a34593b67ad113f95973c1c7a6546fa68"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a2a85cb9869f6584edb2d652a82678225">connect_to_cloud_databases</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a client for working with cloud databases.  <a href="#a2a85cb9869f6584edb2d652a82678225"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax.html#a5858f51939fe223ec24c9befc4fa1a2a">connect_to_cloud_loadbalancers</a></td></tr>
@@ -449,13 +449,7 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>public</em> = <code>None</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>context</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>public</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -466,8 +460,7 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Creates a client for working with cloud files. </p>
-<p>The default is to connect to the public URL; if you need to work with the ServiceNet connection, pass False to the 'public' parameter or set the "use_servicenet" setting to True. </p>
+<p>Creates a client for working with CloudFiles/Swift. </p>
 
 </div>
 </div>
@@ -504,7 +497,8 @@ Variables</h2></td></tr>
 
 <p>Creates a client for working with cloud servers. </p>
 <p>Returns a list of all base images; excludes any images created by this account.</p>
-<p>Returns a list of all images created by this account; in other words, it excludes all the base images. </p>
+<p>Returns a list of all images created by this account; in other words, it excludes all the base images.</p>
+<p>Returns a list of images whose name contains the specified expression. The value passed is treated as a regular expression, allowing for more specific searches than simple wildcards. The matching is done in a case-insensitive manner. </p>
 
 </div>
 </div>
@@ -985,8 +979,8 @@ Variables</h2></td></tr>
 </div>
 <div class="memdoc">
 <b>Initial value:</b><div class="fragment"><pre class="fragment"><a name="l00001"></a><a class="code" href="namespacepyrax.html">00001</a> {
-<a name="l00002"></a>00002         <span class="stringliteral">&quot;object_store&quot;</span>: _cf.CFClient,
-<a name="l00003"></a>00003         <span class="stringliteral">&quot;compute&quot;</span>: _cs_client.Client,
+<a name="l00002"></a>00002         <span class="stringliteral">&quot;compute&quot;</span>: _cs_client.Client,
+<a name="l00003"></a>00003         <span class="stringliteral">&quot;object_store&quot;</span>: StorageClient,
 <a name="l00004"></a>00004         <span class="stringliteral">&quot;database&quot;</span>: CloudDatabaseClient,
 <a name="l00005"></a>00005         <span class="stringliteral">&quot;load_balancer&quot;</span>: CloudLoadBalancerClient,
 <a name="l00006"></a>00006         <span class="stringliteral">&quot;volume&quot;</span>: CloudBlockStorageClient,
@@ -1356,7 +1350,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jun 4 2014 11:35:59 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 15 2014 08:26:24 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

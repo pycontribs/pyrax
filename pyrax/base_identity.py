@@ -9,6 +9,7 @@ import datetime
 import json
 import re
 import requests
+import warnings
 
 try:
     import keyring
@@ -16,9 +17,9 @@ except ImportError:
     keyring = None
 
 import pyrax
-from . import exceptions as exc
+from pyrax import exceptions as exc
 from .resource import BaseResource
-from . import utils
+from . import utils as utils
 
 
 _pat = r"""
@@ -179,7 +180,10 @@ class Endpoint(object):
             # Already failed
             raise clt
         if cached and clt is not None:
-            return clt
+            if client_class and not isinstance(clt, client_class):
+                clt = None
+            else:
+                return clt
         # Create the client
         special_class = bool(client_class)
         if special_class:
@@ -244,13 +248,8 @@ class Endpoint(object):
         Creates a client instance for the service.
         """
         verify_ssl = pyrax.get_setting("verify_ssl")
-        if not special and self.service == "object_store":
-            # Swiftclient requires different parameters.
-            client = pyrax.connect_to_cloudfiles(region=self.region,
-                    public=public, context=self.identity)
-            client.identity = self.identity
-        elif not special and self.service == "compute":
-            # Novaclient also requires special handling.
+        if self.service == "compute" and not special:
+            # Novaclient requires different parameters.
             client = pyrax.connect_to_cloudservers(region=self.region,
                     context=self.identity)
             client.identity = self.identity
@@ -572,7 +571,7 @@ class BaseIdentity(object):
 
 
     def authenticate(self, username=None, password=None, api_key=None,
-            tenant_id=None):
+            tenant_id=None, connect=False):
         """
         Using the supplied credentials, connects to the specified
         authentication endpoint and attempts to log in.
@@ -581,6 +580,9 @@ class BaseIdentity(object):
         previously-stored credentials can be used. If authentication is
         successful, the token and service catalog information is stored, and
         clients for each service and region are created.
+
+        The 'connect' parameter is retained for backwards compatibility. It no
+        longer has any effect.
         """
         self.username = username or self.username or pyrax.get_setting(
                 "username")

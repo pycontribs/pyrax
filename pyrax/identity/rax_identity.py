@@ -25,7 +25,8 @@ class RaxIdentity(BaseIdentity):
 
 
     def _get_auth_endpoint(self):
-        return self._auth_endpoint or AUTH_ENDPOINT
+        return (self._auth_endpoint or pyrax.get_setting("auth_endpoint")
+                or AUTH_ENDPOINT)
 
 
     def _read_credential_file(self, cfg):
@@ -69,11 +70,14 @@ class RaxIdentity(BaseIdentity):
 
 
     def authenticate(self, username=None, password=None, api_key=None,
-            tenant_id=None):
+            tenant_id=None, connect=False):
         """
         If the user's credentials include an API key, the default behavior will
         work. But if they are using a password, the initial attempt will fail,
         so try again, but this time using the standard password format.
+
+        The 'connect' parameter is retained for backwards compatibility. It no
+        longer has any effect.
         """
         try:
             super(RaxIdentity, self).authenticate(username=username,
