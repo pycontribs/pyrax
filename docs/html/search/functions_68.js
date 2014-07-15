@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['handle_5fswiftclient_5fexception',['handle_swiftclient_exception',['../namespacepyrax_1_1cf__wrapper_1_1client.html#aed48921b20ac7d5d1bf17dae8e2f971d',1,'pyrax::cf_wrapper::client']]],
   ['head',['head',['../classpyrax_1_1manager_1_1BaseManager.html#a6ffb8c9775dd06f2a95c5be870862051',1,'pyrax::manager::BaseManager']]],
   ['http_5flog_5freq',['http_log_req',['../namespacepyrax_1_1http.html#aff71c1b3b5d2f16e608995f526e4d531',1,'pyrax::http']]],
   ['http_5flog_5fresp',['http_log_resp',['../namespacepyrax_1_1http.html#ad5a5ea82cd563be6d489571f5b79ecb2',1,'pyrax::http']]],

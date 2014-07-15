@@ -525,7 +525,13 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>tenant_id</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>tenant_id</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>connect</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -537,7 +543,8 @@ Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Using the supplied credentials, connects to the specified authentication endpoint and attempts to log in. </p>
-<p>Credentials can either be passed directly to this method, or previously-stored credentials can be used. If authentication is successful, the token and service catalog information is stored, and clients for each service and region are created. </p>
+<p>Credentials can either be passed directly to this method, or previously-stored credentials can be used. If authentication is successful, the token and service catalog information is stored, and clients for each service and region are created.</p>
+<p>The 'connect' parameter is retained for backwards compatibility. It no longer has any effect. </p>
 
 </div>
 </div>
@@ -2133,7 +2140,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jun 4 2014 11:35:59 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 15 2014 08:26:24 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

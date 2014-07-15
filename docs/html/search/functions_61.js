@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['account_5fmeta_5fprefix',['account_meta_prefix',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a4871daba36a85e962a609e677d654774',1,'pyrax::cf_wrapper::client::CFClient']]],
   ['action',['action',['../classpyrax_1_1fakes_1_1FakeManager.html#a2f9294757736802ae365f423f1e20b88',1,'pyrax::fakes::FakeManager.action()'],['../classpyrax_1_1manager_1_1BaseManager.html#a2f9294757736802ae365f423f1e20b88',1,'pyrax::manager::BaseManager.action()']]],
   ['add',['add',['../classpyrax_1_1image_1_1ImageTagManager.html#a66aa7c8063db6217a0a0061f8b7ba206',1,'pyrax::image::ImageTagManager']]],
   ['add_5faccess_5flist',['add_access_list',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancer.html#a0f762dd53bd0e3907b59bea99bffb87e',1,'pyrax::cloudloadbalancers::CloudLoadBalancer.add_access_list()'],['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerManager.html#a0f762dd53bd0e3907b59bea99bffb87e',1,'pyrax::cloudloadbalancers::CloudLoadBalancerManager.add_access_list()'],['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a0f762dd53bd0e3907b59bea99bffb87e',1,'pyrax::cloudloadbalancers::CloudLoadBalancerClient.add_access_list()']]],
@@ -23,6 +22,7 @@ var searchData=
   ['algorithms',['algorithms',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#aed666a925114f957f496874543d3f2a7',1,'pyrax::cloudloadbalancers::CloudLoadBalancerClient']]],
   ['all',['all',['../namespacepyrax_1_1manager.html#acedac857b1708c80eefe0a6c379bedec',1,'pyrax::manager']]],
   ['allowed_5fdomains',['allowed_domains',['../classpyrax_1_1cloudloadbalancers_1_1CloudLoadBalancerClient.html#a0a5c9a644fa7ae4b7a662ab33f00ed9c',1,'pyrax::cloudloadbalancers::CloudLoadBalancerClient']]],
+  ['assure_5fcontainer',['assure_container',['../namespacepyrax_1_1object__storage.html#a5dad832cdbdfccc602bc5f8a482a075b',1,'pyrax::object_storage']]],
   ['assure_5fdomain',['assure_domain',['../namespacepyrax_1_1clouddns.html#ae456353f0a4abcc4b605b5eeac0656d1',1,'pyrax::clouddns']]],
   ['assure_5fimage',['assure_image',['../namespacepyrax_1_1image.html#a5e61997540ac52a2c90c2363b3bef66f',1,'pyrax::image']]],
   ['assure_5finstance',['assure_instance',['../namespacepyrax_1_1clouddatabases.html#a8f8b217553a66a79f0135899e14964b4',1,'pyrax::clouddatabases']]],
