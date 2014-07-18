@@ -10,6 +10,9 @@ var searchData=
   ['serviceresponsefailure',['ServiceResponseFailure',['../classpyrax_1_1exceptions_1_1ServiceResponseFailure.html',1,'pyrax::exceptions']]],
   ['settings',['Settings',['../classpyrax_1_1Settings.html',1,'pyrax']]],
   ['snapshotnotavailable',['SnapshotNotAvailable',['../classpyrax_1_1exceptions_1_1SnapshotNotAvailable.html',1,'pyrax::exceptions']]],
-  ['storageobject',['StorageObject',['../classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html',1,'pyrax::cf_wrapper::storage_object']]],
+  ['storageclient',['StorageClient',['../classpyrax_1_1object__storage_1_1StorageClient.html',1,'pyrax::object_storage']]],
+  ['storageobject',['StorageObject',['../classpyrax_1_1object__storage_1_1StorageObject.html',1,'pyrax::object_storage']]],
+  ['storageobjectiterator',['StorageObjectIterator',['../classpyrax_1_1object__storage_1_1StorageObjectIterator.html',1,'pyrax::object_storage']]],
+  ['storageobjectmanager',['StorageObjectManager',['../classpyrax_1_1object__storage_1_1StorageObjectManager.html',1,'pyrax::object_storage']]],
   ['subdomainresultsiterator',['SubdomainResultsIterator',['../classpyrax_1_1clouddns_1_1SubdomainResultsIterator.html',1,'pyrax::clouddns']]]
 ];

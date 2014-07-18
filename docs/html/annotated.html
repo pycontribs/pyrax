@@ -98,9 +98,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1manager_1_1BaseManager.html">BaseManager</a></td><td class="indexvalue">Managers interact with a particular type of API (servers, databases, dns, etc.) and provide CRUD operations for them </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1queueing_1_1BaseQueueManager.html">BaseQueueManager</a></td><td class="indexvalue">This class attempts to add in all the common deviations from the API standards that the regular base classes are based on </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1resource_1_1BaseResource.html">BaseResource</a></td><td class="indexvalue">A resource represents a particular instance of an object (server, flavor, etc) </td></tr>
-  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1BulkDeleter.html">BulkDeleter</a></td><td class="indexvalue">Threading class to allow for bulk deletion of objects from a container </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1object__storage_1_1BulkDeleter.html">BulkDeleter</a></td><td class="indexvalue">Threading class to allow for bulk deletion of objects from a container </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1CDNFailed.html">CDNFailed</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html">CFClient</a></td><td class="indexvalue">Wraps the calls to swiftclient with objects representing Containers and StorageObjects </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1ClientException.html">ClientException</a></td><td class="indexvalue">The base exception class for all exceptions this library raises </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html">CloudBlockStorageClient</a></td><td class="indexvalue">This is the primary class for interacting with Cloud Block Storage </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageManager.html">CloudBlockStorageManager</a></td><td class="indexvalue">Manager class for Cloud Block Storage </td></tr>
@@ -144,8 +143,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetwork.html">CloudNetwork</a></td><td class="indexvalue">This represents a network in the cloud </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html">CloudNetworkClient</a></td><td class="indexvalue">This is the base client for creating and managing Cloud Networks </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudnetworks_1_1CloudNetworkManager.html">CloudNetworkManager</a></td><td class="indexvalue">Does nothing special, but is used in testing </td></tr>
-  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html">Connection</a></td><td class="indexvalue">This class wraps the swiftclient connection, adding support for CDN </td></tr>
-  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Container.html">Container</a></td><td class="indexvalue">Represents a CloudFiles container </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1object__storage_1_1Container.html">Container</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1object__storage_1_1ContainerManager.html">ContainerManager</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1DBUpdateUnchanged.html">DBUpdateUnchanged</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1DNSCallTimedOut.html">DNSCallTimedOut</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1DomainCreationFailed.html">DomainCreationFailed</a></td><td class="indexvalue"></td></tr>
@@ -180,6 +179,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeCloudNetwork.html">FakeCloudNetwork</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeCloudNetworkClient.html">FakeCloudNetworkClient</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeContainer.html">FakeContainer</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeContainerManager.html">FakeContainerManager</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeCSClient.html">FakeCSClient</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeDatabaseClient.html">FakeDatabaseClient</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeDatabaseInstance.html">FakeDatabaseInstance</a></td><td class="indexvalue"></td></tr>
@@ -204,6 +204,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeImageManager.html">FakeImageManager</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeImageMemberManager.html">FakeImageMemberManager</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeImageTagManager.html">FakeImageTagManager</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeIterator.html">FakeIterator</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeKeyring.html">FakeKeyring</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeLoadBalancer.html">FakeLoadBalancer</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeLoadBalancerClient.html">FakeLoadBalancerClient</a></td><td class="indexvalue"></td></tr>
@@ -222,13 +223,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeServer.html">FakeServer</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeService.html">FakeService</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeStatusChanger.html">FakeStatusChanger</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageClient.html">FakeStorageClient</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html">FakeStorageObject</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObjectManager.html">FakeStorageObjectManager</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1fakes_1_1FakeVirtualIP.html">FakeVirtualIP</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cf__wrapper_1_1container_1_1Fault.html">Fault</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1object__storage_1_1Fault__cls.html">Fault_cls</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1FileNotFound.html">FileNotFound</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1FlavorNotFound.html">FlavorNotFound</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1FolderNotFound.html">FolderNotFound</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1FolderUploader.html">FolderUploader</a></td><td class="indexvalue">Threading class to allow for uploading multiple files in the background </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1object__storage_1_1FolderUploader.html">FolderUploader</a></td><td class="indexvalue">Threading class to allow for uploading multiple files in the background </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1Forbidden.html">Forbidden</a></td><td class="indexvalue">HTTP 403 - <a class="el" href="classpyrax_1_1exceptions_1_1Forbidden.html" title="HTTP 403 - Forbidden: your credentials don&#39;t give you access to this resource.">Forbidden</a>: your credentials don't give you access to this resource </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1HTTPNotImplemented.html">HTTPNotImplemented</a></td><td class="indexvalue">HTTP 501 - Not Implemented: the server does not support this operation </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1IdentityClassNotDefined.html">IdentityClassNotDefined</a></td><td class="indexvalue"></td></tr>
@@ -292,6 +295,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1NetworkLabelNotUnique.html">NetworkLabelNotUnique</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1NetworkNotFound.html">NetworkNotFound</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1NoClientForService.html">NoClientForService</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1NoContentSpecified.html">NoContentSpecified</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cloudloadbalancers_1_1Node.html">Node</a></td><td class="indexvalue">Represents a <a class="el" href="classpyrax_1_1cloudloadbalancers_1_1Node.html" title="Represents a Node for a Load Balancer.">Node</a> for a Load Balancer </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1NoEndpointForRegion.html">NoEndpointForRegion</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1NoEndpointForService.html">NoEndpointForService</a></td><td class="indexvalue"></td></tr>
@@ -325,6 +329,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1queueing_1_1QueueMessageManager.html">QueueMessageManager</a></td><td class="indexvalue">Manager class for a <a class="el" href="classpyrax_1_1queueing_1_1Queue.html" title="This class represents a Queue.">Queue</a> Message </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1identity_1_1rax__identity_1_1RaxIdentity.html">RaxIdentity</a></td><td class="indexvalue">This class handles all of the authentication requirements for working with the Rackspace Cloud </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddns_1_1RecordResultsIterator.html">RecordResultsIterator</a></td><td class="indexvalue"><a class="el" href="classpyrax_1_1clouddns_1_1ResultsIterator.html" title="This object will iterate over all the results for a given type of listing, no matter how many items e...">ResultsIterator</a> subclass for iterating over all domain records </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1utils_1_1ResultsIterator.html">ResultsIterator</a></td><td class="indexvalue">This object will iterate over all the results for a given type of listing, no matter how many items exist </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddns_1_1ResultsIterator.html">ResultsIterator</a></td><td class="indexvalue">This object will iterate over all the results for a given type of listing, no matter how many items exist </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1base__identity_1_1Role.html">Role</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1autoscale_1_1ScalingGroup.html">ScalingGroup</a></td><td class="indexvalue"></td></tr>
@@ -337,7 +342,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1ServiceResponseFailure.html">ServiceResponseFailure</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1Settings.html">Settings</a></td><td class="indexvalue">Holds and manages the settings for pyrax </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1SnapshotNotAvailable.html">SnapshotNotAvailable</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html">StorageObject</a></td><td class="indexvalue">Represents a CloudFiles storage object </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1object__storage_1_1StorageClient.html">StorageClient</a></td><td class="indexvalue">This is the primary class for interacting with OpenStack Object Storage </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1object__storage_1_1StorageObject.html">StorageObject</a></td><td class="indexvalue">This class represents an object stored in a <a class="el" href="classpyrax_1_1object__storage_1_1Container.html">Container</a> </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1object__storage_1_1StorageObjectIterator.html">StorageObjectIterator</a></td><td class="indexvalue">Allows you to iterate over all the objects in a container, even if they exceed the limit for any single listing call </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classpyrax_1_1object__storage_1_1StorageObjectManager.html">StorageObjectManager</a></td><td class="indexvalue">Handles all the interactions with StorageObjects </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1clouddns_1_1SubdomainResultsIterator.html">SubdomainResultsIterator</a></td><td class="indexvalue"><a class="el" href="classpyrax_1_1clouddns_1_1ResultsIterator.html" title="This object will iterate over all the results for a given type of listing, no matter how many items e...">ResultsIterator</a> subclass for iterating over all subdomains </td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1base__identity_1_1Tenant.html">Tenant</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classpyrax_1_1exceptions_1_1TenantNotFound.html">TenantNotFound</a></td><td class="indexvalue"></td></tr>
@@ -373,7 +381,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 6 2014 11:50:13 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 15 2014 08:26:30 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

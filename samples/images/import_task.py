@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright 2014 Rackspace
+# Copyright (c)2014 Rackspace US, Inc.
 
 # All Rights Reserved.
 #
@@ -59,7 +59,7 @@ try:
 except ValueError:
     print("'%s' is not a valid number." % snum)
     exit()
-if not 0 <= num < len(conts):
+if not 0 <= num < len(objs):
     print("'%s' is not a valid object number." % snum)
     exit()
 obj = objs[num]

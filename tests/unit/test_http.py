@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import json
+import logging
 import random
 import unittest
 
@@ -122,20 +123,21 @@ class HttpTest(unittest.TestCase):
         pyrax._http_debug = sav_pdbug
 
     def test_http_log_resp(self):
-        sav_pldbug = pyrax._logger.debug
-        pyrax._logger.debug = Mock()
-        resp = "resp"
+        log = logging.getLogger("pyrax")
+        sav_pldbug = log.debug
+        log.debug = Mock()
+        resp = fakes.FakeResponse()
         body = "body"
         sav_pdbug = pyrax._http_debug
         pyrax._http_debug = False
         self.http.http_log_resp(resp, body)
-        self.assertFalse(pyrax._logger.debug.called)
+        self.assertFalse(log.debug.called)
         pyrax._http_debug = True
         self.http.http_log_resp(resp, body)
-        self.assertTrue(pyrax._logger.debug.called)
-        pyrax._logger.debug.assert_called_once_with(
-                "RESP: %s %s\n", "resp", "body")
-        pyrax._logger.debug = sav_pldbug
+        self.assertTrue(log.debug.called)
+        log.debug.assert_any_call("RESP: %s\n%s", resp, resp.headers)
+        log.debug.assert_called_with("RESP BODY: %s", body)
+        log.debug = sav_pldbug
         pyrax._http_debug = sav_pdbug
 
 

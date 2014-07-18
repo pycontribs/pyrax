@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright 2013 Rackspace
+# Copyright (c)2013 Rackspace US, Inc.
 
 # All Rights Reserved.
 #

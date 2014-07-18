@@ -1,7 +1,6 @@
 var searchData=
 [
   ['cdnfailed',['CDNFailed',['../classpyrax_1_1exceptions_1_1CDNFailed.html',1,'pyrax::exceptions']]],
-  ['cfclient',['CFClient',['../classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html',1,'pyrax::cf_wrapper::client']]],
   ['clientexception',['ClientException',['../classpyrax_1_1exceptions_1_1ClientException.html',1,'pyrax::exceptions']]],
   ['cloudblockstorageclient',['CloudBlockStorageClient',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageClient.html',1,'pyrax::cloudblockstorage']]],
   ['cloudblockstoragemanager',['CloudBlockStorageManager',['../classpyrax_1_1cloudblockstorage_1_1CloudBlockStorageManager.html',1,'pyrax::cloudblockstorage']]],
@@ -45,6 +44,6 @@ var searchData=
   ['cloudnetwork',['CloudNetwork',['../classpyrax_1_1cloudnetworks_1_1CloudNetwork.html',1,'pyrax::cloudnetworks']]],
   ['cloudnetworkclient',['CloudNetworkClient',['../classpyrax_1_1cloudnetworks_1_1CloudNetworkClient.html',1,'pyrax::cloudnetworks']]],
   ['cloudnetworkmanager',['CloudNetworkManager',['../classpyrax_1_1cloudnetworks_1_1CloudNetworkManager.html',1,'pyrax::cloudnetworks']]],
-  ['connection',['Connection',['../classpyrax_1_1cf__wrapper_1_1client_1_1Connection.html',1,'pyrax::cf_wrapper::client']]],
-  ['container',['Container',['../classpyrax_1_1cf__wrapper_1_1container_1_1Container.html',1,'pyrax::cf_wrapper::container']]]
+  ['container',['Container',['../classpyrax_1_1object__storage_1_1Container.html',1,'pyrax::object_storage']]],
+  ['containermanager',['ContainerManager',['../classpyrax_1_1object__storage_1_1ContainerManager.html',1,'pyrax::object_storage']]]
 ];

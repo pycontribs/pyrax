@@ -8,6 +8,7 @@ from six.moves import configparser as ConfigParser
 import pyrax
 from ..base_identity import BaseIdentity
 from ..base_identity import User
+from ..cloudnetworks import CloudNetworkClient
 from .. import exceptions as exc
 from .. import utils as utils
 
@@ -24,7 +25,8 @@ class RaxIdentity(BaseIdentity):
 
 
     def _get_auth_endpoint(self):
-        return self._auth_endpoint or AUTH_ENDPOINT
+        return (self._auth_endpoint or pyrax.get_setting("auth_endpoint")
+                or AUTH_ENDPOINT)
 
 
     def _read_credential_file(self, cfg):
@@ -56,12 +58,26 @@ class RaxIdentity(BaseIdentity):
             return super(RaxIdentity, self)._format_credentials()
 
 
+    def set_credentials(self, username, password=None, region=None,
+            tenant_id=None, authenticate=False):
+        """
+        Sets the username and password directly. Because Rackspace auth uses
+        the api_key, make sure that any old values are cleared.
+        """
+        self.api_key = None
+        super(RaxIdentity, self).set_credentials(username, password=password,
+                region=region, tenant_id=tenant_id, authenticate=authenticate)
+
+
     def authenticate(self, username=None, password=None, api_key=None,
-            tenant_id=None):
+            tenant_id=None, connect=False):
         """
         If the user's credentials include an API key, the default behavior will
         work. But if they are using a password, the initial attempt will fail,
         so try again, but this time using the standard password format.
+
+        The 'connect' parameter is retained for backwards compatibility. It no
+        longer has any effect.
         """
         try:
             super(RaxIdentity, self).authenticate(username=username,
@@ -110,6 +126,30 @@ class RaxIdentity(BaseIdentity):
         defreg = user.get("RAX-AUTH:defaultRegion")
         if defreg:
             self._default_region = defreg
+
+
+    def get_client(self, service, region, public=True, cached=True):
+        """
+        Returns the client object for the specified service and region.
+
+        By default the public endpoint is used. If you wish to work with a
+        services internal endpoints, specify `public=False`.
+
+        By default, if a client has already been created for the given service,
+        region, and public values, that will be returned. To force a new client
+        to be created, pass 'cached=False'.
+        """
+        client_class = None
+        # Cloud Networks currently uses nova-networks, so it doesn't appear as
+        # a separate entry in the service catalog. This hack will allow context
+        # objects to continue to work with Rackspace Cloud Networks. When the
+        # Neutron service is implemented, this hack will have to be removed.
+        if service in ("compute:networks", "networks", "network",
+                "cloudnetworks", "cloud_networks"):
+            service = "compute"
+            client_class = CloudNetworkClient
+        return super(RaxIdentity, self).get_client(service, region,
+                public=public, cached=cached, client_class=client_class)
 
 
     def find_user_by_name(self, name):

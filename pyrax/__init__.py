@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright 2012 Rackspace
+# Copyright (c)2012 Rackspace US, Inc.
 
 # All Rights Reserved.
 #
@@ -27,13 +27,6 @@ built on the Rackspace / OpenStack Cloud.<br />
 The source code for <b>pyrax</b> can be found at:
 
 http://github.com/rackspace/pyrax
-
-\package cf_wrapper
-
-This module wraps <b>swiftclient</b>, the Python client for OpenStack / Swift,
-providing an object-oriented interface to the Swift object store.
-
-It also adds in CDN functionality that is Rackspace-specific.
 """
 
 from __future__ import absolute_import
@@ -41,6 +34,7 @@ from functools import wraps
 import inspect
 import logging
 import os
+import re
 import six.moves.configparser as ConfigParser
 import warnings
 
@@ -60,9 +54,9 @@ try:
     from . import http
     from . import version
 
-    from .cf_wrapper import client as _cf
     from novaclient import exceptions as _cs_exceptions
     from novaclient import auth_plugin as _cs_auth_plugin
+    from novaclient.shell import OpenStackComputeShell as _cs_shell
     from novaclient.v1_1 import client as _cs_client
     from novaclient.v1_1.servers import Server as CloudServer
 
@@ -74,6 +68,7 @@ try:
     from .cloudnetworks import CloudNetworkClient
     from .cloudmonitoring import CloudMonitorClient
     from .image import ImageClient
+    from .object_storage import StorageClient
     from .queueing import QueueClient
 except ImportError:
     # See if this is the result of the importing of version.py in setup.py
@@ -119,8 +114,8 @@ regions = tuple()
 services = tuple()
 
 _client_classes = {
-        "object_store": _cf.CFClient,
         "compute": _cs_client.Client,
+        "object_store": StorageClient,
         "database": CloudDatabaseClient,
         "load_balancer": CloudLoadBalancerClient,
         "volume": CloudBlockStorageClient,
@@ -184,8 +179,10 @@ class Settings(object):
         if env is None:
             env = self.environment
         try:
-            return self._settings[env][key]
+            ret = self._settings[env][key]
         except KeyError:
+            ret = None
+        if ret is None:
             # See if it's set in the environment
             if key == "identity_class":
                 # This is defined via the identity_type
@@ -196,9 +193,10 @@ class Settings(object):
             else:
                 env_var = self.env_dct.get(key)
             try:
-                return os.environ[env_var]
+                ret = os.environ[env_var]
             except KeyError:
-                return None
+                ret = None
+        return ret
 
 
     def set(self, key, val, env=None):
@@ -578,17 +576,6 @@ def authenticate(connect=True):
     identity.authenticate()
 
 
-def plug_hole_in_swiftclient_auth(clt, url):
-    """
-    This is necessary because swiftclient has an issue when a token expires and
-    it needs to re-authenticate against Rackspace auth. It is a temporary
-    workaround until we can fix swiftclient.
-    """
-    conn = clt.connection
-    conn.token = identity.token
-    conn.url = url
-
-
 def clear_credentials():
     """De-authenticate by clearing all the names back to None."""
     global identity, regions, services, cloudservers, cloudfiles
@@ -674,10 +661,12 @@ def connect_to_cloudservers(region=None, context=None, **kwargs):
         # Service is not available
         return
     insecure = not get_setting("verify_ssl")
+    cs_shell = _cs_shell()
+    extensions = cs_shell._discover_extensions("1.1")
     cloudservers = _cs_client.Client(context.username, context.password,
             project_id=context.tenant_id, auth_url=context.auth_endpoint,
             auth_system=id_type, region_name=region, service_type="compute",
-            auth_plugin=auth_plugin, insecure=insecure,
+            auth_plugin=auth_plugin, insecure=insecure, extensions=extensions,
             http_log_debug=_http_debug, **kwargs)
     agt = cloudservers.client.USER_AGENT
     cloudservers.client.USER_AGENT = _make_agent_name(agt)
@@ -705,50 +694,44 @@ def connect_to_cloudservers(region=None, context=None, **kwargs):
         return [image for image in cloudservers.images.list()
                 if hasattr(image, "server")]
 
+    def find_images_by_name(expr):
+        """
+        Returns a list of images whose name contains the specified expression.
+        The value passed is treated as a regular expression, allowing for more
+        specific searches than simple wildcards. The matching is done in a
+        case-insensitive manner.
+        """
+        return [image for image in cloudservers.images.list()
+                if re.search(expr, image.name, re.I)]
+
     cloudservers.list_base_images = list_base_images
     cloudservers.list_snapshots = list_snapshots
+    cloudservers.find_images_by_name = find_images_by_name
+    cloudservers.identity = identity
     return cloudservers
 
 
-def connect_to_cloudfiles(region=None, public=None, context=None):
-    """
-    Creates a client for working with cloud files. The default is to connect
-    to the public URL; if you need to work with the ServiceNet connection, pass
-    False to the 'public' parameter or set the "use_servicenet" setting to True.
-    """
+def connect_to_cloudfiles(region=None, public=None):
+    """Creates a client for working with CloudFiles/Swift."""
     if public is None:
         is_public = not bool(get_setting("use_servicenet"))
     else:
         is_public = public
-    # If a specific context is passed, use that. Otherwise, use the global
-    # identity reference.
-    context = context or identity
-    region = _safe_region(region, context=context)
-    cf_url = _get_service_endpoint(context, "object_store", region,
+    ret = _create_client(ep_name="object_store", region=region,
             public=is_public)
-    cloudfiles = None
-    if not cf_url:
-        # Service is not available
-        return
-    cdn_url = _get_service_endpoint(context, "object_cdn", region)
-    ep_type = {True: "publicURL", False: "internalURL"}[is_public]
-    opts = {"tenant_id": context.tenant_name, "auth_token": context.token,
-            "endpoint_type": ep_type, "tenant_name": context.tenant_name,
-            "object_storage_url": cf_url, "object_cdn_url": cdn_url,
-            "region_name": region}
-    verify_ssl = get_setting("verify_ssl")
-    cloudfiles = _cf.CFClient(context.auth_endpoint, context.username,
-            context.password, tenant_name=context.tenant_name,
-            preauthurl=cf_url, preauthtoken=context.token, auth_version="2",
-            os_options=opts, verify_ssl=verify_ssl, http_log_debug=_http_debug)
-    cloudfiles.user_agent = _make_agent_name(cloudfiles.user_agent)
-    return cloudfiles
+    if ret:
+        # Add CDN endpoints, if available
+        region = _safe_region(region)
+        ret.cdn_management_url = _get_service_endpoint(None, "object_cdn",
+                region, public=is_public)
+    return ret
 
 
 @_require_auth
 def _create_client(ep_name, region, public=True):
     region = _safe_region(region)
-    ep = _get_service_endpoint(None, ep_name.split(":")[0], region, public=public)
+    ep = _get_service_endpoint(None, ep_name.split(":")[0], region,
+            public=public)
     if not ep:
         return
     verify_ssl = get_setting("verify_ssl")
@@ -827,19 +810,6 @@ def set_http_debug(val):
             autoscale, images, queues):
         if svc is not None:
             svc.http_log_debug = val
-    # Need to manually add/remove the debug handler for swiftclient
-    swift_logger = _cf._swift_client.logger
-    if val:
-        for handler in swift_logger.handlers:
-            if isinstance(handler, logging.StreamHandler):
-                # Already present
-                return
-        swift_logger.addHandler(logging.StreamHandler())
-        swift_logger.setLevel(logging.DEBUG)
-    else:
-        for handler in swift_logger.handlers:
-            if isinstance(handler, logging.StreamHandler):
-                swift_logger.removeHandler(handler)
 
 
 def get_encoding():

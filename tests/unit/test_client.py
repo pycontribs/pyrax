@@ -17,6 +17,7 @@ import pyrax
 import pyrax.utils as utils
 import pyrax.exceptions as exc
 from pyrax import client
+from pyrax.client import _safe_quote
 
 from pyrax import fakes
 
@@ -38,6 +39,16 @@ class ClientTest(unittest.TestCase):
 
     def tearDown(self):
         self.client = None
+
+    def test_safe_quote_ascii(self):
+        ret = _safe_quote("test")
+        expected = "test"
+        self.assertEqual(ret, expected)
+
+    def test_safe_quote_unicode(self):
+        ret = _safe_quote(unichr(1000))
+        expected = "%CF%A8"
+        self.assertEqual(ret, expected)
 
     def test_base_client(self):
         tenant_id = "faketenantid"
@@ -152,7 +163,8 @@ class ClientTest(unittest.TestCase):
         ret = clt.get_limits()
         self.assertEqual(ret, data)
 
-    def test_request_ok(self):
+    @patch("pyrax.http.request")
+    def test_request_ok(self, mock_req):
         clt = self.client
         clt.http_log_debug = False
         clt.timeout = utils.random_unicode()
@@ -161,15 +173,34 @@ class ClientTest(unittest.TestCase):
         body_content = {"one": 2, "three": 4}
         fake_uri = utils.random_unicode()
         fake_method = utils.random_unicode()
-        sav = pyrax.http.request
-        pyrax.http.request = Mock(return_value=(fakeresp, body_content))
+        mock_req.return_value = (fakeresp, body_content)
         resp, body = clt.request(fake_uri, fake_method, body="text")
         self.assertTrue(isinstance(resp, fakes.FakeResponse))
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(body, body_content)
-        pyrax.http.request = sav
 
-    def test_request_400(self):
+    @patch("pyrax.http.request")
+    def test_request_content_type_header(self, mock_req):
+        clt = self.client
+        clt.http_log_debug = False
+        clt.timeout = utils.random_unicode()
+        fakeresp = fakes.FakeResponse()
+        fakeresp.status_code = 200
+        body_content = {"one": 2, "three": 4}
+        body = "text"
+        headers = {"Content-Type": None}
+        fake_uri = utils.random_unicode()
+        fake_method = utils.random_unicode()
+        mock_req.return_value = (fakeresp, body_content)
+        resp, body = clt.request(fake_uri, fake_method, body=body,
+                headers=headers)
+        self.assertTrue(isinstance(resp, fakes.FakeResponse))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(body, body_content)
+
+    @patch("pyrax.exceptions.from_response")
+    @patch("pyrax.http.request")
+    def test_request_400(self, mock_req, mock_from):
         clt = self.client
         clt.http_log_debug = False
         fakeresp = fakes.FakeResponse()
@@ -178,54 +209,46 @@ class ClientTest(unittest.TestCase):
         fakebody = json.dumps(body_content)
         fake_uri = utils.random_unicode()
         fake_method = utils.random_unicode()
-        sav = pyrax.http.request
-        pyrax.http.request = Mock(return_value=(fakeresp, fakebody))
-        savexc = exc.from_response
-        exc.from_response = Mock(side_effect=fakes.FakeException)
+        mock_req.return_value = (fakeresp, fakebody)
+        mock_from.side_effect = fakes.FakeException
         self.assertRaises(fakes.FakeException, clt.request, fake_uri,
                 fake_method)
-        exc.from_response = savexc
-        pyrax.http.request = sav
 
-    def test_request_no_json_resp(self):
+    @patch("pyrax.exceptions.from_response")
+    @patch("pyrax.http.request")
+    def test_request_no_json_resp(self, mock_req, mock_from):
         clt = self.client
         clt.http_log_debug = False
         fakeresp = fakes.FakeResponse()
         fakeresp.status_code = 400
         body_content = {"one": 2, "three": 4}
         fakebody = json.dumps(body_content)
-        sav = pyrax.http.request
         # Test non-json response
         fakebody = "{{{{{{"
         fake_uri = utils.random_unicode()
         fake_method = utils.random_unicode()
-        pyrax.http.request = Mock(return_value=(fakeresp, fakebody))
-        savexc = exc.from_response
-        exc.from_response = Mock(side_effect=fakes.FakeException)
+        mock_req.return_value = (fakeresp, fakebody)
+        mock_from.side_effect = fakes.FakeException
         self.assertRaises(fakes.FakeException, clt.request, fake_uri,
                 fake_method)
-        exc.from_response = savexc
-        pyrax.http.request = sav
 
-    def test_request_empty_body(self):
+    @patch("pyrax.exceptions.from_response")
+    @patch("pyrax.http.request")
+    def test_request_empty_body(self, mock_req, mock_from):
         clt = self.client
         clt.http_log_debug = False
         fakeresp = fakes.FakeResponse()
         fakeresp.status_code = 400
         body_content = {"one": 2, "three": 4}
         fakebody = json.dumps(body_content)
-        sav = pyrax.http.request
         fakebody = ""
         fake_uri = utils.random_unicode()
         fake_method = utils.random_unicode()
-        pyrax.http.request = Mock(return_value=(fakeresp, fakebody))
-        savexc = exc.from_response
-        exc.from_response = Mock(side_effect=fakes.FakeException)
+        mock_req.return_value = (fakeresp, fakebody)
+        mock_from.side_effect = fakes.FakeException
         self.assertRaises(fakes.FakeException, clt.request, fake_uri,
                 fake_method)
-        exc.from_response.assert_called_once_with(fakeresp, "")
-        exc.from_response = savexc
-        pyrax.http.request = sav
+        mock_from.assert_called_once_with(fakeresp, "")
 
     def test_time_request(self):
         clt = self.client
