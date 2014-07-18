@@ -22,7 +22,7 @@ import json
 import os
 import re
 
-import six
+from six.moves import urllib
 
 import pyrax
 from pyrax.client import BaseClient
