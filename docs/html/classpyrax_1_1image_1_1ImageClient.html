@@ -130,6 +130,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all of the images in one call, rather than in paginated batches.  <a href="#a28f5fede14b6bf699c5aa34dfa64f126"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1image_1_1ImageClient.html#abe52b977c101e59f342489ed18140819">update</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepts an image reference (object or ID) and dictionary of key/value pairs, where the key is an attribute of the image, and the value is the desired new value for that image.  <a href="#abe52b977c101e59f342489ed18140819"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1image_1_1ImageClient.html#a5b7ef0221e471e99fa7f0a87a28ba1ea">create</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new image with the specified name.  <a href="#a5b7ef0221e471e99fa7f0a87a28ba1ea"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1image_1_1ImageClient.html#aee621a307db99440e1f800b60f957ccf">change_image_name</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpyrax_1_1image_1_1Image.html" title="This class represents an Image.">Image</a> name can be changed via the <a class="el" href="classpyrax_1_1image_1_1ImageClient.html#abe52b977c101e59f342489ed18140819" title="Accepts an image reference (object or ID) and dictionary of key/value pairs, where the key is an attr...">update()</a> method.  <a href="#aee621a307db99440e1f800b60f957ccf"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1image_1_1ImageClient.html#aeb70e281f854b9ea51745c12247b3de5">list_image_members</a></td></tr>
@@ -276,6 +278,66 @@ Static Public Attributes</h2></td></tr>
 
 <p><a class="el" href="classpyrax_1_1image_1_1Image.html" title="This class represents an Image.">Image</a> name can be changed via the <a class="el" href="classpyrax_1_1image_1_1ImageClient.html#abe52b977c101e59f342489ed18140819" title="Accepts an image reference (object or ID) and dictionary of key/value pairs, where the key is an attr...">update()</a> method. </p>
 <p>This is simply a convenience method. </p>
+
+</div>
+</div>
+<a class="anchor" id="a5b7ef0221e471e99fa7f0a87a28ba1ea"></a><!-- doxytag: member="pyrax::image::ImageClient::create" ref="a5b7ef0221e471e99fa7f0a87a28ba1ea" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1image_1_1ImageClient.html#a5b7ef0221e471e99fa7f0a87a28ba1ea">create</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>img_format</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>data</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>container</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>obj</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>metadata</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Creates a new image with the specified name. </p>
+<p>The image data can either be supplied directly in the 'data' parameter, or it can be an image stored in the object storage service. In the case of the latter, you can either supply the container and object names, or simply a StorageObject reference. </p>
 
 </div>
 </div>
@@ -952,7 +1014,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 12 2014 16:01:47 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 4 2014 11:36:04 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['safe_5fquote_5fchars',['SAFE_QUOTE_CHARS',['../namespacepyrax_1_1client.html#a8e0f4a21236e90f2e846cd833e963445',1,'pyrax::client']]],
   ['scaling_5fgroup',['scaling_group',['../classpyrax_1_1autoscale_1_1AutoScalePolicy.html#a7f23105293583afca652e62b3dc62613',1,'pyrax::autoscale::AutoScalePolicy']]],
   ['serverclientexception',['ServerClientException',['../namespacepyrax_1_1exceptions.html#a033b7e579f64b8616b8c34e2406e24d7',1,'pyrax::exceptions']]],
   ['servernotfound',['ServerNotFound',['../namespacepyrax_1_1exceptions.html#aa7887bc0806ad489b281e31ec228dcc3',1,'pyrax::exceptions']]],

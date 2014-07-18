@@ -106,13 +106,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">FakeStorageObject Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<!-- doxytag: class="pyrax::fakes::FakeStorageObject" --><!-- doxytag: inherits="pyrax::cf_wrapper::storage_object::StorageObject" --><div class="dynheader">
+<!-- doxytag: class="pyrax::fakes::FakeStorageObject" --><!-- doxytag: inherits="pyrax::object_storage::StorageObject" --><div class="dynheader">
 Inheritance diagram for FakeStorageObject:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="classpyrax_1_1fakes_1_1FakeStorageObject.png" usemap="#FakeStorageObject_map" alt=""/>
   <map id="FakeStorageObject_map" name="FakeStorageObject_map">
-<area href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html" title="Represents a CloudFiles storage object." alt="StorageObject" shape="rect" coords="0,0,121,24"/>
+<area href="classpyrax_1_1object__storage_1_1StorageObject.html" title="This class represents an object stored in a Container." alt="StorageObject" shape="rect" coords="0,56,121,80"/>
+<area href="classpyrax_1_1resource_1_1BaseResource.html" title="A resource represents a particular instance of an object (server, flavor, etc)." alt="BaseResource" shape="rect" coords="0,0,121,24"/>
 </map>
  </div></div>
 
@@ -124,13 +125,12 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The object can either be initialized with individual params, or by passing the dict that is returned by swiftclient.  <a href="#ac775ee34451fdfa742b318538164070e"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#ad5bc32b75da65fe60067f501a4bb6665">client</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#a030ecaa2a61b422a8ca7422403ad8c77">container</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#a23416379944e641a8ad6bdbc95ef1859">manager</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#ab74e6bf80237ddc4109968cedc58c151">name</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#a15d97ed7e27cf9263c3bc520f95e1d82">total_bytes</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#ab5b288623cd78ddf5eeabe825d17a1c1">bytes</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#a221623422ea72de630e7e446a84e9f1f">content_type</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#aacadc30373e677c508e7b598fe832e32">last_modified</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#a1ee78e6280ae4527b4257099cfb8c330">etag</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#a28b5828ac3b16e22c26077eedf5674ff">hash</a></td></tr>
 </table>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ac775ee34451fdfa742b318538164070e"></a><!-- doxytag: member="pyrax::fakes::FakeStorageObject::__init__" ref="ac775ee34451fdfa742b318538164070e" args="" -->
@@ -147,13 +147,7 @@ Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>client</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>container</em>, </td>
+          <td class="paramname"><em>manager</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -202,38 +196,19 @@ Public Attributes</h2></td></tr>
 
 <p>The object can either be initialized with individual params, or by passing the dict that is returned by swiftclient. </p>
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#ac775ee34451fdfa742b318538164070e">StorageObject</a>.</p>
-
 </div>
 </div>
 <hr/><h2>Member Data Documentation</h2>
-<a class="anchor" id="ad5bc32b75da65fe60067f501a4bb6665"></a><!-- doxytag: member="pyrax::fakes::FakeStorageObject::client" ref="ad5bc32b75da65fe60067f501a4bb6665" args="" -->
+<a class="anchor" id="ab5b288623cd78ddf5eeabe825d17a1c1"></a><!-- doxytag: member="pyrax::fakes::FakeStorageObject::bytes" ref="ab5b288623cd78ddf5eeabe825d17a1c1" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#ad5bc32b75da65fe60067f501a4bb6665">client</a></td>
+          <td class="memname"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#ab5b288623cd78ddf5eeabe825d17a1c1">bytes</a></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#ad5bc32b75da65fe60067f501a4bb6665">StorageObject</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a030ecaa2a61b422a8ca7422403ad8c77"></a><!-- doxytag: member="pyrax::fakes::FakeStorageObject::container" ref="a030ecaa2a61b422a8ca7422403ad8c77" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#a030ecaa2a61b422a8ca7422403ad8c77">container</a></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a030ecaa2a61b422a8ca7422403ad8c77">StorageObject</a>.</p>
 
 </div>
 </div>
@@ -248,22 +223,18 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a221623422ea72de630e7e446a84e9f1f">StorageObject</a>.</p>
-
 </div>
 </div>
-<a class="anchor" id="a1ee78e6280ae4527b4257099cfb8c330"></a><!-- doxytag: member="pyrax::fakes::FakeStorageObject::etag" ref="a1ee78e6280ae4527b4257099cfb8c330" args="" -->
+<a class="anchor" id="a28b5828ac3b16e22c26077eedf5674ff"></a><!-- doxytag: member="pyrax::fakes::FakeStorageObject::hash" ref="a28b5828ac3b16e22c26077eedf5674ff" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#a1ee78e6280ae4527b4257099cfb8c330">etag</a></td>
+          <td class="memname"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#a28b5828ac3b16e22c26077eedf5674ff">hash</a></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a1ee78e6280ae4527b4257099cfb8c330">StorageObject</a>.</p>
 
 </div>
 </div>
@@ -278,7 +249,20 @@ Public Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#aacadc30373e677c508e7b598fe832e32">StorageObject</a>.</p>
+</div>
+</div>
+<a class="anchor" id="a23416379944e641a8ad6bdbc95ef1859"></a><!-- doxytag: member="pyrax::fakes::FakeStorageObject::manager" ref="a23416379944e641a8ad6bdbc95ef1859" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#a23416379944e641a8ad6bdbc95ef1859">manager</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpyrax_1_1resource_1_1BaseResource.html#a23416379944e641a8ad6bdbc95ef1859">BaseResource</a>.</p>
 
 </div>
 </div>
@@ -292,23 +276,6 @@ Public Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#ab74e6bf80237ddc4109968cedc58c151">StorageObject</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a15d97ed7e27cf9263c3bc520f95e1d82"></a><!-- doxytag: member="pyrax::fakes::FakeStorageObject::total_bytes" ref="a15d97ed7e27cf9263c3bc520f95e1d82" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpyrax_1_1fakes_1_1FakeStorageObject.html#a15d97ed7e27cf9263c3bc520f95e1d82">total_bytes</a></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Reimplemented from <a class="el" href="classpyrax_1_1cf__wrapper_1_1storage__object_1_1StorageObject.html#a15d97ed7e27cf9263c3bc520f95e1d82">StorageObject</a>.</p>
 
 </div>
 </div>
@@ -333,7 +300,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 24 2014 11:18:01 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 15 2014 08:26:28 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

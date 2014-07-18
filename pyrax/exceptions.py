@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2012 Rackspace
+# Copyright (c)2012 Rackspace US, Inc.
 
 # All Rights Reserved.
 #
@@ -254,6 +254,9 @@ class NoEndpointForRegion(PyraxException):
 class NoEndpointForService(PyraxException):
     pass
 
+class NoContentSpecified(PyraxException):
+    pass
+
 class NoMoreResults(PyraxException):
     pass
 
@@ -478,6 +481,8 @@ def from_response(response, body):
                 else:
                     message = error
                     details = None
+        else:
+            message = body
         return cls(code=status, message=message, details=details,
                    request_id=request_id)
     else:

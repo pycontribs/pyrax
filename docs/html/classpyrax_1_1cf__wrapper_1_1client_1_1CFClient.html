@@ -183,6 +183,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the object from storage.  <a href="#a1c274968ef395c2b88a4d67c24f30f8e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ad1e7a72f5953d9a66e17bbe53b38fdc2">fetch_partial</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the first 'size' bytes of an object.  <a href="#ad1e7a72f5953d9a66e17bbe53b38fdc2"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aaef0d2bdb7e63ca8f1f0c619cad80253">fetch_dlo</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of 2-tuples in the form of (object_name, fetch_generator) representing the components of a multi-part DLO (Dynamic Large Object).  <a href="#aaef0d2bdb7e63ca8f1f0c619cad80253"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a4d536318080f1745a14922224b2a28b5">download_object</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches the object from storage, and writes it to the specified directory.  <a href="#a4d536318080f1745a14922224b2a28b5"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#ae413c04282e2a1f584d7b99bbea09b54">get_all_containers</a></td></tr>
@@ -192,7 +194,7 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of StorageObjects representing the objects in the container.  <a href="#aaf73308b26a79abf34f31686698ce8fc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a6104ca24badc598cb4f2e17f20cc7e07">get_container_object_names</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a67a23cb99d99eb7027e487e506cf68f6">list_container_subdirs</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of StorageObjects representing the pseudo-subdirectories in the specified container.  <a href="#a67a23cb99d99eb7027e487e506cf68f6"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of StorageObjects representing the pseudo-subdirectories in the specified container.  <a href="#a67a23cb99d99eb7027e487e506cf68f6"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a384aea54f97656a3742b60bae861bc34">get_info</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a tuple for the number of containers and total bytes in the account.  <a href="#a384aea54f97656a3742b60bae861bc34"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a></td></tr>
@@ -222,6 +224,10 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a10275a078bd1abcbebc206cc5d19e18b">connection</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a9ebd30d3926b0fe246ca66e564caf148">cdn_connection</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a295392d2c1465863e97d36dfd19a4b97">gen</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aa9e289eddb591991c9bc7321dc5b186b">verbose</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aff5b44290b180a195768e1e1a947e1dc">processed</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a943af1103d1f1365d6c7f31b331119bf">interval</a></td></tr>
 <tr><td colspan="2"><h2><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a15b27a248ed9133d6a84543a420fe2f9">cdn_enabled</a> = False</td></tr>
@@ -779,6 +785,50 @@ Properties</h2></td></tr>
 <p>Fetches the object from storage, and writes it to the specified directory. </p>
 <p>The directory must exist before calling this method.</p>
 <p>If the object name represents a nested folder structure, such as "foo/bar/baz.txt", that folder structure will be created in the target directory by default. If you do not want the nested folders to be created, pass `structure=False` in the parameters. </p>
+
+</div>
+</div>
+<a class="anchor" id="aaef0d2bdb7e63ca8f1f0c619cad80253"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::fetch_dlo" ref="aaef0d2bdb7e63ca8f1f0c619cad80253" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aaef0d2bdb7e63ca8f1f0c619cad80253">fetch_dlo</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>cont</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>chunk_size</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns a list of 2-tuples in the form of (object_name, fetch_generator) representing the components of a multi-part DLO (Dynamic Large Object). </p>
+<p>Each fetch_generator object can be interated to retrieve its contents.</p>
+<p>This is useful when transferring a DLO from one object storage system to another. Examples would be copying DLOs from one region of a provider to another, or copying a DLO from one provider to another.</p>
+<p>Class that takes the generator objects returned by a chunked <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a1c274968ef395c2b88a4d67c24f30f8e" title="Fetches the object from storage.">fetch_object()</a> call and wraps them to behave as file-like objects for uploading. </p>
 
 </div>
 </div>
@@ -1541,8 +1591,8 @@ Properties</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Return a list of StorageObjects representing the pseudo-subdirectories in the specified container. </p>
-<p>You can use the marker and limit params to handle pagination, and the prefix and delimiter params to filter the objects returned. </p>
+<p>Returns a list of StorageObjects representing the pseudo-subdirectories in the specified container. </p>
+<p>You can use the marker and limit params to handle pagination, and the prefix param to filter the objects returned. The 'delimiter' parameter is ignored, as the only meaningful value is '/'. </p>
 
 </div>
 </div>
@@ -2361,6 +2411,12 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>headers</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
           <td class="paramname"><em>extra_info</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
@@ -2375,6 +2431,7 @@ Properties</h2></td></tr>
 <p>Creates a new object in the specified container, and populates it with the given data. </p>
 <p>A StorageObject reference to the uploaded file will be returned, unless 'return_none' is set to True.</p>
 <p>'chunk_size' represents the number of bytes of data to write; it defaults to 65536. It is used only if the the 'data' parameter is an object with a 'read' method; otherwise, it is ignored.</p>
+<p>If you wish to specify additional headers to be passed to the PUT request, pass them as a dict in the 'headers' parameter. It is the developer's responsibility to ensure that any headers are valid; pyrax does no checking.</p>
 <p>'extra_info' is an optional dictionary which will be populated with 'status', 'reason', and 'headers' keys from the underlying swiftclient call. </p>
 
 </div>
@@ -2523,7 +2580,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>content_length</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>content_length</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>headers</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -2538,6 +2601,7 @@ Properties</h2></td></tr>
 <p>If no name is supplied, the file's name will be used. Either a file path or an open file-like object may be supplied. A StorageObject reference to the uploaded file will be returned, unless 'return_none' is set to True.</p>
 <p>You may optionally set the `content_type` and `content_encoding` parameters; pyrax will create the appropriate headers when the object is stored.</p>
 <p>If the size of the file is known, it can be passed as `content_length`.</p>
+<p>If you wish to specify additional headers to be passed to the PUT request, pass them as a dict in the 'headers' parameter. It is the developer's responsibility to ensure that any headers are valid; pyrax does no checking.</p>
 <p>If you wish for the object to be temporary, specify the time it should be stored in seconds in the `ttl` parameter. If this is specified, the object will be deleted after that number of seconds. Returns the size of a file-like object. </p>
 
 </div>
@@ -2674,6 +2738,19 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a295392d2c1465863e97d36dfd19a4b97"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::gen" ref="a295392d2c1465863e97d36dfd19a4b97" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a295392d2c1465863e97d36dfd19a4b97">gen</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a9c57eef25270a48365249a68581a1247"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::get" ref="a9c57eef25270a48365249a68581a1247" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -2693,6 +2770,19 @@ Properties</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aa476a035f5fbe5e4aeb41337529d0740">get_all_containers</a> = <a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a><code> [static]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a943af1103d1f1365d6c7f31b331119bf"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::interval" ref="a943af1103d1f1365d6c7f31b331119bf" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#a943af1103d1f1365d6c7f31b331119bf">interval</a></td>
         </tr>
       </table>
 </div>
@@ -2752,6 +2842,32 @@ Properties</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="aff5b44290b180a195768e1e1a947e1dc"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::processed" ref="aff5b44290b180a195768e1e1a947e1dc" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aff5b44290b180a195768e1e1a947e1dc">processed</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa9e289eddb591991c9bc7321dc5b186b"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::verbose" ref="aa9e289eddb591991c9bc7321dc5b186b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpyrax_1_1cf__wrapper_1_1client_1_1CFClient.html#aa9e289eddb591991c9bc7321dc5b186b">verbose</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <hr/><h2>Property Documentation</h2>
 <a class="anchor" id="a80b9e3606456b3ebde43de9500b1fcbb"></a><!-- doxytag: member="pyrax::cf_wrapper::client::CFClient::http_log_debug" ref="a80b9e3606456b3ebde43de9500b1fcbb" args="" -->
 <div class="memitem">
@@ -2803,7 +2919,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 13 2014 11:03:41 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 4 2014 11:35:59 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

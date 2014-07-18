@@ -5,10 +5,10 @@ import datetime
 import json
 import os
 import random
-import StringIO
 import sys
 import unittest
-import urllib2
+
+from six import StringIO
 
 from mock import MagicMock as Mock
 from mock import patch
@@ -241,28 +241,6 @@ class IdentityTest(unittest.TestCase):
         ret = ep.client_private
         self.assertEqual(ret, clt)
 
-    def test_ep_create_client_obj_store(self):
-        svc = self.service
-        pub = utils.random_unicode()
-        priv = utils.random_unicode()
-        ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
-        rgn = utils.random_unicode().upper()
-        ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
-        vssl = random.choice((True, False))
-        public = random.choice((True, False))
-        sav_gs = pyrax.get_setting
-        pyrax.get_setting = Mock(return_value=vssl)
-        sav_conn = pyrax.connect_to_cloudfiles
-        fake_client = object()
-        pyrax.connect_to_cloudfiles = Mock(return_value=fake_client)
-        ep.service = "object_store"
-        ret = ep._create_client(None, None, public)
-        self.assertEqual(ret, fake_client)
-        pyrax.connect_to_cloudfiles.assert_called_once_with(region=ep.region,
-                public=public, context=ep.identity)
-        pyrax.connect_to_cloudfiles = sav_conn
-        pyrax.get_setting = sav_gs
-
     def test_ep_create_client_compute(self):
         svc = self.service
         pub = utils.random_unicode()
@@ -275,7 +253,8 @@ class IdentityTest(unittest.TestCase):
         sav_gs = pyrax.get_setting
         pyrax.get_setting = Mock(return_value=vssl)
         sav_conn = pyrax.connect_to_cloudservers
-        fake_client = object()
+        fake_client = fakes.FakeClient()
+        fake_client.identity = self.identity
         pyrax.connect_to_cloudservers = Mock(return_value=fake_client)
         ep.service = "compute"
         ret = ep._create_client(None, None, public)
@@ -443,6 +422,21 @@ class IdentityTest(unittest.TestCase):
         ret = ident.get_client(svc, region)
         self.assertEqual(ret, clt)
 
+    @patch("pyrax.base_identity.BaseIdentity.get_client")
+    def test_get_client_rax(self, mock_get_client):
+        from pyrax.cloudnetworks import CloudNetworkClient
+        ident = self.rax_identity_class()
+        region = utils.random_unicode()
+        service = "networks"
+        ident.get_client(service, region)
+        mock_get_client.assert_called_with("compute", region, public=True,
+                cached=True, client_class=CloudNetworkClient)
+        # Check with any other service
+        service = utils.random_unicode()
+        ident.get_client(service, region)
+        mock_get_client.assert_called_with(service, region, public=True,
+                cached=True, client_class=None)
+
     def test_get_client_unauthenticated(self):
         ident = self.identity
         ident.authenticated = False
@@ -473,9 +467,11 @@ class IdentityTest(unittest.TestCase):
         ident.services[svc].endpoints = {region: ep}
         ret = ident.get_client(svc, region, public=False)
         self.assertEqual(ret, clt)
-        ep._get_client.assert_called_once_with(public=False)
+        ep._get_client.assert_called_once_with(cached=True, public=False,
+                client_class=None)
 
-    def test_get_client_no_cache(self):
+    @patch("pyrax.client_class_for_service")
+    def test_get_client_no_cache(self, mock_ccfs):
         ident = self.identity
         ident.authenticated = True
         svc = "fake"
@@ -484,13 +480,13 @@ class IdentityTest(unittest.TestCase):
         priv = utils.random_unicode()
         ep_dict = {"publicURL": pub, "privateURL": priv, "tenantId": "aa"}
         rgn = "FOO"
-        clt = fakes.FakeClient()
+        clt_class = fakes.FakeClient
         ep = fakes.FakeEndpoint(ep_dict, svc, rgn, self.identity)
-        ep.get_new_client = Mock(return_value=clt)
+        mock_ccfs.return_value = clt_class
         ident.services[svc].endpoints = {region: ep}
         ret = ident.get_client(svc, region, cached=False)
-        self.assertEqual(ret, clt)
-        ep.get_new_client.assert_called_once_with(public=True)
+        self.assertTrue(isinstance(ret, clt_class))
+        mock_ccfs.assert_called_once_with(svc)
 
     def test_get_client_no_client(self):
         ident = self.identity
@@ -730,10 +726,27 @@ class IdentityTest(unittest.TestCase):
         self.assertRaises(exc.AuthenticationFailed, ident.authenticate)
         pyrax.http.request = savrequest
 
+    def test_authenticate_backwards_compatibility_connect_param(self):
+        savrequest = pyrax.http.request
+        fake_resp = fakes.FakeIdentityResponse()
+        fake_body = fakes.fake_identity_response
+        pyrax.http.request = Mock(return_value=(fake_resp, fake_body))
+        for cls in self.id_classes.values():
+            ident = cls()
+            if cls is self.keystone_identity_class:
+                # Necessary for testing to avoid NotImplementedError.
+                utils.add_method(ident, lambda self: "", "_get_auth_endpoint")
+            ident.authenticate(connect=False)
+        pyrax.http.request = savrequest
+
     def test_rax_endpoints(self):
         ident = self.rax_identity_class()
+        sav = pyrax.get_setting("auth_endpoint")
+        fake_ep = utils.random_unicode()
+        pyrax.set_setting("auth_endpoint", fake_ep)
         ep = ident._get_auth_endpoint()
-        self.assertEqual(ep, rax_identity.AUTH_ENDPOINT)
+        self.assertEqual(ep, fake_ep)
+        pyrax.set_setting("auth_endpoint", sav)
 
     def test_auth_token(self):
         for cls in self.id_classes.values():
@@ -861,7 +874,7 @@ class IdentityTest(unittest.TestCase):
         ident.http_log_debug = True
         uri = "https://%s/%s" % (utils.random_ascii(), utils.random_ascii())
         sav_stdout = sys.stdout
-        out = StringIO.StringIO()
+        out = StringIO()
         sys.stdout = out
         utils.add_method(ident, lambda self: "", "_get_auth_endpoint")
         dkv = utils.random_ascii()
@@ -1254,6 +1267,7 @@ class IdentityTest(unittest.TestCase):
         sav_setting = pyrax.get_setting
         pyrax.get_setting = Mock(return_value=None)
         self.assertRaises(exc.EndpointNotDefined, ident._get_auth_endpoint)
+        pyrax.get_setting = sav_setting
 
     def test_get_token(self):
         for cls in self.id_classes.values():

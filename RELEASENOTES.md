@@ -1,5 +1,61 @@
 # Release Notes for pyrax
 
+### 2014.07.14 - Version 1.9.0
+
+  - Cloud Files / Swift
+    - Removed dependency on python-swiftclient
+    - Ensured that URIs are properly encoded and quoted.
+    - Improved verbose output for sync_folder_to_container().
+    - CDN-related attributes were sometimes not initialized correctly.
+      GitHub #399 and #423
+    - Fixed case where passing async=True to bulk_delete() was ignored.
+      GitHub #398
+
+  - General
+    - Fixed case where envronment variables are improperly ignored.
+    - Fixed missing 'connect' param in identity authenticate().
+    - Added support for different auth_endpoint values when using Rackspace
+      authentication.
+
+  - Cloud Servers / Nova 
+    - Load extenstions already installed in the local novaclient. GitHub #425
+    - Made sure that 'personality' files are properly base-64 encoded.
+
+  - Cloud Images / Glance
+    - Added the find_images_by_name() method to list images by case-insensitive
+      partial name matches.
+
+  - Autoscale
+    - Updated update_launch_config(). The 'flavorRef' variable was being
+      incorrectly set to None.
+    - Fixed 400 error when not including a personality file value.
+
+  - Cloud Networks
+    - The networks client was not being returned in cases where novaclient had
+      already been created, due to incorrect caching of clients. GitHub #406
+
+  - Cloud Load Balancers
+    - Made get_stats() call available from the LB. GitHub #394
+
+###2014.06.04 - Version 1.8.2
+
+  - General
+    - Changed copyright notices to match the standard by Rackspace Legal.
+    - Clear old api_key values when re-authenticating. GitHub #383
+
+  - Cloud Files
+    - Fixes issue with non-CDN containers. GitHub #254
+    - Fixed the subdir listing for Cloud Files. GitHub #342
+    - Added a method to fetch DLOs from object storage.
+    - Added option for specifying headers. GitHub #374
+
+  - Cloud Monitoring
+    - Updated the code to use the pyrax.http module.
+
+  - Cloud Networks
+    - Added special handling for RAX networks. GitHub #381
+
+
 ###2014.05.13 - Version 1.8.1
   - General
     - Restored module-level regions and services attributes. GitHub #371
@@ -12,8 +68,8 @@
     - Fixed service catalog parsing. GitHub #361
 
   - Cloud Files
-    - Added aliases to make Cloud Files method names more consistent. GitHub
-      #373
+    - Added aliases to make Cloud Files method names more consistent.
+      GitHub #373
     - Added missing limit/marker parameters. GitHub #349
     - Added code to check for CDN before making CDN calls.
     - Made the meta prefixes read-only. GitHub #365
