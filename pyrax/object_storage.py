@@ -3241,13 +3241,12 @@ class BulkDeleter(threading.Thread):
     """
     Threading class to allow for bulk deletion of objects from a container.
     """
-    completed = False
-    results = None
-
     def __init__(self, client, container, object_names):
         self.client = client
         self.container = container
         self.object_names = object_names
+        self.completed = False
+        self.results = None
         threading.Thread.__init__(self)
 
 
