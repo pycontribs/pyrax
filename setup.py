@@ -23,6 +23,10 @@ version = vmatch.groups()[0]
 # Set to another value when cutting official release RPMS, then change back to
 # zero for the next development cycle
 release = '0'
+# At the moment we are doing this in a fork so every release is strictly speaking
+# a snapshot.  Set this to false _and_ set above release to a non-zero value to
+# get short "normal" release strings
+snapshot_release = True
 
 class sdist(_sdist):
     """ custom sdist command, to prep pyrax.spec file """
@@ -37,10 +41,12 @@ class sdist(_sdist):
                                     stdout=subprocess.PIPE).communicate()[0].strip()
         date = time.strftime("%Y%m%d%H%M%S", time.gmtime())
         git_release = "%sgit%s" % (date, git_head)
+        shortdate = time.strftime("%Y%m%d", time.gmtime())
+        snapshot_git_release = "%sgit%s" % (shortdate, git_head)
 
         # Expand macros in pyrax.spec.in
-        spec_in = open('pyrax.spec.in', 'r')
-        spec = open('pyrax.spec', 'w')
+        spec_in = open('python-pyrax.spec.in', 'r')
+        spec = open('python-pyrax.spec', 'w')
         for line in spec_in.xreadlines():
             if "@VERSION@" in line:
                 line = line.replace("@VERSION@", version)
@@ -48,6 +54,8 @@ class sdist(_sdist):
                 # If development release, include date+githash in %{release}
                 if release.startswith('0'):
                     release += '.' + git_release
+                elif snapshot_release:
+                     release += '.' + snapshot_git_release
                 line = line.replace("@RELEASE@", release)
             spec.write(line)
         spec_in.close()

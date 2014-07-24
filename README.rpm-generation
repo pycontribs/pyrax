@@ -1,0 +1,43 @@
+* Notes related to RPM generation
+
+You can generate an RPM from the upstream pyrax source tree by running:
+
+$ make rpms
+
+This will generate a distribution tarball by running:
+
+$ python setup.py sdist
+
+Code within setup.py creates a SPEC file with the version and release
+replaced from the SPEC template "python-pyrax.spec.in"
+
+Details of how the release string is generated can be found in setup.py.
+
+Generally speaking, during development the release string should be "0".
+This allows frequent rebuilds of the RPMs and will generate a timestamp
+based release that is always "newer" for more recent rebuilds.
+
+When doing a formal upstream release the "release" string can be set
+to any non-zero value.  This will turn off the generation of additional
+time and git-based release string content.
+
+* Snapshot Packages
+
+If you need to generate an RPM that is not based on an entirely unmodified
+upstream source release, you should set "snapshot_release" to True.
+This will generate a release suffix based on the date and git hash that
+meets the Fedora package guidelines presented here:
+
+http://fedoraproject.org/wiki/Packaging:NamingGuidelines#Snapshot_packages
+
+(Note from imcleod@redhat.com - Monday, July 28, 2014
+
+We are working to get pyrax into the Fedora package set.  Our submission
+is in bugzilla here:
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1123044
+
+Until we can coordinate releases regularly with upstream, I will be doing
+snapshot package generation as described above.  I will fork upstream at
+the point of release and then set the RPM version and release details as
+needed to generate a package.)
