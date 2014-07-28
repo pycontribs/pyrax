@@ -15,7 +15,6 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-mock
 BuildRequires:  python2-devel
 Requires:       python-novaclient >= 2.13.0
-Requires:       python-httplib2
 Requires:       python-keyring
 
 
