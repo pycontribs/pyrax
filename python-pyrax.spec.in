@@ -42,6 +42,12 @@ rm -rf $RPM_BUILD_ROOT
 %{python2_sitelib}/*
 
 %changelog
+* Mon Jul 28 2014 Ian McLeod <imcleod@redhat.com> - 1.9.0-2
+- Remove obsolete httplib requirement from SPEC file
+- Remove #! execution headers for non-executable components [BZ1123044]
+- add inline license for slugify() function to satisfy 3-clause BSD requirements from django [BZ1123044]
+- misc additional SPEC change to comply with Fedora package guidelines [BZ1123044]
+
 * Thu Jul 24 2014 Ian McLeod <imcleod@redhat.com> - 1.9.0-1
 - Pull in upstream 1.9.0 release
 

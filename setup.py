@@ -22,11 +22,11 @@ version = vmatch.groups()[0]
 # When set to '0' this expands in the RPM SPEC file to a unique date-base string
 # Set to another value when cutting official release RPMS, then change back to
 # zero for the next development cycle
-release = '1'
+release = '2'
 # At the moment we are doing this in a fork so every release is strictly speaking
 # a snapshot.  Set this to false _and_ set above release to a non-zero value to
 # get short "normal" release strings
-snapshot_release = True
+snapshot_release = False
 
 class sdist(_sdist):
     """ custom sdist command, to prep pyrax.spec file """
