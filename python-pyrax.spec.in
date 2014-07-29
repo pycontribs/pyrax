@@ -1,3 +1,9 @@
+# The python2 defines are missing in RHEL6
+%if 0%{?rhel} == 6
+%define __python2 %{__python}
+%define python2_sitelib %{python_sitelib}
+%endif
+
 Name:           python-pyrax
 Version:        @VERSION@
 Release:        @RELEASE@%{?dist}
@@ -42,6 +48,9 @@ rm -rf $RPM_BUILD_ROOT
 %{python2_sitelib}/*
 
 %changelog
+* Tue Jul 29 2014 Ian McLeod <imcleod@redhat.com> - 1.9.0-3
+- SPEC change to add missing macros for EPEL 6 builds
+
 * Mon Jul 28 2014 Ian McLeod <imcleod@redhat.com> - 1.9.0-2
 - Remove obsolete httplib requirement from SPEC file
 - Remove #! execution headers for non-executable components [BZ1123044]
