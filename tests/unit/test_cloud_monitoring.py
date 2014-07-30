@@ -5,7 +5,7 @@ import datetime
 import random
 import unittest
 
-from mock import patch
+from mock import patch, call
 from mock import MagicMock as Mock
 
 import pyrax.cloudnetworks
@@ -1038,10 +1038,29 @@ class CloudMonitoringTest(unittest.TestCase):
 
     def test_clt_list_entities(self):
         clt = self.client
-        ents = utils.random_unicode()
-        clt._entity_manager.list = Mock(return_value=ents)
+        ents_single = [ utils.random_unicode(), utils.random_unicode() ]
+        
+        # list should return these with two calls
+        clt._entity_manager.list = Mock(return_value = ents_single)
+        # get_next_marker should return results on two calls
+        clt._entity_manager.get_next_marker = Mock(side_effect=['abc', None])
+        # run the tested method
         ret = clt.list_entities()
-        clt._entity_manager.list.assert_called_once_with()
+
+        # assert that the list calls were as expected
+        expected_calls = [call(limit = 100, marker = None), 
+                call(limit = 100, marker = 'abc')]
+        clt._entity_manager.list.assert_has_calls(expected_calls)
+
+        # assert that the get_next_marker calls were as expected
+        expected_calls = [call(), call()]
+        clt._entity_manager.get_next_marker.assert_has_calls(expected_calls)
+
+        
+        # assert that the result is as expected
+        ents = []
+        ents.extend(ents_single)
+        ents.extend(ents_single)
         self.assertEqual(ret, ents)
 
     def test_clt_get_entity(self):
