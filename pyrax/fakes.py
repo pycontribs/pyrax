@@ -472,7 +472,7 @@ class FakeCloudNetwork(CloudNetwork):
         info["label"] = label
         super(FakeCloudNetwork, self).__init__(manager=None, info=info, *args,
                 **kwargs)
-        self.id = uuid.uuid4()
+        self.id = uuid.uuid4().hex
 
 
 class FakeAutoScaleClient(AutoScaleClient):
