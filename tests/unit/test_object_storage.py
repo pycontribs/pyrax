@@ -1279,7 +1279,7 @@ class ObjectStorageTest(unittest.TestCase):
         name2 = utils.random_ascii()
         sdir = utils.random_ascii()
         objs = [{"name": name1, "content_type": "fake"},
-                {"name": name2, "subdir": sdir, "content_type": "fake"}]
+                {"subdir": sdir}]
         cont.list = Mock(return_value=objs)
         marker = utils.random_unicode()
         limit = utils.random_unicode()

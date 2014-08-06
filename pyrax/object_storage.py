@@ -1321,8 +1321,6 @@ class ContainerManager(BaseManager):
         objs = mthd(marker=marker, limit=limit, prefix=prefix, delimiter="/",
                 return_raw=True)
         sdirs = [obj for obj in objs if "subdir" in obj]
-        for sdir in sdirs:
-            sdir["name"] = sdir["subdir"]
         mgr = container.object_manager
         return [StorageObject(mgr, sdir) for sdir in sdirs]
 
@@ -1557,6 +1555,10 @@ class StorageObject(BaseResource):
     """
     def __init__(self, manager, info, *args, **kwargs):
         self._container = None
+        if ("name" not in info) and ("subdir" in info):
+            # Subdir dicts lack a 'name' and 'content_type' key
+            info["name"] = info["subdir"]
+            info["content_type"] = "pseudo/subdirectory"
         return super(StorageObject, self).__init__(manager, info, *args,
                 **kwargs)
 
