@@ -2028,7 +2028,7 @@ class ObjectStorageTest(unittest.TestCase):
             ret = mgr.fetch(obj, include_meta=include_meta,
                     chunk_size=chunk_size, size=size, extra_info=extra_info)
             mgr.api.method_get.assert_called_once_with(exp_uri,
-                    headers=exp_headers)
+                    headers=exp_headers, raw_content=True)
             if include_meta:
                 self.assertEqual(ret, (hdrs, resp_body))
             else:

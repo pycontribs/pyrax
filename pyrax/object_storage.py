@@ -1968,7 +1968,8 @@ class StorageObjectManager(BaseManager):
         headers = {}
         if size:
             headers = {"Range": "bytes=0-%s" % size}
-        resp, resp_body = self.api.method_get(uri, headers=headers)
+        resp, resp_body = self.api.method_get(uri, headers=headers,
+                raw_content=True)
         if include_meta:
             meta_resp, meta_body = self.api.method_head(uri)
             return (meta_resp.headers, resp_body)
@@ -1986,7 +1987,8 @@ class StorageObjectManager(BaseManager):
         while True:
             endpos = min(obj_size, pos + chunk_size)
             headers = {"Range": "bytes=%s-%s" % (pos, endpos)}
-            resp, resp_body = self.api.method_get(uri, headers=headers)
+            resp, resp_body = self.api.method_get(uri, headers=headers,
+                    raw_content=True)
             pos = endpos
             if not resp_body:
                 # End of file
