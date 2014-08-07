@@ -2181,6 +2181,15 @@ class StorageClient(BaseClient):
     def __init__(self, *args, **kwargs):
         # Constants used in metadata headers
         super(StorageClient, self).__init__(*args, **kwargs)
+        self._sync_summary = {"total": 0,
+                "uploaded": 0,
+                "ignored": 0,
+                "older": 0,
+                "duplicate": 0,
+                "failed": 0,
+                "failure_reasons": [],
+                "deleted": 0,
+                }
         self._cached_temp_url_key = None
         self.cdn_management_url = ""
         self.method_dict = {
@@ -3011,12 +3020,35 @@ class StorageClient(BaseClient):
             log.info("Loading remote object list (prefix=%s)", object_prefix)
         data = cont.get_objects(prefix=object_prefix, full_listing=True)
         self._remote_files = dict((d.name, d) for d in data)
+        self._sync_summary = {"total": 0,
+                "uploaded": 0,
+                "ignored": 0,
+                "older": 0,
+                "duplicate": 0,
+                "failed": 0,
+                "failure_reasons": [],
+                "deleted": 0,
+                }
         self._sync_folder_to_container(folder_path, cont, prefix="",
                 delete=delete, include_hidden=include_hidden, ignore=ignore,
                 ignore_timestamps=ignore_timestamps,
                 object_prefix=object_prefix, verbose=verbose)
         # Unset the _remote_files
         self._remote_files = None
+        if verbose:
+            # Log the summary
+            summary = self._sync_summary
+            log.info("Folder sync completed at %s" % time.ctime())
+            log.info("  Total files processed: %s" % summary["total"])
+            log.info("  Number Uploaded: %s" % summary["uploaded"])
+            log.info("  Number Ignored: %s" % summary["ignored"])
+            log.info("  Number Skipped (older): %s" % summary["older"])
+            log.info("  Number Skipped (dupe): %s" % summary["duplicate"])
+            log.info("  Number Deleted: %s" % summary["deleted"])
+            log.info("  Number Failed: %s" % summary["failed"])
+            if summary["failed"]:
+                for reason in summary["failure_reasons"]:
+                    log.info("  Reason: %s" % reason)
 
 
     def _sync_folder_to_container(self, folder_path, container, prefix, delete,
@@ -3032,6 +3064,7 @@ class StorageClient(BaseClient):
             ignore.append(".*")
         for fname in fnames:
             if utils.match_pattern(fname, ignore):
+                self._sync_summary["ignored"] += 1
                 continue
             pth = os.path.join(folder_path, fname)
             if os.path.isdir(pth):
@@ -3066,17 +3099,28 @@ class StorageClient(BaseClient):
                     local_mod_str = local_mod.isoformat()
                     if obj_time_str >= local_mod_str:
                         # Remote object is newer
+                        self._sync_summary["older"] += 1
                         if verbose:
                             log.info("%s NOT UPLOADED because remote object is "
                                     "newer", fullname_with_prefix)
                             log.info("  Local: %s   Remote: %s" % (
                                     local_mod_str, obj_time_str))
                         continue
-                container.upload_file(pth, obj_name=fullname_with_prefix,
-                    etag=local_etag, return_none=True)
-                if verbose:
-                    log.info("%s UPLOADED", fullname_with_prefix)
+                try:
+                    container.upload_file(pth, obj_name=fullname_with_prefix,
+                        etag=local_etag, return_none=True)
+                    self._sync_summary["uploaded"] += 1
+                    if verbose:
+                        log.info("%s UPLOADED", fullname_with_prefix)
+                except Exception as e:
+                    # Record the failure, and move on
+                    self._sync_summary["failed"] += 1
+                    self._sync_summary["failure_reasons"].append("%s" % e)
+                    if verbose:
+                        log.error("%s UPLOAD FAILED. Exception: %s" %
+                                (fullname_with_prefix, e))
             else:
+                self._sync_summary["duplicate"] += 1
                 if verbose:
                     log.info("%s NOT UPLOADED because it already exists",
                             fullname_with_prefix)
@@ -3093,6 +3137,7 @@ class StorageClient(BaseClient):
                 full_listing=True))
         localnames = set(self._local_files)
         to_delete = list(objnames.difference(localnames))
+        self._sync_summary["deleted"] += len(to_delete)
         # We don't need to wait around for this to complete. Store the thread
         # reference in case it is needed at some point.
         self._thread = self.bulk_delete(cont, to_delete, async=True)

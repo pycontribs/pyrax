@@ -3012,11 +3012,77 @@ class ObjectStorageTest(unittest.TestCase):
                 object_prefix=object_prefix, verbose=verbose)
 
     @patch("logging.Logger.info")
+    def test_clt_sync_folder_to_container_failures(self, mock_log):
+        clt = self.client
+        cont = self.container
+        folder_path = utils.random_unicode()
+        delete = utils.random_unicode()
+        include_hidden = utils.random_unicode()
+        ignore = utils.random_unicode()
+        ignore_timestamps = utils.random_unicode()
+        object_prefix = utils.random_unicode()
+        verbose = utils.random_unicode()
+        num_objs = random.randint(1, 3)
+        ctype = "text/fake"
+        objs = [StorageObject(cont.object_manager,
+                {"name": "obj%s" % num, "content_type": ctype, "bytes": 42})
+                for num in range(num_objs)]
+        cont.get_objects = Mock(return_value=objs)
+        reason = utils.random_unicode()
+
+        def mock_fail(*args, **kwargs):
+            clt._sync_summary["failed"] += 1
+            clt._sync_summary["failure_reasons"].append(reason)
+
+        clt._sync_folder_to_container = Mock(side_effect=mock_fail)
+        clt.sync_folder_to_container(folder_path, cont, delete=delete,
+                include_hidden=include_hidden, ignore=ignore,
+                ignore_timestamps=ignore_timestamps,
+                object_prefix=object_prefix, verbose=verbose)
+        clt._sync_folder_to_container.assert_called_once_with(folder_path, cont,
+                prefix="", delete=delete, include_hidden=include_hidden,
+                ignore=ignore, ignore_timestamps=ignore_timestamps,
+                object_prefix=object_prefix, verbose=verbose)
+
+    @patch("logging.Logger.info")
     @patch("os.listdir")
     def test_clt_under_sync_folder_to_container(self, mock_listdir, mock_log):
         clt = self.client
         cont = self.container
         cont.upload_file = Mock()
+        clt._local_files = []
+        rem_obj = StorageObject(cont.object_manager, {"name": "test2",
+                "last_modified": "2014-01-01T00:00:00.000001", "bytes": 42,
+                "content_type": "text/fake", "hash": "FAKE"})
+        clt._remote_files = {"test2": rem_obj}
+        clt._delete_objects_not_in_list = Mock()
+        prefix = ""
+        delete = True
+        include_hidden = False
+        ignore = "fake*"
+        ignore_timestamps = False
+        object_prefix = ""
+        verbose = utils.random_unicode()
+        with utils.SelfDeletingTempDirectory() as folder_path:
+            # Create a few files
+            fnames = ["test1", "test2", "test3", "fake1", "fake2"]
+            for fname in fnames:
+                pth = os.path.join(folder_path, fname)
+                open(pth, "w").write("faketext")
+            mock_listdir.return_value = fnames
+            clt._sync_folder_to_container(folder_path, cont, prefix, delete,
+                    include_hidden, ignore, ignore_timestamps, object_prefix,
+                    verbose)
+        self.assertEqual(cont.upload_file.call_count, 3)
+
+    @patch("logging.Logger.info")
+    @patch("logging.Logger.error")
+    @patch("os.listdir")
+    def test_clt_under_sync_folder_to_container_upload_fail(self, mock_listdir,
+            mock_log_error, mock_log_info):
+        clt = self.client
+        cont = self.container
+        cont.upload_file = Mock(side_effect=Exception(""))
         clt._local_files = []
         rem_obj = StorageObject(cont.object_manager, {"name": "test2",
                 "last_modified": "2014-01-01T00:00:00.000001", "bytes": 42,
