@@ -1855,9 +1855,8 @@ class StorageObjectManager(BaseManager):
                     content_length, etag, chunked, chunk_size, headers)
         else:
             if isinstance(file_or_path, file):
-                self._upload(obj_name, file_or_path, content_type,
-                        content_encoding, content_length, etag, False,
-                        headers)
+                self._upload(obj_name, file_or_path, content_type, content_encoding,
+                        content_length, etag, False, chunk_size, headers)
             else:
                 # Need to wrap the call in a context manager
                 with open(file_or_path, "rb") as ff:
