@@ -505,7 +505,6 @@ class CloudDNSTest(unittest.TestCase):
         dom = self.domain
         resp_body = {'Something': 'here'}
         clt.method_get = Mock(return_value=({}, resp_body))
-#        uri = "/domains/%s/subdomains" % utils.get_id(dom)
         uri = "/domains?name=%s&limit=5" % dom.name
         clt.list_subdomains(dom, limit=5)
         clt.method_get.assert_called_once_with(uri)
@@ -651,13 +650,13 @@ class CloudDNSTest(unittest.TestCase):
         mgr = clt._manager
         dom = self.domain
         nm = utils.random_unicode()
-        rec = fakes.FakeDNSRecord(mgr, {"id": utils.random_unicode(),
-                "name": nm})
+        rec_id = utils.random_unicode()
+        rec = fakes.FakeDNSRecord(mgr, {"id": rec_id, "name": nm})
         ttl = 9999
         data = "0.0.0.0"
         mgr._async_call = Mock(return_value=({}, {}))
-        uri = "/domains/%s/records/%s" % (utils.get_id(dom), utils.get_id(rec))
-        req_body = {"name": nm, "data": data, "ttl": ttl}
+        uri = "/domains/%s/records" % utils.get_id(dom)
+        req_body = {"id": rec_id, "name": nm, "data": data, "ttl": ttl}
         clt.update_record(dom, rec, data=data, ttl=ttl)
         mgr._async_call.assert_called_once_with(uri, method="PUT",
                 body=req_body, error_class=exc.DomainRecordUpdateFailed,
