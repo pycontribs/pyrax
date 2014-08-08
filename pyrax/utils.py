@@ -589,14 +589,12 @@ def get_name(name_or_obj):
         raise exc.MissingName(name_or_obj)
 
 
-def params_to_dict(params, dct, local_dict):
+def params_to_dict(params, dct):
     """
-    Given a set of optional parameter names, constructs a dictionary with the
-    parameter name as the key, and the value for that key in the local_dict as
-    the value, for all non-None values.
+    Updates the 'dct' dictionary with the 'params' dictionary, filtering out
+    all those whose param value is None.
     """
-    for param in params:
-        val = local_dict.get(param)
+    for param, val in params.items():
         if val is None:
             continue
         dct[param] = val
