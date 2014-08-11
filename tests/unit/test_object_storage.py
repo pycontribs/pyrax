@@ -1869,6 +1869,55 @@ class ObjectStorageTest(unittest.TestCase):
             else:
                 self.assertEqual(ret, get_resp)
 
+    def test_sobj_mgr_create_file_like_obj(self):
+        cont = self.container
+        mgr = cont.object_manager
+        obj_name = utils.random_unicode()
+        content_type = utils.random_unicode()
+        etag = utils.random_unicode()
+        content_encoding = utils.random_unicode()
+        content_length = utils.random_unicode()
+        ttl = utils.random_unicode()
+        chunked = utils.random_unicode()
+        chunk_size = utils.random_unicode()
+        key = utils.random_unicode()
+        val = utils.random_unicode()
+        metadata = {key: val}
+        headers = {"X-Delete-After": ttl}
+        massaged = _massage_metakeys(metadata, OBJECT_META_PREFIX)
+        headers.update(massaged)
+
+        class Foo:
+            pass
+
+        file_like_object = Foo()
+        file_like_object.read = lambda: utils.random_unicode()
+
+        for return_none in (True, False):
+            mgr._upload = Mock()
+            get_resp = utils.random_unicode()
+            mgr.get = Mock(return_value=get_resp)
+
+            ret = mgr.create(file_like_object, obj_name=obj_name,
+                    content_type=content_type, etag=etag,
+                    content_encoding=content_encoding,
+                    content_length=content_length, ttl=ttl,
+                    chunked=chunked, metadata=metadata,
+                    chunk_size=chunk_size, headers=headers,
+                    return_none=return_none)
+
+            self.assertEqual(mgr._upload.call_count, 1)
+            call_args = list(mgr._upload.call_args)[0]
+
+            for param in (obj_name, content_type, content_encoding,
+                    content_length, etag, False, headers):
+                self.assertTrue(param in call_args)
+
+            if return_none:
+                self.assertIsNone(ret)
+            else:
+                self.assertEqual(ret, get_resp)
+
     def test_sobj_mgr_upload(self):
         obj = self.obj
         mgr = obj.manager
