@@ -44,6 +44,7 @@ class BaseManager(object):
     plural_response_key = None
     uri_base = None
     _hooks_map = {}
+    next_marker = None    # provides the next marker for paginated listing
 
 
     def __init__(self, api, resource_class=None, response_key=None,
@@ -57,6 +58,8 @@ class BaseManager(object):
             self.plural_response_key = "%ss" % response_key
         self.uri_base = uri_base
 
+    def get_next_marker(self):
+        return self.next_marker
 
     def list(self, limit=None, marker=None, return_raw=False):
         """
@@ -161,6 +164,11 @@ class BaseManager(object):
         #           unlike other services which just return the list...
         if isinstance(data, dict):
             try:
+                # if it is present, store the next marker for pagination
+                self.next_marker = None
+                if ('metadata' in data):
+                   if ('next_marker' in data['metadata']):
+                       self.next_marker = data['metadata']['next_marker']
                 data = data["values"]
             except KeyError:
                 pass

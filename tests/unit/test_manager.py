@@ -54,6 +54,18 @@ class ManagerTest(unittest.TestCase):
         expected_uri = "/test?limit=%s&marker=%s" % (fake_limit, fake_marker)
         mgr._list.assert_called_once_with(expected_uri, return_raw=False)
 
+    def test_get_next_marker(self):
+        mgr = self.manager
+        marker = random.randint(100, 200)
+        resp_body = Mock()
+        resp_body_data = dict({
+                "values": [ random.randint(10, 20), random.randint(10, 20) ],
+                "metadata": { "next_marker": marker }
+                })
+        resp_body.get = Mock(return_value = resp_body_data)
+        mgr._data_from_response(resp_body)
+        self.assertEqual(mgr.get_next_marker(), marker);
+
     def test_head(self):
         mgr = self.manager
         mgr._head = Mock()

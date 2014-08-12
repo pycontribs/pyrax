@@ -929,8 +929,34 @@ class CloudMonitorClient(BaseClient):
         return resp_body["values"]
 
 
-    def list_entities(self):
-        return self._entity_manager.list()
+    def list_entities(self, page_limit = 100):
+        '''
+        Returns all available entities in a list
+        The 'page_limit' parameter defines how many entities may be
+        requested in one backend api call.
+
+        This may result in multiple requests to the backend API to 
+        gather all entities, depending on total number and page_limit
+        '''
+        result = []
+        finished = False
+        marker = None
+        while not finished:
+            # get next group of entities from the manager
+            req_res = self._entity_manager.list(
+                    limit = page_limit, marker = marker)
+            if (len(req_res) > 0):
+                # elements were returned, so store them and check the marker
+                result.extend(req_res)
+                marker = self._entity_manager.get_next_marker()
+                if (marker == None):
+                    finished = True
+            else:
+                # no elements = end of the list
+                finished = True
+
+        # at this point, result is either an empty list or contains all entities
+        return result
 
 
     def get_entity(self, entity):
