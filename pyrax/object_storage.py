@@ -1854,17 +1854,16 @@ class StorageObjectManager(BaseManager):
             self._upload(obj_name, data, content_type,
                     content_encoding, content_length, etag, chunked,
                     chunk_size, headers)
+        elif hasattr(file_or_path, "read"):
+            self._upload(obj_name, file_or_path, content_type,
+                    content_encoding, content_length, etag, False,
+                    chunk_size, headers)
         else:
-            if isinstance(file_or_path, file):
-                self._upload(obj_name, file_or_path, content_type,
+            # Need to wrap the call in a context manager
+            with open(file_or_path, "rb") as ff:
+                self._upload(obj_name, ff, content_type,
                         content_encoding, content_length, etag, False,
                         chunk_size, headers)
-            else:
-                # Need to wrap the call in a context manager
-                with open(file_or_path, "rb") as ff:
-                    self._upload(obj_name, ff, content_type,
-                            content_encoding, content_length, etag, False,
-                            chunk_size, headers)
         if return_none:
             return
         return self.get(obj_name)

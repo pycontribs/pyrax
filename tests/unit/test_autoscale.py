@@ -114,15 +114,19 @@ class AutoscaleTest(unittest.TestCase):
         networks = utils.random_unicode()
         load_balancers = utils.random_unicode()
         key_name = utils.random_unicode()
+        config_drive = utils.random_unicode()
+        user_data = utils.random_unicode()
         sg.update_launch_config(server_name=server_name, flavor=flavor,
                 image=image, disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers, key_name=key_name)
+                load_balancers=load_balancers, key_name=key_name,
+                config_drive=config_drive, user_data=user_data)
         mgr.update_launch_config.assert_called_once_with(sg,
                 server_name=server_name, flavor=flavor, image=image,
                 disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers, key_name=key_name)
+                load_balancers=load_balancers, key_name=key_name,
+                config_drive=config_drive, user_data=user_data)
 
     def test_update_launch_metadata(self):
         sg = self.scaling_group
@@ -551,7 +555,16 @@ class AutoscaleTest(unittest.TestCase):
         sg.launchConfiguration = {}
         body = {"type": "launch_server",
                 "args": {
-                    "server": key_name,
+                    "server": {
+                        "name": name,
+                        "imageRef": img,
+                        "flavorRef": flv,
+                        "OS-DCF:diskConfig": dconfig,
+                        "networks": networks,
+                        "metadata": metadata,
+                        "key_name": key_name,
+                        "personality": personality,
+                    },
                     "loadBalancers": lbs,
                 },
             }
@@ -1462,15 +1475,19 @@ class AutoscaleTest(unittest.TestCase):
         networks = utils.random_unicode()
         load_balancers = utils.random_unicode()
         key_name = utils.random_unicode()
+        user_data = utils.random_unicode()
+        config_drive = utils.random_unicode()
         clt.update_launch_config(sg, server_name=server_name, flavor=flavor,
                 image=image, disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers, key_name=key_name)
+                load_balancers=load_balancers, key_name=key_name,
+                config_drive=config_drive, user_data=user_data)
         mgr.update_launch_config.assert_called_once_with(sg,
                 server_name=server_name, flavor=flavor, image=image,
                 disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers, key_name=key_name)
+                load_balancers=load_balancers, key_name=key_name,
+                config_drive=config_drive, user_data=user_data)
 
     def test_clt_update_launch_metadata(self):
         clt = fakes.FakeAutoScaleClient()
