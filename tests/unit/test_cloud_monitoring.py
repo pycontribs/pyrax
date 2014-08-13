@@ -16,6 +16,7 @@ from pyrax.cloudmonitoring import CloudMonitorNotification
 from pyrax.cloudmonitoring import CloudMonitorNotificationPlan
 from pyrax.cloudmonitoring import CloudMonitorNotificationType
 from pyrax.cloudmonitoring import CloudMonitorZone
+from pyrax.cloudmonitoring import _PaginationManager
 from pyrax.cloudmonitoring import _params_to_dict
 
 import pyrax.exceptions as exc
@@ -32,6 +33,8 @@ class CloudMonitoringTest(unittest.TestCase):
     def setUp(self):
         self.client = fakes.FakeCloudMonitorClient()
         self.entity = fakes.FakeCloudMonitorEntity()
+        self.check = fakes.FakeCloudMonitorCheck(entity=self.entity)
+        self.check.set_entity(self.entity)
 
     def tearDown(self):
         self.client = None
@@ -53,45 +56,61 @@ class CloudMonitoringTest(unittest.TestCase):
         ent.manager.update_entity.assert_called_once_with(ent, agent=agent,
                 metadata=metadata)
 
+    def test_entity_get_check(self):
+        ent = self.entity
+        ent._check_manager.get = Mock()
+        check = utils.random_unicode()
+        ent.get_check(check)
+        ent._check_manager.get.assert_called_once_with(check)
+
     def test_entity_list_checks(self):
         ent = self.entity
-        ent.manager.list_checks = Mock()
-        ent.list_checks()
-        ent.manager.list_checks.assert_called_once_with(ent)
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = utils.random_unicode()
+        ent._check_manager.list = Mock()
+        ent.list_checks(limit=limit, marker=marker, return_next=return_next)
+        ent._check_manager.list.assert_called_once_with(limit=limit,
+                marker=marker, return_next=return_next)
 
     def test_entity_delete_check(self):
         ent = self.entity
-        ent.manager.delete_check = Mock()
+        ent._check_manager.delete = Mock()
         check = utils.random_unicode()
         ent.delete_check(check)
-        ent.manager.delete_check.assert_called_once_with(ent, check)
+        ent._check_manager.delete.assert_called_once_with(check)
 
     def test_entity_list_metrics(self):
         ent = self.entity
-        ent.manager.list_metrics = Mock()
-        check = utils.random_unicode()
-        ent.list_metrics(check)
-        ent.manager.list_metrics.assert_called_once_with(ent, check)
+        chk = self.check
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = utils.random_unicode()
+        chk.list_metrics = Mock()
+        ent.list_metrics(chk, limit=limit, marker=marker,
+                return_next=return_next)
+        chk.list_metrics.assert_called_once_with(limit=limit, marker=marker,
+                return_next=return_next)
 
     def test_entity_get_metric_data_points(self):
         ent = self.entity
-        ent.manager.get_metric_data_points = Mock()
-        check = utils.random_unicode()
+        chk = self.check
+        chk.get_metric_data_points = Mock()
         metric = utils.random_unicode()
         start = utils.random_unicode()
         end = utils.random_unicode()
         points = utils.random_unicode()
         resolution = utils.random_unicode()
         stats = utils.random_unicode()
-        ent.get_metric_data_points(check, metric, start, end, points=points,
+        ent.get_metric_data_points(chk, metric, start, end, points=points,
                 resolution=resolution, stats=stats)
-        ent.manager.get_metric_data_points.assert_called_once_with(ent, check,
-                metric, start, end, points=points, resolution=resolution,
-                stats=stats)
+        chk.get_metric_data_points.assert_called_once_with(metric, start, end,
+                points=points, resolution=resolution, stats=stats)
 
     def test_entity_create_alarm(self):
         ent = self.entity
-        ent.manager.create_alarm = Mock()
+        mgr = ent._alarm_manager
+        mgr.create = Mock()
         check = utils.random_unicode()
         np = utils.random_unicode()
         criteria = utils.random_unicode()
@@ -101,13 +120,13 @@ class CloudMonitoringTest(unittest.TestCase):
         metadata = utils.random_unicode()
         ent.create_alarm(check, np, criteria=criteria, disabled=disabled,
                 label=label, name=name, metadata=metadata)
-        ent.manager.create_alarm.assert_called_once_with(ent, check, np,
-                criteria=criteria, disabled=disabled, label=label, name=name,
-                metadata=metadata)
+        mgr.create.assert_called_once_with(check, np, criteria=criteria,
+                disabled=disabled, label=label, name=name, metadata=metadata)
 
     def test_entity_update_alarm(self):
         ent = self.entity
-        ent.manager.update_alarm = Mock()
+        mgr = ent._alarm_manager
+        mgr.update = Mock()
         alarm = utils.random_unicode()
         criteria = utils.random_unicode()
         disabled = random.choice((True, False))
@@ -116,34 +135,66 @@ class CloudMonitoringTest(unittest.TestCase):
         metadata = utils.random_unicode()
         ent.update_alarm(alarm, criteria=criteria, disabled=disabled,
                 label=label, name=name, metadata=metadata)
-        ent.manager.update_alarm.assert_called_once_with(ent, alarm,
-                criteria=criteria, disabled=disabled, label=label, name=name,
-                metadata=metadata)
+        mgr.update.assert_called_once_with(alarm, criteria=criteria,
+                disabled=disabled, label=label, name=name, metadata=metadata)
 
     def test_entity_list_alarms(self):
         ent = self.entity
-        ent.manager.list_alarms = Mock()
-        ent.list_alarms()
-        ent.manager.list_alarms.assert_called_once_with(ent)
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = utils.random_unicode()
+        ent._alarm_manager.list = Mock()
+        ent.list_alarms(limit=limit, marker=marker, return_next=return_next)
+        ent._alarm_manager.list.assert_called_once_with(limit=limit,
+                marker=marker, return_next=return_next)
 
     def test_entity_get_alarm(self):
         ent = self.entity
-        ent.manager.get_alarm = Mock()
+        mgr = ent._alarm_manager
+        mgr.get = Mock()
         alarm = utils.random_unicode()
         ent.get_alarm(alarm)
-        ent.manager.get_alarm.assert_called_once_with(ent, alarm)
+        mgr.get.assert_called_once_with(alarm)
 
     def test_entity_delete_alarm(self):
         ent = self.entity
-        ent.manager.delete_alarm = Mock()
+        mgr = ent._alarm_manager
         alarm = utils.random_unicode()
+        mgr.delete = Mock()
         ent.delete_alarm(alarm)
-        ent.manager.delete_alarm.assert_called_once_with(ent, alarm)
+        mgr.delete.assert_called_once_with(alarm)
 
     def test_entity_name(self):
         ent = self.entity
         ent.label = utils.random_unicode()
         self.assertEqual(ent.label, ent.name)
+
+    @patch("pyrax.manager.BaseManager.list")
+    def test_pagination_mgr_list(self, mock_list):
+        pm = _PaginationManager(self.client)
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = False
+        ents = utils.random_unicode()
+        mock_list.return_value = ents
+        ret = pm.list(limit=limit, marker=marker, return_next=return_next)
+        mock_list.assert_called_once_with(limit=limit, marker=marker)
+        self.assertEqual(ret, ents)
+
+    @patch("pyrax.manager.BaseManager.list")
+    def test_pagination_mgr_list_next(self, mock_list):
+        pm = _PaginationManager(self.client)
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = True
+        ents = utils.random_unicode()
+        next_marker = utils.random_unicode()
+        meta = [{"next_marker": next_marker}]
+        mock_list.return_value = (ents, meta)
+        ret = pm.list(limit=limit, marker=marker, return_next=return_next)
+        mock_list.assert_called_once_with(limit=limit, marker=marker,
+                other_keys="metadata")
+        self.assertEqual(ret, (ents, next_marker))
 
     def test_notif_manager_create(self):
         clt = self.client
@@ -153,7 +204,7 @@ class CloudMonitoringTest(unittest.TestCase):
         fake_resp = fakes.FakeResponse()
         fake_resp.headers = {"x-object-id": obj_id}
 
-        clt.method_post = Mock(return_value=(fake_resp, None))
+        mgr.api.method_post = Mock(return_value=(fake_resp, None))
         mgr.get = Mock()
         ntyp = utils.random_unicode()
         label = utils.random_unicode()
@@ -162,46 +213,46 @@ class CloudMonitoringTest(unittest.TestCase):
         exp_uri = "/%s" % mgr.uri_base
         exp_body = {"label": label or name, "type": ntyp, "details": details}
         mgr.create(ntyp, label=label, name=name, details=details)
-        clt.method_post.assert_called_once_with(exp_uri, body=exp_body)
+        mgr.api.method_post.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_notif_manager_test_notification_existing(self):
         clt = self.client
         mgr = clt._notification_manager
-        clt.method_post = Mock(return_value=(None, None))
+        mgr.api.method_post = Mock(return_value=(None, None))
         ntf = utils.random_unicode()
         details = utils.random_unicode()
         exp_uri = "/%s/%s/test" % (mgr.uri_base, ntf)
         exp_body = None
         mgr.test_notification(notification=ntf, details=details)
-        clt.method_post.assert_called_once_with(exp_uri, body=exp_body)
+        mgr.api.method_post.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_notif_manager_test_notification(self):
         clt = self.client
         mgr = clt._notification_manager
-        clt.method_post = Mock(return_value=(None, None))
+        mgr.api.method_post = Mock(return_value=(None, None))
         ntyp = utils.random_unicode()
         details = utils.random_unicode()
         exp_uri = "/test-notification"
         exp_body = {"type": ntyp, "details": details}
         mgr.test_notification(notification_type=ntyp, details=details)
-        clt.method_post.assert_called_once_with(exp_uri, body=exp_body)
+        mgr.api.method_post.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_notif_manager_update_notification(self):
         clt = self.client
         mgr = clt._notification_manager
-        clt.method_put = Mock(return_value=(None, None))
+        mgr.api.method_put = Mock(return_value=(None, None))
         ntf = fakes.FakeCloudMonitorNotification()
         ntf.type = utils.random_unicode()
         details = utils.random_unicode()
         exp_uri = "/%s/%s" % (mgr.uri_base, ntf.id)
         exp_body = {"type": ntf.type, "details": details}
         mgr.update_notification(ntf, details)
-        clt.method_put.assert_called_once_with(exp_uri, body=exp_body)
+        mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_notif_manager_update_notification_id(self):
         clt = self.client
         mgr = clt._notification_manager
-        clt.method_put = Mock(return_value=(None, None))
+        mgr.api.method_put = Mock(return_value=(None, None))
         ntf = fakes.FakeCloudMonitorNotification()
         ntf.type = utils.random_unicode()
         details = utils.random_unicode()
@@ -209,16 +260,16 @@ class CloudMonitoringTest(unittest.TestCase):
         exp_uri = "/%s/%s" % (mgr.uri_base, ntf.id)
         exp_body = {"type": ntf.type, "details": details}
         mgr.update_notification(ntf.id, details)
-        clt.method_put.assert_called_once_with(exp_uri, body=exp_body)
+        mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_notif_manager_list_types(self):
         clt = self.client
         mgr = clt._notification_manager
         id_ = utils.random_unicode()
         ret_body = {"values": [{"id": id_}]}
-        clt.method_get = Mock(return_value=(None, ret_body))
+        mgr.api.method_get = Mock(return_value=(None, ret_body))
         ret = mgr.list_types()
-        clt.method_get.assert_called_once_with("/notification_types")
+        mgr.api.method_get.assert_called_once_with("/notification_types")
         self.assertEqual(len(ret), 1)
         inst = ret[0]
         self.assertTrue(isinstance(inst, CloudMonitorNotificationType))
@@ -229,10 +280,10 @@ class CloudMonitoringTest(unittest.TestCase):
         mgr = clt._notification_manager
         id_ = utils.random_unicode()
         ret_body = {"id": id_}
-        clt.method_get = Mock(return_value=(None, ret_body))
+        mgr.api.method_get = Mock(return_value=(None, ret_body))
         ret = mgr.get_type(id_)
         exp_uri = "/notification_types/%s" % id_
-        clt.method_get.assert_called_once_with(exp_uri)
+        mgr.api.method_get.assert_called_once_with(exp_uri)
         self.assertTrue(isinstance(ret, CloudMonitorNotificationType))
         self.assertEqual(ret.id, id_)
 
@@ -240,12 +291,9 @@ class CloudMonitoringTest(unittest.TestCase):
         clt = self.client
         mgr = clt._notification_plan_manager
         obj_id = utils.random_unicode()
-
         fake_resp = fakes.FakeResponse()
         fake_resp.headers = {"x-object-id": obj_id}
-
-        clt.method_post = Mock(return_value=(fake_resp, None))
-
+        mgr.api.method_post = Mock(return_value=(fake_resp, None))
         mgr.get = Mock()
         label = utils.random_unicode()
         name = utils.random_unicode()
@@ -259,44 +307,23 @@ class CloudMonitoringTest(unittest.TestCase):
                 "ok_state": [ok.id], "warning_state": [warn]}
         mgr.create(label=label, name=name, critical_state=crit, ok_state=ok,
                 warning_state=warn)
-        clt.method_post.assert_called_once_with(exp_uri, body=exp_body)
+        mgr.api.method_post.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_entity_mgr_update_entity(self):
         ent = self.entity
         clt = self.client
         mgr = clt._entity_manager
-        clt.method_put = Mock(return_value=(None, None))
+        mgr.api.method_put = Mock(return_value=(None, None))
         agent = utils.random_unicode()
         metadata = utils.random_unicode()
         exp_uri = "/%s/%s" % (mgr.uri_base, ent.id)
         exp_body = {"agent_id": agent, "metadata": metadata}
         mgr.update_entity(ent, agent, metadata)
-        clt.method_put.assert_called_once_with(exp_uri, body=exp_body)
+        mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
 
-    def test_entity_mgr_list_checks(self):
+    def test_check_mgr_create_check_test_debug(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        id_ = utils.random_unicode()
-        ret_body = {"values": [{"id": id_}]}
-        clt.method_get = Mock(return_value=(None, ret_body))
-        ret = mgr.list_checks(ent)
-        exp_uri = "/%s/%s/checks" % (mgr.uri_base, ent.id)
-        clt.method_get.assert_called_once_with(exp_uri)
-        self.assertEqual(len(ret), 1)
-        inst = ret[0]
-        self.assertTrue(isinstance(inst, CloudMonitorCheck))
-        self.assertEqual(inst.id, id_)
-
-    # The following tests need to mock CloudMonitorCheck, as we're mocking out
-    # the entity manager's method_post, which is what CloudMonitorCheck is
-    # created from. It's probably easier than making a more complicated
-    # method_post mock.
-    @patch("pyrax.cloudmonitoring.CloudMonitorCheck")
-    def test_entity_mgr_create_check_test_debug(self, cmc):
-        ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         label = utils.random_unicode()
         name = utils.random_unicode()
         check_type = utils.random_unicode()
@@ -314,30 +341,27 @@ class CloudMonitoringTest(unittest.TestCase):
         fake_resp = fakes.FakeResponse()
         fake_resp.status_code = 201
         fake_resp.headers["x-object-id"] = utils.random_unicode()
-        clt.method_post = Mock(return_value=(fake_resp, None))
-        mgr.get_check = Mock()
+        mgr.api.method_post = Mock(return_value=(fake_resp, None))
         mgr.get = Mock(return_value=fakes.FakeEntity)
-        exp_uri = "/%s/%s/test-check?debug=true" % (mgr.uri_base, ent.id)
+        exp_uri = "/%s/test-check?debug=true" % mgr.uri_base
         exp_body = {"label": label or name, "details": details,
                 "disabled": disabled, "type": check_type,
                 "monitoring_zones_poll": [monitoring_zones_poll], "timeout":
                 timeout, "period": period, "target_alias": target_alias,
                 "target_hostname": target_hostname, "target_receiver":
                 target_receiver}
-        mgr.create_check(ent, label=label, name=name, check_type=check_type,
+        mgr.create_check(label=label, name=name, check_type=check_type,
                 details=details, disabled=disabled, metadata=metadata,
                 monitoring_zones_poll=monitoring_zones_poll, timeout=timeout,
                 period=period, target_alias=target_alias,
                 target_hostname=target_hostname,
                 target_receiver=target_receiver, test_only=test_only,
                 include_debug=include_debug)
-        clt.method_post.assert_called_once_with(exp_uri, body=exp_body)
+        mgr.api.method_post.assert_called_once_with(exp_uri, body=exp_body)
 
-    @patch("pyrax.cloudmonitoring.CloudMonitorCheck")
-    def test_entity_mgr_create_check_test_no_debug(self, cmc):
+    def test_check_mgr_create_check_test_no_debug(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         label = utils.random_unicode()
         name = utils.random_unicode()
         check_type = utils.random_unicode()
@@ -355,30 +379,27 @@ class CloudMonitoringTest(unittest.TestCase):
         fake_resp = fakes.FakeResponse()
         fake_resp.status_code = 201
         fake_resp.headers["x-object-id"] = utils.random_unicode()
-        clt.method_post = Mock(return_value=(fake_resp, None))
-        mgr.get_check = Mock()
-        mgr.get = Mock(return_value=fakes.FakeEntity)
-        exp_uri = "/%s/%s/test-check" % (mgr.uri_base, ent.id)
+        mgr.api.method_post = Mock(return_value=(fake_resp, None))
+        mgr.get = Mock(return_value=self.check)
+        exp_uri = "/%s/test-check" % mgr.uri_base
         exp_body = {"label": label or name, "details": details,
                 "disabled": disabled, "type": check_type,
                 "monitoring_zones_poll": [monitoring_zones_poll], "timeout":
                 timeout, "period": period, "target_alias": target_alias,
                 "target_hostname": target_hostname, "target_receiver":
                 target_receiver}
-        mgr.create_check(ent, label=label, name=name, check_type=check_type,
+        mgr.create_check(label=label, name=name, check_type=check_type,
                 details=details, disabled=disabled, metadata=metadata,
                 monitoring_zones_poll=monitoring_zones_poll, timeout=timeout,
                 period=period, target_alias=target_alias,
                 target_hostname=target_hostname,
                 target_receiver=target_receiver, test_only=test_only,
                 include_debug=include_debug)
-        clt.method_post.assert_called_once_with(exp_uri, body=exp_body)
+        mgr.api.method_post.assert_called_once_with(exp_uri, body=exp_body)
 
-    @patch("pyrax.cloudmonitoring.CloudMonitorCheck")
-    def test_entity_mgr_create_check(self, cmc):
+    def test_check_mgr_create_check(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         label = utils.random_unicode()
         name = utils.random_unicode()
         check_type = utils.random_unicode()
@@ -396,94 +417,86 @@ class CloudMonitoringTest(unittest.TestCase):
         fake_resp = fakes.FakeResponse()
         fake_resp.status_code = 201
         fake_resp.headers["x-object-id"] = utils.random_unicode()
-        clt.method_post = Mock(return_value=(fake_resp, None))
-        mgr.get_check = Mock()
-        mgr.get = Mock(return_value=fakes.FakeEntity)
-        exp_uri = "/%s/%s/checks" % (mgr.uri_base, ent.id)
+        mgr.api.method_post = Mock(return_value=(fake_resp, None))
+        mgr.get = Mock(return_value=self.check)
+        exp_uri = "/%s" % mgr.uri_base
         exp_body = {"label": label or name, "details": details,
                 "disabled": disabled, "type": check_type,
                 "monitoring_zones_poll": [monitoring_zones_poll], "timeout":
                 timeout, "period": period, "target_alias": target_alias,
                 "target_hostname": target_hostname, "target_receiver":
                 target_receiver}
-        mgr.create_check(ent, label=label, name=name, check_type=check_type,
+        mgr.create_check(label=label, name=name, check_type=check_type,
                 details=details, disabled=disabled, metadata=metadata,
                 monitoring_zones_poll=monitoring_zones_poll, timeout=timeout,
                 period=period, target_alias=target_alias,
                 target_hostname=target_hostname,
                 target_receiver=target_receiver, test_only=test_only,
                 include_debug=include_debug)
-        clt.method_post.assert_called_once_with(exp_uri, body=exp_body)
+        mgr.api.method_post.assert_called_once_with(exp_uri, body=exp_body)
 
-    def test_entity_mgr_create_check_no_details(self):
+    def test_check_mgr_create_check_no_details(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         self.assertRaises(exc.MissingMonitoringCheckDetails, mgr.create_check,
                 ent)
 
-    def test_entity_mgr_create_check_no_target(self):
+    def test_check_mgr_create_check_no_target(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         self.assertRaises(exc.MonitoringCheckTargetNotSpecified,
                 mgr.create_check, ent, details="fake")
 
     def test_entity_mgr_create_check_no_mz_poll(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         self.assertRaises(exc.MonitoringZonesPollMissing, mgr.create_check,
                 ent, details="fake", target_alias="fake",
                 check_type="remote.fake")
 
     def test_entity_mgr_create_check_invalid_details(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         err = exc.BadRequest(400)
         err.message = "Validation error for key 'fake'"
         err.details = "Validation failed for 'fake'"
-        clt.method_post = Mock(side_effect=err)
+        mgr.api.method_post = Mock(side_effect=err)
         self.assertRaises(exc.BadRequest, mgr.create_check,
                 ent, details="fake", target_alias="fake",
                 check_type="remote.fake", monitoring_zones_poll="fake")
 
     def test_entity_mgr_create_check_missing_details(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         err = exc.BadRequest(400)
         err.message = "Validation error for key 'something'"
         err.details = "Validation failed for 'something'"
-        clt.method_post = Mock(side_effect=err)
+        mgr.api.method_post = Mock(side_effect=err)
         self.assertRaises(exc.BadRequest, mgr.create_check,
                 ent, details="fake", target_alias="fake",
                 check_type="remote.fake", monitoring_zones_poll="fake")
 
     def test_entity_mgr_create_check_failed_validation(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         err = exc.BadRequest(400)
         err.message = "Validation error"
         err.details = "Some details"
-        clt.method_post = Mock(side_effect=err)
+        mgr.api.method_post = Mock(side_effect=err)
         self.assertRaises(exc.InvalidMonitoringCheckDetails, mgr.create_check,
                 ent, details="fake", target_alias="fake",
                 check_type="remote.fake", monitoring_zones_poll="fake")
 
     def test_entity_mgr_find_all_checks(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         c1 = fakes.FakeCloudMonitorCheck(entity=ent, info={"foo": "fake",
                 "bar": "fake"})
         c2 = fakes.FakeCloudMonitorCheck(entity=ent, info={"foo": "fake"})
         c3 = fakes.FakeCloudMonitorCheck(entity=ent, info={"foo": "fake",
                 "bar": "real"})
-        mgr.list_checks = Mock(return_value=[c1, c2, c3])
-        found = mgr.find_all_checks(ent, foo="fake", bar="fake")
+        mgr.list = Mock(return_value=[c1, c2, c3])
+        found = mgr.find_all_checks(foo="fake", bar="fake")
         self.assertEqual(len(found), 1)
         self.assertTrue(c1 in found)
         self.assertTrue(c2 not in found)
@@ -491,9 +504,8 @@ class CloudMonitoringTest(unittest.TestCase):
 
     def test_entity_mgr_update_check(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        chk = fakes.FakeCloudMonitorCheck(entity=ent)
+        mgr = ent._check_manager
+        chk = self.check
         label = utils.random_unicode()
         name = utils.random_unicode()
         check_type = utils.random_unicode()
@@ -508,105 +520,94 @@ class CloudMonitoringTest(unittest.TestCase):
         target_receiver = utils.random_unicode()
         test_only = False
         include_debug = False
-        clt.method_put = Mock(return_value=(None, None))
-        exp_uri = "/%s/%s/checks/%s" % (mgr.uri_base, ent.id, chk.id)
+        mgr.api.method_put = Mock(return_value=(None, None))
+        exp_uri = "/%s/%s" % (mgr.uri_base, chk.id)
         exp_body = {"label": label or name, "metadata": metadata, "disabled":
             disabled, "monitoring_zones_poll": [monitoring_zones_poll],
             "timeout": timeout, "period": period, "target_alias": target_alias,
             "target_hostname": target_hostname, "target_receiver":
             target_receiver}
-        mgr.update_check(chk, label=label, name=name, disabled=disabled,
+        mgr.update(chk, label=label, name=name, disabled=disabled,
                 metadata=metadata, monitoring_zones_poll=monitoring_zones_poll,
                 timeout=timeout, period=period, target_alias=target_alias,
                 target_hostname=target_hostname,
                 target_receiver=target_receiver)
-        clt.method_put.assert_called_once_with(exp_uri, body=exp_body)
+        mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_entity_mgr_update_check_failed_validation(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        id_ = utils.random_unicode()
-        chk = fakes.FakeCloudMonitorCheck(info={"id": id_}, entity=ent)
+        mgr = ent._check_manager
+        chk = self.check
         err = exc.BadRequest(400)
         err.message = "Validation error"
         err.details = "Some details"
-        clt.method_put = Mock(side_effect=err)
-        self.assertRaises(exc.InvalidMonitoringCheckUpdate, mgr.update_check,
+        mgr.api.method_put = Mock(side_effect=err)
+        self.assertRaises(exc.InvalidMonitoringCheckUpdate, mgr.update,
                 chk, target_alias="fake", monitoring_zones_poll="fake")
 
-    def test_entity_mgr_update_check_failed_validation_other(self):
+    def test_check_mgr_update_check_failed_validation_other(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        id_ = utils.random_unicode()
-        chk = fakes.FakeCloudMonitorCheck(info={"id": id_}, entity=ent)
+        mgr = ent._check_manager
+        chk = self.check
         err = exc.BadRequest(400)
         err.message = "Another error"
         err.details = "Some details"
-        clt.method_put = Mock(side_effect=err)
-        self.assertRaises(exc.BadRequest, mgr.update_check, chk,
+        mgr.api.method_put = Mock(side_effect=err)
+        self.assertRaises(exc.BadRequest, mgr.update, chk,
                 target_alias="fake", monitoring_zones_poll="fake")
 
-    def test_entity_mgr_get_check(self):
+    def test_check_mgr_get_check(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         id_ = utils.random_unicode()
         ret_body = {"id": id_}
-        clt.method_get = Mock(return_value=(None, ret_body))
-        ret = mgr.get_check(ent, id_)
-        exp_uri = "/%s/%s/checks/%s" % (mgr.uri_base, ent.id, id_)
-        clt.method_get.assert_called_once_with(exp_uri)
+        mgr.api.method_get = Mock(return_value=(None, ret_body))
+        ret = mgr.get(id_)
+        exp_uri = "/%s/%s" % (mgr.uri_base, id_)
+        mgr.api.method_get.assert_called_once_with(exp_uri)
         self.assertTrue(isinstance(ret, CloudMonitorCheck))
         self.assertEqual(ret.id, id_)
 
-    def test_entity_mgr_delete_check(self):
+    def test_check_mgr_delete_check(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = ent._check_manager
         id_ = utils.random_unicode()
-        clt.method_delete = Mock(return_value=(None, None))
-        ret = mgr.delete_check(ent, id_)
-        exp_uri = "/%s/%s/checks/%s" % (mgr.uri_base, ent.id, id_)
-        clt.method_delete.assert_called_once_with(exp_uri)
+        mgr.api.method_delete = Mock(return_value=(None, None))
+        ret = mgr.delete(id_)
+        exp_uri = "/%s/%s" % (mgr.uri_base, id_)
+        mgr.api.method_delete.assert_called_once_with(exp_uri)
 
-    def test_entity_mgr_list_metrics(self):
+    def test_metrics_mgr_list_metrics(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        id_ = utils.random_unicode()
-        met1 = utils.random_unicode()
-        met2 = utils.random_unicode()
-        ret_body = {"values": [{"name": met1}, {"name": met2}]}
-        clt.method_get = Mock(return_value=(None, ret_body))
-        ret = mgr.list_metrics(ent, id_)
-        exp_uri = "/%s/%s/checks/%s/metrics" % (mgr.uri_base, ent.id, id_)
-        clt.method_get.assert_called_once_with(exp_uri)
-        self.assertEqual(len(ret), 2)
-        self.assertTrue(met1 in ret)
-        self.assertTrue(met2 in ret)
+        chk = self.check
+        mgr = chk._metrics_manager
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = utils.random_unicode()
+        mgr.list = Mock()
+        chk.list_metrics(limit=limit, marker=marker, return_next=return_next)
+        mgr.list.assert_called_once_with(limit=limit, marker=marker,
+                return_next=return_next)
 
-    def test_entity_mgr_get_metric_data_points_no_granularity(self):
+    def test_metrics_mgr_get_metric_data_points_no_granularity(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        chk = self.check
+        mgr = chk._metrics_manager
         self.assertRaises(exc.MissingMonitoringCheckGranularity,
-                mgr.get_metric_data_points, None, None, None, None, None)
+                mgr.get_metric_data_points, None, None, None)
 
-    def test_entity_mgr_get_metric_data_points_invalid_resolution(self):
+    def test_metrics_mgr_get_metric_data_points_invalid_resolution(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        chk = self.check
+        mgr = chk._metrics_manager
         self.assertRaises(exc.InvalidMonitoringMetricsResolution,
-                mgr.get_metric_data_points, None, None, None, None, None,
+                mgr.get_metric_data_points, None, None, None,
                 resolution="INVALID")
 
-    def test_entity_mgr_get_metric_data_points(self):
+    def test_metrics_mgr_get_metric_data_points(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        chk_id = utils.random_unicode()
+        chk = self.check
+        mgr = chk._metrics_manager
         metric = utils.random_unicode()
         points = utils.random_unicode()
         resolution = "FULL"
@@ -624,21 +625,19 @@ class CloudMonitoringTest(unittest.TestCase):
         stats = ["foo", "bar"]
         exp_qp = "from=%s&to=%s&points=%s&resolution=%s&select=%s&select=%s" % (
                 start_stamp, end_stamp, points, resolution, stats[0], stats[1])
-        exp_uri = "/%s/%s/checks/%s/metrics/%s/plot?%s" % (mgr.uri_base, ent.id,
-                chk_id, metric, exp_qp)
+        exp_uri = "/%s/%s/plot?%s" % (mgr.uri_base, metric, exp_qp)
         vals = utils.random_unicode()
         ret_body = {"values": vals}
-        clt.method_get = Mock(return_value=(None, ret_body))
-        ret = mgr.get_metric_data_points(ent, chk_id, metric, start, end,
-                points=points, resolution=resolution, stats=stats)
-        clt.method_get.assert_called_once_with(exp_uri)
+        mgr.api.method_get = Mock(return_value=(None, ret_body))
+        ret = mgr.get_metric_data_points(metric, start, end, points=points,
+                resolution=resolution, stats=stats)
+        mgr.api.method_get.assert_called_once_with(exp_uri)
         self.assertEqual(ret, vals)
 
-    def test_entity_mgr_get_metric_data_points_invalid_request(self):
+    def test_metrics_mgr_get_metric_data_points_invalid_request(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        chk_id = utils.random_unicode()
+        chk = self.check
+        mgr = chk._metrics_manager
         metric = utils.random_unicode()
         points = utils.random_unicode()
         resolution = "FULL"
@@ -647,16 +646,15 @@ class CloudMonitoringTest(unittest.TestCase):
         stats = ["foo", "bar"]
         err = exc.BadRequest(400)
         err.message = "Validation error: foo"
-        clt.method_get = Mock(side_effect=err)
+        mgr.api.method_get = Mock(side_effect=err)
         self.assertRaises(exc.InvalidMonitoringMetricsRequest,
-                mgr.get_metric_data_points, ent, chk_id, metric, start, end,
-                points=points, resolution=resolution, stats=stats)
+                mgr.get_metric_data_points, metric, start, end, points=points,
+                resolution=resolution, stats=stats)
 
-    def test_entity_mgr_get_metric_data_points_invalid_request_other(self):
+    def test_metrics_mgr_get_metric_data_points_invalid_request_other(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        chk_id = utils.random_unicode()
+        chk = self.check
+        mgr = chk._metrics_manager
         metric = utils.random_unicode()
         points = utils.random_unicode()
         resolution = "FULL"
@@ -665,16 +663,14 @@ class CloudMonitoringTest(unittest.TestCase):
         stats = ["foo", "bar"]
         err = exc.BadRequest(400)
         err.message = "Some other error: foo"
-        clt.method_get = Mock(side_effect=err)
-        self.assertRaises(exc.BadRequest, mgr.get_metric_data_points, ent,
-                chk_id, metric, start, end, points=points,
-                resolution=resolution, stats=stats)
+        mgr.api.method_get = Mock(side_effect=err)
+        self.assertRaises(exc.BadRequest, mgr.get_metric_data_points, metric,
+                start, end, points=points, resolution=resolution, stats=stats)
 
     def test_entity_mgr_create_alarm(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        check = utils.random_unicode()
+        mgr = ent._alarm_manager
+        check = self.check
         np = utils.random_unicode()
         criteria = utils.random_unicode()
         disabled = random.choice((True, False))
@@ -686,71 +682,34 @@ class CloudMonitoringTest(unittest.TestCase):
         fake_resp.status_code = 201
         fake_resp.headers["x-object-id"] = obj_id
         fake_respbody = utils.random_unicode()
-        clt.method_post = Mock(return_value=(fake_resp, fake_respbody))
-        mgr.get_alarm = Mock()
-        exp_uri = "/%s/%s/alarms" % (mgr.uri_base, ent.id)
-        exp_body = {"check_id": check, "notification_plan_id": np, "criteria":
+        mgr.api.method_post = Mock(return_value=(fake_resp, fake_respbody))
+        mgr.get = Mock()
+        exp_uri = "/%s" % mgr.uri_base
+        exp_body = {"check_id": check.id, "notification_plan_id": np, "criteria":
                 criteria, "disabled": disabled, "label": label,
                 "metadata": metadata}
-        alarm = mgr.create_alarm(ent, check, np, criteria=criteria,
-                disabled=disabled, label=label, name=name, metadata=metadata)
-        alarm.assertEqual(alarm.entity, ent)
-        clt.method_post.assert_called_once_with(exp_uri, body=exp_body)
+        alarm = mgr.create(check, np, criteria=criteria, disabled=disabled,
+                label=label, name=name, metadata=metadata)
+        mgr.api.method_post.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_entity_mgr_update_alarm(self):
         ent = self.entity
         clt = self.client
         mgr = clt._entity_manager
-        clt.method_put = Mock(return_value=(None, None))
+        mgr = ent._alarm_manager
+        mgr.api.method_put = Mock(return_value=(None, None))
         alarm = utils.random_unicode()
         criteria = utils.random_unicode()
         disabled = random.choice((True, False))
         label = utils.random_unicode()
         name = utils.random_unicode()
         metadata = utils.random_unicode()
-        exp_uri = "/%s/%s/alarms/%s" % (mgr.uri_base, ent.id, alarm)
+        exp_uri = "/%s/%s" % (mgr.uri_base, alarm)
         exp_body = {"criteria": criteria, "disabled": disabled, "label": label,
                 "metadata": metadata}
-        mgr.update_alarm(ent, alarm, criteria=criteria, disabled=disabled,
-                label=label, name=name, metadata=metadata)
-        clt.method_put.assert_called_once_with(exp_uri, body=exp_body)
-
-    def test_entity_mgr_list_alarms(self):
-        ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        id_ = utils.random_unicode()
-        ret_body = {"values": [{"id": id_}]}
-        clt.method_get = Mock(return_value=(None, ret_body))
-        exp_uri = "/%s/%s/alarms" % (mgr.uri_base, ent.id)
-        ret = mgr.list_alarms(ent)
-        clt.method_get.assert_called_once_with(exp_uri)
-        self.assertEqual(len(ret), 1)
-        self.assertTrue(isinstance(ret[0], CloudMonitorAlarm))
-        self.assertEqual(ret[0].id, id_)
-
-    def test_entity_mgr_get_alarm(self):
-        ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        id_ = utils.random_unicode()
-        ret_body = {"id": id_}
-        clt.method_get = Mock(return_value=(None, ret_body))
-        ret = mgr.get_alarm(ent, id_)
-        exp_uri = "/%s/%s/alarms/%s" % (mgr.uri_base, ent.id, id_)
-        clt.method_get.assert_called_once_with(exp_uri)
-        self.assertTrue(isinstance(ret, CloudMonitorAlarm))
-        self.assertEqual(ret.id, id_)
-
-    def test_entity_mgr_delete_alarm(self):
-        ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        id_ = utils.random_unicode()
-        clt.method_delete = Mock(return_value=(None, None))
-        ret = mgr.delete_alarm(ent, id_)
-        exp_uri = "/%s/%s/alarms/%s" % (mgr.uri_base, ent.id, id_)
-        clt.method_delete.assert_called_once_with(exp_uri)
+        mgr.update(alarm, criteria=criteria, disabled=disabled, label=label,
+                name=name, metadata=metadata)
+        mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
 
     def test_changelog_mgr_list(self):
         clt = self.client
@@ -808,7 +767,7 @@ class CloudMonitoringTest(unittest.TestCase):
         mgr = clt._entity_manager
         id_ = utils.random_unicode()
         chk = CloudMonitorCheck(mgr, info={"id": id_}, entity=ent)
-        mgr.update_check = Mock()
+        mgr.update = Mock()
         label = utils.random_unicode()
         name = utils.random_unicode()
         check_type = utils.random_unicode()
@@ -825,7 +784,7 @@ class CloudMonitoringTest(unittest.TestCase):
                 timeout=timeout, period=period, target_alias=target_alias,
                 target_hostname=target_hostname,
                 target_receiver=target_receiver)
-        mgr.update_check.assert_called_once_with(chk, label=label, name=name,
+        mgr.update.assert_called_once_with(chk, label=label, name=name,
                 disabled=disabled, metadata=metadata,
                 monitoring_zones_poll=monitoring_zones_poll, timeout=timeout,
                 period=period, target_alias=target_alias,
@@ -834,41 +793,39 @@ class CloudMonitoringTest(unittest.TestCase):
 
     def test_check_delete(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        id_ = utils.random_unicode()
-        chk = CloudMonitorCheck(mgr, info={"id": id_}, entity=ent)
-        mgr.delete_check = Mock()
+        chk = self.check
+        mgr = chk.manager
+        mgr.delete = Mock()
         chk.delete()
-        mgr.delete_check.assert_called_once_with(ent, chk)
+        mgr.delete.assert_called_once_with(chk)
 
     def test_check_list_metrics(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        id_ = utils.random_unicode()
-        chk = CloudMonitorCheck(mgr, info={"id": id_}, entity=ent)
-        mgr.list_metrics = Mock()
-        chk.list_metrics()
-        mgr.list_metrics.assert_called_once_with(ent, chk)
+        chk = self.check
+        mgr = chk._metrics_manager
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = utils.random_unicode()
+        mgr.list = Mock()
+        chk.list_metrics(limit=limit, marker=marker, return_next=return_next)
+        mgr.list.assert_called_once_with(limit=limit, marker=marker,
+                return_next=return_next)
 
     def test_check_get_metric_data_points(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
-        id_ = utils.random_unicode()
-        chk = CloudMonitorCheck(mgr, info={"id": id_}, entity=ent)
-        mgr.get_metric_data_points = Mock()
+        chk = self.check
+        mgr = chk._metrics_manager
         metric = utils.random_unicode()
         start = utils.random_unicode()
         end = utils.random_unicode()
         points = utils.random_unicode()
         resolution = utils.random_unicode()
         stats = utils.random_unicode()
+        mgr.get_metric_data_points = Mock()
         chk.get_metric_data_points(metric, start, end, points=points,
                 resolution=resolution, stats=stats)
-        mgr.get_metric_data_points.assert_called_once_with(ent, chk, metric,
-                start, end, points=points, resolution=resolution, stats=stats)
+        mgr.get_metric_data_points.assert_called_once_with(metric, start, end,
+                points=points, resolution=resolution, stats=stats)
 
     def test_check_create_alarm(self):
         ent = self.entity
@@ -1038,11 +995,13 @@ class CloudMonitoringTest(unittest.TestCase):
 
     def test_clt_list_entities(self):
         clt = self.client
-        ents = utils.random_unicode()
-        clt._entity_manager.list = Mock(return_value=ents)
-        ret = clt.list_entities()
-        clt._entity_manager.list.assert_called_once_with()
-        self.assertEqual(ret, ents)
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = utils.random_unicode()
+        clt._entity_manager.list = Mock()
+        clt.list_entities(limit=limit, marker=marker, return_next=return_next)
+        clt._entity_manager.list.assert_called_once_with(limit=limit,
+                marker=marker, return_next=return_next)
 
     def test_clt_get_entity(self):
         clt = self.client
@@ -1097,13 +1056,14 @@ class CloudMonitoringTest(unittest.TestCase):
 
     def test_clt_list_check_types(self):
         clt = self.client
-        ent = self.entity
-        mgr = clt._check_type_manager
-        cts = utils.random_unicode()
-        mgr.list = Mock(return_value=cts)
-        ret = clt.list_check_types()
-        mgr.list.assert_called_once_with()
-        self.assertEqual(ret, cts)
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = utils.random_unicode()
+        clt._check_type_manager.list = Mock()
+        clt.list_check_types(limit=limit, marker=marker,
+                return_next=return_next)
+        clt._check_type_manager.list.assert_called_once_with(limit=limit,
+                marker=marker, return_next=return_next)
 
     def test_clt_get_check_type(self):
         clt = self.client
@@ -1118,17 +1078,18 @@ class CloudMonitoringTest(unittest.TestCase):
     def test_clt_list_checks(self):
         clt = self.client
         ent = self.entity
-        mgr = clt._entity_manager
-        chks = utils.random_unicode()
-        mgr.list_checks = Mock(return_value=chks)
-        ret = clt.list_checks(ent)
-        mgr.list_checks.assert_called_once_with(ent)
-        self.assertEqual(ret, chks)
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = utils.random_unicode()
+        ent.list_checks = Mock()
+        clt.list_checks(ent, limit=limit, marker=marker,
+                return_next=return_next)
+        ent.list_checks.assert_called_once_with(limit=limit, marker=marker,
+                return_next=return_next)
 
     def test_clt_create_check(self):
         clt = self.client
         ent = self.entity
-        mgr = clt._entity_manager
         label = utils.random_unicode()
         name = utils.random_unicode()
         check_type = utils.random_unicode()
@@ -1141,51 +1102,43 @@ class CloudMonitoringTest(unittest.TestCase):
         target_alias = utils.random_unicode()
         target_hostname = utils.random_unicode()
         target_receiver = utils.random_unicode()
-        rand_bool = random.choice((True, False))
-        answer = utils.random_unicode()
-        mgr.create_check = Mock(return_value=answer)
-        ret = clt.create_check(ent, label=label, name=name,
+        test_only = utils.random_unicode()
+        include_debug = utils.random_unicode()
+        ent.create_check = Mock()
+        clt.create_check(ent, label=label, name=name,
                 check_type=check_type, disabled=disabled, metadata=metadata,
                 details=details, monitoring_zones_poll=monitoring_zones_poll,
                 timeout=timeout, period=period, target_alias=target_alias,
                 target_hostname=target_hostname,
-                target_receiver=target_receiver, test_only=rand_bool,
-                include_debug=rand_bool)
-        mgr.create_check.assert_called_once_with(ent, label=label, name=name,
+                target_receiver=target_receiver, test_only=test_only,
+                include_debug=include_debug)
+        ent.create_check.assert_called_once_with(label=label, name=name,
                 check_type=check_type, disabled=disabled, metadata=metadata,
                 details=details, monitoring_zones_poll=monitoring_zones_poll,
                 timeout=timeout, period=period, target_alias=target_alias,
                 target_hostname=target_hostname,
-                target_receiver=target_receiver, test_only=rand_bool,
-                include_debug=rand_bool)
-        self.assertEqual(ret, answer)
+                target_receiver=target_receiver, test_only=test_only,
+                include_debug=include_debug)
 
     def test_clt_get_check(self):
         clt = self.client
         ent = self.entity
-        mgr = clt._entity_manager
-        answer = utils.random_unicode()
-        chk = utils.random_unicode()
-        mgr.get_check = Mock(return_value=answer)
-        ret = clt.get_check(ent, chk)
-        mgr.get_check.assert_called_once_with(ent, chk)
-        self.assertEqual(ret, answer)
+        check_id = utils.random_unicode()
+        ent.get_check = Mock()
+        clt.get_check(ent, check_id)
+        ent.get_check.assert_called_once_with(check_id)
 
     def test_clt_find_all_checks(self):
         clt = self.client
         ent = self.entity
-        mgr = clt._entity_manager
-        answer = utils.random_unicode()
-        mgr.find_all_checks = Mock(return_value=answer)
-        ret = clt.find_all_checks(ent, foo="fake", bar="fake")
-        mgr.find_all_checks.assert_called_once_with(ent, foo="fake", bar="fake")
-        self.assertEqual(ret, answer)
+        ent.find_all_checks = Mock()
+        clt.find_all_checks(ent, foo="fake", bar="fake")
+        ent.find_all_checks.assert_called_once_with(foo="fake", bar="fake")
 
     def test_clt_update_check(self):
         clt = self.client
         ent = self.entity
-        mgr = clt._entity_manager
-        chk = utils.random_unicode()
+        chk = self.check
         label = utils.random_unicode()
         name = utils.random_unicode()
         disabled = utils.random_unicode()
@@ -1196,14 +1149,14 @@ class CloudMonitoringTest(unittest.TestCase):
         target_alias = utils.random_unicode()
         target_hostname = utils.random_unicode()
         target_receiver = utils.random_unicode()
-        mgr.update_check = Mock()
+        ent.update_check = Mock()
         clt.update_check(ent, chk, label=label, name=name, disabled=disabled,
                 metadata=metadata, monitoring_zones_poll=monitoring_zones_poll,
                 timeout=timeout, period=period, target_alias=target_alias,
                 target_hostname=target_hostname,
                 target_receiver=target_receiver)
-        mgr.update_check.assert_called_once_with(ent, chk, label=label,
-                name=name, disabled=disabled, metadata=metadata,
+        ent.update_check.assert_called_once_with(chk, label=label, name=name,
+                disabled=disabled, metadata=metadata,
                 monitoring_zones_poll=monitoring_zones_poll, timeout=timeout,
                 period=period, target_alias=target_alias,
                 target_hostname=target_hostname,
@@ -1212,41 +1165,39 @@ class CloudMonitoringTest(unittest.TestCase):
     def test_clt_delete_check(self):
         clt = self.client
         ent = self.entity
-        mgr = clt._entity_manager
         chk = utils.random_unicode()
-        mgr.delete_check = Mock()
+        ent.delete_check = Mock()
         clt.delete_check(ent, chk)
-        mgr.delete_check.assert_called_once_with(ent, chk)
+        ent.delete_check.assert_called_once_with(chk)
 
     def test_clt_list_metrics(self):
         clt = self.client
         ent = self.entity
-        mgr = clt._entity_manager
-        chk = utils.random_unicode()
-        answer = utils.random_unicode()
-        mgr.list_metrics = Mock(return_value=answer)
-        ret = clt.list_metrics(ent, chk)
-        mgr.list_metrics.assert_called_once_with(ent, chk)
-        self.assertEqual(ret, answer)
+        chk = self.check
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = utils.random_unicode()
+        ent.list_metrics = Mock()
+        clt.list_metrics(ent, chk, limit=limit, marker=marker,
+                return_next=return_next)
+        ent.list_metrics.assert_called_once_with(chk, limit=limit,
+                marker=marker, return_next=return_next)
 
     def test_clt_get_metric_data_points(self):
         clt = self.client
         ent = self.entity
-        mgr = clt._entity_manager
-        chk = utils.random_unicode()
-        answer = utils.random_unicode()
-        mgr.get_metric_data_points = Mock(return_value=answer)
+        chk = self.check
         metric = utils.random_unicode()
         start = utils.random_unicode()
         end = utils.random_unicode()
         points = utils.random_unicode()
         resolution = utils.random_unicode()
         stats = utils.random_unicode()
-        ret = clt.get_metric_data_points(ent, chk, metric, start, end,
+        ent.get_metric_data_points = Mock()
+        clt.get_metric_data_points(ent, chk, metric, start, end, points=points,
+                resolution=resolution, stats=stats)
+        ent.get_metric_data_points.assert_called_once_with(chk, metric, start, end,
                 points=points, resolution=resolution, stats=stats)
-        mgr.get_metric_data_points.assert_called_once_with(ent, chk, metric,
-                start, end, points=points, resolution=resolution, stats=stats)
-        self.assertEqual(ret, answer)
 
     def test_clt_list_notifications(self):
         clt = self.client
@@ -1377,12 +1328,14 @@ class CloudMonitoringTest(unittest.TestCase):
     def test_clt_list_alarms(self):
         clt = self.client
         ent = self.entity
-        mgr = clt._entity_manager
-        alms = utils.random_unicode()
-        mgr.list_alarms = Mock(return_value=alms)
-        ret = clt.list_alarms(ent)
-        mgr.list_alarms.assert_called_once_with(ent)
-        self.assertEqual(ret, alms)
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_next = utils.random_unicode()
+        ent.list_alarms = Mock()
+        clt.list_alarms(ent, limit=limit, marker=marker,
+                return_next=return_next)
+        ent.list_alarms.assert_called_once_with(limit=limit, marker=marker,
+                return_next=return_next)
 
     def test_clt_get_alarm(self):
         clt = self.client

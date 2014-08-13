@@ -523,18 +523,20 @@ class FakeCloudMonitorClient(CloudMonitorClient):
 class FakeCloudMonitorEntity(CloudMonitorEntity):
     def __init__(self, *args, **kwargs):
         info = kwargs.pop("info", {"fake": "fake"})
+        info["id"] = utils.random_ascii()
         super(FakeCloudMonitorEntity, self).__init__(FakeManager(), info=info,
                 *args, **kwargs)
         self.manager.api = FakeCloudMonitorClient()
-        self.id = utils.random_unicode()
 
 
 class FakeCloudMonitorCheck(CloudMonitorCheck):
     def __init__(self, *args, **kwargs):
         info = kwargs.pop("info", {"fake": "fake"})
-        entity = kwargs.pop("entity", FakeCloudMonitorEntity())
-        super(FakeCloudMonitorCheck, self).__init__(None, info, entity,
-                *args, **kwargs)
+        entity = kwargs.pop("entity", None)
+        info["id"] = utils.random_ascii()
+        super(FakeCloudMonitorCheck, self).__init__(FakeManager(), info, *args,
+                **kwargs)
+        self.set_entity(entity)
         self.id = uuid.uuid4()
 
 

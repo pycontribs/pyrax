@@ -70,10 +70,11 @@ class BaseQueueManager(BaseManager):
     This class attempts to add in all the common deviations from the API
     standards that the regular base classes are based on.
     """
-    def _list(self, uri, obj_class=None, body=None, return_raw=False):
+    def _list(self, uri, obj_class=None, body=None, return_raw=False,
+            other_keys=None):
         try:
             return super(BaseQueueManager, self)._list(uri, obj_class=None,
-                    body=None, return_raw=return_raw)
+                    body=None, return_raw=return_raw, other_keys=other_keys)
         except (exc.NotFound, AttributeError):
             return []
 
