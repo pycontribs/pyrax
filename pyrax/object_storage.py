@@ -784,11 +784,16 @@ class Container(BaseResource):
 
 
 class ContainerManager(BaseManager):
-    def _list(self, uri, obj_class=None, body=None, return_raw=False):
+    def list(self, limit=None, marker=None, end_marker=None, prefix=None):
         """
         Swift doesn't return listings in the same format as the rest of
         OpenStack, so this method has to be overriden.
         """
+        uri = "/%s" % self.uri_base
+        qs = utils.dict_to_qs({"marker": marker, "limit": limit,
+                "prefix": prefix, "end_marker": end_marker})
+        if qs:
+            uri = "%s?%s" % (uri, qs)
         resp, resp_body = self.api.method_get(uri)
         return [Container(self, res, loaded=False)
                 for res in resp_body if res]
@@ -2375,6 +2380,16 @@ class StorageClient(BaseClient):
         """
         return self._manager.get_temp_url(container, obj, seconds,
                 method=method, key=key, cached=cached)
+
+
+    def list(self, limit=None, marker=None, end_marker=None, prefix=None):
+        """
+        List the containers in this account, using the parameters to control
+        the pagination of containers, since by default only the first 10,000
+        containers are returned.
+        """
+        return self._manager.list(limit=limit, marker=marker,
+                end_marker=end_marker, prefix=prefix)
 
 
     def list_public_containers(self):

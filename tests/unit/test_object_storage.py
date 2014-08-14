@@ -672,13 +672,20 @@ class ObjectStorageTest(unittest.TestCase):
     def test_cmgr_list(self):
         cont = self.container
         mgr = cont.manager
-        uri = utils.random_unicode()
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        end_marker = utils.random_unicode()
+        prefix = utils.random_unicode()
+        qs = utils.dict_to_qs({"marker": marker, "limit": limit,
+                "prefix": prefix, "end_marker": end_marker})
+        exp_uri = "/%s?%s" % (mgr.uri_base, qs)
         name1 = utils.random_unicode()
         name2 = utils.random_unicode()
         resp_body = [{"name": name1}, {"name": name2}]
         mgr.api.method_get = Mock(return_value=(None, resp_body))
-        ret = mgr._list(uri)
-        mgr.api.method_get.assert_called_once_with(uri)
+        ret = mgr.list(limit=limit, marker=marker, end_marker=end_marker,
+                prefix=prefix)
+        mgr.api.method_get.assert_called_once_with(exp_uri)
         self.assertEqual(len(ret), 2)
         self.assertTrue(isinstance(ret[0], Container))
 
@@ -2479,6 +2486,19 @@ class ObjectStorageTest(unittest.TestCase):
                 cached=cached)
         mgr.get_temp_url.assert_called_once_with(cont, obj, seconds,
                 method=method, key=key, cached=cached)
+
+    def test_clt_list(self):
+        clt = self.client
+        mgr = clt._manager
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        end_marker = utils.random_unicode()
+        prefix = utils.random_unicode()
+        mgr.list = Mock()
+        clt.list(limit=limit, marker=marker, end_marker=end_marker,
+                prefix=prefix)
+        mgr.list.assert_called_once_with(limit=limit, marker=marker,
+                end_marker=end_marker, prefix=prefix)
 
     def test_clt_list_public_containers(self):
         clt = self.client
