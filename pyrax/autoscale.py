@@ -453,6 +453,7 @@ class ScalingGroupManager(BaseManager):
         if user_data:
             user_data = base64.b64encode(user_data)
         usr_data = user_data or srv_args.get("user_data")
+        update_metadata = metadata or srv_args.get("metadata")
         body = {"type": "launch_server",
                 "args": {
                     "server": {
@@ -461,7 +462,6 @@ class ScalingGroupManager(BaseManager):
                         "flavorRef": flav,
                         "OS-DCF:diskConfig": dconf,
                         "networks": networks or srv_args.get("networks"),
-                        "metadata": metadata or srv_args.get("metadata"),
                     },
                     "loadBalancers": load_balancers or lb_args,
                 },
@@ -472,6 +472,8 @@ class ScalingGroupManager(BaseManager):
             body["args"]["server"]["user_data"] = usr_data
         if pers:
             body["args"]["server"]["personality"] = pers
+        if update_metadata:
+            body["args"]["server"]["metadata"] = update_metadata
         key_name = key_name or srv_args.get("key_name")
         if key_name:
             body["args"]["server"]["key_name"] = key_name
