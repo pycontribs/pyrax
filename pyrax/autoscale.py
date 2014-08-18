@@ -466,17 +466,18 @@ class ScalingGroupManager(BaseManager):
                     "loadBalancers": load_balancers or lb_args,
                 },
             }
+        bas = body["args"]["server"]
         if cfg_drv:
-            body["args"]["server"]["config_drive"] = cfg_drv
+            bas["config_drive"] = cfg_drv
         if usr_data:
-            body["args"]["server"]["user_data"] = usr_data
+            bas["user_data"] = usr_data
         if pers:
-            body["args"]["server"]["personality"] = pers
+            bas["personality"] = self._encode_personality(pers)
         if update_metadata:
-            body["args"]["server"]["metadata"] = update_metadata
+            bas["metadata"] = update_metadata
         key_name = key_name or srv_args.get("key_name")
         if key_name:
-            body["args"]["server"]["key_name"] = key_name
+            bas["key_name"] = key_name
         resp, resp_body = self.api.method_put(uri, body=body)
         return None
 
@@ -766,6 +767,20 @@ class ScalingGroupManager(BaseManager):
         return lb_args
 
 
+    def _encode_personality(self, personality):
+        """
+        Personality files must be base64-encoded before transmitting.
+        """
+        if personality is None:
+            personality = []
+        else:
+            personality = utils.coerce_to_list(personality)
+            for pfile in personality:
+                if "contents" in pfile:
+                    pfile["contents"] = base64.b64encode(pfile["contents"])
+        return personality
+
+
     def _create_body(self, name, cooldown, min_entities, max_entities,
             launch_config_type, server_name, image, flavor, disk_config=None,
             metadata=None, personality=None, networks=None,
@@ -775,16 +790,8 @@ class ScalingGroupManager(BaseManager):
         Used to create the dict required to create any of the following:
             A Scaling Group
         """
-#        if disk_config is None:
-#            disk_config = "AUTO"
         if metadata is None:
             metadata = {}
-        if personality is None:
-            personality = []
-        else:
-            for file in personality:
-                if "contents" in file:
-                    file["contents"] = base64.b64encode(file["contents"])
         if scaling_policies is None:
             scaling_policies = []
         group_config = self._create_group_config_body(name, cooldown,
@@ -832,7 +839,7 @@ class ScalingGroupManager(BaseManager):
         if metadata is not None:
             server_args["metadata"] = metadata
         if personality is not None:
-            server_args["personality"] = personality
+            server_args["personality"] = self._encode_personality(personality)
         if networks is not None:
             server_args["networks"] = networks
         if disk_config is not None:
