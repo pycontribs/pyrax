@@ -293,7 +293,7 @@ def random_ascii(length=20, ascii_only=False):
     return _join_chars(string.ascii_letters, length)
 
 
-def coerce_string_to_list(val):
+def coerce_to_list(val):
     """
     For parameters that can take either a single string or a list of strings,
     this function will ensure that the result is a list containing the passed
@@ -316,7 +316,7 @@ def folder_size(pth, ignore=None):
     if not os.path.isdir(pth):
         raise exc.FolderNotFound
 
-    ignore = coerce_string_to_list(ignore)
+    ignore = coerce_to_list(ignore)
 
     def get_size(total, root, names):
         paths = [os.path.realpath(os.path.join(root, nm)) for nm in names]
@@ -619,7 +619,7 @@ def match_pattern(nm, patterns):
     `fnmatch` module. For example, the pattern "*.py" will match the names
     of all Python scripts.
     """
-    patterns = coerce_string_to_list(patterns)
+    patterns = coerce_to_list(patterns)
     for pat in patterns:
         if fnmatch.fnmatch(nm, pat):
             return True

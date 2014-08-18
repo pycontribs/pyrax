@@ -2093,7 +2093,7 @@ class StorageObjectManager(BaseManager):
         oname = utils.get_name(obj)
         headers = {}
         if email_addresses:
-            email_addresses = utils.coerce_string_to_list(email_addresses)
+            email_addresses = utils.coerce_to_list(email_addresses)
             headers["X-Purge-Email"] = ", ".join(email_addresses)
         uri = "/%s/%s" % (cname, oname)
         resp, resp_body = self.api.cdn_request(uri, method="DELETE",
@@ -2971,7 +2971,7 @@ class StorageClient(BaseClient):
         if not os.path.isdir(folder_path):
             raise exc.FolderNotFound("No such folder: '%s'" % folder_path)
 
-        ignore = utils.coerce_string_to_list(ignore)
+        ignore = utils.coerce_to_list(ignore)
         total_bytes = utils.folder_size(folder_path, ignore)
         upload_key = str(uuid.uuid4())
         self.folder_upload_status[upload_key] = {"continue": True,
@@ -3074,7 +3074,7 @@ class StorageClient(BaseClient):
         nested folder structures.
         """
         fnames = os.listdir(folder_path)
-        ignore = utils.coerce_string_to_list(ignore)
+        ignore = utils.coerce_to_list(ignore)
         log = logging.getLogger("pyrax")
         if not include_hidden:
             ignore.append(".*")
@@ -3253,7 +3253,7 @@ class FolderUploader(threading.Thread):
     def __init__(self, root_folder, container, ignore, upload_key, client,
             ttl=None):
         self.root_folder = root_folder.rstrip("/")
-        self.ignore = utils.coerce_string_to_list(ignore)
+        self.ignore = utils.coerce_to_list(ignore)
         self.upload_key = upload_key
         self.ttl = ttl
         self.client = client

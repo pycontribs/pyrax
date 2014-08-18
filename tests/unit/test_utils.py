@@ -119,6 +119,16 @@ class UtilsTest(unittest.TestCase):
         self.assertRaises(exc.FolderNotFound, utils.folder_size,
                 "/doesnt_exist")
 
+    def test_coerce_to_list(self):
+        val = utils.random_ascii()
+        ret = utils.coerce_to_list(val)
+        self.assertEqual(ret, [val])
+
+    def test_coerce_to_list_list(self):
+        val = [utils.random_ascii(), utils.random_ascii()]
+        ret = utils.coerce_to_list(val)
+        self.assertEqual(ret, val)
+
     def test_folder_size_no_ignore(self):
         with utils.SelfDeletingTempDirectory() as tmpdir:
             # write 5 files of 100 bytes each

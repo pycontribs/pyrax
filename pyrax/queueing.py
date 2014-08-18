@@ -364,7 +364,7 @@ class QueueMessageManager(BaseQueueManager):
         the matching messages will be returned. This avoids pulling down all
         the messages in a queue and filtering on the client side.
         """
-        ids = utils.coerce_string_to_list(ids)
+        ids = utils.coerce_to_list(ids)
         uri = "/%s?ids=%s" % (self.uri_base, ",".join(ids))
         # The API is not consistent in how it returns message lists, so this
         # workaround is needed.
@@ -380,7 +380,7 @@ class QueueMessageManager(BaseQueueManager):
         """
         Deletes the messages whose IDs are passed in from this queue.
         """
-        ids = utils.coerce_string_to_list(ids)
+        ids = utils.coerce_to_list(ids)
         uri = "/%s?ids=%s" % (self.uri_base, ",".join(ids))
         return self.api.method_delete(uri)
 

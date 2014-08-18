@@ -158,7 +158,7 @@ class BaseManager(object):
         data = self._data_from_response(resp_body)
         ret = [obj_class(self, res, loaded=False) for res in data if res]
         if other_keys:
-            keys = utils.coerce_string_to_list(other_keys)
+            keys = utils.coerce_to_list(other_keys)
             other = [self._data_from_response(resp_body, key) for key in keys]
             return (ret, other)
         else:

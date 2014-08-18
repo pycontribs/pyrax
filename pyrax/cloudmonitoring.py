@@ -377,17 +377,17 @@ class CloudMonitorNotificationPlanManager(_PaginationManager):
         body = {"label": label or name}
 
         def make_list_of_ids(parameter):
-            params = utils.coerce_string_to_list(parameter)
+            params = utils.coerce_to_list(parameter)
             return [utils.get_id(param) for param in params]
 
         if critical_state:
-            critical_state = utils.coerce_string_to_list(critical_state)
+            critical_state = utils.coerce_to_list(critical_state)
             body["critical_state"] = make_list_of_ids(critical_state)
         if warning_state:
-            warning_state = utils.coerce_string_to_list(warning_state)
+            warning_state = utils.coerce_to_list(warning_state)
             body["warning_state"] = make_list_of_ids(warning_state)
         if ok_state:
-            ok_state = utils.coerce_string_to_list(ok_state)
+            ok_state = utils.coerce_to_list(ok_state)
             body["ok_state"] = make_list_of_ids(ok_state)
         resp, resp_body = self.api.method_post(uri, body=body)
         return self.get(resp.headers["x-object-id"])
@@ -451,7 +451,7 @@ class CloudMonitorMetricsManager(_PaginationManager):
         if resolution:
             qparms.append("resolution=%s" % resolution.upper())
         if stats:
-            stats = utils.coerce_string_to_list(stats)
+            stats = utils.coerce_to_list(stats)
             for stat in stats:
                 qparms.append("select=%s" % stat)
         qparm = "&".join(qparms)
@@ -557,8 +557,7 @@ class CloudMonitorCheckManager(_PaginationManager):
                     "creating a check.")
         ctype = utils.get_id(check_type)
         is_remote = ctype.startswith("remote")
-        monitoring_zones_poll = utils.coerce_string_to_list(
-                monitoring_zones_poll)
+        monitoring_zones_poll = utils.coerce_to_list(monitoring_zones_poll)
         monitoring_zones_poll = [utils.get_id(mzp)
                 for mzp in monitoring_zones_poll]
         if is_remote and not monitoring_zones_poll:
@@ -612,8 +611,7 @@ class CloudMonitorCheckManager(_PaginationManager):
             period=None, target_alias=None, target_hostname=None,
             target_receiver=None):
         if monitoring_zones_poll:
-            monitoring_zones_poll = utils.coerce_string_to_list(
-                    monitoring_zones_poll)
+            monitoring_zones_poll = utils.coerce_to_list(monitoring_zones_poll)
             monitoring_zones_poll = [utils.get_id(mzp)
                     for mzp in monitoring_zones_poll]
         body = {}
