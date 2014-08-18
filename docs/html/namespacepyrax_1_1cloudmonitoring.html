@@ -98,6 +98,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">pyrax::cloudmonitoring Namespace Reference</div>  </div>
@@ -107,16 +108,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html">CloudMonitorEntity</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1__PaginationManager.html">_PaginationManager</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationManager.html">CloudMonitorNotificationManager</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles all of the requests dealing with notifications.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationManager.html#details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationPlanManager.html">CloudMonitorNotificationPlanManager</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles all of the requests dealing with Notification Plans.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationPlanManager.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorMetricsManager.html">CloudMonitorMetricsManager</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorAlarmManager.html">CloudMonitorAlarmManager</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles all of the alarm-specific requests.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorAlarmManager.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheckManager.html">CloudMonitorCheckManager</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles all of the check-specific requests.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheckManager.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1__EntityFilteringManger.html">_EntityFilteringManger</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles calls that can optionally filter requests based on an entity.  <a href="classpyrax_1_1cloudmonitoring_1_1__EntityFilteringManger.html#details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntityManager.html">CloudMonitorEntityManager</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles all of the entity-specific requests.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntityManager.html#details">More...</a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorChangelogManager.html">CloudMonitorChangelogManager</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles calls to retrieve changelogs.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorChangelogManager.html#details">More...</a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorOverviewManager.html">CloudMonitorOverviewManager</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Handles calls to retrieve overview information.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorOverviewManager.html#details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html">CloudMonitorCheck</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a check defined for an entity.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html#details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheckType.html">CloudMonitorCheckType</a></td></tr>
@@ -129,14 +134,61 @@ Classes</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a class of action to take when an alarm is triggered.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationType.html#details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationPlan.html">CloudMonitorNotificationPlan</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">A Notification plan is a list of the notification actions to take when an alarm is triggered.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorNotificationPlan.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorMetric.html">CloudMonitorMetric</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Metrics represent statistics about the checks defined on an entity.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorMetric.html#details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorAlarm.html">CloudMonitorAlarm</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Alarms bind alerting rules, entities, and notification plans into a logical unit.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorAlarm.html#details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html">CloudMonitorClient</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the base client for creating and managing Cloud Monitoring.  <a href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorClient.html#details">More...</a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cloudmonitoring.html#a0ce8e5b6bb5553249995ea5c77976f09">assure_check</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an checkID passed as the check to a <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html" title="Represents a check defined for an entity.">CloudMonitorCheck</a> object.  <a href="#a0ce8e5b6bb5553249995ea5c77976f09"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cloudmonitoring.html#a159640b44542ec1b5f13566a1bbd7101">assure_entity</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an entityID passed as the entity to a <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html">CloudMonitorEntity</a> object.  <a href="#a159640b44542ec1b5f13566a1bbd7101"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">tuple&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1cloudmonitoring.html#a96865c97ed6b14f9c1b5561e89f98515">_invalid_key_pat</a> = re.compile(r&quot;Validation error for key '([^']+)'&quot;)</td></tr>
 </table>
+<hr/><h2>Function Documentation</h2>
+<a class="anchor" id="a0ce8e5b6bb5553249995ea5c77976f09"></a><!-- doxytag: member="pyrax::cloudmonitoring::assure_check" ref="a0ce8e5b6bb5553249995ea5c77976f09" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1cloudmonitoring.html#a0ce8e5b6bb5553249995ea5c77976f09">pyrax.cloudmonitoring.assure_check</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>fnc</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Converts an checkID passed as the check to a <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html" title="Represents a check defined for an entity.">CloudMonitorCheck</a> object. </p>
+
+</div>
+</div>
+<a class="anchor" id="a159640b44542ec1b5f13566a1bbd7101"></a><!-- doxytag: member="pyrax::cloudmonitoring::assure_entity" ref="a159640b44542ec1b5f13566a1bbd7101" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="namespacepyrax_1_1cloudmonitoring.html#a159640b44542ec1b5f13566a1bbd7101">pyrax.cloudmonitoring.assure_entity</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>fnc</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Converts an entityID passed as the entity to a <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html">CloudMonitorEntity</a> object. </p>
+
+</div>
+</div>
 <hr/><h2>Variable Documentation</h2>
 <a class="anchor" id="a96865c97ed6b14f9c1b5561e89f98515"></a><!-- doxytag: member="pyrax::cloudmonitoring::_invalid_key_pat" ref="a96865c97ed6b14f9c1b5561e89f98515" args="" -->
 <div class="memitem">
@@ -169,7 +221,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 3 2014 11:34:23 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Aug 18 2014 10:34:28 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

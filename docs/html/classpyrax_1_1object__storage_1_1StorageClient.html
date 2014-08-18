@@ -146,6 +146,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the key for the Temporary URL for the account.  <a href="#a3815e3caab49229722d4761c169fc358"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1object__storage_1_1StorageClient.html#a26cd51b10d04d2f632fc6f12fa2e3b43">get_temp_url</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a storage object in a container, returns a URL that can be used to access that object.  <a href="#a26cd51b10d04d2f632fc6f12fa2e3b43"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1object__storage_1_1StorageClient.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">List the containers in this account, using the parameters to control the pagination of containers, since by default only the first 10,000 containers are returned.  <a href="#a9b522b4ef7526bfa60b78fe735caa55c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1object__storage_1_1StorageClient.html#a34c1b3aa7e651b23e470f5c42d6011df">list_public_containers</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of the names of all CDN-enabled containers.  <a href="#a34c1b3aa7e651b23e470f5c42d6011df"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1object__storage_1_1StorageClient.html#a76f191980ae586a885256c95f681b3c5">make_container_public</a></td></tr>
@@ -1470,6 +1472,53 @@ Static Public Attributes</h2></td></tr>
 <div class="memdoc">
 
 <p>Returns the number of bytes uploaded for the specified process. </p>
+
+</div>
+</div>
+<a class="anchor" id="a9b522b4ef7526bfa60b78fe735caa55c"></a><!-- doxytag: member="pyrax::object_storage::StorageClient::list" ref="a9b522b4ef7526bfa60b78fe735caa55c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1object__storage_1_1StorageClient.html#a9b522b4ef7526bfa60b78fe735caa55c">list</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>limit</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>marker</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>end_marker</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>prefix</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>List the containers in this account, using the parameters to control the pagination of containers, since by default only the first 10,000 containers are returned. </p>
 
 </div>
 </div>
@@ -2977,7 +3026,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jul 15 2014 08:26:29 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Aug 18 2014 10:34:32 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -110,8 +110,8 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a random name; useful for testing.  <a href="#a22d977f9099b32cca29ae8f2bf85c738"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#ad1dd5f67ceaa944c1f0bae698488632f">random_ascii</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a random name; useful for testing.  <a href="#ad1dd5f67ceaa944c1f0bae698488632f"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a399c6b9652f5150282c3edb32d4d05f3">coerce_string_to_list</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">For parameters that can take either a single string or a list of strings, this function will ensure that the result is a list containing the passed values.  <a href="#a399c6b9652f5150282c3edb32d4d05f3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#aa75600a0d66bbef3a1e638d2d15e8c67">coerce_to_list</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">For parameters that can take either a single string or a list of strings, this function will ensure that the result is a list containing the passed values.  <a href="#aa75600a0d66bbef3a1e638d2d15e8c67"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a44e6cd242f9d12705e157706a6caddfe">folder_size</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the total bytes for the specified path, optionally ignoring any files which match the 'ignore' parameter.  <a href="#a44e6cd242f9d12705e157706a6caddfe"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#aa8d6873854a2bde7479a7fbe44d1d60b">add_method</a></td></tr>
@@ -131,7 +131,7 @@ Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#ac4bcbc47a32f87bf9ee5b3a6a6ca92c3">get_name</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the 'name' attribute of 'name_or_obj' if present; if not, returns 'name_or_obj'.  <a href="#ac4bcbc47a32f87bf9ee5b3a6a6ca92c3"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a9829217a17004ff879dffa75d60842ae">params_to_dict</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a set of optional parameter names, constructs a dictionary with the parameter name as the key, and the value for that key in the local_dict as the value, for all non-None values.  <a href="#a9829217a17004ff879dffa75d60842ae"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the 'dct' dictionary with the 'params' dictionary, filtering out all those whose param value is None.  <a href="#a9829217a17004ff879dffa75d60842ae"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#a4846bc482f7a79cbdb05401113c5e618">dict_to_qs</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes a dictionary and uses it to create a query string.  <a href="#a4846bc482f7a79cbdb05401113c5e618"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepyrax_1_1utils.html#ab32790e8c29f35cd0c810dd86dedba2c">match_pattern</a></td></tr>
@@ -174,7 +174,7 @@ Variables</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jul 15 2014 08:26:24 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Aug 18 2014 10:34:27 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -21,7 +21,7 @@ var searchData=
   ['cloudservers',['cloudservers',['../namespacepyrax.html#a558330633ea0238aee2d4f5f5a7afa07',1,'pyrax']]],
   ['code',['code',['../classpyrax_1_1exceptions_1_1ClientException.html#afb9ed1b8a27eb20854efe6e23e297683',1,'pyrax::exceptions::ClientException']]],
   ['comment',['comment',['../classpyrax_1_1clouddns_1_1CloudDNSRecord.html#a8c0288707ed90c2275d70e22bd1f16d9',1,'pyrax::clouddns::CloudDNSRecord.comment()'],['../classpyrax_1_1clouddns_1_1CloudDNSPTRRecord.html#a8c0288707ed90c2275d70e22bd1f16d9',1,'pyrax::clouddns::CloudDNSPTRRecord.comment()']]],
-  ['completed',['completed',['../classpyrax_1_1fakes_1_1FakeBulkDeleter.html#a5fd2693b43ceb7c5b415600614d1f0d2',1,'pyrax::fakes::FakeBulkDeleter.completed()'],['../classpyrax_1_1object__storage_1_1BulkDeleter.html#a5fd2693b43ceb7c5b415600614d1f0d2',1,'pyrax::object_storage::BulkDeleter::completed()']]],
+  ['completed',['completed',['../classpyrax_1_1fakes_1_1FakeBulkDeleter.html#a5fd2693b43ceb7c5b415600614d1f0d2',1,'pyrax::fakes::FakeBulkDeleter.completed()'],['../classpyrax_1_1object__storage_1_1BulkDeleter.html#a5fd2693b43ceb7c5b415600614d1f0d2',1,'pyrax::object_storage::BulkDeleter.completed()']]],
   ['condition',['condition',['../classpyrax_1_1cloudloadbalancers_1_1Node.html#a4824b91cc0e6b5f112bdd8049af4d7d6',1,'pyrax::cloudloadbalancers::Node']]],
   ['config_5ffile',['config_file',['../namespacepyrax.html#ae6512f1802b7f1f9cc6f196a0938db60',1,'pyrax']]],
   ['container',['container',['../classpyrax_1_1object__storage_1_1FolderUploader.html#a030ecaa2a61b422a8ca7422403ad8c77',1,'pyrax::object_storage::FolderUploader.container()'],['../classpyrax_1_1object__storage_1_1BulkDeleter.html#a030ecaa2a61b422a8ca7422403ad8c77',1,'pyrax::object_storage::BulkDeleter.container()']]],

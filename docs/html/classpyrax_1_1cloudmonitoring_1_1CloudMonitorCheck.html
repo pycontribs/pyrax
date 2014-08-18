@@ -126,6 +126,7 @@ Inheritance diagram for CloudMonitorCheck:</div>
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html#adba6080c7b02390a436cfb6f08f210a5">set_entity</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html#a757840459670ee7692e00cf5ddc722d5">name</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html#a444a1328efb32d5d9d2dcb2efe855d3b">get</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Reloads the check with its current values.  <a href="#a444a1328efb32d5d9d2dcb2efe855d3b"></a><br/></td></tr>
@@ -175,7 +176,7 @@ Static Public Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>entity</em>, </td>
+          <td class="paramname"><em>entity</em> = <code>None</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -372,8 +373,30 @@ Static Public Attributes</h2></td></tr>
           <td class="memname">def <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html#af232f5b9467cd7214f217a3fe6d51473">list_metrics</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>limit</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>marker</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>return_next</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
@@ -393,6 +416,33 @@ Static Public Attributes</h2></td></tr>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><em>self</em></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="adba6080c7b02390a436cfb6f08f210a5"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorCheck::set_entity" ref="adba6080c7b02390a436cfb6f08f210a5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorCheck.html#adba6080c7b02390a436cfb6f08f210a5">set_entity</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>entity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
@@ -533,7 +583,7 @@ Static Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 24 2014 11:17:58 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Aug 18 2014 10:34:28 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
