@@ -672,13 +672,20 @@ class ObjectStorageTest(unittest.TestCase):
     def test_cmgr_list(self):
         cont = self.container
         mgr = cont.manager
-        uri = utils.random_unicode()
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        end_marker = utils.random_unicode()
+        prefix = utils.random_unicode()
+        qs = utils.dict_to_qs({"marker": marker, "limit": limit,
+                "prefix": prefix, "end_marker": end_marker})
+        exp_uri = "/%s?%s" % (mgr.uri_base, qs)
         name1 = utils.random_unicode()
         name2 = utils.random_unicode()
         resp_body = [{"name": name1}, {"name": name2}]
         mgr.api.method_get = Mock(return_value=(None, resp_body))
-        ret = mgr._list(uri)
-        mgr.api.method_get.assert_called_once_with(uri)
+        ret = mgr.list(limit=limit, marker=marker, end_marker=end_marker,
+                prefix=prefix)
+        mgr.api.method_get.assert_called_once_with(exp_uri)
         self.assertEqual(len(ret), 2)
         self.assertTrue(isinstance(ret[0], Container))
 
@@ -1279,7 +1286,7 @@ class ObjectStorageTest(unittest.TestCase):
         name2 = utils.random_ascii()
         sdir = utils.random_ascii()
         objs = [{"name": name1, "content_type": "fake"},
-                {"name": name2, "subdir": sdir, "content_type": "fake"}]
+                {"subdir": sdir}]
         cont.list = Mock(return_value=objs)
         marker = utils.random_unicode()
         limit = utils.random_unicode()
@@ -1869,6 +1876,55 @@ class ObjectStorageTest(unittest.TestCase):
             else:
                 self.assertEqual(ret, get_resp)
 
+    def test_sobj_mgr_create_file_like_obj(self):
+        cont = self.container
+        mgr = cont.object_manager
+        obj_name = utils.random_unicode()
+        content_type = utils.random_unicode()
+        etag = utils.random_unicode()
+        content_encoding = utils.random_unicode()
+        content_length = utils.random_unicode()
+        ttl = utils.random_unicode()
+        chunked = utils.random_unicode()
+        chunk_size = utils.random_unicode()
+        key = utils.random_unicode()
+        val = utils.random_unicode()
+        metadata = {key: val}
+        headers = {"X-Delete-After": ttl}
+        massaged = _massage_metakeys(metadata, OBJECT_META_PREFIX)
+        headers.update(massaged)
+
+        class Foo:
+            pass
+
+        file_like_object = Foo()
+        file_like_object.read = lambda: utils.random_unicode()
+
+        for return_none in (True, False):
+            mgr._upload = Mock()
+            get_resp = utils.random_unicode()
+            mgr.get = Mock(return_value=get_resp)
+
+            ret = mgr.create(file_like_object, obj_name=obj_name,
+                    content_type=content_type, etag=etag,
+                    content_encoding=content_encoding,
+                    content_length=content_length, ttl=ttl,
+                    chunked=chunked, metadata=metadata,
+                    chunk_size=chunk_size, headers=headers,
+                    return_none=return_none)
+
+            self.assertEqual(mgr._upload.call_count, 1)
+            call_args = list(mgr._upload.call_args)[0]
+
+            for param in (obj_name, content_type, content_encoding,
+                    content_length, etag, False, headers):
+                self.assertTrue(param in call_args)
+
+            if return_none:
+                self.assertIsNone(ret)
+            else:
+                self.assertEqual(ret, get_resp)
+
     def test_sobj_mgr_upload(self):
         obj = self.obj
         mgr = obj.manager
@@ -2028,7 +2084,7 @@ class ObjectStorageTest(unittest.TestCase):
             ret = mgr.fetch(obj, include_meta=include_meta,
                     chunk_size=chunk_size, size=size, extra_info=extra_info)
             mgr.api.method_get.assert_called_once_with(exp_uri,
-                    headers=exp_headers)
+                    headers=exp_headers, raw_content=True)
             if include_meta:
                 self.assertEqual(ret, (hdrs, resp_body))
             else:
@@ -2430,6 +2486,19 @@ class ObjectStorageTest(unittest.TestCase):
                 cached=cached)
         mgr.get_temp_url.assert_called_once_with(cont, obj, seconds,
                 method=method, key=key, cached=cached)
+
+    def test_clt_list(self):
+        clt = self.client
+        mgr = clt._manager
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        end_marker = utils.random_unicode()
+        prefix = utils.random_unicode()
+        mgr.list = Mock()
+        clt.list(limit=limit, marker=marker, end_marker=end_marker,
+                prefix=prefix)
+        mgr.list.assert_called_once_with(limit=limit, marker=marker,
+                end_marker=end_marker, prefix=prefix)
 
     def test_clt_list_public_containers(self):
         clt = self.client
@@ -3012,11 +3081,77 @@ class ObjectStorageTest(unittest.TestCase):
                 object_prefix=object_prefix, verbose=verbose)
 
     @patch("logging.Logger.info")
+    def test_clt_sync_folder_to_container_failures(self, mock_log):
+        clt = self.client
+        cont = self.container
+        folder_path = utils.random_unicode()
+        delete = utils.random_unicode()
+        include_hidden = utils.random_unicode()
+        ignore = utils.random_unicode()
+        ignore_timestamps = utils.random_unicode()
+        object_prefix = utils.random_unicode()
+        verbose = utils.random_unicode()
+        num_objs = random.randint(1, 3)
+        ctype = "text/fake"
+        objs = [StorageObject(cont.object_manager,
+                {"name": "obj%s" % num, "content_type": ctype, "bytes": 42})
+                for num in range(num_objs)]
+        cont.get_objects = Mock(return_value=objs)
+        reason = utils.random_unicode()
+
+        def mock_fail(*args, **kwargs):
+            clt._sync_summary["failed"] += 1
+            clt._sync_summary["failure_reasons"].append(reason)
+
+        clt._sync_folder_to_container = Mock(side_effect=mock_fail)
+        clt.sync_folder_to_container(folder_path, cont, delete=delete,
+                include_hidden=include_hidden, ignore=ignore,
+                ignore_timestamps=ignore_timestamps,
+                object_prefix=object_prefix, verbose=verbose)
+        clt._sync_folder_to_container.assert_called_once_with(folder_path, cont,
+                prefix="", delete=delete, include_hidden=include_hidden,
+                ignore=ignore, ignore_timestamps=ignore_timestamps,
+                object_prefix=object_prefix, verbose=verbose)
+
+    @patch("logging.Logger.info")
     @patch("os.listdir")
     def test_clt_under_sync_folder_to_container(self, mock_listdir, mock_log):
         clt = self.client
         cont = self.container
         cont.upload_file = Mock()
+        clt._local_files = []
+        rem_obj = StorageObject(cont.object_manager, {"name": "test2",
+                "last_modified": "2014-01-01T00:00:00.000001", "bytes": 42,
+                "content_type": "text/fake", "hash": "FAKE"})
+        clt._remote_files = {"test2": rem_obj}
+        clt._delete_objects_not_in_list = Mock()
+        prefix = ""
+        delete = True
+        include_hidden = False
+        ignore = "fake*"
+        ignore_timestamps = False
+        object_prefix = ""
+        verbose = utils.random_unicode()
+        with utils.SelfDeletingTempDirectory() as folder_path:
+            # Create a few files
+            fnames = ["test1", "test2", "test3", "fake1", "fake2"]
+            for fname in fnames:
+                pth = os.path.join(folder_path, fname)
+                open(pth, "w").write("faketext")
+            mock_listdir.return_value = fnames
+            clt._sync_folder_to_container(folder_path, cont, prefix, delete,
+                    include_hidden, ignore, ignore_timestamps, object_prefix,
+                    verbose)
+        self.assertEqual(cont.upload_file.call_count, 3)
+
+    @patch("logging.Logger.info")
+    @patch("logging.Logger.error")
+    @patch("os.listdir")
+    def test_clt_under_sync_folder_to_container_upload_fail(self, mock_listdir,
+            mock_log_error, mock_log_info):
+        clt = self.client
+        cont = self.container
+        cont.upload_file = Mock(side_effect=Exception(""))
         clt._local_files = []
         rem_obj = StorageObject(cont.object_manager, {"name": "test2",
                 "last_modified": "2014-01-01T00:00:00.000001", "bytes": 42,

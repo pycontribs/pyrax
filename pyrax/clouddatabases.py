@@ -199,7 +199,7 @@ class CloudDatabaseUserManager(BaseManager):
         list of database names. If any of the supplied dbs do not exist, a
         NoSuchDatabase exception will be raised, unless you pass strict=False.
         """
-        dbs = utils.coerce_string_to_list(dbs)
+        dbs = utils.coerce_to_list(dbs)
         db_names = [utils.get_name(db) for db in dbs]
         if strict:
             good_dbs = self.instance.list_databases()

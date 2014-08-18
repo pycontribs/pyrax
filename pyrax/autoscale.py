@@ -107,7 +107,7 @@ class ScalingGroup(BaseResource):
 
     def update_launch_config(self, server_name=None, image=None, flavor=None,
             disk_config=None, metadata=None, personality=None, networks=None,
-            load_balancers=None, key_name=None):
+            load_balancers=None, key_name=None, config_drive=False, user_data=None):
         """
         Updates the server launch configuration for this scaling group.
         One or more of the available attributes can be specified.
@@ -119,7 +119,8 @@ class ScalingGroup(BaseResource):
         return self.manager.update_launch_config(self, server_name=server_name,
                 image=image, flavor=flavor, disk_config=disk_config,
                 metadata=metadata, personality=personality, networks=networks,
-                load_balancers=load_balancers, key_name=key_name)
+                load_balancers=load_balancers, key_name=key_name,
+                config_drive=config_drive, user_data=user_data)
 
 
     def update_launch_metadata(self, metadata):
@@ -410,7 +411,7 @@ class ScalingGroupManager(BaseManager):
     def replace_launch_config(self, scaling_group, launch_config_type,
             server_name, image, flavor, disk_config=None, metadata=None,
             personality=None, networks=None, load_balancers=None,
-            key_name=None):
+            key_name=None, config_drive=False, user_data=None):
         """
         Replace an existing launch configuration. All of the attributes must be
         specified. If you wish to delete any of the optional attributes, pass
@@ -422,13 +423,15 @@ class ScalingGroupManager(BaseManager):
                 launch_config_type=launch_config_type, server_name=server_name,
                 image=image, flavor=flavor, disk_config=disk_config,
                 metadata=metadata, personality=personality, networks=networks,
-                load_balancers=load_balancers, key_name=key_name)
+                load_balancers=load_balancers, key_name=key_name,
+                config_drive=config_drive, user_data=user_data)
         resp, resp_body = self.api.method_put(uri, body=body)
 
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
             flavor=None, disk_config=None, metadata=None, personality=None,
-            networks=None, load_balancers=None, key_name=None):
+            networks=None, load_balancers=None, key_name=None, config_drive=False,
+            user_data=None):
         """
         Updates the server launch configuration for an existing scaling group.
         One or more of the available attributes can be specified.
@@ -446,6 +449,11 @@ class ScalingGroupManager(BaseManager):
         flav = flavor or srv_args.get("flavorRef")
         dconf = disk_config or srv_args.get("OS-DCF:diskConfig", "AUTO")
         pers = personality or srv_args.get("personality", [])
+        cfg_drv = config_drive or srv_args.get("config_drive")
+        if user_data:
+            user_data = base64.b64encode(user_data)
+        usr_data = user_data or srv_args.get("user_data")
+        update_metadata = metadata or srv_args.get("metadata")
         body = {"type": "launch_server",
                 "args": {
                     "server": {
@@ -454,16 +462,22 @@ class ScalingGroupManager(BaseManager):
                         "flavorRef": flav,
                         "OS-DCF:diskConfig": dconf,
                         "networks": networks or srv_args.get("networks"),
-                        "metadata": metadata or srv_args.get("metadata"),
                     },
                     "loadBalancers": load_balancers or lb_args,
                 },
             }
+        bas = body["args"]["server"]
+        if cfg_drv:
+            bas["config_drive"] = cfg_drv
+        if usr_data:
+            bas["user_data"] = usr_data
         if pers:
-            body["args"]["server"]["personality"] = pers
+            bas["personality"] = self._encode_personality(pers)
+        if update_metadata:
+            bas["metadata"] = update_metadata
         key_name = key_name or srv_args.get("key_name")
         if key_name:
-            body["args"]["server"] = key_name
+            bas["key_name"] = key_name
         resp, resp_body = self.api.method_put(uri, body=body)
         return None
 
@@ -753,25 +767,31 @@ class ScalingGroupManager(BaseManager):
         return lb_args
 
 
+    def _encode_personality(self, personality):
+        """
+        Personality files must be base64-encoded before transmitting.
+        """
+        if personality is None:
+            personality = []
+        else:
+            personality = utils.coerce_to_list(personality)
+            for pfile in personality:
+                if "contents" in pfile:
+                    pfile["contents"] = base64.b64encode(pfile["contents"])
+        return personality
+
+
     def _create_body(self, name, cooldown, min_entities, max_entities,
             launch_config_type, server_name, image, flavor, disk_config=None,
             metadata=None, personality=None, networks=None,
             load_balancers=None, scaling_policies=None, group_metadata=None,
-            key_name=None):
+            key_name=None, config_drive=False, user_data=None):
         """
         Used to create the dict required to create any of the following:
             A Scaling Group
         """
-#        if disk_config is None:
-#            disk_config = "AUTO"
         if metadata is None:
             metadata = {}
-        if personality is None:
-            personality = []
-        else:
-            for file in personality:
-                if "contents" in file:
-                    file["contents"] = base64.b64encode(file["contents"])
         if scaling_policies is None:
             scaling_policies = []
         group_config = self._create_group_config_body(name, cooldown,
@@ -779,7 +799,8 @@ class ScalingGroupManager(BaseManager):
         launch_config = self._create_launch_config_body(launch_config_type,
                 server_name, image, flavor, disk_config=disk_config,
                 metadata=metadata, personality=personality, networks=networks,
-                load_balancers=load_balancers, key_name=key_name)
+                load_balancers=load_balancers, key_name=key_name,
+                config_drive=config_drive, user_data=user_data)
         body = {
                 "groupConfiguration": group_config,
                 "launchConfiguration": launch_config,
@@ -807,29 +828,36 @@ class ScalingGroupManager(BaseManager):
     def _create_launch_config_body(self, launch_config_type,
             server_name, image, flavor, disk_config=None, metadata=None,
             personality=None, networks=None, load_balancers=None,
-            key_name=None):
+            key_name=None, config_drive=False, user_data=None):
+
         server_args = {
                 "flavorRef": "%s" % flavor,
                 "name": server_name,
                 "imageRef": utils.get_id(image),
                 }
+
         if metadata is not None:
             server_args["metadata"] = metadata
         if personality is not None:
-            server_args["personality"] = personality
+            server_args["personality"] = self._encode_personality(personality)
         if networks is not None:
             server_args["networks"] = networks
         if disk_config is not None:
             server_args["OS-DCF:diskConfig"] = disk_config
         if key_name is not None:
             server_args["key_name"] = key_name
+        if config_drive is not False:
+            server_args['config_drive'] = config_drive
+        if user_data is not None:
+            server_args['user_data'] = base64.b64encode(user_data)
+
         if load_balancers is None:
             load_balancers = []
         load_balancer_args = self._resolve_lbs(load_balancers)
+
         return {"type": launch_config_type,
                 "args": {"server": server_args,
                          "loadBalancers": load_balancer_args}}
-
 
 
 class AutoScalePolicy(BaseResource):
@@ -1065,7 +1093,8 @@ class AutoScaleClient(BaseClient):
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
             flavor=None, disk_config=None, metadata=None, personality=None,
-            networks=None, load_balancers=None, key_name=None):
+            networks=None, load_balancers=None, key_name=None, config_drive=False,
+            user_data=None):
         """
         Updates the server launch configuration for an existing scaling group.
         One or more of the available attributes can be specified.
@@ -1078,7 +1107,8 @@ class AutoScaleClient(BaseClient):
                 server_name=server_name, image=image, flavor=flavor,
                 disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers, key_name=key_name)
+                load_balancers=load_balancers, key_name=key_name,
+                config_drive=config_drive, user_data=user_data)
 
 
     def update_launch_metadata(self, scaling_group, metadata):

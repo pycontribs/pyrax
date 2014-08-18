@@ -29,10 +29,17 @@ class ManagerTest(unittest.TestCase):
 
     def test_list(self):
         mgr = self.manager
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_raw = utils.random_unicode()
+        other_keys = utils.random_unicode()
         mgr._list = Mock()
         mgr.uri_base = "test"
-        mgr.list()
-        mgr._list.assert_called_once_with("/test", return_raw=False)
+        mgr.list(limit=limit, marker=marker, return_raw=return_raw,
+                other_keys=other_keys)
+        exp_uri = "/test?limit=%s&marker=%s" % (limit, marker)
+        mgr._list.assert_called_once_with(exp_uri, return_raw=return_raw,
+                other_keys=other_keys)
 
     def test_under_list_return_raw(self):
         mgr = self.manager
@@ -48,11 +55,15 @@ class ManagerTest(unittest.TestCase):
         mgr = self.manager
         mgr._list = Mock()
         mgr.uri_base = "test"
-        fake_limit = random.randint(10, 20)
-        fake_marker = random.randint(100, 200)
-        mgr.list(limit=fake_limit, marker=fake_marker)
-        expected_uri = "/test?limit=%s&marker=%s" % (fake_limit, fake_marker)
-        mgr._list.assert_called_once_with(expected_uri, return_raw=False)
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        return_raw = utils.random_unicode()
+        other_keys = utils.random_unicode()
+        mgr.list(limit=limit, marker=marker, return_raw=return_raw,
+                other_keys=other_keys)
+        expected_uri = "/test?limit=%s&marker=%s" % (limit, marker)
+        mgr._list.assert_called_once_with(expected_uri, return_raw=return_raw,
+                other_keys=other_keys)
 
     def test_head(self):
         mgr = self.manager

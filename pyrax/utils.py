@@ -293,7 +293,7 @@ def random_ascii(length=20, ascii_only=False):
     return _join_chars(string.ascii_letters, length)
 
 
-def coerce_string_to_list(val):
+def coerce_to_list(val):
     """
     For parameters that can take either a single string or a list of strings,
     this function will ensure that the result is a list containing the passed
@@ -316,7 +316,7 @@ def folder_size(pth, ignore=None):
     if not os.path.isdir(pth):
         raise exc.FolderNotFound
 
-    ignore = coerce_string_to_list(ignore)
+    ignore = coerce_to_list(ignore)
 
     def get_size(total, root, names):
         paths = [os.path.realpath(os.path.join(root, nm)) for nm in names]
@@ -589,14 +589,12 @@ def get_name(name_or_obj):
         raise exc.MissingName(name_or_obj)
 
 
-def params_to_dict(params, dct, local_dict):
+def params_to_dict(params, dct):
     """
-    Given a set of optional parameter names, constructs a dictionary with the
-    parameter name as the key, and the value for that key in the local_dict as
-    the value, for all non-None values.
+    Updates the 'dct' dictionary with the 'params' dictionary, filtering out
+    all those whose param value is None.
     """
-    for param in params:
-        val = local_dict.get(param)
+    for param, val in params.items():
         if val is None:
             continue
         dct[param] = val
@@ -621,7 +619,7 @@ def match_pattern(nm, patterns):
     `fnmatch` module. For example, the pattern "*.py" will match the names
     of all Python scripts.
     """
-    patterns = coerce_string_to_list(patterns)
+    patterns = coerce_to_list(patterns)
     for pat in patterns:
         if fnmatch.fnmatch(nm, pat):
             return True

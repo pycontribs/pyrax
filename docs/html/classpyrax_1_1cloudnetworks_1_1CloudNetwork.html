@@ -209,7 +209,13 @@ Properties</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>private</em> = <code>False</code>&#160;</td>
+          <td class="paramname"><em>private</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>key</em> = <code>None</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -221,6 +227,7 @@ Properties</h2></td></tr>
 <div class="memdoc">
 
 <p>Creates the dict of network UUIDs required by Cloud Servers when creating a new server with isolated networks. </p>
+<p>By default, the UUID values are returned with the key of "net-id", which is what novaclient expects. Other tools may require different values, such as 'uuid'. If that is the case, pass the desired key as the 'key' parameter.</p>
 <p>By default only this network is included. If you wish to create a server that has either the public (internet) or private (ServiceNet) networks, you have to pass those parameters in with values of True. </p>
 
 </div>
@@ -323,7 +330,7 @@ Properties</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 24 2014 11:17:58 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Aug 18 2014 10:34:28 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

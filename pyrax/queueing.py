@@ -70,10 +70,11 @@ class BaseQueueManager(BaseManager):
     This class attempts to add in all the common deviations from the API
     standards that the regular base classes are based on.
     """
-    def _list(self, uri, obj_class=None, body=None, return_raw=False):
+    def _list(self, uri, obj_class=None, body=None, return_raw=False,
+            other_keys=None):
         try:
             return super(BaseQueueManager, self)._list(uri, obj_class=None,
-                    body=None, return_raw=return_raw)
+                    body=None, return_raw=return_raw, other_keys=other_keys)
         except (exc.NotFound, AttributeError):
             return []
 
@@ -363,7 +364,7 @@ class QueueMessageManager(BaseQueueManager):
         the matching messages will be returned. This avoids pulling down all
         the messages in a queue and filtering on the client side.
         """
-        ids = utils.coerce_string_to_list(ids)
+        ids = utils.coerce_to_list(ids)
         uri = "/%s?ids=%s" % (self.uri_base, ",".join(ids))
         # The API is not consistent in how it returns message lists, so this
         # workaround is needed.
@@ -379,7 +380,7 @@ class QueueMessageManager(BaseQueueManager):
         """
         Deletes the messages whose IDs are passed in from this queue.
         """
-        ids = utils.coerce_string_to_list(ids)
+        ids = utils.coerce_to_list(ids)
         uri = "/%s?ids=%s" % (self.uri_base, ",".join(ids))
         return self.api.method_delete(uri)
 

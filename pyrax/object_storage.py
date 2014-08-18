@@ -784,11 +784,16 @@ class Container(BaseResource):
 
 
 class ContainerManager(BaseManager):
-    def _list(self, uri, obj_class=None, body=None, return_raw=False):
+    def list(self, limit=None, marker=None, end_marker=None, prefix=None):
         """
         Swift doesn't return listings in the same format as the rest of
         OpenStack, so this method has to be overriden.
         """
+        uri = "/%s" % self.uri_base
+        qs = utils.dict_to_qs({"marker": marker, "limit": limit,
+                "prefix": prefix, "end_marker": end_marker})
+        if qs:
+            uri = "%s?%s" % (uri, qs)
         resp, resp_body = self.api.method_get(uri)
         return [Container(self, res, loaded=False)
                 for res in resp_body if res]
@@ -1321,8 +1326,6 @@ class ContainerManager(BaseManager):
         objs = mthd(marker=marker, limit=limit, prefix=prefix, delimiter="/",
                 return_raw=True)
         sdirs = [obj for obj in objs if "subdir" in obj]
-        for sdir in sdirs:
-            sdir["name"] = sdir["subdir"]
         mgr = container.object_manager
         return [StorageObject(mgr, sdir) for sdir in sdirs]
 
@@ -1557,6 +1560,10 @@ class StorageObject(BaseResource):
     """
     def __init__(self, manager, info, *args, **kwargs):
         self._container = None
+        if ("name" not in info) and ("subdir" in info):
+            # Subdir dicts lack a 'name' and 'content_type' key
+            info["name"] = info["subdir"]
+            info["content_type"] = "pseudo/subdirectory"
         return super(StorageObject, self).__init__(manager, info, *args,
                 **kwargs)
 
@@ -1849,18 +1856,19 @@ class StorageObjectManager(BaseManager):
         if ttl is not None:
             headers["X-Delete-After"] = ttl
         if src is data:
-            self._upload(obj_name, data, content_type, content_encoding,
-                    content_length, etag, chunked, chunk_size, headers)
+            self._upload(obj_name, data, content_type,
+                    content_encoding, content_length, etag, chunked,
+                    chunk_size, headers)
+        elif hasattr(file_or_path, "read"):
+            self._upload(obj_name, file_or_path, content_type,
+                    content_encoding, content_length, etag, False,
+                    chunk_size, headers)
         else:
-            if isinstance(file_or_path, file):
-                self._upload(obj_name, file_or_path, content_type,
+            # Need to wrap the call in a context manager
+            with open(file_or_path, "rb") as ff:
+                self._upload(obj_name, ff, content_type,
                         content_encoding, content_length, etag, False,
-                        headers)
-            else:
-                # Need to wrap the call in a context manager
-                with open(file_or_path, "rb") as ff:
-                    self._upload(obj_name, ff, content_type, content_encoding,
-                            content_length, etag, False, chunk_size, headers)
+                        chunk_size, headers)
         if return_none:
             return
         return self.get(obj_name)
@@ -1968,7 +1976,8 @@ class StorageObjectManager(BaseManager):
         headers = {}
         if size:
             headers = {"Range": "bytes=0-%s" % size}
-        resp, resp_body = self.api.method_get(uri, headers=headers)
+        resp, resp_body = self.api.method_get(uri, headers=headers,
+                raw_content=True)
         if include_meta:
             meta_resp, meta_body = self.api.method_head(uri)
             return (meta_resp.headers, resp_body)
@@ -1986,7 +1995,8 @@ class StorageObjectManager(BaseManager):
         while True:
             endpos = min(obj_size, pos + chunk_size)
             headers = {"Range": "bytes=%s-%s" % (pos, endpos)}
-            resp, resp_body = self.api.method_get(uri, headers=headers)
+            resp, resp_body = self.api.method_get(uri, headers=headers,
+                    raw_content=True)
             pos = endpos
             if not resp_body:
                 # End of file
@@ -2083,7 +2093,7 @@ class StorageObjectManager(BaseManager):
         oname = utils.get_name(obj)
         headers = {}
         if email_addresses:
-            email_addresses = utils.coerce_string_to_list(email_addresses)
+            email_addresses = utils.coerce_to_list(email_addresses)
             headers["X-Purge-Email"] = ", ".join(email_addresses)
         uri = "/%s/%s" % (cname, oname)
         resp, resp_body = self.api.cdn_request(uri, method="DELETE",
@@ -2177,6 +2187,15 @@ class StorageClient(BaseClient):
     def __init__(self, *args, **kwargs):
         # Constants used in metadata headers
         super(StorageClient, self).__init__(*args, **kwargs)
+        self._sync_summary = {"total": 0,
+                "uploaded": 0,
+                "ignored": 0,
+                "older": 0,
+                "duplicate": 0,
+                "failed": 0,
+                "failure_reasons": [],
+                "deleted": 0,
+                }
         self._cached_temp_url_key = None
         self.cdn_management_url = ""
         self.method_dict = {
@@ -2361,6 +2380,16 @@ class StorageClient(BaseClient):
         """
         return self._manager.get_temp_url(container, obj, seconds,
                 method=method, key=key, cached=cached)
+
+
+    def list(self, limit=None, marker=None, end_marker=None, prefix=None):
+        """
+        List the containers in this account, using the parameters to control
+        the pagination of containers, since by default only the first 10,000
+        containers are returned.
+        """
+        return self._manager.list(limit=limit, marker=marker,
+                end_marker=end_marker, prefix=prefix)
 
 
     def list_public_containers(self):
@@ -2942,7 +2971,7 @@ class StorageClient(BaseClient):
         if not os.path.isdir(folder_path):
             raise exc.FolderNotFound("No such folder: '%s'" % folder_path)
 
-        ignore = utils.coerce_string_to_list(ignore)
+        ignore = utils.coerce_to_list(ignore)
         total_bytes = utils.folder_size(folder_path, ignore)
         upload_key = str(uuid.uuid4())
         self.folder_upload_status[upload_key] = {"continue": True,
@@ -3007,12 +3036,35 @@ class StorageClient(BaseClient):
             log.info("Loading remote object list (prefix=%s)", object_prefix)
         data = cont.get_objects(prefix=object_prefix, full_listing=True)
         self._remote_files = dict((d.name, d) for d in data)
+        self._sync_summary = {"total": 0,
+                "uploaded": 0,
+                "ignored": 0,
+                "older": 0,
+                "duplicate": 0,
+                "failed": 0,
+                "failure_reasons": [],
+                "deleted": 0,
+                }
         self._sync_folder_to_container(folder_path, cont, prefix="",
                 delete=delete, include_hidden=include_hidden, ignore=ignore,
                 ignore_timestamps=ignore_timestamps,
                 object_prefix=object_prefix, verbose=verbose)
         # Unset the _remote_files
         self._remote_files = None
+        if verbose:
+            # Log the summary
+            summary = self._sync_summary
+            log.info("Folder sync completed at %s" % time.ctime())
+            log.info("  Total files processed: %s" % summary["total"])
+            log.info("  Number Uploaded: %s" % summary["uploaded"])
+            log.info("  Number Ignored: %s" % summary["ignored"])
+            log.info("  Number Skipped (older): %s" % summary["older"])
+            log.info("  Number Skipped (dupe): %s" % summary["duplicate"])
+            log.info("  Number Deleted: %s" % summary["deleted"])
+            log.info("  Number Failed: %s" % summary["failed"])
+            if summary["failed"]:
+                for reason in summary["failure_reasons"]:
+                    log.info("  Reason: %s" % reason)
 
 
     def _sync_folder_to_container(self, folder_path, container, prefix, delete,
@@ -3022,12 +3074,13 @@ class StorageClient(BaseClient):
         nested folder structures.
         """
         fnames = os.listdir(folder_path)
-        ignore = utils.coerce_string_to_list(ignore)
+        ignore = utils.coerce_to_list(ignore)
         log = logging.getLogger("pyrax")
         if not include_hidden:
             ignore.append(".*")
         for fname in fnames:
             if utils.match_pattern(fname, ignore):
+                self._sync_summary["ignored"] += 1
                 continue
             pth = os.path.join(folder_path, fname)
             if os.path.isdir(pth):
@@ -3062,17 +3115,28 @@ class StorageClient(BaseClient):
                     local_mod_str = local_mod.isoformat()
                     if obj_time_str >= local_mod_str:
                         # Remote object is newer
+                        self._sync_summary["older"] += 1
                         if verbose:
                             log.info("%s NOT UPLOADED because remote object is "
                                     "newer", fullname_with_prefix)
                             log.info("  Local: %s   Remote: %s" % (
                                     local_mod_str, obj_time_str))
                         continue
-                container.upload_file(pth, obj_name=fullname_with_prefix,
-                    etag=local_etag, return_none=True)
-                if verbose:
-                    log.info("%s UPLOADED", fullname_with_prefix)
+                try:
+                    container.upload_file(pth, obj_name=fullname_with_prefix,
+                        etag=local_etag, return_none=True)
+                    self._sync_summary["uploaded"] += 1
+                    if verbose:
+                        log.info("%s UPLOADED", fullname_with_prefix)
+                except Exception as e:
+                    # Record the failure, and move on
+                    self._sync_summary["failed"] += 1
+                    self._sync_summary["failure_reasons"].append("%s" % e)
+                    if verbose:
+                        log.error("%s UPLOAD FAILED. Exception: %s" %
+                                (fullname_with_prefix, e))
             else:
+                self._sync_summary["duplicate"] += 1
                 if verbose:
                     log.info("%s NOT UPLOADED because it already exists",
                             fullname_with_prefix)
@@ -3089,6 +3153,7 @@ class StorageClient(BaseClient):
                 full_listing=True))
         localnames = set(self._local_files)
         to_delete = list(objnames.difference(localnames))
+        self._sync_summary["deleted"] += len(to_delete)
         # We don't need to wait around for this to complete. Store the thread
         # reference in case it is needed at some point.
         self._thread = self.bulk_delete(cont, to_delete, async=True)
@@ -3188,7 +3253,7 @@ class FolderUploader(threading.Thread):
     def __init__(self, root_folder, container, ignore, upload_key, client,
             ttl=None):
         self.root_folder = root_folder.rstrip("/")
-        self.ignore = utils.coerce_string_to_list(ignore)
+        self.ignore = utils.coerce_to_list(ignore)
         self.upload_key = upload_key
         self.ttl = ttl
         self.client = client
@@ -3241,13 +3306,12 @@ class BulkDeleter(threading.Thread):
     """
     Threading class to allow for bulk deletion of objects from a container.
     """
-    completed = False
-    results = None
-
     def __init__(self, client, container, object_names):
         self.client = client
         self.container = container
         self.object_names = object_names
+        self.completed = False
+        self.results = None
         threading.Thread.__init__(self)
 
 

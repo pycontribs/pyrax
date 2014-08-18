@@ -1,5 +1,34 @@
 # Release Notes for pyrax
 
+### 2014.08.18 - Version 1.9.1
+
+  - General
+    - Changed 'coerce_string_to_list()' to 'coerce_to_list()'.
+
+  - Autoscale
+    - Encode personality files. GitHub #447
+    - Fixed exception when updating a launch config w/o metadata. GitHub #448
+    - Add config_drive and user_data support to autoscale
+    - Added flexibility to Cloud Networks get_server_networks() to be
+      compatible with autoscale. GitHub #400
+
+  - Cloud Files / Swift
+    - Added 'prefix' and 'end_marker' to listing. GitHub #436
+    - Added support for file-like objects when uploading. GitHub #442
+    - Added missing chunk_size parameter. GitHub #439
+    - Added summary to folder sync. GitHub #403
+    - Fixed recursion issue with subdirs. GitHub #429
+    - Fetching objects containing JSON returns actual content. GitHub #432
+    - Fixed issue with class variables in BulkDeleter class. Thanks to Lars
+      Butler for catching this. GitHub #392
+
+  - Cloud Monitoring
+    - Fixed pagination for monitoring. GitHub #433
+
+  - Cloud DNS
+    - Added the ability to mass edit records. GitHub #427
+
+
 ### 2014.07.14 - Version 1.9.0
 
   - Cloud Files / Swift
@@ -36,6 +65,7 @@
 
   - Cloud Load Balancers
     - Made get_stats() call available from the LB. GitHub #394
+
 
 ###2014.06.04 - Version 1.8.2
 

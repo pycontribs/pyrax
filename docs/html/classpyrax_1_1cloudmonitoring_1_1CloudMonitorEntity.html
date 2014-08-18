@@ -120,10 +120,19 @@ Inheritance diagram for CloudMonitorEntity:</div>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#ac775ee34451fdfa742b318538164070e">__init__</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#abe52b977c101e59f342489ed18140819">update</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Only the agent_id and metadata are able to be updated via the API.  <a href="#abe52b977c101e59f342489ed18140819"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#a663e1c9857cbc0bf083314e6404e976f">get_check</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an instance of the specified check.  <a href="#a663e1c9857cbc0bf083314e6404e976f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#aedd0a1ae642c3f9e56df9bb5a1e1384c">list_checks</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of all CloudMonitorChecks defined for this entity.  <a href="#aedd0a1ae642c3f9e56df9bb5a1e1384c"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a list of the checks defined for this account.  <a href="#aedd0a1ae642c3f9e56df9bb5a1e1384c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#a85522a4725d32d0924f3196f59f91d92">find_all_checks</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds all checks for this entity with attributes matching ``**kwargs``.  <a href="#a85522a4725d32d0924f3196f59f91d92"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#a6fc873d6c66c1173dc63793fd2cc72d6">create_check</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a check on this entity with the specified attributes.  <a href="#a6fc873d6c66c1173dc63793fd2cc72d6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#a31db8ea7ae986d187cad68055d066a20">update_check</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates an existing check with any of the parameters.  <a href="#a31db8ea7ae986d187cad68055d066a20"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#a4efaacdc5baa3b0cf23478e90a16a5b9">delete_check</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the specified check from this entity.  <a href="#a4efaacdc5baa3b0cf23478e90a16a5b9"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#af232f5b9467cd7214f217a3fe6d51473">list_metrics</a></td></tr>
@@ -142,6 +151,42 @@ Public Member Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the specified alarm.  <a href="#aa6f9a8547a22941467c661e1c3b83178"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#a757840459670ee7692e00cf5ddc722d5">name</a></td></tr>
 </table>
+<hr/><h2>Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="ac775ee34451fdfa742b318538164070e"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorEntity::__init__" ref="ac775ee34451fdfa742b318538164070e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#ac775ee34451fdfa742b318538164070e">__init__</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>args</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>kwargs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classpyrax_1_1fakes_1_1FakeCloudMonitorEntity.html#ac775ee34451fdfa742b318538164070e">FakeCloudMonitorEntity</a>.</p>
+
+</div>
+</div>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="a5e3e83b1715922337eb99e95373166e6"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorEntity::create_alarm" ref="a5e3e83b1715922337eb99e95373166e6" args="" -->
 <div class="memitem">
@@ -208,6 +253,114 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a6fc873d6c66c1173dc63793fd2cc72d6"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorEntity::create_check" ref="a6fc873d6c66c1173dc63793fd2cc72d6" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#a6fc873d6c66c1173dc63793fd2cc72d6">create_check</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>label</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>check_type</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>disabled</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>metadata</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>details</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>monitoring_zones_poll</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>period</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>target_alias</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>target_hostname</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>target_receiver</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>test_only</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>include_debug</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Creates a check on this entity with the specified attributes. </p>
+<p>The 'details' parameter should be a dict with the keys as the option name, and the value as the desired setting. </p>
+
+</div>
+</div>
 <a class="anchor" id="aa6f9a8547a22941467c661e1c3b83178"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorEntity::delete_alarm" ref="aa6f9a8547a22941467c661e1c3b83178" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -266,6 +419,36 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a85522a4725d32d0924f3196f59f91d92"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorEntity::find_all_checks" ref="a85522a4725d32d0924f3196f59f91d92" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#a85522a4725d32d0924f3196f59f91d92">find_all_checks</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>kwargs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Finds all checks for this entity with attributes matching ``**kwargs``. </p>
+<p>This isn't very efficient: it loads the entire list then filters on the Python side. </p>
+
+</div>
+</div>
 <a class="anchor" id="a0efb17866082d1efd4697a8414e61d22"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorEntity::get_alarm" ref="a0efb17866082d1efd4697a8414e61d22" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -293,6 +476,35 @@ Public Member Functions</h2></td></tr>
 
 <p>Returns the alarm with the specified ID for this entity. </p>
 <p>If a <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorAlarm.html" title="Alarms bind alerting rules, entities, and notification plans into a logical unit.">CloudMonitorAlarm</a> instance is passed, returns a new <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorAlarm.html" title="Alarms bind alerting rules, entities, and notification plans into a logical unit.">CloudMonitorAlarm</a> object with the current state from the API. </p>
+
+</div>
+</div>
+<a class="anchor" id="a663e1c9857cbc0bf083314e6404e976f"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorEntity::get_check" ref="a663e1c9857cbc0bf083314e6404e976f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#a663e1c9857cbc0bf083314e6404e976f">get_check</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>check</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns an instance of the specified check. </p>
 
 </div>
 </div>
@@ -372,8 +584,30 @@ Public Member Functions</h2></td></tr>
           <td class="memname">def <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#aba03029cc0b951e300763dfb7b374b8f">list_alarms</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>limit</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>marker</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>return_next</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
@@ -391,14 +625,38 @@ Public Member Functions</h2></td></tr>
           <td class="memname">def <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#aedd0a1ae642c3f9e56df9bb5a1e1384c">list_checks</a> </td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>self</em></td><td>)</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>limit</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>marker</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>return_next</em> = <code>False</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Returns a list of all CloudMonitorChecks defined for this entity. </p>
+<p>Returns a list of the checks defined for this account. </p>
+<p>By default the number returned is limited to 100; you can define the number to return by optionally passing a value for the 'limit' parameter. The value for limit must be at least 1, and can be up to 1000.</p>
+<p>For pagination, you must also specify the 'marker' parameter. This is the ID of the first item to return. To get this, pass True for the 'return_next' parameter, and the response will be a 2-tuple, with the first element being the list of checks, and the second the ID of the next item. If there is no next item, the second element will be None. </p>
 
 </div>
 </div>
@@ -416,7 +674,25 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>check</em>&#160;</td>
+          <td class="paramname"><em>check</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>limit</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>marker</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>return_next</em> = <code>False</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -542,6 +818,95 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a31db8ea7ae986d187cad68055d066a20"></a><!-- doxytag: member="pyrax::cloudmonitoring::CloudMonitorEntity::update_check" ref="a31db8ea7ae986d187cad68055d066a20" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def <a class="el" href="classpyrax_1_1cloudmonitoring_1_1CloudMonitorEntity.html#a31db8ea7ae986d187cad68055d066a20">update_check</a> </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>check</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>label</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>name</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>disabled</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>metadata</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>monitoring_zones_poll</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>timeout</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>period</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>target_alias</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>target_hostname</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>target_receiver</em> = <code>None</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Updates an existing check with any of the parameters. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>pyrax/<a class="el" href="cloudmonitoring_8py.html">cloudmonitoring.py</a></li>
 </ul>
@@ -563,7 +928,7 @@ Public Member Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 24 2014 11:17:58 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Aug 18 2014 10:34:28 for pyrax by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

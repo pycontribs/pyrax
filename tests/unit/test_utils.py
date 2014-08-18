@@ -119,6 +119,16 @@ class UtilsTest(unittest.TestCase):
         self.assertRaises(exc.FolderNotFound, utils.folder_size,
                 "/doesnt_exist")
 
+    def test_coerce_to_list(self):
+        val = utils.random_ascii()
+        ret = utils.coerce_to_list(val)
+        self.assertEqual(ret, [val])
+
+    def test_coerce_to_list_list(self):
+        val = [utils.random_ascii(), utils.random_ascii()]
+        ret = utils.coerce_to_list(val)
+        self.assertEqual(ret, val)
+
     def test_folder_size_no_ignore(self):
         with utils.SelfDeletingTempDirectory() as tmpdir:
             # write 5 files of 100 bytes each
@@ -378,7 +388,6 @@ class UtilsTest(unittest.TestCase):
         self.assertRaises(exc.MissingName, utils.get_name, object())
 
     def test_params_to_dict(self):
-        dct = {}
         k1 = utils.random_unicode()
         k2 = utils.random_unicode()
         k3 = utils.random_unicode()
@@ -386,10 +395,10 @@ class UtilsTest(unittest.TestCase):
         v1 = utils.random_unicode()
         v2 = utils.random_unicode()
         v3 = utils.random_unicode()
-        local = {k1: v1, k2: v2, k3: v3}
-        params = [k2, k3, k4]
-        expected = {k2: v2, k3: v3}
-        utils.params_to_dict(params, dct, local)
+        dct = {k2: "OLDVAL"}
+        params = {k1: v1, k2: v2, k3: v3, k4: None}
+        expected = {k1: v1, k2: v2, k3: v3}
+        utils.params_to_dict(params, dct)
         self.assertEqual(dct, expected)
 
     def test_import_class(self):
