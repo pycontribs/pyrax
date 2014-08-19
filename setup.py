@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 from setuptools import setup
+from setuptools.command.sdist import sdist as _sdist
 import re
 import sys
+import time
+import subprocess
 if sys.version < "2.2.3":
     from distutils.dist import DistributionMetadata
     DistributionMetadata.classifiers = None
@@ -15,6 +18,43 @@ with open("pyrax/version.py", "rt") as vfile:
     version_text = vfile.read()
 vmatch = re.search(r'version ?= ?"(.+)"$', version_text)
 version = vmatch.groups()[0]
+
+# When set to '0' this expands in the RPM SPEC file to a unique date-base string
+# Set to another value when cutting official release RPMS, then change back to
+# zero for the next development cycle
+release = '0'
+
+class sdist(_sdist):
+    """ custom sdist command, to prep pyrax.spec file """
+
+    def run(self):
+        global version
+        global release
+
+        # Create a development release string for later use
+        git_head = subprocess.Popen("git log -1 --pretty=format:%h",
+                                    shell=True,
+                                    stdout=subprocess.PIPE).communicate()[0].strip()
+        date = time.strftime("%Y%m%d%H%M%S", time.gmtime())
+        git_release = "%sgit%s" % (date, git_head)
+
+        # Expand macros in pyrax.spec.in
+        spec_in = open('pyrax.spec.in', 'r')
+        spec = open('pyrax.spec', 'w')
+        for line in spec_in.xreadlines():
+            if "@VERSION@" in line:
+                line = line.replace("@VERSION@", version)
+            elif "@RELEASE@" in line:
+                # If development release, include date+githash in %{release}
+                if release.startswith('0'):
+                    release += '.' + git_release
+                line = line.replace("@RELEASE@", release)
+            spec.write(line)
+        spec_in.close()
+        spec.close()
+
+        # Run parent constructor
+        _sdist.run(self)
 
 testing_requires = ["mock"]
 
@@ -42,4 +82,5 @@ setup(
         "pyrax",
         "pyrax/identity",
     ],
+    cmdclass = {'sdist': sdist}
 )
