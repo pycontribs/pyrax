@@ -1993,11 +1993,11 @@ class StorageObjectManager(BaseManager):
         size = size or obj_size
         max_size = min(size, obj_size)
         while True:
-            endpos = min(obj_size, pos + chunk_size)
+            endpos = min(obj_size, pos + chunk_size - 1)
             headers = {"Range": "bytes=%s-%s" % (pos, endpos)}
             resp, resp_body = self.api.method_get(uri, headers=headers,
                     raw_content=True)
-            pos = endpos
+            pos = endpos + 1
             if not resp_body:
                 # End of file
                 raise StopIteration
