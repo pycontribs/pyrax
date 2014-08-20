@@ -1,0 +1,64 @@
+# The python2 defines are missing in RHEL6
+%if 0%{?rhel} == 6
+%define __python2 %{__python}
+%define python2_sitelib %{python_sitelib}
+%endif
+
+Name:           python-pyrax
+Version:        @VERSION@
+Release:        @RELEASE@%{?dist}
+Summary:        Python language bindings for OpenStack Clouds
+
+
+License:        ASL 2.0
+Source0:        http://imcleod.fedorapeople.org/src/pyrax/pyrax-%{version}.tar.gz
+URL:            https://github.com/rackspace/pyrax
+
+# Earlier upstream RPMs had the name pyrax - provide this for compatibility
+Provides:       pyrax = %{version}
+BuildArch:      noarch
+BuildRequires:  python-setuptools
+BuildRequires:  python-mock
+BuildRequires:  python2-devel
+Requires:       python-novaclient >= 2.13.0
+Requires:       python-keyring
+
+
+%description
+A library for working with most OpenStack-based cloud deployments, though it
+originally targeted the Rackspace public cloud. For example, the code for
+cloudfiles contains the ability to publish your content on Rackspace's CDN
+network, even though CDN support is not part of OpenStack Swift. But if you
+don't use any of the CDN-related code, your app will work fine on any
+standard Swift deployment.
+
+%prep
+%setup -q -n pyrax-%{version}
+
+
+%build
+
+
+%install
+rm -rf $RPM_BUILD_ROOT
+%{__python2} setup.py install --root $RPM_BUILD_ROOT
+
+%files
+%doc README COPYING samples docs 
+%{python2_sitelib}/*
+
+%changelog
+* Tue Jul 29 2014 Ian McLeod <imcleod@redhat.com> - 1.9.0-3
+- SPEC change to add missing macros for EPEL 6 builds
+
+* Mon Jul 28 2014 Ian McLeod <imcleod@redhat.com> - 1.9.0-2
+- Remove obsolete httplib requirement from SPEC file
+- Remove #! execution headers for non-executable components [BZ1123044]
+- add inline license for slugify() function to satisfy 3-clause BSD requirements from django [BZ1123044]
+- misc additional SPEC change to comply with Fedora package guidelines [BZ1123044]
+
+* Thu Jul 24 2014 Ian McLeod <imcleod@redhat.com> - 1.9.0-1
+- Pull in upstream 1.9.0 release
+
+* Fri Sep 6 2013 Greg Swift <gregswift@gmail.com> - 1.5.0-1
+- Initial spec
