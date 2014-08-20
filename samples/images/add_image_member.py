@@ -19,7 +19,9 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
+
 
 pyrax.set_setting("identity_type", "rackspace")
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
@@ -36,7 +38,7 @@ else:
     print("Images:")
     for pos, image in enumerate(images):
         print("[%s] - %s" % (pos, image.name))
-    snum = raw_input("Enter the number of the image you want to share: ")
+    snum = six.moves.input("Enter the number of the image you want to share: ")
     if not snum:
         exit()
     try:
@@ -49,8 +51,8 @@ else:
         exit()
     image = images[num]
 
-project_id = raw_input("Enter the project ID of the member you wish to share "
-        "this image with: ")
+project_id = six.moves.input("Enter the project ID of the member you wish to "
+        "share this image with: ")
 if not project_id:
     print("No project ID entered; exiting.")
     exit()

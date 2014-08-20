@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 
 pyrax.set_setting("identity_type", "rackspace")
@@ -49,7 +50,7 @@ for image, members in images_with_members:
         print("  [%s] - %s (%s)" % (member_index, member.id, member.status))
         to_delete.append(member)
         member_index += 1
-snum = raw_input("Enter the number of the member you wish to delete: ")
+snum = six.moves.input("Enter the number of the member you wish to delete: ")
 if not snum:
     exit()
 try:

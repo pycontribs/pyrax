@@ -21,6 +21,7 @@ from __future__ import print_function
 import os
 import sys
 import time
+import six
 
 import pyrax
 
@@ -46,7 +47,7 @@ except Exception as e:
     print("No server named 'sacrifice' exists, so for safety reasons this")
     print("script will not do anything potentially destructive.")
     print()
-    answer = raw_input("Do you want to create that server now? [y/n] ")
+    answer = six.moves.input("Do you want to create that server now? [y/n] ")
     if answer.strip().lower()[0] == "y":
         sacrifice = create_server()
     else:
@@ -56,8 +57,8 @@ except Exception as e:
 if sacrifice.status != "ACTIVE":
     print("Please wait until the 'sacrifice' server is in ACTIVE status.")
     print("Current status:", sacrifice.status)
-    raw_answer = raw_input("Do you want this script to cycle every 10 seconds "
-            "to check? [y/n] ")
+    raw_answer = six.moves.input("Do you want this script to cycle every 10 "
+        "seconds to check? [y/n] ")
     answer = raw_answer[0].lower()
     if answer != "y":
         sys.exit()

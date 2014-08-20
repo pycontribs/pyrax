@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 import pyrax.exceptions as exc
 
@@ -43,8 +44,8 @@ else:
     print("Queues:")
     for pos, queue in enumerate(queues):
         print("%s - %s" % (pos, queue.name))
-    snum = raw_input("Enter the number of the queue you wish to list messages "
-            "from: ")
+    snum = six.moves.input("Enter the number of the queue you wish to list "
+        "messages from: ")
     if not snum:
         exit()
     try:
