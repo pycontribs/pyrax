@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 
 pyrax.set_setting("identity_type", "rackspace")
@@ -37,7 +38,7 @@ if not images:
 for pos, image in enumerate(images):
     new_status = None
     print("[%s] - %s" % (pos, image.name))
-    choice = raw_input("Would you like to accept, reject or skip? "
+    choice = six.moves.input("Would you like to accept, reject or skip? "
             "('a', 'r', or 's'): ")
     if choice == 'a':
         new_status = 'accepted'

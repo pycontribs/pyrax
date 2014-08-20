@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 import pyrax.exceptions as exc
 
@@ -27,7 +28,7 @@ creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 pq = pyrax.queues
 
-name = raw_input("Enter the name for your queue: ")
+name = six.moves.input("Enter the name for your queue: ")
 if not name:
     exit()
 

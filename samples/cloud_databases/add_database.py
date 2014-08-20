@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import sys
 
 import pyrax
@@ -40,8 +41,9 @@ for pos, inst in enumerate(instances):
     print("%s: %s (%s, RAM=%s, volume=%s) Status=%s" % (pos, inst.name,
             inst.flavor.name, inst.flavor.ram, inst.volume.size, inst.status))
 try:
-    sel = int(raw_input("Enter the number of the instance to which you want to "
-            "add a database: "))
+    sel = int(six.moves.input(
+        "Enter the number of the instance to which you want to add a database: "
+    ))
 except ValueError:
     print()
     print("Invalid (non-numeric) entry.")
@@ -55,7 +57,8 @@ except IndexError:
     print()
     sys.exit()
 
-nm = raw_input("Enter the name of the new database to create in this instance: ")
+prompt = "Enter the name of the new database to create in this instance: "
+nm = six.moves.input(prompt)
 db = inst.create_database(nm)
 
 dbs = inst.list_databases()

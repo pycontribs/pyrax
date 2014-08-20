@@ -20,6 +20,7 @@ from __future__ import print_function
 
 from pprint import pprint
 import os
+import six
 
 import pyrax
 from pyrax import utils
@@ -56,7 +57,7 @@ print("Isolated server:", isolated.name, isolated.id
 print()
 print("The networks will not be visible until the servers have finished building.")
 print("Do you want to wait until then to see the results? It might take several")
-answer = raw_input("minutes to complete. [y/N]")
+answer = six.moves.input("minutes to complete. [y/N]")
 if answer not in "yY":
     exit()
 

@@ -1,5 +1,15 @@
 # Release Notes for pyrax
 
+### 2014.08.20 - Version 1.9.2
+
+  - Cloud Files
+    - Fixed data corruption bug in _fetch_chunker. GitHub #449
+
+  - General
+    - Incorporated several Python3 compatibility enhancements from @jaraco
+      GitHub #379 and #380
+
+
 ### 2014.08.18 - Version 1.9.1
 
   - General
@@ -46,7 +56,7 @@
     - Added support for different auth_endpoint values when using Rackspace
       authentication.
 
-  - Cloud Servers / Nova 
+  - Cloud Servers / Nova
     - Load extenstions already installed in the local novaclient. GitHub #425
     - Made sure that 'personality' files are properly base-64 encoded.
 

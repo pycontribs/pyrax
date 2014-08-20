@@ -96,6 +96,7 @@ var searchData=
   ['cloudnetworkmanager',['CloudNetworkManager',['../classpyrax_1_1cloudnetworks_1_1CloudNetworkManager.html',1,'pyrax::cloudnetworks']]],
   ['cloudnetworks_2epy',['cloudnetworks.py',['../cloudnetworks_8py.html',1,'']]],
   ['cloudservers',['cloudservers',['../namespacepyrax.html#a558330633ea0238aee2d4f5f5a7afa07',1,'pyrax']]],
+  ['cmdclass',['cmdclass',['../namespacesetup.html#aaaa16adb27d4e68f0fab16ed5e202b79',1,'setup']]],
   ['code',['code',['../classpyrax_1_1exceptions_1_1ClientException.html#afb9ed1b8a27eb20854efe6e23e297683',1,'pyrax::exceptions::ClientException']]],
   ['coerce_5fto_5flist',['coerce_to_list',['../namespacepyrax_1_1utils.html#aa75600a0d66bbef3a1e638d2d15e8c67',1,'pyrax::utils']]],
   ['comment',['comment',['../classpyrax_1_1clouddns_1_1CloudDNSRecord.html#a8c0288707ed90c2275d70e22bd1f16d9',1,'pyrax::clouddns::CloudDNSRecord.comment()'],['../classpyrax_1_1clouddns_1_1CloudDNSPTRRecord.html#a8c0288707ed90c2275d70e22bd1f16d9',1,'pyrax::clouddns::CloudDNSPTRRecord.comment()']]],

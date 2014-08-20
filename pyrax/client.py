@@ -29,7 +29,7 @@ import json
 import logging
 import requests
 import time
-import six.moves.urllib as urllib
+from six.moves import urllib
 
 import pyrax
 import pyrax.exceptions as exc

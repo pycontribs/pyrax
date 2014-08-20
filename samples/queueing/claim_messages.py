@@ -19,6 +19,7 @@
 from __future__ import print_function
 
 import os
+import six
 import pyrax
 import pyrax.exceptions as exc
 
@@ -39,8 +40,8 @@ else:
     print("Queues:")
     for pos, queue in enumerate(queues):
         print("%s - %s" % (pos, queue.name))
-    snum = raw_input("Enter the number of the queue you wish to post a message "
-            "to: ")
+    snum = six.moves.input("Enter the number of the queue you wish to post a "
+        "message to: ")
     if not snum:
         exit()
     try:
@@ -53,7 +54,7 @@ else:
         exit()
     queue = queues[num]
 
-sttl = raw_input("Enter a TTL for the claim: ")
+sttl = six.moves.input("Enter a TTL for the claim: ")
 if not sttl:
     print("A TTL value is required.")
     exit()
@@ -69,7 +70,7 @@ else:
         print("'%s' is not a valid number." % sttl)
         exit()
 
-sgrace = raw_input("Enter a grace period for the claim: ")
+sgrace = six.moves.input("Enter a grace period for the claim: ")
 if not sgrace:
     print("A value for the grace period is required.")
     exit()
@@ -85,8 +86,8 @@ else:
         print("'%s' is not a valid number." % sgrace)
         exit()
 
-scount = raw_input("Enter the number of messages to claim (max=20), or press "
-        "Enter for the default of 10: ")
+scount = six.moves.input("Enter the number of messages to claim (max=20), or "
+    "press Enter for the default of 10: ")
 if not scount:
     count = None
 else:
