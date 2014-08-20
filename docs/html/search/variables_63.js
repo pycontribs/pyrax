@@ -19,6 +19,7 @@ var searchData=
   ['cloud_5fnetworks',['cloud_networks',['../namespacepyrax.html#af25ef81616c79ed5da4655185879259f',1,'pyrax']]],
   ['cloudfiles',['cloudfiles',['../namespacepyrax.html#a87bf34a456a3712f3bd4a7207f1c36ca',1,'pyrax']]],
   ['cloudservers',['cloudservers',['../namespacepyrax.html#a558330633ea0238aee2d4f5f5a7afa07',1,'pyrax']]],
+  ['cmdclass',['cmdclass',['../namespacesetup.html#aaaa16adb27d4e68f0fab16ed5e202b79',1,'setup']]],
   ['code',['code',['../classpyrax_1_1exceptions_1_1ClientException.html#afb9ed1b8a27eb20854efe6e23e297683',1,'pyrax::exceptions::ClientException']]],
   ['comment',['comment',['../classpyrax_1_1clouddns_1_1CloudDNSRecord.html#a8c0288707ed90c2275d70e22bd1f16d9',1,'pyrax::clouddns::CloudDNSRecord.comment()'],['../classpyrax_1_1clouddns_1_1CloudDNSPTRRecord.html#a8c0288707ed90c2275d70e22bd1f16d9',1,'pyrax::clouddns::CloudDNSPTRRecord.comment()']]],
   ['completed',['completed',['../classpyrax_1_1fakes_1_1FakeBulkDeleter.html#a5fd2693b43ceb7c5b415600614d1f0d2',1,'pyrax::fakes::FakeBulkDeleter.completed()'],['../classpyrax_1_1object__storage_1_1BulkDeleter.html#a5fd2693b43ceb7c5b415600614d1f0d2',1,'pyrax::object_storage::BulkDeleter.completed()']]],

@@ -2,6 +2,7 @@ var searchData=
 [
   ['scalinggroup',['ScalingGroup',['../classpyrax_1_1autoscale_1_1ScalingGroup.html',1,'pyrax::autoscale']]],
   ['scalinggroupmanager',['ScalingGroupManager',['../classpyrax_1_1autoscale_1_1ScalingGroupManager.html',1,'pyrax::autoscale']]],
+  ['sdist',['sdist',['../classsetup_1_1sdist.html',1,'setup']]],
   ['selfdeletingtempdirectory',['SelfDeletingTempDirectory',['../classpyrax_1_1utils_1_1SelfDeletingTempDirectory.html',1,'pyrax::utils']]],
   ['selfdeletingtempfile',['SelfDeletingTempfile',['../classpyrax_1_1utils_1_1SelfDeletingTempfile.html',1,'pyrax::utils']]],
   ['service',['Service',['../classpyrax_1_1base__identity_1_1Service.html',1,'pyrax::base_identity']]],
