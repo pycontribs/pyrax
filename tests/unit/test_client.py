@@ -346,7 +346,8 @@ class ClientTest(unittest.TestCase):
         sav_req = clt._time_request
         clt._time_request = Mock(return_value=((None, None)))
         uri = "/abc/def?fake@fake.com"
-        expected = "%s%s" % (clt.management_url, urllib.parse.quote(uri, safe="/.?="))
+        expected = "%s%s" % (clt.management_url, urllib.parse.quote(uri,
+                safe="/.?="))
         clt._api_request(uri, "GET")
         clt._time_request.assert_called_once_with(expected, 'GET',
                 headers={'X-Auth-Token': None})
@@ -364,7 +365,8 @@ class ClientTest(unittest.TestCase):
         sav_req = clt._time_request
         clt._time_request = Mock(return_value=((None, None)))
         uri = "/abc/def"
-        expected = "%s%s" % (clt.management_url, urllib.parse.quote(uri, safe="/.?="))
+        expected = "%s%s" % (clt.management_url, urllib.parse.quote(uri,
+                safe="/.?="))
         clt._api_request(uri, "GET")
         clt._time_request.assert_called_once_with(expected, 'GET',
                 headers={'X-Auth-Token': None})
