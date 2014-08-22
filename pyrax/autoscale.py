@@ -388,6 +388,11 @@ class ScalingGroupManager(BaseManager):
         """
         Returns the launch configuration for the specified scaling group.
         """
+        key_map = {
+            "OS-DCF:diskConfig": "disk_config",
+            "flavorRef": "flavor",
+            "imageRef": "image",
+        }
         uri = "/%s/%s/launch" % (self.uri_base, utils.get_id(scaling_group))
         resp, resp_body = self.api.method_get(uri)
         ret = {}
@@ -395,15 +400,9 @@ class ScalingGroupManager(BaseManager):
         ret["type"] = data.get("type")
         args = data.get("args", {})
         ret["load_balancers"] = args.get("loadBalancers")
-        srv = args.get("server", {})
-        ret["name"] = srv.get("name")
-        ret["flavor"] = srv.get("flavorRef")
-        ret["image"] = srv.get("imageRef")
-        ret["disk_config"] = srv.get("OS-DCF:diskConfig")
-        ret["metadata"] = srv.get("metadata")
-        ret["personality"] = srv.get("personality")
-        ret["networks"] = srv.get("networks")
-        ret["key_name"] = srv.get("key_name")
+        for key, value in args.get("server", {}).items():
+            norm_key = key_map.get(key, key)
+            ret[norm_key] = value
         return ret
 
 
