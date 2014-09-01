@@ -56,11 +56,11 @@ To delete a network you've created, you use either of the two equivalent command
 
 In the first form, you pass either a `CloudNetwork` object or the ID of the network to be deleted to the pyrax.cloud_networks client. However, if you already have a `CloudNetwork` object for the network to be deleted, you can simply call its `delete()` method directly.
 
-Please note that you cannot delete a network that is attached to a server. As there is no way to "unattach" a network from a server, you must first delete the server if you want to delete the network. If you attempt to delete a network that is attached to one or more servers, a **`NetworkInUse`** exception is raised.
+If you attempt to delete a network that is attached to one or more servers, a **`NetworkInUse`** exception is raised. To remedy this, the network must be detached from each server. See the examples below for more information.
 
 
 ## Creating a Server with an Isolated Network
-Isolated networks can only be attached to servers when the servers are being created; you cannot attach an isolated network to an existing server.
+Isolated networks can be attached to servers when the servers are being created.
 
 There is an optional `networks` parameter available in the `create()` command when creating a new server. If you do not specify this, the server is created with the public and private networks by default. If you do include the `networks` parameter, **you must specify all the networks for that server**, including the default networks. The Cloud Servers `create()` command expects the argument for the `networks` parameter to be in a particular format, so `pyrax` makes that easy for you by providing the `get_server_networks()` method on both the `CloudNetwork` and the `CloudNetworksClient` classes.
 
@@ -104,17 +104,27 @@ This server's `networks` attribute shows all three networks:
      u'public': [u'2001:4800:7810:0512:8ca7:b42c:ff04:93ee', u'64.49.237.239']}
 
 
+## Attaching existing servers to cloud networks
+To attach an existing server to an existing cloud network, we need to use a Rackspace-specific extension. To create a new virtual interface on the server:
+
+    cnw_ext = cs.os_virtual_interfacesv2_python_novaclient_ext
+    cnw_ext.create(isolated.id, svr.id)
+    
+To remove the network from the server, we need the interface ID and the server ID. You can get the virtual interface ID multiple ways:
+    cnw_ext.list(server_id)
+    The network's `get_server_network` method as described above
+    The server's `networks` attribute
+
+To delete the virtual interface simply call:
+    cnw_ext.delete(vif_id, server_id)
+
 ## Limitations of Cloud Networks
 Please note that there are several limitations regarding Cloud Networks:
 
 * You can create a maximum of **10** isolated networks. Please create a Rackspace support ticket if you'll need more than 10 networks.
-* You can attach an isolated network to a maximum of **60** servers.
+* You can attach an isolated network to a maximum of **250** servers.
 * A server instance can have a maximum of **15** virtual interfaces (VIFs).
-* You cannot attach an isolated network to an existing server.
-    * Workaround: Create an image of the server and build a new server based on that image. When you build the new server, you can attach the isolated network. For information, see [Attach a Cloud Network to an Existing Cloud Server](http://www.rackspace.com/knowledge_center/article/attach-a-cloud-network-to-an-existing-cloud-server). To use the create image API, see [Create Image](http://docs.rackspace.com/servers/api/v2/cs-devguide/content/Create_Image-d1e4655.html).
+* A server can only be attached to a network within the same region.
 * You cannot delete an isolated network unless the network is not associated with any server.
-* You cannot detach an isolated network from a server.
-    * Workaround: To detach an isolated network from a server, you must delete the server.
 * You cannot rename an isolated network.
 * You cannot renumber the CIDR for an isolated network.
-
