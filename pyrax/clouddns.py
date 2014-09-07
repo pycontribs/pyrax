@@ -240,7 +240,7 @@ class CloudDNSDomain(BaseResource):
                 "comment": comment,
                 }
         utils.params_to_dict(pdict, rdict)
-        return self.manager.update_records(self, rdict)
+        return self.manager.update_records(self, [rdict])
 
 
     def update_records(self, records):
@@ -875,8 +875,10 @@ class CloudDNSManager(BaseManager):
         """
         Modifies an existing record for a domain.
         """
+        if not isinstance(records, list):
+            raise TypeError("Expected records of type list")
         uri = "/domains/%s/records" % utils.get_id(domain)
-        resp, resp_body = self._async_call(uri, method="PUT", body=records,
+        resp, resp_body = self._async_call(uri, method="PUT", body={"records": records},
                 error_class=exc.DomainRecordUpdateFailed, has_response=False)
         return resp_body
 
