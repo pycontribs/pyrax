@@ -1719,11 +1719,13 @@ class ObjectStorageTest(unittest.TestCase):
         conttype = utils.random_unicode()
         etag = utils.random_unicode()
         lastmod = utils.random_unicode()
+        timestamp = utils.random_unicode()
         fake_resp = fakes.FakeResponse()
         fake_resp.headers = {"content-length": contlen,
                 "content-type": conttype,
                 "etag": etag,
                 "last-modified": lastmod,
+                "x-timestamp": timestamp,
                 }
         mgr.api.method_head = Mock(return_value=(fake_resp, None))
         ret = mgr.get(obj)
@@ -1732,6 +1734,7 @@ class ObjectStorageTest(unittest.TestCase):
         self.assertEqual(ret.content_type, conttype)
         self.assertEqual(ret.hash, etag)
         self.assertEqual(ret.last_modified, lastmod)
+        self.assertEqual(ret.timestamp, timestamp)
 
     def test_sobj_mgr_get_no_length(self):
         cont = self.container

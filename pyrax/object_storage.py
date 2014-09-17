@@ -1797,6 +1797,7 @@ class StorageObjectManager(BaseManager):
                 "content_type": hdrs.get("content-type"),
                 "hash": hdrs.get("etag"),
                 "last_modified": hdrs.get("last-modified"),
+                "timestamp": hdrs.get("x-timestamp"),
                 }
         return StorageObject(self, data, loaded=True)
 
