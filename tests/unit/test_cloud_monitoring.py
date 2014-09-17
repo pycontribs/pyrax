@@ -169,6 +169,13 @@ class CloudMonitoringTest(unittest.TestCase):
         ent.label = utils.random_unicode()
         self.assertEqual(ent.label, ent.name)
 
+    def test_entity_find_all_checks(self):
+        ent = self.entity
+        ent._check_manager.find_all_checks = Mock(
+            return_value=[fakes.FakeCloudMonitorCheck()])
+        checks = ent.find_all_checks()
+        self.assertEqual(checks[0].entity, ent)
+
     @patch("pyrax.manager.BaseManager.list")
     def test_pagination_mgr_list(self, mock_list):
         pm = _PaginationManager(self.client)
@@ -755,7 +762,7 @@ class CloudMonitoringTest(unittest.TestCase):
         clt = self.client
         mgr = clt._entity_manager
         id_ = utils.random_unicode()
-        chk = CloudMonitorCheck(mgr, info={"id": id_}, entity=ent)
+        chk = fakes.FakeCloudMonitorCheck(info={"id": id_}, entity=ent)
         info = chk._info
         mgr.get_check = Mock(return_value=chk)
         chk.reload()
