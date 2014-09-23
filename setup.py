@@ -63,7 +63,7 @@ setup(
     version=version,
     description="Python language bindings for OpenStack Clouds.",
     author="Rackspace",
-    author_email="ed.leafe@rackspace.com",
+    author_email="sdk-support@rackspace.com",
     url="https://github.com/rackspace/pyrax",
     keywords="pyrax rackspace cloud openstack",
     classifiers=[

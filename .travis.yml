@@ -21,6 +21,4 @@ after_success:
     coveralls
 
 notifications:
-  email:
-    - ed.leafe@rackspace.com
   irc: "irc.freenode.org#rackspace-dev"
