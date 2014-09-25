@@ -659,7 +659,8 @@ class CloudDNSTest(unittest.TestCase):
         req_body = {"id": rec_id, "name": nm, "data": data, "ttl": ttl}
         clt.update_record(dom, rec, data=data, ttl=ttl)
         mgr._async_call.assert_called_once_with(uri, method="PUT",
-                body={"records": [req_body]}, error_class=exc.DomainRecordUpdateFailed,
+                body={"records": [req_body]},
+                error_class=exc.DomainRecordUpdateFailed,
                 has_response=False)
 
     def test_delete_record(self):
