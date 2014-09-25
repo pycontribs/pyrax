@@ -274,6 +274,7 @@ class CloudBlockStorageTest(unittest.TestCase):
                 "volume_type": "SATA",
                 "metadata": {},
                 "availability_zone": availability_zone,
+                "imageRef": None,
                 }}
         ret = mgr._create_body(name=name, size=size, volume_type=volume_type,
                 description=display_description, metadata=metadata,
@@ -300,6 +301,7 @@ class CloudBlockStorageTest(unittest.TestCase):
                 "volume_type": volume_type,
                 "metadata": metadata,
                 "availability_zone": availability_zone,
+                "imageRef": None,
                 }}
         ret = mgr._create_body(name=name, size=size, volume_type=volume_type,
                 description=display_description, metadata=metadata,
