@@ -5,3 +5,4 @@ omit =
     */lib_pypy/_*.py
     */site-packages/*
     */unittest2/*
+    */fakes.py
