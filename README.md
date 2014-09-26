@@ -1,7 +1,7 @@
 #pyrax
 Python SDK for OpenStack/Rackspace APIs
 
-See the COPYING file for license and copyright information.
+See the LICENSE file for license and copyright information.
 
 **pyrax** should work with most OpenStack-based cloud deployments, though it specifically targets the Rackspace public cloud. For example, the code for cloudfiles contains the ability to publish your content on Rackspace's CDN network, even though CDN support is not part of OpenStack Swift. But if you don't use any of the CDN-related code, your app will work fine on any standard Swift deployment.
 
