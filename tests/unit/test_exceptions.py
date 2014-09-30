@@ -43,6 +43,19 @@ class ExceptionsTest(unittest.TestCase):
         self.assertEqual(ret.details, "fake_details")
         self.assertTrue("HTTP 666" in str(ret))
 
+    def test_pickle(self):
+        error = exc.NotFound(42, 'message', 'details', 0xDEADBEEF)
+
+        import pickle
+        pickled_error = pickle.dumps(error, -1)
+
+        unpickled_error = pickle.loads(pickled_error)
+
+        self.assertIsInstance(unpickled_error, exc.NotFound)
+        self.assertEqual(unpickled_error.code, 42)
+        self.assertEqual(unpickled_error.message, 'message')
+        self.assertEqual(unpickled_error.details, 'details')
+        self.assertEqual(unpickled_error.request_id, 0xDEADBEEF)
 
 
 if __name__ == "__main__":
