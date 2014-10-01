@@ -92,6 +92,19 @@ class Service(object):
         return "<'%s' Service object at %s>" % (self.service_type, memloc)
 
 
+    def merge(self, new_endpoints):
+        """
+        Merge another service into this one.
+
+        Some pre-production or QE service catalogs have the service type
+        duplicated, so you'll see two entries for 'compute' instead of
+        one entry with two endpoints (the names will probably be different).
+        pyrax used to just take the last Service it saw, so now on parsing
+        the service catalog we can merge endpoints as we see service types.
+        """
+        self.endpoints.update(new_endpoints)
+
+
     def _ep_for_region(self, region):
         """
         Given a region, returns the Endpoint for that region, or the Endpoint
@@ -648,7 +661,13 @@ class BaseIdentity(object):
             if not hasattr(service, "endpoints"):
                 # Not an OpenStack service
                 continue
-            setattr(self.services, service.service_type, service)
+            if not hasattr(self.services, service.service_type):
+                setattr(self.services, service.service_type, service)
+            else:
+                # If we see the same service_type come up again, merge
+                # the endpoints instead of overwriting.
+                svc = getattr(self.services, service.service_type)
+                svc.merge(service.endpoints)
             self.regions.update(list(service.endpoints.keys()))
         # Update the 'ALL' services to include all available regions.
         self.regions.discard("ALL")
