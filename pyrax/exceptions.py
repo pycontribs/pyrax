@@ -376,6 +376,10 @@ class ClientException(PyraxException):
             formatted_string += " (Request-ID: %s)" % self.request_id
         return formatted_string
 
+    def __reduce__(self):
+        return (self.__class__, (self.code, self.message,
+                                 self.details, self.request_id))
+
 
 class BadRequest(ClientException):
     """
