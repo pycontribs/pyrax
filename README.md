@@ -45,6 +45,10 @@ Once you have the source code, `cd` to the base directory of the source and run 
 
 	python setup.py install
 
+For more information on getting started, check out the following documentation:
+
+[https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md](https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md)
+[https://developer.rackspace.com/sdks/python/](https://developer.rackspace.com/sdks/python/)
 
 ## Updates
 If you installed **pyrax** using pip, it is simple to get the latest updates from either PyPI or GitHub:
