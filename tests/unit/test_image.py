@@ -8,6 +8,8 @@ import unittest
 from mock import patch
 from mock import MagicMock as Mock
 
+from collections import OrderedDict
+
 import pyrax
 from pyrax.manager import BaseManager
 import pyrax.image
@@ -179,7 +181,7 @@ class ImageTest(unittest.TestCase):
         mgr = clt._manager
         img = self.image
         setattr(img, "foo", "old")
-        valdict = {"foo": "new", "bar": "new"}
+        valdict = OrderedDict([("foo", "new"), ("bar", "new")])
         mgr.api.method_patch = Mock(return_value=(None, None))
         mgr.get = Mock(return_value=img)
         exp_uri = "/%s/%s" % (mgr.uri_base, img.id)
