@@ -3238,7 +3238,8 @@ class ObjectStorageTest(unittest.TestCase):
             fnames = ["test1", "test2", "test3", "fake1", "fake2"]
             for fname in fnames:
                 pth = os.path.join(folder_path, fname)
-                open(pth, "w").write(txt)
+                with open(pth, "w") as f:
+                    f.write(txt)
             mock_listdir.return_value = fnames
             clt._sync_folder_to_container(folder_path, cont, prefix, delete,
                     include_hidden, ignore, ignore_timestamps, object_prefix,
