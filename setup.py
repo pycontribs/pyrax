@@ -76,11 +76,13 @@ setup(
     author="Rackspace",
     author_email="sdk-support@rackspace.com",
     url="https://github.com/rackspace/pyrax",
+    license='Apache License, Version 2.0',
     keywords="pyrax rackspace cloud openstack",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 2",
+        "Operating System :: OS Independent",
     ],
     install_requires=[
         "python-novaclient>=2.13.0",
