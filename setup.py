@@ -5,6 +5,7 @@ from setuptools.command.sdist import sdist as _sdist
 import re
 import sys
 import time
+import codecs
 import subprocess
 if sys.version < "2.2.3":
     from distutils.dist import DistributionMetadata
@@ -13,7 +14,7 @@ if sys.version < "2.2.3":
 
 # Workaround for problems caused by this import
 # It's either this or hardcoding the version.
-#from pyrax.version import version
+# from pyrax.version import version
 with open("pyrax/version.py", "rt") as vfile:
     version_text = vfile.read()
 vmatch = re.search(r'version ?= ?"(.+)"$', version_text)
@@ -23,6 +24,7 @@ version = vmatch.groups()[0]
 # Set to another value when cutting official release RPMS, then change back to
 # zero for the next development cycle
 release = '0'
+
 
 class sdist(_sdist):
     """ custom sdist command, to prep pyrax.spec file """
@@ -56,20 +58,31 @@ class sdist(_sdist):
         # Run parent constructor
         _sdist.run(self)
 
+# Get the long description from the relevant file
+try:
+    f = codecs.open('README.rst', encoding='utf-8')
+    long_description = f.read()
+    f.close()
+except:
+    long_description = ''
+
 testing_requires = ["mock"]
 
 setup(
     name="pyrax",
     version=version,
     description="Python language bindings for OpenStack Clouds.",
+    long_description=long_description,
     author="Rackspace",
     author_email="sdk-support@rackspace.com",
     url="https://github.com/rackspace/pyrax",
+    license='Apache License, Version 2.0',
     keywords="pyrax rackspace cloud openstack",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 2",
+        "Operating System :: OS Independent",
     ],
     install_requires=[
         "python-novaclient>=2.13.0",
@@ -82,5 +95,5 @@ setup(
         "pyrax",
         "pyrax/identity",
     ],
-    cmdclass = {'sdist': sdist}
+    cmdclass={'sdist': sdist}
 )

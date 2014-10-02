@@ -77,9 +77,8 @@ class IdentityTest(unittest.TestCase):
         bad_url = utils.random_unicode()
         good_ep = fakes.FakeEndpoint({"public_url": good_url}, svc.service_type,
                 region, self.identity)
-        bad_ep = fakes.FakeEndpoint({"public_url": bad_url}, svc.service_type,
-                region, self.identity)
-        svc.endpoints = utils.DotDict({region: good_ep, "other": bad_ep})
+        from collections import OrderedDict
+        svc.endpoints = utils.DotDict({region: good_ep})
         ep = svc._ep_for_region("notthere")
         self.assertEqual(ep, good_ep)
 
