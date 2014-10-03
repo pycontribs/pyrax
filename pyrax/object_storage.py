@@ -3077,6 +3077,7 @@ class StorageClient(BaseClient):
         fnames = os.listdir(folder_path)
         ignore = utils.coerce_to_list(ignore)
         log = logging.getLogger("pyrax")
+        merged_prefix = ""
         if not include_hidden:
             ignore.append(".*")
         for fname in fnames:
@@ -3097,8 +3098,8 @@ class StorageClient(BaseClient):
                     fname))
             local_etag = utils.get_checksum(pth)
             if object_prefix:
-                prefix = os.path.join(prefix, object_prefix)
-            fullname_with_prefix = os.path.join(prefix, fname)
+                merged_prefix = os.path.join(object_prefix, prefix)
+            fullname_with_prefix = os.path.join(merged_prefix, fname)
             try:
                 obj = self._remote_files[fullname_with_prefix]
                 obj_etag = obj.etag
