@@ -53,6 +53,7 @@ try:
     from . import exceptions as exc
     from . import http
     from . import version
+    __version__ = version.version
 
     from novaclient import exceptions as _cs_exceptions
     from novaclient import auth_plugin as _cs_auth_plugin
