@@ -622,7 +622,7 @@ class ObjectStorageTest(unittest.TestCase):
         cont.object_manager.get_metadata = Mock()
         obj = utils.random_unicode()
         cont.get_object_metadata(obj)
-        cont.object_manager.get_metadata.assert_called_once_with(obj)
+        cont.object_manager.get_metadata.assert_called_once_with(obj, None)
 
     def test_cont_set_object_metadata(self):
         cont = self.container
@@ -1607,7 +1607,7 @@ class ObjectStorageTest(unittest.TestCase):
         mgr = obj.manager
         mgr.get_metadata = Mock()
         obj.get_metadata()
-        mgr.get_metadata.assert_called_once_with(obj)
+        mgr.get_metadata.assert_called_once_with(obj, None)
 
     def test_sobj_set_metadata(self):
         obj = self.obj

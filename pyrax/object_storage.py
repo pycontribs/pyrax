@@ -658,11 +658,11 @@ class Container(BaseResource):
                 key=key, cached=cached)
 
 
-    def get_object_metadata(self, obj):
+    def get_object_metadata(self, obj, prefix=None):
         """
         Returns the metadata for the specified object as a dict.
         """
-        return self.object_manager.get_metadata(obj)
+        return self.object_manager.get_metadata(obj, prefix)
 
 
     def set_object_metadata(self, obj, metadata, clear=False, extra_info=None,
@@ -1677,11 +1677,11 @@ class StorageObject(BaseResource):
         return self.manager.purge(self, email_addresses=email_addresses)
 
 
-    def get_metadata(self):
+    def get_metadata(self, prefix=None):
         """
         Returns the metadata for this object as a dict.
         """
-        return self.manager.get_metadata(self)
+        return self.manager.get_metadata(self, prefix)
 
 
     def set_metadata(self, metadata, clear=False, prefix=None):
