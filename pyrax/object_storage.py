@@ -3352,7 +3352,14 @@ class BulkDeleter(threading.Thread):
                     headers=headers)
             for k, v in six.iteritems(resp_body):
                 if key_map[k] == "errors":
-                    self.results["errors"].extend(v)
+                    status_code = int(resp_body.get("Response Status", "200")[:3])
+                    if status_code != 200 and not v:
+                        self.results["errors"].extend([[
+                            resp_body.get("Response Body"),
+                            resp_body.get("Response Status")
+                        ]])
+                    else:
+                        self.results["errors"].extend(v)
                 elif key_map[k] in ("deleted", "not_found"):
                     self.results[key_map[k]] += int(v)
                 elif key_map[k]:
