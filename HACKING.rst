@@ -15,6 +15,10 @@ When indenting continuation lines, the standard is 2 levels (i.e., 8
 spaces). Please do not use "visual indentation", as it is fraught with
 its own issues with consistency.
 
+Please do not submit pull requests for Python 3 support. The tests
+currently do not pass on Python 3, and until they do, pull requests
+for issues on Python 3 will be summarily dismissed.
+
 There are several other places where pyrax differs from the "pure" PEP8
 suggestions. Please remember that PEP8 is a guideline, not an absolute
 dictum. Here is the command I use to run the pep8 tool:
