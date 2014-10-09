@@ -776,7 +776,7 @@ class ObjectStorageTest(unittest.TestCase):
         exp_uri = "/%s" % cont.name
         mgr.api.method_delete = Mock(return_value=(None, None))
         mgr.delete(cont, del_objects=True)
-        mgr.list_object_names.assert_called_once_with(cont)
+        mgr.list_object_names.assert_called_once_with(cont, full_listing=True)
         mgr.api.bulk_delete.assert_called_once_with(cont, names, async=False)
         mgr.api.method_delete.assert_called_once_with(exp_uri)
 
@@ -2175,7 +2175,8 @@ class ObjectStorageTest(unittest.TestCase):
         mgr.api.list_object_names = Mock(return_value=nms)
         mgr.api.bulk_delete = Mock()
         mgr.delete_all_objects(None, async=async)
-        mgr.api.list_object_names.assert_called_once_with(mgr.name)
+        mgr.api.list_object_names.assert_called_once_with(mgr.name,
+                                                          full_listing=True)
         mgr.api.bulk_delete.assert_called_once_with(mgr.name, nms, async=async)
 
     def test_sobj_mgr_download_no_directory(self):

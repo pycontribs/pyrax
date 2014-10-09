@@ -852,7 +852,7 @@ class ContainerManager(BaseManager):
         each object will be deleted first, and then the container.
         """
         if del_objects:
-            nms = self.list_object_names(container)
+            nms = self.list_object_names(container, full_listing=True)
             self.api.bulk_delete(container, nms, async=False)
         uri = "/%s" % utils.get_name(container)
         resp, resp_body = self.api.method_delete(uri)
@@ -2046,7 +2046,7 @@ class StorageObjectManager(BaseManager):
             errors - a list of any errors returned by the bulk delete call
         """
         if nms is None:
-            nms = self.api.list_object_names(self.name)
+            nms = self.api.list_object_names(self.name, full_listing=True)
         return self.api.bulk_delete(self.name, nms, async=async)
 
 
