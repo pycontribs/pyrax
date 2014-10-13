@@ -1479,7 +1479,7 @@ class ObjectStorageTest(unittest.TestCase):
         obj = utils.random_unicode()
         cont.get_object_metadata = Mock()
         mgr.get_object_metadata(cont, obj)
-        cont.get_object_metadata.assert_called_once_with(obj)
+        cont.get_object_metadata.assert_called_once_with(obj, prefix=None)
 
     def test_cmgr_set_object_metadata(self):
         cont = self.container
@@ -2707,7 +2707,7 @@ class ObjectStorageTest(unittest.TestCase):
         obj = self.obj
         mgr.get_object_metadata = Mock()
         clt.get_object_metadata(cont, obj)
-        mgr.get_object_metadata.assert_called_once_with(cont, obj)
+        mgr.get_object_metadata.assert_called_once_with(cont, obj, prefix=None)
 
     def test_clt_set_object_metadata(self):
         clt = self.client

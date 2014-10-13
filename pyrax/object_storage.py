@@ -1523,11 +1523,11 @@ class ContainerManager(BaseManager):
 
 
     @assure_container
-    def get_object_metadata(self, container, obj):
+    def get_object_metadata(self, container, obj, prefix=None):
         """
         Returns the metadata for the specified object as a dict.
         """
-        return container.get_object_metadata(obj)
+        return container.get_object_metadata(obj, prefix=prefix)
 
 
     @assure_container
@@ -2588,11 +2588,11 @@ class StorageClient(BaseClient):
         return self._manager.set_cdn_metadata(container, metadata)
 
 
-    def get_object_metadata(self, container, obj):
+    def get_object_metadata(self, container, obj, prefix=None):
         """
         Returns the metadata for the specified object as a dict.
         """
-        return self._manager.get_object_metadata(container, obj)
+        return self._manager.get_object_metadata(container, obj, prefix=prefix)
 
 
     def set_object_metadata(self, container, obj, metadata, clear=False,
