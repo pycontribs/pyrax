@@ -426,22 +426,17 @@ Session persistence is a feature of the load balancing service that forces multi
 To get the session persistence setting for a load balancer, you would run:
 
     lb = clb.list()[0]
-    sp_mgr = lb.session_persistence()
-    print sp_mgr.get()
+    print = lb.session_persistence
 
 By default, load balancers are not configured for session persistence. You would run the following code to add persistence to your load balancer:
 
     lb = clb.list()[0]
-    sp_mgr = lb.session_persistence()
-    sp = sp_mgr.resource(persistenceType="HTTP_COOKIE")
-    sp_mgr.add(sp)
+    lb.session_persistence = "HTTP_COOKIE"
 
 Similarly, to remove session persistence from your load balancer, you would run:
 
     lb = clb.list()[0]
-    sp_mgr = lb.session_persistence()
-    sp_mgr.delete()
-
+    lb.session_persistence = None
 
 ## Connection Logging
 The connection logging feature allows logs to be delivered to a Cloud Files account every hour. For HTTP-based protocol traffic, these are Apache-style access logs. For all other traffic, this is connection and transfer logging.
