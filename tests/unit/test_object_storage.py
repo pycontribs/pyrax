@@ -3337,6 +3337,40 @@ class ObjectStorageTest(unittest.TestCase):
         ret = clt.bulk_delete(cont, obj_names, async=False)
         self.assertEqual(ret, expected)
 
+    def test_clt_bulk_delete_sync_413(self):
+        clt = self.client
+        cont = self.container
+        obj_names = ["test1", "test2"]
+        resp = fakes.FakeResponse()
+        fake_res = utils.random_unicode()
+        body = {
+            "Number Not Found": 0,
+            "Response Status": "413 Request Entity Too Large",
+            "Errors": [],
+            "Number Deleted": 0,
+            "Response Body": "Maximum Bulk Deletes: 10000 per request"
+        }
+        expected = {
+            'deleted': 0,
+            'errors': [
+                [
+                    'Maximum Bulk Deletes: 10000 per request',
+                    '413 Request Entity Too Large'
+                ]
+            ],
+            'not_found': 0,
+            'status': '413 Request Entity Too Large'
+        }
+        clt.bulk_delete_interval = 0.01
+
+        def fake_bulk_resp(uri, data=None, headers=None):
+            time.sleep(0.05)
+            return (resp, body)
+
+        clt.method_delete = Mock(side_effect=fake_bulk_resp)
+        ret = clt.bulk_delete(cont, obj_names, async=False)
+        self.assertEqual(ret, expected)
+
     def test_clt_cdn_request_not_enabled(self):
         clt = self.client
         uri = utils.random_unicode()
