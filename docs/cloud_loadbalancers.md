@@ -444,21 +444,19 @@ The connection logging feature allows logs to be delivered to a Cloud Files acco
 You can retrieve the current state of connection logging for a given load balancer, and also enable/disable connection logging.
 
     lb = clb.list()[0]
-    cl_mgr = lb.connection_logging()
-    # Get the current state
-    print "Current logging status:", cl_mgr.get()
-    # Enable connection logging
-    cl_mgr.enable()
-    print "Logging status after enable():", cl_mgr.get()
+    # Print the current state
+    print "Current logging status: %s" % lb.connection_logging
+    lb.connection_logging = True
+    print "Logging status after enable: %s" % lb.connection_logging
     # Disable connection logging
-    cl_mgr.disable()
-    print "Logging status after disable():", cl_mgr.get()
+    lb.connection_logging = False
+    print "Logging status after disable: %s" % lb.connection_logging
 
-After running the above code, you should see output like this:
+After running the above code (with proper pauses to wait for the loadbalancer to become mutable), you should see output like this:
 
     Current logging status: False
-    Logging status after enable(): True
-    Logging status after disable(): False
+    Logging status after enable: True
+    Logging status after disable: False
 
 
 ## Access Lists
