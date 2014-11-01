@@ -56,7 +56,10 @@ class sdist(_sdist):
         # Run parent constructor
         _sdist.run(self)
 
-testing_requires = ["mock"]
+testing_requires = [
+    "mock",
+    "nose",
+]
 
 setup(
     name="pyrax",
@@ -73,11 +76,13 @@ setup(
     ],
     install_requires=[
         "python-novaclient>=2.13.0",
+        "python-swiftclient>=1.5.0",
         "rackspace-novaclient",
         "keyring",
         "requests>=2.2.1",
         "six>=1.5.2",
-    ] + testing_requires,
+    ],
+    tests_require = testing_requires,
     packages=[
         "pyrax",
         "pyrax/identity",
