@@ -2,4 +2,3 @@ include README.rst RELEASENOTES.md LICENSE
 recursive-include docs *.md
 recursive-include samples *.py
 recursive-include tests *.py
-recursive-include tests *.png
