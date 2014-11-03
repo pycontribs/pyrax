@@ -892,7 +892,9 @@ class CloudDatabasesTest(unittest.TestCase):
                 "flavorRef": example_uri,
                 "volume": {"size": 1},
                 "databases": [],
-                "users": []}}
+                "users": [],
+                "datastore": {"version": "5.1",
+              "type": "MySQL"}}}
         self.assertEqual(ret, expected)
 
 
