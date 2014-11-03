@@ -82,7 +82,7 @@ class CloudDatabaseManager(BaseManager):
 
 
     def _create_body(self, name, flavor=None, volume=None, databases=None,
-            users=None):
+            users=None, datastore=None):
         """
         Used to create the dict required to create a Cloud Database instance.
         """
@@ -95,12 +95,16 @@ class CloudDatabaseManager(BaseManager):
             databases = []
         if users is None:
             users = []
+        if datastore is None:
+            datastore = {"version": "5.1",
+              "type": "MySQL"}
         body = {"instance": {
                 "name": name,
                 "flavorRef": flavor_ref,
                 "volume": {"size": volume},
                 "databases": databases,
                 "users": users,
+                "datastore": datastore
                 }}
         return body
 
