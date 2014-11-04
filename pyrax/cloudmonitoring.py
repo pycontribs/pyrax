@@ -121,7 +121,10 @@ class CloudMonitorEntity(BaseResource):
         This isn't very efficient: it loads the entire list then filters on
         the Python side.
         """
-        return self._check_manager.find_all_checks(**kwargs)
+        checks = self._check_manager.find_all_checks(**kwargs)
+        for check in checks:
+            check.set_entity(self)
+        return checks
 
 
     def create_check(self, label=None, name=None, check_type=None,
@@ -741,7 +744,7 @@ class CloudMonitorCheck(BaseResource):
 
     def get(self):
         """Reloads the check with its current values."""
-        new = self.manager.get_check(self.entity, self)
+        new = self.manager.get(self)
         if new:
             self._add_details(new._info)
 
