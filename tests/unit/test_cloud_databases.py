@@ -895,6 +895,29 @@ class CloudDatabasesTest(unittest.TestCase):
                 "users": []}}
         self.assertEqual(ret, expected)
 
+    @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
+    def test_missing_db_parameters(self):
+        clt = self.client
+        nm = utils.random_unicode()
+        clt._get_flavor_ref = Mock(return_value=example_uri)
+        self.assertRaises(exc.MissingCloudDatabaseParameter,
+            clt._manager._create_body,nm, version="10")
+
+    @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
+    def test_create_body_datastore(self):
+        clt = self.client
+        nm = utils.random_unicode()
+        clt._get_flavor_ref = Mock(return_value=example_uri)
+        ret = clt._manager._create_body(nm, version="10", type="MariaDB")
+        expected = {"instance": {
+                "name": nm,
+                "flavorRef": example_uri,
+                "volume": {"size": 1},
+                "databases": [],
+                "users": [],
+                "datastore": {"type": "MariaDB", "version": "10"}}}
+        self.assertEqual(ret, expected)
+
 
 if __name__ == "__main__":
     unittest.main()
