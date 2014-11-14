@@ -3088,7 +3088,7 @@ class StorageClient(BaseClient):
             if os.path.isdir(pth):
                 subprefix = fname
                 if prefix:
-                    subprefix = "%s/%s" % (prefix, subprefix)
+                    subprefix = os.path.join(prefix, subprefix)
                 self._sync_folder_to_container(pth, container, prefix=subprefix,
                         delete=delete, include_hidden=include_hidden,
                         ignore=ignore, ignore_timestamps=ignore_timestamps,
@@ -3098,7 +3098,8 @@ class StorageClient(BaseClient):
                     fname))
             local_etag = utils.get_checksum(pth)
             if object_prefix:
-                prefix = os.path.join(prefix, object_prefix)
+                prefix = os.path.join(object_prefix, prefix)
+                object_prefix = ""
             fullname_with_prefix = os.path.join(prefix, fname)
             try:
                 obj = self._remote_files[fullname_with_prefix]
