@@ -1109,7 +1109,7 @@ class Node(object):
         """
         Returns the current metadata for the node.
         """
-        return self.manager.get_metadata(self, node=self)
+        return self.parent.get_metadata_for_node(self)
 
 
     def set_metadata(self, metadata):
@@ -1117,7 +1117,7 @@ class Node(object):
         Sets the metadata for the node to the supplied dictionary
         of values. Any existing metadata is cleared.
         """
-        return self.manager.set_metadata(self, metadata, node=self)
+        return self.parent.set_metadata_for_node(self, metadata)
 
 
     def update_metadata(self, metadata):
@@ -1125,7 +1125,7 @@ class Node(object):
         Updates the existing metadata for the node with
         the supplied dictionary.
         """
-        return self.manager.update_metadata(self, metadata, node=self)
+        return self.parent.update_metadata_for_node(self, metadata)
 
 
     def delete_metadata(self, keys=None):
@@ -1134,7 +1134,7 @@ class Node(object):
         this node. If no value for 'keys' is provided, all
         metadata is deleted.
         """
-        return self.manager.delete_metadata(self, keys=keys, node=self)
+        return self.parent.delete_metadata_for_node(self, keys=keys)
 
 
     @assure_parent
