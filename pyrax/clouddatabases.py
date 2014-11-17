@@ -81,7 +81,7 @@ class CloudDatabaseManager(BaseManager):
 
 
     def _create_body(self, name, flavor=None, volume=None, databases=None,
-            users=None):
+            users=None, version=None, type=None):
         """
         Used to create the dict required to create a Cloud Database instance.
         """
@@ -94,6 +94,7 @@ class CloudDatabaseManager(BaseManager):
             databases = []
         if users is None:
             users = []
+
         body = {"instance": {
                 "name": name,
                 "flavorRef": flavor_ref,
@@ -101,6 +102,14 @@ class CloudDatabaseManager(BaseManager):
                 "databases": databases,
                 "users": users,
                 }}
+
+        if type is not None or version is not None:
+            required = (type, version)
+            if all(required):
+                body['instance']['datastore'] = {"type": type, "version": version}
+            else:
+                raise exc.MissingCloudDatabaseParameter("Specifying a datastore"
+                    " requires both the datastore type as well as the version.")
         return body
 
 

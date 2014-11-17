@@ -348,7 +348,8 @@ class VolumeDetachmentFailed(PyraxException):
 
 class VolumeNotAvailable(PyraxException):
     pass
-
+class MissingCloudDatabaseParameter(PyraxException):
+    pass
 
 class AmbiguousEndpoints(PyraxException):
     """Found more than one matching endpoint in Service Catalog."""
