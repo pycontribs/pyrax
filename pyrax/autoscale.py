@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Copyright (c)2013 Rackspace US, Inc.
@@ -447,7 +446,8 @@ class ScalingGroupManager(BaseManager):
         lb_args = largs.get("loadBalancers", {})
         flav = flavor or srv_args.get("flavorRef")
         dconf = disk_config or srv_args.get("OS-DCF:diskConfig", "AUTO")
-        pers = personality or srv_args.get("personality", [])
+        if personality is None:
+            personality = srv_args.get("personality", [])
         cfg_drv = config_drive or srv_args.get("config_drive")
         if user_data:
             user_data = base64.b64encode(user_data)
@@ -470,8 +470,8 @@ class ScalingGroupManager(BaseManager):
             bas["config_drive"] = cfg_drv
         if usr_data:
             bas["user_data"] = usr_data
-        if pers:
-            bas["personality"] = self._encode_personality(pers)
+        if personality:
+            bas["personality"] = self._encode_personality(personality)
         if update_metadata:
             bas["metadata"] = update_metadata
         key_name = key_name or srv_args.get("key_name")

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import json
 import os
@@ -894,13 +893,3 @@ class FakeIdentityResponse(FakeResponse):
 
     def read(self):
         return json.dumps(self.content)
-
-
-def get_png_content():
-    _module_pth = os.path.dirname(pyrax.__file__)
-    _img_path = os.path.join(_module_pth, "..", "tests", "unit",
-            "python-logo.png")
-    png_content = None
-    with open(_img_path, "rb") as pfile:
-        png_content = pfile.read()
-    return png_content

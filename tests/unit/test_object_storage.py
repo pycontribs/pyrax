@@ -622,7 +622,7 @@ class ObjectStorageTest(unittest.TestCase):
         cont.object_manager.get_metadata = Mock()
         obj = utils.random_unicode()
         cont.get_object_metadata(obj)
-        cont.object_manager.get_metadata.assert_called_once_with(obj)
+        cont.object_manager.get_metadata.assert_called_once_with(obj, None)
 
     def test_cont_set_object_metadata(self):
         cont = self.container
@@ -776,7 +776,7 @@ class ObjectStorageTest(unittest.TestCase):
         exp_uri = "/%s" % cont.name
         mgr.api.method_delete = Mock(return_value=(None, None))
         mgr.delete(cont, del_objects=True)
-        mgr.list_object_names.assert_called_once_with(cont)
+        mgr.list_object_names.assert_called_once_with(cont, full_listing=True)
         mgr.api.bulk_delete.assert_called_once_with(cont, names, async=False)
         mgr.api.method_delete.assert_called_once_with(exp_uri)
 
@@ -1479,7 +1479,7 @@ class ObjectStorageTest(unittest.TestCase):
         obj = utils.random_unicode()
         cont.get_object_metadata = Mock()
         mgr.get_object_metadata(cont, obj)
-        cont.get_object_metadata.assert_called_once_with(obj)
+        cont.get_object_metadata.assert_called_once_with(obj, prefix=None)
 
     def test_cmgr_set_object_metadata(self):
         cont = self.container
@@ -1607,7 +1607,7 @@ class ObjectStorageTest(unittest.TestCase):
         mgr = obj.manager
         mgr.get_metadata = Mock()
         obj.get_metadata()
-        mgr.get_metadata.assert_called_once_with(obj)
+        mgr.get_metadata.assert_called_once_with(obj, None)
 
     def test_sobj_set_metadata(self):
         obj = self.obj
@@ -1719,11 +1719,13 @@ class ObjectStorageTest(unittest.TestCase):
         conttype = utils.random_unicode()
         etag = utils.random_unicode()
         lastmod = utils.random_unicode()
+        timestamp = utils.random_unicode()
         fake_resp = fakes.FakeResponse()
         fake_resp.headers = {"content-length": contlen,
                 "content-type": conttype,
                 "etag": etag,
                 "last-modified": lastmod,
+                "x-timestamp": timestamp,
                 }
         mgr.api.method_head = Mock(return_value=(fake_resp, None))
         ret = mgr.get(obj)
@@ -1732,6 +1734,7 @@ class ObjectStorageTest(unittest.TestCase):
         self.assertEqual(ret.content_type, conttype)
         self.assertEqual(ret.hash, etag)
         self.assertEqual(ret.last_modified, lastmod)
+        self.assertEqual(ret.timestamp, timestamp)
 
     def test_sobj_mgr_get_no_length(self):
         cont = self.container
@@ -2172,7 +2175,8 @@ class ObjectStorageTest(unittest.TestCase):
         mgr.api.list_object_names = Mock(return_value=nms)
         mgr.api.bulk_delete = Mock()
         mgr.delete_all_objects(None, async=async)
-        mgr.api.list_object_names.assert_called_once_with(mgr.name)
+        mgr.api.list_object_names.assert_called_once_with(mgr.name,
+                                                          full_listing=True)
         mgr.api.bulk_delete.assert_called_once_with(mgr.name, nms, async=async)
 
     def test_sobj_mgr_download_no_directory(self):
@@ -2704,7 +2708,7 @@ class ObjectStorageTest(unittest.TestCase):
         obj = self.obj
         mgr.get_object_metadata = Mock()
         clt.get_object_metadata(cont, obj)
-        mgr.get_object_metadata.assert_called_once_with(cont, obj)
+        mgr.get_object_metadata.assert_called_once_with(cont, obj, prefix=None)
 
     def test_clt_set_object_metadata(self):
         clt = self.client
@@ -3235,7 +3239,8 @@ class ObjectStorageTest(unittest.TestCase):
             fnames = ["test1", "test2", "test3", "fake1", "fake2"]
             for fname in fnames:
                 pth = os.path.join(folder_path, fname)
-                open(pth, "w").write(txt)
+                with open(pth, "w") as f:
+                    f.write(txt)
             mock_listdir.return_value = fnames
             clt._sync_folder_to_container(folder_path, cont, prefix, delete,
                     include_hidden, ignore, ignore_timestamps, object_prefix,
@@ -3309,7 +3314,19 @@ class ObjectStorageTest(unittest.TestCase):
         obj_names = ["test1", "test2"]
         resp = fakes.FakeResponse()
         fake_res = utils.random_unicode()
-        body = {"Response Status": "foo " + fake_res}
+        body = {
+            "Number Not Found": 1,
+            "Response Status": "200 OK",
+            "Errors": [],
+            "Number Deleted": 10,
+            "Response Body": ""
+        }
+        expected = {
+            'deleted': 10,
+            'errors': [],
+            'not_found': 1,
+            'status': '200 OK'
+        }
         clt.bulk_delete_interval = 0.01
 
         def fake_bulk_resp(uri, data=None, headers=None):
@@ -3318,7 +3335,41 @@ class ObjectStorageTest(unittest.TestCase):
 
         clt.method_delete = Mock(side_effect=fake_bulk_resp)
         ret = clt.bulk_delete(cont, obj_names, async=False)
-        self.assertEqual(ret, body)
+        self.assertEqual(ret, expected)
+
+    def test_clt_bulk_delete_sync_413(self):
+        clt = self.client
+        cont = self.container
+        obj_names = ["test1", "test2"]
+        resp = fakes.FakeResponse()
+        fake_res = utils.random_unicode()
+        body = {
+            "Number Not Found": 0,
+            "Response Status": "413 Request Entity Too Large",
+            "Errors": [],
+            "Number Deleted": 0,
+            "Response Body": "Maximum Bulk Deletes: 10000 per request"
+        }
+        expected = {
+            'deleted': 0,
+            'errors': [
+                [
+                    'Maximum Bulk Deletes: 10000 per request',
+                    '413 Request Entity Too Large'
+                ]
+            ],
+            'not_found': 0,
+            'status': '413 Request Entity Too Large'
+        }
+        clt.bulk_delete_interval = 0.01
+
+        def fake_bulk_resp(uri, data=None, headers=None):
+            time.sleep(0.05)
+            return (resp, body)
+
+        clt.method_delete = Mock(side_effect=fake_bulk_resp)
+        ret = clt.bulk_delete(cont, obj_names, async=False)
+        self.assertEqual(ret, expected)
 
     def test_clt_cdn_request_not_enabled(self):
         clt = self.client

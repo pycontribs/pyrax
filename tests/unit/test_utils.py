@@ -90,7 +90,7 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(expected, received)
 
     def test_get_checksum_from_binary(self):
-        test = fakes.get_png_content()
+        test = os.urandom(1024)
         md = hashlib.md5()
         enc = "utf8"
         md.update(test)

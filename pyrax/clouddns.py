@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Copyright (c)2012 Rackspace US, Inc.
@@ -67,13 +66,12 @@ class CloudDNSRecord(BaseResource):
     ttl = None
     comment = None
 
-
     def update(self, data=None, priority=None, ttl=None, comment=None):
         """
         Modifies this record.
         """
-        return self.domain.update_record(self, data=data, priority=priority,
-                ttl=ttl, comment=comment)
+        return self.manager.update_record(self.domain_id, self, data=data,
+            priority=priority, ttl=ttl, comment=comment)
 
 
     def get(self):
@@ -231,16 +229,8 @@ class CloudDNSDomain(BaseResource):
         """
         Modifies an existing record for this domain.
         """
-        rdict = {"id": record.id,
-                "name": record.name,
-                }
-        pdict = {"data": data,
-                "priority": priority,
-                "ttl": ttl,
-                "comment": comment,
-                }
-        utils.params_to_dict(pdict, rdict)
-        return self.manager.update_records(self, rdict)
+        return self.manager.update_record(self, record, data=data,
+            priority=priority, ttl=ttl, comment=comment)
 
 
     def update_records(self, records):
@@ -871,12 +861,32 @@ class CloudDNSManager(BaseManager):
         return CloudDNSRecord(self, resp_body, loaded=False)
 
 
-    def update_records(self, domain, records):
+    def update_record(self, domain, record, data=None, priority=None,
+            ttl=None, comment=None):
         """
         Modifies an existing record for a domain.
         """
+        rdict = {"id": record.id,
+                "name": record.name,
+                }
+        pdict = {"data": data,
+                "priority": priority,
+                "ttl": ttl,
+                "comment": comment,
+                }
+        utils.params_to_dict(pdict, rdict)
+        return self.update_records(domain, [rdict])
+
+
+    def update_records(self, domain, records):
+        """
+        Modifies an existing records for a domain.
+        """
+        if not isinstance(records, list):
+            raise TypeError("Expected records of type list")
         uri = "/domains/%s/records" % utils.get_id(domain)
-        resp, resp_body = self._async_call(uri, method="PUT", body=records,
+        resp, resp_body = self._async_call(uri, method="PUT",
+                body={"records": records},
                 error_class=exc.DomainRecordUpdateFailed, has_response=False)
         return resp_body
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -19,6 +18,7 @@ import tempfile
 import threading
 import time
 import types
+import unicodedata
 
 try:
     import pudb
@@ -30,6 +30,10 @@ import six
 
 import pyrax
 import pyrax.exceptions as exc
+
+
+SLUGIFY_STRIP_RE = re.compile(r"[^\w\s-]")
+SLUGIFY_HYPHENATE_RE = re.compile(r"[-\s]+")
 
 
 def runproc(cmd):
@@ -711,20 +715,72 @@ def import_class(import_str):
     return getattr(sys.modules[mod_str], class_str)
 
 
-# http://code.activestate.com/recipes/
-#   577257-slugify-make-a-string-usable-in-a-url-or-filename/
-def slugify(value):
-    """
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
+def safe_decode(text, incoming=None, errors='strict'):
+    """Decodes incoming text/bytes string using `incoming` if they're not
+       already unicode.
 
-    From Django's "django/template/defaultfilters.py".
+    This function was copied from novaclient.openstack.strutils
+
+    :param incoming: Text's current encoding
+    :param errors: Errors handling policy. See here for valid
+        values http://docs.python.org/2/library/codecs.html
+    :returns: text or a unicode `incoming` encoded
+                representation of it.
+    :raises TypeError: If text is not an instance of str
     """
-    import unicodedata
-    _slugify_strip_re = re.compile(r"[^\w\s-]")
-    _slugify_hyphenate_re = re.compile(r"[-\s]+")
-    if not isinstance(value, six.text_type):
-        value = six.text_type(value)
-    value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore")
-    value = six.text_type(_slugify_strip_re.sub("", value).strip().lower())
-    return _slugify_hyphenate_re.sub("-", value)
+    if not isinstance(text, (six.string_types, six.binary_type)):
+        raise TypeError("%s can't be decoded" % type(text))
+
+    if isinstance(text, six.text_type):
+        return text
+
+    if not incoming:
+        incoming = (sys.stdin.encoding or
+                    sys.getdefaultencoding())
+
+    try:
+        return text.decode(incoming, errors)
+    except UnicodeDecodeError:
+        # Note(flaper87) If we get here, it means that
+        # sys.stdin.encoding / sys.getdefaultencoding
+        # didn't return a suitable encoding to decode
+        # text. This happens mostly when global LANG
+        # var is not set correctly and there's no
+        # default encoding. In this case, most likely
+        # python will use ASCII or ANSI encoders as
+        # default encodings but they won't be capable
+        # of decoding non-ASCII characters.
+        #
+        # Also, UTF-8 is being used since it's an ASCII
+        # extension.
+        return text.decode('utf-8', errors)
+
+
+def to_slug(value, incoming=None, errors="strict"):
+    """Normalize string.
+
+    Convert to lowercase, remove non-word characters, and convert spaces
+    to hyphens.
+
+    This function was copied from novaclient.openstack.strutils
+
+    Inspired by Django's `slugify` filter.
+
+    :param value: Text to slugify
+    :param incoming: Text's current encoding
+    :param errors: Errors handling policy. See here for valid
+        values http://docs.python.org/2/library/codecs.html
+    :returns: slugified unicode representation of `value`
+    :raises TypeError: If text is not an instance of str
+    """
+    value = safe_decode(value, incoming, errors)
+    # NOTE(aababilov): no need to use safe_(encode|decode) here:
+    # encodings are always "ascii", error handling is always "ignore"
+    # and types are always known (first: unicode; second: str)
+    value = unicodedata.normalize("NFKD", value).encode(
+        "ascii", "ignore").decode("ascii")
+    value = SLUGIFY_STRIP_RE.sub("", value).strip().lower()
+    return SLUGIFY_HYPHENATE_RE.sub("-", value)
+
+# For backwards compatibility, alias slugify to point to_slug
+slugify = to_slug

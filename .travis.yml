@@ -4,23 +4,12 @@ python:
  - 2.7
  - pypy
 
-matrix:
-  allow_failures:
-    - python: pypy
-
 install:
-  - pip install -U setuptools
-  - pip install .
-  - pip install --use-mirrors nose pep8
-  - pip install --use-mirrors nose coveralls
+  - pip install -U setuptools tox coveralls
 
 script:
-  - "pep8 -r --show-source --max-line-length=84 --ignore=E123,E124,E126,E127,E128,E303,E302 pyrax/"
-  - nosetests -v tests/unit --with-cover --cover-package=pyrax
-after_success:
-    coveralls
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then tox -e pep8,py27; fi
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "pypy" ]]; then tox -e pep8,pypy; fi
 
-notifications:
-  email:
-    - ed.leafe@rackspace.com
-  irc: "irc.freenode.org#rackspace-dev"
+after_success:
+  - coveralls

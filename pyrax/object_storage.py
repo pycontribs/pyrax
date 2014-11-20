@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Copyright 2014 Rackspace
@@ -55,6 +54,8 @@ DEFAULT_CHUNKSIZE = 65536
 DEFAULT_CDN_TTL = 86400
 # When comparing files dates, represents a date older than anything.
 EARLY_DATE_STR = "1900-01-01T00:00:00"
+# Maximum number of objects that can be passed to bulk-delete
+MAX_BULK_DELETE = 10000
 
 # Used to indicate values that are lazy-loaded
 class Fault_cls(object):
@@ -658,11 +659,11 @@ class Container(BaseResource):
                 key=key, cached=cached)
 
 
-    def get_object_metadata(self, obj):
+    def get_object_metadata(self, obj, prefix=None):
         """
         Returns the metadata for the specified object as a dict.
         """
-        return self.object_manager.get_metadata(obj)
+        return self.object_manager.get_metadata(obj, prefix)
 
 
     def set_object_metadata(self, obj, metadata, clear=False, extra_info=None,
@@ -850,7 +851,7 @@ class ContainerManager(BaseManager):
         each object will be deleted first, and then the container.
         """
         if del_objects:
-            nms = self.list_object_names(container)
+            nms = self.list_object_names(container, full_listing=True)
             self.api.bulk_delete(container, nms, async=False)
         uri = "/%s" % utils.get_name(container)
         resp, resp_body = self.api.method_delete(uri)
@@ -1523,11 +1524,11 @@ class ContainerManager(BaseManager):
 
 
     @assure_container
-    def get_object_metadata(self, container, obj):
+    def get_object_metadata(self, container, obj, prefix=None):
         """
         Returns the metadata for the specified object as a dict.
         """
-        return container.get_object_metadata(obj)
+        return container.get_object_metadata(obj, prefix=prefix)
 
 
     @assure_container
@@ -1677,11 +1678,11 @@ class StorageObject(BaseResource):
         return self.manager.purge(self, email_addresses=email_addresses)
 
 
-    def get_metadata(self):
+    def get_metadata(self, prefix=None):
         """
         Returns the metadata for this object as a dict.
         """
-        return self.manager.get_metadata(self)
+        return self.manager.get_metadata(self, prefix)
 
 
     def set_metadata(self, metadata, clear=False, prefix=None):
@@ -1797,6 +1798,7 @@ class StorageObjectManager(BaseManager):
                 "content_type": hdrs.get("content-type"),
                 "hash": hdrs.get("etag"),
                 "last_modified": hdrs.get("last-modified"),
+                "timestamp": hdrs.get("x-timestamp"),
                 }
         return StorageObject(self, data, loaded=True)
 
@@ -2043,7 +2045,7 @@ class StorageObjectManager(BaseManager):
             errors - a list of any errors returned by the bulk delete call
         """
         if nms is None:
-            nms = self.api.list_object_names(self.name)
+            nms = self.api.list_object_names(self.name, full_listing=True)
         return self.api.bulk_delete(self.name, nms, async=async)
 
 
@@ -2587,11 +2589,11 @@ class StorageClient(BaseClient):
         return self._manager.set_cdn_metadata(container, metadata)
 
 
-    def get_object_metadata(self, container, obj):
+    def get_object_metadata(self, container, obj, prefix=None):
         """
         Returns the metadata for the specified object as a dict.
         """
-        return self._manager.get_object_metadata(container, obj)
+        return self._manager.get_object_metadata(container, obj, prefix=prefix)
 
 
     def set_object_metadata(self, container, obj, metadata, clear=False,
@@ -3086,7 +3088,7 @@ class StorageClient(BaseClient):
             if os.path.isdir(pth):
                 subprefix = fname
                 if prefix:
-                    subprefix = "%s/%s" % (prefix, subprefix)
+                    subprefix = os.path.join(prefix, subprefix)
                 self._sync_folder_to_container(pth, container, prefix=subprefix,
                         delete=delete, include_hidden=include_hidden,
                         ignore=ignore, ignore_timestamps=ignore_timestamps,
@@ -3096,7 +3098,8 @@ class StorageClient(BaseClient):
                     fname))
             local_etag = utils.get_checksum(pth)
             if object_prefix:
-                prefix = os.path.join(prefix, object_prefix)
+                prefix = os.path.join(object_prefix, prefix)
+                object_prefix = ""
             fullname_with_prefix = os.path.join(prefix, fname)
             try:
                 obj = self._remote_files[fullname_with_prefix]
@@ -3311,7 +3314,12 @@ class BulkDeleter(threading.Thread):
         self.container = container
         self.object_names = object_names
         self.completed = False
-        self.results = None
+        self.results = {
+            "deleted": 0,
+            "not_found": 0,
+            "status": "",
+            "errors": []
+        }
         threading.Thread.__init__(self)
 
 
@@ -3321,14 +3329,40 @@ class BulkDeleter(threading.Thread):
         object_names = self.object_names
         cname = utils.get_name(container)
         ident = self.client.identity
-        headers = {"X-Auth-Token": ident.token,
-                "Content-Type": "text/plain",
-                }
-        obj_paths = ("%s/%s" % (cname, nm) for nm in object_names)
-        body = "\n".join(obj_paths)
+        headers = {
+            "X-Auth-Token": ident.token,
+            "Content-Type": "text/plain",
+        }
         uri = "/?bulk-delete=1"
-        resp, resp_body = self.client.method_delete(uri, data=body,
-                headers=headers)
-        status = resp_body.get("Response Status", "").split(" ")[0]
-        self.results = resp_body
+        key_map = {
+            "Number Not Found": "not_found",
+            "Response Status": "status",
+            "Errors": "errors",
+            "Number Deleted": "deleted",
+            "Response Body": None,
+        }
+        batch = []
+        while object_names:
+            batch[:] = object_names[:MAX_BULK_DELETE]
+            del object_names[:MAX_BULK_DELETE]
+
+            obj_paths = ("%s/%s" % (cname, nm) for nm in batch)
+            body = "\n".join(obj_paths)
+            resp, resp_body = self.client.method_delete(uri, data=body,
+                    headers=headers)
+            for k, v in six.iteritems(resp_body):
+                if key_map[k] == "errors":
+                    status_code = int(resp_body.get("Response Status", "200")[:3])
+                    if status_code != 200 and not v:
+                        self.results["errors"].extend([[
+                            resp_body.get("Response Body"),
+                            resp_body.get("Response Status")
+                        ]])
+                    else:
+                        self.results["errors"].extend(v)
+                elif key_map[k] in ("deleted", "not_found"):
+                    self.results[key_map[k]] += int(v)
+                elif key_map[k]:
+                    self.results[key_map[k]] = v
+
         self.completed = True

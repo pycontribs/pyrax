@@ -141,13 +141,14 @@ class CloudDatabasesTest(unittest.TestCase):
         mgr = inst.manager
         mgr.api._backup_manager.list = Mock(return_value=(None, None))
         mgr.list_backups(inst)
-        mgr.api._backup_manager.list.assert_called_once_with(instance=inst)
+        mgr.api._backup_manager.list.assert_called_once_with(instance=inst,
+                limit=20, marker=0)
 
     def test_mgr_list_backups_for_instance(self):
         inst = self.instance
         mgr = inst.manager
         mgr.api.method_get = Mock(return_value=(None, {"backups": []}))
-        expected_uri = "/%s/%s/backups" % (mgr.uri_base, inst.id)
+        expected_uri = "/%s/%s/backups?limit=20&marker=0" % (mgr.uri_base, inst.id)
         mgr._list_backups_for_instance(inst)
         mgr.api.method_get.assert_called_once_with(expected_uri)
 
@@ -279,7 +280,8 @@ class CloudDatabasesTest(unittest.TestCase):
         mgr = inst.manager
         mgr._list_backups_for_instance = Mock()
         inst.list_backups()
-        mgr._list_backups_for_instance.assert_called_once_with(inst)
+        mgr._list_backups_for_instance.assert_called_once_with(inst, limit=20,
+                marker=0)
 
     def test_inst_create_backup(self):
         inst = self.instance
@@ -579,7 +581,8 @@ class CloudDatabasesTest(unittest.TestCase):
         db_mgr = mgr.api._manager
         db_mgr._list_backups_for_instance = Mock()
         bu_mgr.list(instance=inst)
-        db_mgr._list_backups_for_instance.assert_called_once_with(inst)
+        db_mgr._list_backups_for_instance.assert_called_once_with(inst, limit=20,
+                marker=0)
 
     def test_clt_change_user_password(self):
         clt = self.client
@@ -792,7 +795,7 @@ class CloudDatabasesTest(unittest.TestCase):
         mgr = clt._backup_manager
         mgr.list = Mock()
         clt.list_backups()
-        mgr.list.assert_called_once_with(instance=None)
+        mgr.list.assert_called_once_with(instance=None, limit=20, marker=0)
 
     def test_clt_list_backups_for_instance(self):
         clt = self.client
@@ -800,7 +803,7 @@ class CloudDatabasesTest(unittest.TestCase):
         mgr.list = Mock()
         inst = utils.random_unicode()
         clt.list_backups(instance=inst)
-        mgr.list.assert_called_once_with(instance=inst)
+        mgr.list.assert_called_once_with(instance=inst, limit=20, marker=0)
 
     def test_clt_get_backup(self):
         clt = self.client
@@ -893,6 +896,29 @@ class CloudDatabasesTest(unittest.TestCase):
                 "volume": {"size": 1},
                 "databases": [],
                 "users": []}}
+        self.assertEqual(ret, expected)
+
+    @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
+    def test_missing_db_parameters(self):
+        clt = self.client
+        nm = utils.random_unicode()
+        clt._get_flavor_ref = Mock(return_value=example_uri)
+        self.assertRaises(exc.MissingCloudDatabaseParameter,
+            clt._manager._create_body,nm, version="10")
+
+    @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
+    def test_create_body_datastore(self):
+        clt = self.client
+        nm = utils.random_unicode()
+        clt._get_flavor_ref = Mock(return_value=example_uri)
+        ret = clt._manager._create_body(nm, version="10", type="MariaDB")
+        expected = {"instance": {
+                "name": nm,
+                "flavorRef": example_uri,
+                "volume": {"size": 1},
+                "databases": [],
+                "users": [],
+                "datastore": {"type": "MariaDB", "version": "10"}}}
         self.assertEqual(ret, expected)
 
 

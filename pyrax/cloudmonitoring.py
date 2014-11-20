@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # Copyright (c)2013 Rackspace US, Inc.
@@ -122,7 +121,10 @@ class CloudMonitorEntity(BaseResource):
         This isn't very efficient: it loads the entire list then filters on
         the Python side.
         """
-        return self._check_manager.find_all_checks(**kwargs)
+        checks = self._check_manager.find_all_checks(**kwargs)
+        for check in checks:
+            check.set_entity(self)
+        return checks
 
 
     def create_check(self, label=None, name=None, check_type=None,
@@ -742,7 +744,7 @@ class CloudMonitorCheck(BaseResource):
 
     def get(self):
         """Reloads the check with its current values."""
-        new = self.manager.get_check(self.entity, self)
+        new = self.manager.get(self)
         if new:
             self._add_details(new._info)
 
@@ -1247,26 +1249,24 @@ class CloudMonitorClient(BaseClient):
         """
         return self._notification_plan_manager.delete(notification_plan)
 
-
+    @assure_entity
     def create_alarm(self, entity, check, notification_plan, criteria=None,
             disabled=False, label=None, name=None, metadata=None):
         """
         Creates an alarm that binds the check on the given entity with a
         notification plan.
         """
-        return self._entity_manager.create_alarm(entity, check,
-            notification_plan, criteria=criteria, disabled=disabled,
-            label=label, name=name, metadata=metadata)
+        return entity.create_alarm(check, notification_plan, criteria=criteria,
+            disabled=disabled, label=label, name=name, metadata=metadata)
 
-
+    @assure_entity
     def update_alarm(self, entity, alarm, criteria=None, disabled=False,
             label=None, name=None, metadata=None):
         """
         Updates an existing alarm on the given entity.
         """
-        return self._entity_manager.update_alarm(entity, alarm,
-                criteria=criteria, disabled=disabled, label=label, name=name,
-                metadata=metadata)
+        return entity.update_alarm(alarm, criteria=criteria, disabled=disabled,
+            label=label, name=name, metadata=metadata)
 
 
     @assure_entity
@@ -1278,18 +1278,20 @@ class CloudMonitorClient(BaseClient):
                 return_next=return_next)
 
 
+    @assure_entity
     def get_alarm(self, entity, alarm_id):
         """
         Returns the alarm with the specified ID for the entity.
         """
-        return self._entity_manager.get_alarm(entity, alarm_id)
+        return entity.get_alarm(alarm_id)
 
 
+    @assure_entity
     def delete_alarm(self, entity, alarm):
         """
         Deletes the specified alarm.
         """
-        return self._entity_manager.delete_alarm(entity, alarm)
+        return entity.delete_alarm(alarm)
 
 
     def list_notification_types(self):

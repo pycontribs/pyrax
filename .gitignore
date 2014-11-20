@@ -11,3 +11,4 @@ rpms/
 .tox
 .coveralls.yml
 .coverage
+pyrax.spec

@@ -169,6 +169,13 @@ class CloudMonitoringTest(unittest.TestCase):
         ent.label = utils.random_unicode()
         self.assertEqual(ent.label, ent.name)
 
+    def test_entity_find_all_checks(self):
+        ent = self.entity
+        ent._check_manager.find_all_checks = Mock(
+            return_value=[fakes.FakeCloudMonitorCheck()])
+        checks = ent.find_all_checks()
+        self.assertEqual(checks[0].entity, ent)
+
     @patch("pyrax.manager.BaseManager.list")
     def test_pagination_mgr_list(self, mock_list):
         pm = _PaginationManager(self.client)
@@ -755,7 +762,7 @@ class CloudMonitoringTest(unittest.TestCase):
         clt = self.client
         mgr = clt._entity_manager
         id_ = utils.random_unicode()
-        chk = CloudMonitorCheck(mgr, info={"id": id_}, entity=ent)
+        chk = fakes.FakeCloudMonitorCheck(info={"id": id_}, entity=ent)
         info = chk._info
         mgr.get_check = Mock(return_value=chk)
         chk.reload()
@@ -1343,9 +1350,9 @@ class CloudMonitoringTest(unittest.TestCase):
         mgr = clt._entity_manager
         answer = utils.random_unicode()
         alm = utils.random_unicode()
-        mgr.get_alarm = Mock(return_value=answer)
+        ent.get_alarm = Mock(return_value=answer)
         ret = clt.get_alarm(ent, alm)
-        mgr.get_alarm.assert_called_once_with(ent, alm)
+        ent.get_alarm.assert_called_once_with(alm)
         self.assertEqual(ret, answer)
 
     def test_clt_create_alarm(self):
@@ -1360,10 +1367,10 @@ class CloudMonitoringTest(unittest.TestCase):
         name = utils.random_unicode()
         metadata = utils.random_unicode()
         answer = utils.random_unicode()
-        mgr.create_alarm = Mock(return_value=answer)
+        ent.create_alarm = Mock(return_value=answer)
         ret = clt.create_alarm(ent, chk, nplan, criteria=criteria,
                 disabled=disabled, label=label, name=name, metadata=metadata)
-        mgr.create_alarm.assert_called_once_with(ent, chk, nplan,
+        ent.create_alarm.assert_called_once_with(chk, nplan,
                 criteria=criteria, disabled=disabled, label=label, name=name,
                 metadata=metadata)
         self.assertEqual(ret, answer)
@@ -1379,10 +1386,10 @@ class CloudMonitoringTest(unittest.TestCase):
         name = utils.random_unicode()
         metadata = utils.random_unicode()
         answer = utils.random_unicode()
-        mgr.update_alarm = Mock(return_value=answer)
+        ent.update_alarm = Mock(return_value=answer)
         ret = clt.update_alarm(ent, alm, criteria=criteria, disabled=disabled,
                 label=label, name=name, metadata=metadata)
-        mgr.update_alarm.assert_called_once_with(ent, alm, criteria=criteria,
+        ent.update_alarm.assert_called_once_with(alm, criteria=criteria,
                 disabled=disabled, label=label, name=name, metadata=metadata)
         self.assertEqual(ret, answer)
 
@@ -1391,9 +1398,9 @@ class CloudMonitoringTest(unittest.TestCase):
         ent = self.entity
         mgr = clt._entity_manager
         alm = utils.random_unicode()
-        mgr.delete_alarm = Mock()
+        ent.delete_alarm = Mock()
         clt.delete_alarm(ent, alm)
-        mgr.delete_alarm.assert_called_once_with(ent, alm)
+        ent.delete_alarm.assert_called_once_with(alm)
 
     def test_clt_list_notification_types(self):
         clt = self.client

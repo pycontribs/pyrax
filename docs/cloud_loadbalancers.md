@@ -426,22 +426,17 @@ Session persistence is a feature of the load balancing service that forces multi
 To get the session persistence setting for a load balancer, you would run:
 
     lb = clb.list()[0]
-    sp_mgr = lb.session_persistence()
-    print sp_mgr.get()
+    print = lb.session_persistence
 
 By default, load balancers are not configured for session persistence. You would run the following code to add persistence to your load balancer:
 
     lb = clb.list()[0]
-    sp_mgr = lb.session_persistence()
-    sp = sp_mgr.resource(persistenceType="HTTP_COOKIE")
-    sp_mgr.add(sp)
+    lb.session_persistence = "HTTP_COOKIE"
 
 Similarly, to remove session persistence from your load balancer, you would run:
 
     lb = clb.list()[0]
-    sp_mgr = lb.session_persistence()
-    sp_mgr.delete()
-
+    lb.session_persistence = None
 
 ## Connection Logging
 The connection logging feature allows logs to be delivered to a Cloud Files account every hour. For HTTP-based protocol traffic, these are Apache-style access logs. For all other traffic, this is connection and transfer logging.
@@ -449,21 +444,19 @@ The connection logging feature allows logs to be delivered to a Cloud Files acco
 You can retrieve the current state of connection logging for a given load balancer, and also enable/disable connection logging.
 
     lb = clb.list()[0]
-    cl_mgr = lb.connection_logging()
-    # Get the current state
-    print "Current logging status:", cl_mgr.get()
-    # Enable connection logging
-    cl_mgr.enable()
-    print "Logging status after enable():", cl_mgr.get()
+    # Print the current state
+    print "Current logging status: %s" % lb.connection_logging
+    lb.connection_logging = True
+    print "Logging status after enable: %s" % lb.connection_logging
     # Disable connection logging
-    cl_mgr.disable()
-    print "Logging status after disable():", cl_mgr.get()
+    lb.connection_logging = False
+    print "Logging status after disable: %s" % lb.connection_logging
 
-After running the above code, you should see output like this:
+After running the above code (with proper pauses to wait for the loadbalancer to become mutable), you should see output like this:
 
     Current logging status: False
-    Logging status after enable(): True
-    Logging status after disable(): False
+    Logging status after enable: True
+    Logging status after disable: False
 
 
 ## Access Lists
