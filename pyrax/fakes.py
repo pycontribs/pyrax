@@ -22,6 +22,7 @@ from pyrax.clouddatabases import CloudDatabaseVolume
 from pyrax.cloudblockstorage import CloudBlockStorageClient
 from pyrax.cloudblockstorage import CloudBlockStorageManager
 from pyrax.cloudblockstorage import CloudBlockStorageSnapshot
+from pyrax.cloudblockstorage import CloudBlockStorageSnapshotManager
 from pyrax.cloudblockstorage import CloudBlockStorageVolume
 from pyrax.cloudloadbalancers import CloudLoadBalancer
 from pyrax.cloudloadbalancers import CloudLoadBalancerManager
@@ -362,6 +363,14 @@ class FakeBlockStorageClient(CloudBlockStorageClient):
         ident = FakeIdentity()
         super(FakeBlockStorageClient, self).__init__(ident, "fakeuser",
                 "fakepassword", *args, **kwargs)
+
+
+class FakeSnapshotManager(CloudBlockStorageSnapshotManager):
+    def __init__(self, api=None, *args, **kwargs):
+        ident = FakeIdentity()
+        if api is None:
+            api = FakeBlockStorageClient(ident)
+        super(FakeSnapshotManager, self).__init__(api, *args, **kwargs)
 
 
 class FakeLoadBalancerClient(CloudLoadBalancerClient):
