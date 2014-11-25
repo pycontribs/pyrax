@@ -452,7 +452,24 @@ class CloudMonitoringTest(unittest.TestCase):
         ent = self.entity
         mgr = ent._check_manager
         self.assertRaises(exc.MonitoringCheckTargetNotSpecified,
-                mgr.create_check, ent, details="fake")
+                mgr.create_check, ent, details="fake",
+                check_type="remote.http",
+                monitoring_zones_poll=['foo', 'bar'])
+
+    def test_create_agent_check(self):
+        ent = self.entity
+        ent.id = 9876
+        fake_api = Mock()
+        ent._check_manager.api = fake_api
+        fake_resp = Mock()
+        fake_resp.headers = {'x-object-id': 1234}
+        fake_resp.status_code = 201
+        fake_api.method_post.return_value = (fake_resp, None)
+        ent._check_manager.get = Mock()
+        ent._check_manager.get.return_value = self.check
+        ret = ent._check_manager.create_check(label="test",
+            check_type="agent.memory", details={}, timeout=10, period=30)
+        self.assertEqual(ret, self.check)
 
     def test_entity_mgr_create_check_no_mz_poll(self):
         ent = self.entity

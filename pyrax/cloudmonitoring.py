@@ -553,18 +553,20 @@ class CloudMonitorCheckManager(_PaginationManager):
         if details is None:
             raise exc.MissingMonitoringCheckDetails("The required 'details' "
                     "parameter was not passed to the create_check() method.")
-        if not (target_alias or target_hostname):
-            raise exc.MonitoringCheckTargetNotSpecified("You must specify "
-                    "either the 'target_alias' or 'target_hostname' when "
-                    "creating a check.")
         ctype = utils.get_id(check_type)
         is_remote = ctype.startswith("remote")
         monitoring_zones_poll = utils.coerce_to_list(monitoring_zones_poll)
         monitoring_zones_poll = [utils.get_id(mzp)
                 for mzp in monitoring_zones_poll]
-        if is_remote and not monitoring_zones_poll:
-            raise exc.MonitoringZonesPollMissing("You must specify the "
+        # only require monitoring_zones and targets for remote checks
+        if is_remote:
+            if not monitoring_zones_poll:
+                raise exc.MonitoringZonesPollMissing("You must specify the "
                     "'monitoring_zones_poll' parameter for remote checks.")
+            if not (target_alias or target_hostname):
+                raise exc.MonitoringCheckTargetNotSpecified("You must "
+                    "specify either the 'target_alias' or 'target_hostname' "
+                    "when creating a remote check.")
         body = {"label": label or name,
                 "details": details,
                 "disabled": disabled,
@@ -580,7 +582,7 @@ class CloudMonitorCheckManager(_PaginationManager):
         else:
             uri = "/%s" % self.uri_base
         try:
-            resp, resp_body = self.api.method_post(uri, body=body)
+            resp = self.api.method_post(uri, body=body)[0]
         except exc.BadRequest as e:
             msg = e.message
             dtls = e.details
@@ -588,7 +590,6 @@ class CloudMonitorCheckManager(_PaginationManager):
             if match:
                 missing = match.groups()[0].replace("details.", "")
                 if missing in details:
-                    errcls = exc.InvalidMonitoringCheckDetails
                     errmsg = "".join(["The value passed for '%s' in the ",
                             "details parameter is not valid."]) % missing
                 else:
@@ -602,10 +603,17 @@ class CloudMonitorCheckManager(_PaginationManager):
                     # Info is in the 'details'
                     raise exc.InvalidMonitoringCheckDetails("Validation "
                             "failed. Error: '%s'." % dtls)
+            # its something other than validation error; probably
+            # limits exceeded, but raise it instead of failing silently
+            raise e
         else:
             if resp.status_code == 201:
                 check_id = resp.headers["x-object-id"]
                 return self.get(check_id)
+            # don't fail silently here either; raise an error
+            # if we get an unexpected response code
+            raise exc.ClientException("Unknown response code creating check;"
+                " expected 201, got %s" % resp.status_code)
 
 
     def update(self, check, label=None, name=None, disabled=None,
