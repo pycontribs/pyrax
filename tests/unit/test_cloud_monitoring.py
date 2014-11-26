@@ -8,8 +8,8 @@ import unittest
 from mock import patch
 from mock import MagicMock as Mock
 
-import pyrax.cloudnetworks
 from pyrax.cloudmonitoring import CloudMonitorAlarm
+from pyrax.cloudmonitoring import CloudMonitorAlarmManager
 from pyrax.cloudmonitoring import CloudMonitorCheck
 from pyrax.cloudmonitoring import CloudMonitorCheckType
 from pyrax.cloudmonitoring import CloudMonitorNotification
@@ -23,7 +23,6 @@ import pyrax.exceptions as exc
 import pyrax.utils as utils
 
 from pyrax import fakes
-
 
 
 class CloudMonitoringTest(unittest.TestCase):
@@ -921,11 +920,11 @@ class CloudMonitoringTest(unittest.TestCase):
 
     def test_alarm(self):
         ent = self.entity
-        clt = self.client
-        mgr = clt._entity_manager
+        mgr = Mock(spec=CloudMonitorAlarmManager)
+        mgr.entity_manager = ent.manager
         id_ = utils.random_unicode()
         nm = utils.random_unicode()
-        mgr.get = Mock(return_value=ent)
+        ent.manager.get = Mock(return_value=ent)
         alm = CloudMonitorAlarm(mgr, info={"id": id_, "label": nm},
                 entity="fake")
         self.assertEqual(alm.entity, ent)
