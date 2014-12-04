@@ -71,6 +71,7 @@ try:
     from .image import ImageClient
     from .object_storage import StorageClient
     from .queueing import QueueClient
+    from .rackconnect import RackConnectClient
 except ImportError:
     # See if this is the result of the importing of version.py in setup.py
     callstack = inspect.stack()
@@ -95,6 +96,7 @@ cloud_monitoring = None
 autoscale = None
 images = None
 queues = None
+rackconnect = None
 # Default region for all services. Can be individually overridden if needed
 default_region = None
 # Encoding to use when working with non-ASCII names
@@ -128,6 +130,7 @@ _client_classes = {
         "autoscale": AutoScaleClient,
         "image": ImageClient,
         "queues": QueueClient,
+        "rackconnect": RackConnectClient,
         }
 
 
@@ -590,6 +593,7 @@ def clear_credentials():
     global identity, regions, services, cloudservers, cloudfiles, cloud_cdn
     global cloud_loadbalancers, cloud_databases, cloud_blockstorage, cloud_dns
     global cloud_networks, cloud_monitoring, autoscale, images, queues
+    global rackconnect
     identity = None
     regions = tuple()
     services = tuple()
@@ -605,6 +609,7 @@ def clear_credentials():
     autoscale = None
     images = None
     queues = None
+    rackconnect = None
 
 
 def _make_agent_name(base):
@@ -622,7 +627,7 @@ def connect_to_services(region=None):
     """Establishes authenticated connections to the various cloud APIs."""
     global cloudservers, cloudfiles, cloud_loadbalancers, cloud_databases
     global cloud_blockstorage, cloud_dns, cloud_networks, cloud_monitoring
-    global autoscale, images, queues, cloud_cdn
+    global autoscale, images, queues, rackconnect
     cloudservers = connect_to_cloudservers(region=region)
     cloudfiles = connect_to_cloudfiles(region=region)
     cloud_cdn = connect_to_cloud_cdn(region=region)
@@ -635,6 +640,7 @@ def connect_to_services(region=None):
     autoscale = connect_to_autoscale(region=region)
     images = connect_to_images(region=region)
     queues = connect_to_queues(region=region)
+    rackconnect = connect_to_rackconnect(region=region)
 
 
 def _get_service_endpoint(context, svc, region=None, public=True):
@@ -804,6 +810,11 @@ def connect_to_images(region=None, public=True):
 def connect_to_queues(region=None, public=True):
     """Creates a client for working with Queues."""
     return _create_client(ep_name="queues", region=region, public=public)
+
+
+def connect_to_rackconnect(region=None):
+    """Creates a client for working with RackConnect."""
+    return _create_client(ep_name="rackconnect", region=region)
 
 
 def client_class_for_service(service):

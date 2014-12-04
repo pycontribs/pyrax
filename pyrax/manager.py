@@ -171,6 +171,8 @@ class BaseManager(object):
         listing responses the same way, so overriding this method allows
         subclasses to handle extraction for those outliers.
         """
+        if isinstance(resp_body, list):
+            return resp_body
         if key:
             data = resp_body.get(key)
         else:
