@@ -422,6 +422,16 @@ class NoUniqueMatch(ClientException):
     message = "Not Unique"
 
 
+class Conflict(ClientException):
+    """
+    HTTP 409 - Conflict
+    """
+    def __init__(self, message, *args, **kwargs):
+        code = 409
+        message = message or "Conflict"
+        super(Conflict, self).__init__(code, message, *args, **kwargs)
+
+
 class OverLimit(ClientException):
     """
     HTTP 413 - Over limit: you're over the API limits for this time period.
