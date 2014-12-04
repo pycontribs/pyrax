@@ -26,7 +26,7 @@ You can also install directly from GitHub (where the pyrax source code is hosted
 
 The difference is that using the GitHub installation method installs the current trunk version, which has the latest changes, but may also be less stable.
 
-To upgrade your installation in the future, re-run the same command, but this time add the `--upgrade` option to make sure that pyrax and any dependecies are updated to the newest available version.
+To upgrade your installation in the future, re-run the same command, but this time add the `--upgrade` option to make sure that pyrax and any dependencies are updated to the newest available version.
 
 
 ## Set up Authentication
@@ -193,7 +193,7 @@ If the environment is then changed to 'public', pyrax switches to Rackspace auth
 
 
 ### Accessing Environment Information
-Pyrax offers several methods for querying and modifying envrionments and their settings. To start, you can determine the current environment by calling `pyrax.get_environment()`. You can also get a list of all defined envrionments by calling `pyrax.list_environments()`. And as mentioned above, you can switch the current envrionment by calling `pyrax.set_environment(new_env_name)`.
+Pyrax offers several methods for querying and modifying environments and their settings. To start, you can determine the current environment by calling `pyrax.get_environment()`. You can also get a list of all defined environments by calling `pyrax.list_environments()`. And as mentioned above, you can switch the current envrionment by calling `pyrax.set_environment(new_env_name)`.
 
 To get the value of a setting, call `pyrax.get_setting(key)`. Normally you do not need to change settings in the middle of a session, but just in case you do, you can use the `pyrax.set_setting(key, val)` method. Both of these methods work on the current environment by default. You can get/set settings in other environments with those calls by passing in the envrionment name as the optional `env` parameter to those methods.
 
