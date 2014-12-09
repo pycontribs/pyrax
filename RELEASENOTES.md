@@ -1,5 +1,47 @@
 # Release Notes for pyrax
 
+### 2014.11.24 - Version 1.9.3
+
+  - Identity
+    - Catch an additional Exception during authentication for uncaught API side failures #500
+
+  - Cloud Files
+    - `get_metadata` methods should all support the `prefix` parameter #475
+    - Resolve bulk delete regressions #480
+    - Requests to delete all objects from a container, now properly lists all objects #480
+    - Fix sync_folder_to_container pathing bug #498
+
+  - Autoscale
+    - `get_launch_config` returns all server values provided by the API #451
+    - Add support for unsetting `personality` in a launch config #453
+
+  - Cloud DNS
+    - Resolve invalid attribute error with `update_record` #465
+
+  - Cloud Block Storage
+    - Support creating bootable volumes #463
+
+  - Cloud Load Balancers
+    - Fix documentation errors #486 #488
+    - Fix metadata manipulation for nodes #499
+
+  - Cloud Monitoring
+    - Resolve invalid attribute error with `CloudMonitorCheck.get` #459
+    - Call `set_entity` on all items feturned by `CloudMonitorEntity.list_checks` #459
+    - Resolve invalid attribute error with entity related calls #501
+
+  - Cloud Databases
+    - Allow specification of datastore type and version when creating instances #493
+    - Add `marker` and `limit` parameters to methods for listing database backups #497
+
+  - General
+    - Clarify Apache 2.0 License #471
+    - Remove django slugify function and replace it with novaclient/oslo `to_slug` function,
+      aliased to `slugify` for backwards compatibility #494
+    - Remove unnecessary shebang lines from non-executable python files #494
+    - General housekeeping to clean up the project #502 #471 #472 #474 #464
+    - Run tests via tox #471
+
 ### 2014.08.20 - Version 1.9.2
 
   - Cloud Files
