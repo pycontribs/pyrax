@@ -220,7 +220,7 @@
   - General
     - Added a CONTRIBUTING.rst file, following the suggestion of @justinclift
       in GitHub #327.
-    - Removed dependecy on the httplib2 library; pyrax now only relies on the
+    - Removed dependency on the httplib2 library; pyrax now only relies on the
       'requests' module for HTTP communication.
     - Fixed a bug in folder size calculations. GitHub #302
     - Removed a limit that only handled Rackspace vendor extensions. GitHub #315

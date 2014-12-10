@@ -157,12 +157,12 @@ IMAPv4 | Version 4, the current version of IMAPS.
 LDAP | The Lightweight Directory Access Protocol provides access to distributed directory information services over the Internet. This protocol is typically used to access a large set of hierarchical records, such as corporate email or a telephone directory.
 LDAPS | The Lightweight Directory Access Protocol over Secure Socket Layer (SSL).
 MYSQL | This protocol allows communication with MySQL, an open source database management system.
-POP3 | The Post Office Protocol is one of the two most common protocols for communciation between email clients and email servers. Version 3 is the current standard of POP.
+POP3 | The Post Office Protocol is one of the two most common protocols for communication between email clients and email servers. Version 3 is the current standard of POP.
 POP3S | Post Office Protocol over Secure Socket Layer.
 SFTP | The SSH File Transfer Protocol is a secure file transfer and management protocol. This protocol assumes the files are using a secure channel, such as SSH, and that the identity of the client is available to the protocol.
 SMTP | The Simple Mail Transfer Protocol is used by electronic mail servers to send and receive email messages. Email clients use this protocol to relay messages to another computer or web server, but use IMAP or POP to send and receive messages.
 TCP | The Transmission Control Protocol is a part of the Transport Layer protocol and is one of the core protocols of the Internet Protocol Suite. It provides a reliable, ordered delivery of a stream of bytes from one program on a computer to another program on another computer. Applications that require an ordered and reliable delivery of packets use this protocol.
-TCP_CLIE (TCP_CLIENT_FIRST) | This protocol is similiar to TCP, but is more efficient when a client is expected to write the data first.
+TCP_CLIE (TCP_CLIENT_FIRST) | This protocol is similar to TCP, but is more efficient when a client is expected to write the data first.
 UDP | The User Datagram Protocol provides a datagram service that emphasizes speed over reliability, It works well with applications that provide security through other measures.
 UDP_STRE (UDP_STREAM) | This protocol is designed to stream media over networks and is built on top of UDP.
 
