@@ -886,8 +886,8 @@ class IdentityTest(unittest.TestCase):
             for admin in (True, False):
                 ident.method_post(uri, data=data, headers=headers,
                         std_headers=std_headers, admin=admin)
-                pyrax.http.request.assert_called_with("POST", uri, body=data,
-                        headers=expected_headers)
+                pyrax.http.request.assert_called_with("POST", uri, verify=True,
+                        body=data, headers=expected_headers)
                 self.assertEqual(out.getvalue(), "")
                 out.seek(0)
                 out.truncate()
@@ -904,7 +904,7 @@ class IdentityTest(unittest.TestCase):
         pyrax.http.request = Mock()
         ident._call("POST", "tokens", False, {}, {}, False)
         pyrax.http.request.assert_called_with("POST",
-                "http://example.com/v2.0/tokens", headers={},
+                "http://example.com/v2.0/tokens", verify=False, headers={},
                 raise_exception=False)
 
     def test_call_with_slash(self):
@@ -915,7 +915,7 @@ class IdentityTest(unittest.TestCase):
         pyrax.http.request = Mock()
         ident._call("POST", "tokens", False, {}, {}, False)
         pyrax.http.request.assert_called_with("POST",
-                "http://example.com/v2.0/tokens", headers={},
+                "http://example.com/v2.0/tokens", verify=False, headers={},
                 raise_exception=False)
 
     def test_list_users(self):

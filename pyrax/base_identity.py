@@ -566,7 +566,7 @@ class BaseIdentity(object):
         if "tokens" in uri:
             # We'll handle the exception here
             kwargs["raise_exception"] = False
-        return pyrax.http.request(mthd, uri, **kwargs)
+        return pyrax.http.request(mthd, uri, verify=self.verify_ssl, **kwargs)
 
 
     def authenticate(self, username=None, password=None, api_key=None,
