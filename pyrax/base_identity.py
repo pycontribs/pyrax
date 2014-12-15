@@ -82,7 +82,8 @@ class Service(object):
         eps = catalog.get("endpoints", [])
         for ep in eps:
             rgn = ep.get("region", "ALL")
-            self.endpoints[rgn] = Endpoint(ep, self.service_type, rgn, identity)
+            self.endpoints[rgn] = Endpoint(ep, self.service_type, rgn, identity,
+                                           verify_ssl=self.identity.verify_ssl)
         return
 
 
@@ -153,13 +154,14 @@ class Endpoint(object):
             }
 
 
-    def __init__(self, ep_dict, service, region, identity):
+    def __init__(self, ep_dict, service, region, identity, verify_ssl=True):
         """
         Set local attributes from the supplied dictionary.
         """
         self.service = service
         self.region = region
         self.identity = identity
+        self.verify_ssl = verify_ssl
         for key, val in list(ep_dict.items()):
             att_name = self.attr_map.get(key, key)
             setattr(self, att_name, val)
@@ -246,15 +248,14 @@ class Endpoint(object):
         """
         Creates a client instance for the service.
         """
-        verify_ssl = pyrax.get_setting("verify_ssl")
         if self.service == "compute" and not special:
             # Novaclient requires different parameters.
             client = pyrax.connect_to_cloudservers(region=self.region,
-                    context=self.identity)
+                    context=self.identity, verify_ssl=self.verify_ssl)
             client.identity = self.identity
         else:
             client = clt_class(self.identity, region_name=self.region,
-                    management_url=url, verify_ssl=verify_ssl)
+                    management_url=url, verify_ssl=self.verify_ssl)
         return client
 
 
