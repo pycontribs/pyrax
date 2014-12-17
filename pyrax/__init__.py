@@ -645,7 +645,7 @@ def _get_service_endpoint(context, svc, region=None, public=True):
     return ep
 
 
-def connect_to_cloudservers(region=None, context=None, **kwargs):
+def connect_to_cloudservers(region=None, context=None, verify_ssl=None, **kwargs):
     """Creates a client for working with cloud servers."""
     context = context or identity
     _cs_auth_plugin.discover_auth_systems()
@@ -660,7 +660,10 @@ def connect_to_cloudservers(region=None, context=None, **kwargs):
     if not mgt_url:
         # Service is not available
         return
-    insecure = not get_setting("verify_ssl")
+    if verify_ssl is None:
+        insecure = not get_setting("verify_ssl")
+    else:
+        insecure = not verify_ssl
     cs_shell = _cs_shell()
     extensions = cs_shell._discover_extensions("1.1")
     cloudservers = _cs_client.Client(context.username, context.password,
@@ -728,13 +731,14 @@ def connect_to_cloudfiles(region=None, public=None):
 
 
 @_require_auth
-def _create_client(ep_name, region, public=True):
+def _create_client(ep_name, region, public=True, verify_ssl=None):
     region = _safe_region(region)
     ep = _get_service_endpoint(None, ep_name.split(":")[0], region,
             public=public)
     if not ep:
         return
-    verify_ssl = get_setting("verify_ssl")
+    if verify_ssl is None:
+        verify_ssl = get_setting("verify_ssl")
     cls = _client_classes[ep_name]
     client = cls(identity, region_name=region, management_url=ep,
             verify_ssl=verify_ssl, http_log_debug=_http_debug)

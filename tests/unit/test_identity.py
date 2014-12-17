@@ -259,7 +259,7 @@ class IdentityTest(unittest.TestCase):
         ret = ep._create_client(None, None, public)
         self.assertEqual(ret, fake_client)
         pyrax.connect_to_cloudservers.assert_called_once_with(region=ep.region,
-                context=ep.identity)
+                context=ep.identity, verify_ssl=True)
         pyrax.connect_to_cloudservers = sav_conn
         pyrax.get_setting = sav_gs
 
