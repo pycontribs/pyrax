@@ -72,8 +72,8 @@ class CloudMonitorEntity(BaseResource):
                 uri_base="entities/%s/checks" % self.id,
                 resource_class=CloudMonitorCheck, response_key=None,
                 plural_response_key=None)
-        self._alarm_manager = CloudMonitorAlarmManager(self.manager.api,
-                uri_base="entities/%s/alarms" % self.id,
+        self._alarm_manager = CloudMonitorAlarmManager(self.manager,
+                self.manager.api, uri_base="entities/%s/alarms" % self.id,
                 resource_class=CloudMonitorAlarm, response_key=None,
                 plural_response_key=None)
 
@@ -476,6 +476,15 @@ class CloudMonitorAlarmManager(_PaginationManager):
     """
     Handles all of the alarm-specific requests.
     """
+
+    def __init__(self, entity_manager, api, resource_class=None,
+            response_key=None, plural_response_key=None, uri_base=None):
+        # need the entity manager to materialize the CloudMonitorAlarm object
+        self.entity_manager = entity_manager
+        _PaginationManager.__init__(self, api, resource_class=resource_class,
+            response_key=response_key, plural_response_key=plural_response_key,
+            uri_base=uri_base)
+
     def create(self, check, notification_plan, criteria=None,
             disabled=False, label=None, name=None, metadata=None):
         """
@@ -915,8 +924,10 @@ class CloudMonitorAlarm(BaseResource):
     def __init__(self, manager, info, entity, key=None, loaded=False):
         super(CloudMonitorAlarm, self).__init__(manager, info, key=key,
                 loaded=loaded)
+        if entity is None:
+            entity = info['entity_id']
         if not isinstance(entity, CloudMonitorEntity):
-            entity = manager.get(entity)
+            entity = manager.entity_manager.get(entity)
         self.entity = entity
 
 
