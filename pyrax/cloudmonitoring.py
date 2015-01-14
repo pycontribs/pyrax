@@ -730,6 +730,32 @@ class CloudMonitorEntityManager(_PaginationManager):
             resp, body = self.api.method_put(uri, body=body)
 
 
+class CloudMonitorTokenManager(BaseManager):
+    """
+    Handles API calls for managing Monitoring Agent Tokens
+    """
+
+    def __init__(self, api):
+        super(CloudMonitorTokenManager, self).__init__(api,
+            resource_class=CloudMonitorAgentToken, uri_base="agent_tokens")
+
+    def create(self, name):
+        resp = super(CloudMonitorTokenManager, self).create(name,
+            return_response=True)
+        loc = resp.headers.get("location")
+        if loc:
+            return self.get(loc.rsplit("/")[-1])
+
+    def update(self, token, label):
+        uri = "/%s/%s" % (self.uri_base, utils.get_id(token))
+        self._update(uri, self._create_body(label))
+        return self.get(token)
+
+    def _create_body(self, name, *args, **kwargs):
+        return {
+            "label": name
+        }
+
 
 class CloudMonitorCheck(BaseResource):
     """
@@ -965,6 +991,17 @@ class CloudMonitorAlarm(BaseResource):
         return self.label
 
 
+class CloudMonitorAgentToken(BaseResource):
+    """
+    Agent tokens are used to authenticate Monitoring agents to the Monitoring
+    Service. Multiple agents can share a single token.
+    """
+
+    @property
+    def name(self):
+        return self.label
+
+
 
 class CloudMonitorClient(BaseClient):
     """
@@ -1003,6 +1040,7 @@ class CloudMonitorClient(BaseClient):
         self._overview_manager = _EntityFilteringManger(self,
                 uri_base="views/overview", resource_class=None,
                 response_key="value", plural_response_key=None)
+        self._token_manager = CloudMonitorTokenManager(self)
 
 
     def get_account(self):
@@ -1360,6 +1398,21 @@ class CloudMonitorClient(BaseClient):
         for the specified entity.
         """
         return self._overview_manager.list(entity=entity)
+
+    def create_agent_token(self, label):
+        return self._token_manager.create(label)
+
+    def list_agent_tokens(self):
+        return self._token_manager.list()
+
+    def get_agent_token(self, token_id):
+        return self._token_manager.get(token_id)
+
+    def update_agent_token(self, token, label=None):
+        return self._token_manager.update(token, label)
+
+    def delete_agent_token(self, token):
+        self._token_manager.delete(token)
 
 
     #################################################################

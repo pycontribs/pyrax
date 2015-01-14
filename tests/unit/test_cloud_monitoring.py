@@ -8,6 +8,7 @@ import unittest
 from mock import patch
 from mock import MagicMock as Mock
 
+from pyrax.cloudmonitoring import CloudMonitorAgentToken
 from pyrax.cloudmonitoring import CloudMonitorAlarm
 from pyrax.cloudmonitoring import CloudMonitorAlarmManager
 from pyrax.cloudmonitoring import CloudMonitorCheck
@@ -988,6 +989,99 @@ class CloudMonitoringTest(unittest.TestCase):
         ent.get_alarm = Mock(return_value=alm)
         alm.reload()
         self.assertEqual(alm._info, info)
+
+    def test_token_get(self):
+        mgr = self.client._token_manager
+        resp = {
+            "id": "someId",
+            "token": "4c5e28f0-0b3f-11e1-860d-c55c4705a286:1234",
+            "label": "aLabel"
+        }
+        mgr.api.method_get = Mock(return_value=(Mock(), resp))
+        token = mgr.get("someId")
+        mgr.api.method_get.assert_called_once_with("/agent_tokens/someId")
+        self.assertIsInstance(token, CloudMonitorAgentToken)
+        self.assertEqual(resp['token'], token.token)
+        self.assertEqual(resp['label'], token.label)
+        self.assertEqual(resp['label'], token.name)
+        self.assertEqual(resp['id'], token.id)
+
+    def test_token_list(self):
+        mgr = self.client._token_manager
+        exp_token = "4c5e28f0-0b3f-11e1-860d-c55c4705a286:1234"
+        exp_lable = "aLabel"
+        resp = {
+            "values": [{
+                "token": exp_token,
+                "label": exp_lable
+            }],
+            "metadata": {
+                "count": 1,
+                "limit": 50,
+                "marker": None,
+                "next_marker": None,
+                "next_href": None
+            }
+        }
+        mgr.api.method_get = Mock(return_value=(Mock(), resp))
+        tokens = mgr.list()
+        mgr.api.method_get.assert_called_once_with("/agent_tokens")
+        self.assertIsInstance(tokens, list)
+        self.assertEqual(1, len(tokens))
+        token = tokens[0]
+        self.assertIsInstance(token, CloudMonitorAgentToken)
+        self.assertEqual(exp_token, token.token)
+        self.assertEqual(exp_lable, token.label)
+        self.assertEqual(exp_lable, token.name)
+
+    def test_token_create(self):
+        mgr = self.client._token_manager
+        req = {'label': "aLabel"}
+        data = {
+            "id": "someId",
+            "token": "4c5e28f0-0b3f-11e1-860d-c55c4705a286:1234",
+            "label": "aLabel"
+        }
+        resp = Mock()
+        resp.headers = {"location": "/someId"}
+        mgr.api.method_post = Mock(return_value=(resp, None))
+        mgr.api.method_get = Mock(return_value=(resp, data))
+        token = mgr.create("aLabel")
+        mgr.api.method_post.assert_called_once_with("/agent_tokens",
+            body=req)
+        mgr.api.method_get.assert_called_once_with('/agent_tokens/someId')
+        self.assertIsInstance(token, CloudMonitorAgentToken)
+        self.assertEqual(data['token'], token.token)
+        self.assertEqual(data['label'], token.label)
+        self.assertEqual(data['label'], token.name)
+        self.assertEqual(data['id'], token.id)
+
+    def test_token_delete(self):
+        mgr = self.client._token_manager
+        mgr.api.method_delete = Mock(return_value=(Mock(), None))
+        mgr.delete("someId")
+        mgr.api.method_delete.assert_called_once_with("/agent_tokens/someId")
+
+    def test_token_update(self):
+        mgr = self.client._token_manager
+        req = { 'label': "aNewLabel"}
+        data = {
+            "id": "someId",
+            "token": "4c5e28f0-0b3f-11e1-860d-c55c4705a286:1234",
+            "label": "aNewLabel"
+        }
+        resp = Mock()
+        mgr.api.method_put = Mock(return_value=(resp, None))
+        mgr.api.method_get = Mock(return_value=(resp, data))
+        token = mgr.update('someId', "aNewLabel")
+        mgr.api.method_put.assert_called_once_with("/agent_tokens/someId",
+            body=req)
+        mgr.api.method_get.assert_called_once_with("/agent_tokens/someId")
+        self.assertIsInstance(token, CloudMonitorAgentToken)
+        self.assertEqual(data['token'], token.token)
+        self.assertEqual(data['label'], token.label)
+        self.assertEqual(data['label'], token.name)
+        self.assertEqual(data['id'], token.id)
 
     def test_clt_get_account(self):
         clt = self.client
