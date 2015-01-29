@@ -72,8 +72,8 @@ class CloudMonitorEntity(BaseResource):
                 uri_base="entities/%s/checks" % self.id,
                 resource_class=CloudMonitorCheck, response_key=None,
                 plural_response_key=None)
-        self._alarm_manager = CloudMonitorAlarmManager(self.manager.api,
-                uri_base="entities/%s/alarms" % self.id,
+        self._alarm_manager = CloudMonitorAlarmManager(self.manager,
+                self.manager.api, uri_base="entities/%s/alarms" % self.id,
                 resource_class=CloudMonitorAlarm, response_key=None,
                 plural_response_key=None)
 
@@ -476,6 +476,15 @@ class CloudMonitorAlarmManager(_PaginationManager):
     """
     Handles all of the alarm-specific requests.
     """
+
+    def __init__(self, entity_manager, api, resource_class=None,
+            response_key=None, plural_response_key=None, uri_base=None):
+        # need the entity manager to materialize the CloudMonitorAlarm object
+        self.entity_manager = entity_manager
+        _PaginationManager.__init__(self, api, resource_class=resource_class,
+            response_key=response_key, plural_response_key=plural_response_key,
+            uri_base=uri_base)
+
     def create(self, check, notification_plan, criteria=None,
             disabled=False, label=None, name=None, metadata=None):
         """
@@ -553,18 +562,20 @@ class CloudMonitorCheckManager(_PaginationManager):
         if details is None:
             raise exc.MissingMonitoringCheckDetails("The required 'details' "
                     "parameter was not passed to the create_check() method.")
-        if not (target_alias or target_hostname):
-            raise exc.MonitoringCheckTargetNotSpecified("You must specify "
-                    "either the 'target_alias' or 'target_hostname' when "
-                    "creating a check.")
         ctype = utils.get_id(check_type)
         is_remote = ctype.startswith("remote")
         monitoring_zones_poll = utils.coerce_to_list(monitoring_zones_poll)
         monitoring_zones_poll = [utils.get_id(mzp)
                 for mzp in monitoring_zones_poll]
-        if is_remote and not monitoring_zones_poll:
-            raise exc.MonitoringZonesPollMissing("You must specify the "
+        # only require monitoring_zones and targets for remote checks
+        if is_remote:
+            if not monitoring_zones_poll:
+                raise exc.MonitoringZonesPollMissing("You must specify the "
                     "'monitoring_zones_poll' parameter for remote checks.")
+            if not (target_alias or target_hostname):
+                raise exc.MonitoringCheckTargetNotSpecified("You must "
+                    "specify either the 'target_alias' or 'target_hostname' "
+                    "when creating a remote check.")
         body = {"label": label or name,
                 "details": details,
                 "disabled": disabled,
@@ -580,7 +591,7 @@ class CloudMonitorCheckManager(_PaginationManager):
         else:
             uri = "/%s" % self.uri_base
         try:
-            resp, resp_body = self.api.method_post(uri, body=body)
+            resp = self.api.method_post(uri, body=body)[0]
         except exc.BadRequest as e:
             msg = e.message
             dtls = e.details
@@ -588,7 +599,6 @@ class CloudMonitorCheckManager(_PaginationManager):
             if match:
                 missing = match.groups()[0].replace("details.", "")
                 if missing in details:
-                    errcls = exc.InvalidMonitoringCheckDetails
                     errmsg = "".join(["The value passed for '%s' in the ",
                             "details parameter is not valid."]) % missing
                 else:
@@ -602,10 +612,17 @@ class CloudMonitorCheckManager(_PaginationManager):
                     # Info is in the 'details'
                     raise exc.InvalidMonitoringCheckDetails("Validation "
                             "failed. Error: '%s'." % dtls)
+            # its something other than validation error; probably
+            # limits exceeded, but raise it instead of failing silently
+            raise e
         else:
             if resp.status_code == 201:
                 check_id = resp.headers["x-object-id"]
                 return self.get(check_id)
+            # don't fail silently here either; raise an error
+            # if we get an unexpected response code
+            raise exc.ClientException("Unknown response code creating check;"
+                " expected 201, got %s" % resp.status_code)
 
 
     def update(self, check, label=None, name=None, disabled=None,
@@ -712,6 +729,32 @@ class CloudMonitorEntityManager(_PaginationManager):
             uri = "/%s/%s" % (self.uri_base, utils.get_id(entity))
             resp, body = self.api.method_put(uri, body=body)
 
+
+class CloudMonitorTokenManager(BaseManager):
+    """
+    Handles API calls for managing Monitoring Agent Tokens
+    """
+
+    def __init__(self, api):
+        super(CloudMonitorTokenManager, self).__init__(api,
+            resource_class=CloudMonitorAgentToken, uri_base="agent_tokens")
+
+    def create(self, name):
+        resp = super(CloudMonitorTokenManager, self).create(name,
+            return_response=True)
+        loc = resp.headers.get("location")
+        if loc:
+            return self.get(loc.rsplit("/")[-1])
+
+    def update(self, token, label):
+        uri = "/%s/%s" % (self.uri_base, utils.get_id(token))
+        self._update(uri, self._create_body(label))
+        return self.get(token)
+
+    def _create_body(self, name, *args, **kwargs):
+        return {
+            "label": name
+        }
 
 
 class CloudMonitorCheck(BaseResource):
@@ -915,8 +958,10 @@ class CloudMonitorAlarm(BaseResource):
     def __init__(self, manager, info, entity, key=None, loaded=False):
         super(CloudMonitorAlarm, self).__init__(manager, info, key=key,
                 loaded=loaded)
+        if entity is None:
+            entity = info['entity_id']
         if not isinstance(entity, CloudMonitorEntity):
-            entity = manager.get(entity)
+            entity = manager.entity_manager.get(entity)
         self.entity = entity
 
 
@@ -940,6 +985,17 @@ class CloudMonitorAlarm(BaseResource):
     # Alias reload() to get()
     reload = get
 
+
+    @property
+    def name(self):
+        return self.label
+
+
+class CloudMonitorAgentToken(BaseResource):
+    """
+    Agent tokens are used to authenticate Monitoring agents to the Monitoring
+    Service. Multiple agents can share a single token.
+    """
 
     @property
     def name(self):
@@ -984,6 +1040,7 @@ class CloudMonitorClient(BaseClient):
         self._overview_manager = _EntityFilteringManger(self,
                 uri_base="views/overview", resource_class=None,
                 response_key="value", plural_response_key=None)
+        self._token_manager = CloudMonitorTokenManager(self)
 
 
     def get_account(self):
@@ -1341,6 +1398,21 @@ class CloudMonitorClient(BaseClient):
         for the specified entity.
         """
         return self._overview_manager.list(entity=entity)
+
+    def create_agent_token(self, label):
+        return self._token_manager.create(label)
+
+    def list_agent_tokens(self):
+        return self._token_manager.list()
+
+    def get_agent_token(self, token_id):
+        return self._token_manager.get(token_id)
+
+    def update_agent_token(self, token, label=None):
+        return self._token_manager.update(token, label)
+
+    def delete_agent_token(self, token):
+        self._token_manager.delete(token)
 
 
     #################################################################
