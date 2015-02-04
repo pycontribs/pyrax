@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function, unicode_literals
 
 import datetime
 import email.utils
@@ -237,10 +237,9 @@ def get_checksum(content, encoding="utf8", block_size=8192):
     md = hashlib.md5()
 
     def safe_update(txt):
-        try:
-            md.update(txt)
-        except UnicodeEncodeError:
-            md.update(txt.encode(encoding))
+        if isinstance(txt, six.text_type):
+            txt = txt.encode(encoding)
+        md.update(txt)
 
     try:
         isfile = os.path.isfile(content)

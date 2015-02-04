@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 
 import random
 import unittest
@@ -110,7 +111,7 @@ class AutoscaleTest(unittest.TestCase):
         image = utils.random_unicode()
         disk_config = utils.random_unicode()
         metadata = utils.random_unicode()
-        personality = utils.random_unicode()
+        personality = utils.random_unicode().encode("utf-8")  # Must be bytes
         networks = utils.random_unicode()
         load_balancers = utils.random_unicode()
         key_name = utils.random_unicode()
@@ -1189,7 +1190,7 @@ class AutoscaleTest(unittest.TestCase):
         flavor = utils.random_unicode()
         disk_config = None
         metadata = None
-        personality = [{"path": "/tmp/testing", "contents": "testtest"}]
+        personality = [{"path": "/tmp/testing", "contents": b"testtest"}]
         scaling_policies = None
         networks = utils.random_unicode()
         lb = fakes.FakeLoadBalancer()
@@ -1215,7 +1216,7 @@ class AutoscaleTest(unittest.TestCase):
                             "metadata": {},
                             "name": server_name,
                             "personality": [{"path": "/tmp/testing",
-                                             "contents": "dGVzdHRlc3Q="}],
+                                             "contents": b"dGVzdHRlc3Q="}],
                             "networks": networks,
                             "key_name": key_name}
                         },

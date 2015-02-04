@@ -22,12 +22,14 @@
 OpenStack Client interface. Handles the REST calls and responses.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import json
 import logging
 import requests
+import six
 import time
+
 from six.moves import urllib
 
 import pyrax
@@ -35,15 +37,11 @@ import pyrax.exceptions as exc
 
 
 def _safe_quote(val):
-    """
-    Unicode values will raise a KeyError, so catch those and encode in UTF-8.
-    """
-    SAFE_QUOTE_CHARS = "/.?&=,"
-    try:
-        ret = urllib.parse.quote(val, safe=SAFE_QUOTE_CHARS)
-    except KeyError:
-        ret = urllib.parse.quote(val.encode("utf-8"), safe=SAFE_QUOTE_CHARS)
-    return ret
+    # urllib.parse.quote expects bytes
+    SAFE_QUOTE_CHARS = b"/.?&=,"
+    if isinstance(val, six.text_type):
+        val = val.encode(pyrax.get_encoding())
+    return urllib.parse.quote(val, safe=SAFE_QUOTE_CHARS)
 
 
 class BaseClient(object):

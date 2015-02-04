@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 
 import json
 import os
@@ -257,7 +258,7 @@ class PyraxInitTest(unittest.TestCase):
 
     def test_set_credential_file(self):
         with utils.SelfDeletingTempfile() as tmpname:
-            with open(tmpname, "wb") as tmp:
+            with open(tmpname, "w") as tmp:
                 tmp.write("[keystone]\n")
                 tmp.write("username = %s\n" % self.username)
                 tmp.write("password = %s\n" % self.password)
@@ -269,7 +270,7 @@ class PyraxInitTest(unittest.TestCase):
 
     def test_set_bad_credential_file(self):
         with utils.SelfDeletingTempfile() as tmpname:
-            with open(tmpname, "wb") as tmp:
+            with open(tmpname, "w") as tmp:
                 tmp.write("[keystone]\n")
                 tmp.write("username = bad\n")
                 tmp.write("password = creds\n")
