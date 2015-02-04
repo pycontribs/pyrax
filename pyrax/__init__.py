@@ -202,10 +202,11 @@ class Settings(object):
                     return _import_identity(ityp)
             else:
                 env_var = self.env_dct.get(key)
-            try:
-                ret = os.environ[env_var]
-            except KeyError:
-                ret = None
+            if env_var is not None:
+                try:
+                    ret = os.environ[env_var]
+                except KeyError:
+                    ret = None
         return ret
 
 
