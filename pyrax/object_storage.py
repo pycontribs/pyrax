@@ -17,8 +17,7 @@
 #    under the License.
 
 
-from __future__ import print_function
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function, unicode_literals
 import datetime
 from functools import wraps
 import hashlib
@@ -1121,15 +1120,17 @@ class ContainerManager(BaseManager):
         path_parts = (mgt_url[start:], cname, oname)
         cleaned = (part.strip("/\\") for part in path_parts)
         pth = "/%s" % "/".join(cleaned)
-        if isinstance(pth, six.string_types):
-            pth = pth.encode(pyrax.get_encoding())
         expires = int(time.time() + int(seconds))
-        hmac_body = "%s\n%s\n%s" % (mod_method, expires, pth)
         try:
-            sig = hmac.new(key, hmac_body, hashlib.sha1).hexdigest()
-        except TypeError as e:
+            key = key.encode("ascii")
+            hmac_body = b'\n'.join([
+                mod_method.encode("ascii"),
+                six.text_type(expires).encode("ascii"),
+                pth.encode("ascii")])
+        except UnicodeEncodeError:
             raise exc.UnicodePathError("Due to a bug in Python, the TempURL "
                     "function only works with ASCII object paths.")
+        sig = hmac.new(key, hmac_body, hashlib.sha1).hexdigest()
         temp_url = "%s%s?temp_url_sig=%s&temp_url_expires=%s" % (base_url, pth,
                 sig, expires)
         return temp_url
