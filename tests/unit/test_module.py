@@ -6,6 +6,7 @@ import os
 import unittest
 import warnings
 
+import six
 from six.moves import reload_module as reload
 
 from mock import patch
@@ -488,8 +489,8 @@ class PyraxInitTest(unittest.TestCase):
         pyrax.get_setting = sav
 
     def test_import_fail(self):
-        import __builtin__
-        sav_import = __builtin__.__import__
+        _builtin = six.moves.builtins
+        sav_import = _builtin.__import__
 
         def fake_import(nm, *args):
             if nm == "identity":
@@ -497,9 +498,9 @@ class PyraxInitTest(unittest.TestCase):
             else:
                 return sav_import(nm, *args)
 
-        __builtin__.__import__ = fake_import
+        _builtin.__import__ = fake_import
         self.assertRaises(ImportError, reload, pyrax)
-        __builtin__.__import__ = sav_import
+        _builtin.__import__ = sav_import
         reload(pyrax)
 
 
