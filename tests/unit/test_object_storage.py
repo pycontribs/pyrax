@@ -172,8 +172,8 @@ class ObjectStorageTest(unittest.TestCase):
 
     def test_backwards_aliases(self):
         cont = self.container
-        get_func = cont.get_objects.im_func
-        list_func = cont.list.im_func
+        get_func = cont.get_objects.__func__
+        list_func = cont.list.__func__
         self.assertTrue(get_func is list_func)
 
     def test_repr(self):

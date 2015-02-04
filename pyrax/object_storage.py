@@ -61,6 +61,7 @@ MAX_BULK_DELETE = 10000
 class Fault_cls(object):
     def __nonzero__(self):
         return False
+    __bool__ = __nonzero__
 
 FAULT = Fault_cls()
 
