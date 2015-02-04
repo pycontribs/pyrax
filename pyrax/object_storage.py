@@ -2827,7 +2827,7 @@ class StorageClient(BaseClient):
                     if self.count > self.interval:
                         self.count = 0
                         print(".")
-                ret = self.gen.next()
+                ret = next(self.gen)
                 self.processed += len(ret)
                 return ret
 
