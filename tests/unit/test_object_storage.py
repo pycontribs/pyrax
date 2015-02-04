@@ -3533,10 +3533,13 @@ class ObjectStorageTest(unittest.TestCase):
         fname2 = utils.random_ascii()
         fname3 = utils.random_ascii()
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            fnames = [tmpdir, fname1, fname2, fname3]
-            for fname in fnames[1:]:
+            fnames = [fname1, fname2, fname3]
+            for fname in fnames:
                 pth = os.path.join(tmpdir, fname)
-                open(pth, "w").write("faketext")
+                with open(pth, "wb") as f:
+                    f.write(b"faketext")
+                    f.close()
+            self.assertEqual(sorted(os.listdir(tmpdir)), sorted(fnames))
             clt._should_abort_folder_upload = Mock(return_value=False)
             folder_up = FolderUploader(tmpdir, cont, ignore, upload_key, clt)
             folder_up.upload_files_in_folder = Mock()
