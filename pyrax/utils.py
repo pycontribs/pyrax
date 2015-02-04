@@ -244,7 +244,7 @@ def get_checksum(content, encoding="utf8", block_size=8192):
 
     try:
         isfile = os.path.isfile(content)
-    except TypeError:
+    except (TypeError, ValueError):
         # Will happen with binary content.
         isfile = False
     if isfile:
