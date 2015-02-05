@@ -43,7 +43,7 @@ class sdist(_sdist):
         # Expand macros in pyrax.spec.in
         spec_in = open('pyrax.spec.in', 'r')
         spec = open('pyrax.spec', 'w')
-        for line in spec_in.xreadlines():
+        for line in spec_in:
             if "@VERSION@" in line:
                 line = line.replace("@VERSION@", version)
             elif "@RELEASE@" in line:
@@ -81,7 +81,11 @@ setup(
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python",
         "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.4",
         "Operating System :: OS Independent",
     ],
     install_requires=[

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
+
 import json
 import logging
 import random
@@ -29,7 +31,7 @@ class HttpTest(unittest.TestCase):
         pass
 
     def test_request(self):
-        mthd = random.choice(self.http.req_methods.keys())
+        mthd = random.choice(list(self.http.req_methods.keys()))
         sav_method = self.http.req_methods[mthd]
         resp = fakes.FakeResponse()
         self.http.req_methods[mthd] = Mock(return_value=resp)
@@ -43,7 +45,7 @@ class HttpTest(unittest.TestCase):
         self.http.req_methods[mthd] = sav_method
 
     def test_request_no_json(self):
-        mthd = random.choice(self.http.req_methods.keys())
+        mthd = random.choice(list(self.http.req_methods.keys()))
         sav_method = self.http.req_methods[mthd]
         resp = fakes.FakeResponse()
         resp.json = Mock(side_effect=ValueError(""))
@@ -58,7 +60,7 @@ class HttpTest(unittest.TestCase):
         self.http.req_methods[mthd] = sav_method
 
     def test_request_exception(self):
-        mthd = random.choice(self.http.req_methods.keys())
+        mthd = random.choice(list(self.http.req_methods.keys()))
         sav_method = self.http.req_methods[mthd]
         resp = fakes.FakeResponse()
         resp.status_code = 404
@@ -71,7 +73,7 @@ class HttpTest(unittest.TestCase):
                 headers=headers)
 
     def test_request_data(self):
-        mthd = random.choice(self.http.req_methods.keys())
+        mthd = random.choice(list(self.http.req_methods.keys()))
         sav_method = self.http.req_methods[mthd]
         resp = fakes.FakeResponse()
         self.http.req_methods[mthd] = Mock(return_value=resp)
@@ -86,7 +88,7 @@ class HttpTest(unittest.TestCase):
         self.http.req_methods[mthd] = sav_method
 
     def test_request_body(self):
-        mthd = random.choice(self.http.req_methods.keys())
+        mthd = random.choice(list(self.http.req_methods.keys()))
         sav_method = self.http.req_methods[mthd]
         resp = fakes.FakeResponse()
         self.http.req_methods[mthd] = Mock(return_value=resp)

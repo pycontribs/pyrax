@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import, unicode_literals
+
 import datetime
 import json
 import os
@@ -8,6 +10,7 @@ import pkg_resources
 import requests
 import unittest
 
+import six
 from six.moves import urllib
 
 from mock import patch
@@ -46,7 +49,7 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(ret, expected)
 
     def test_safe_quote_unicode(self):
-        ret = _safe_quote(unichr(1000))
+        ret = _safe_quote(six.unichr(1000))
         expected = "%CF%A8"
         self.assertEqual(ret, expected)
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 
 import logging
 import mimetypes
@@ -172,8 +173,8 @@ class ObjectStorageTest(unittest.TestCase):
 
     def test_backwards_aliases(self):
         cont = self.container
-        get_func = cont.get_objects.im_func
-        list_func = cont.list.im_func
+        get_func = cont.get_objects.__func__
+        list_func = cont.list.__func__
         self.assertTrue(get_func is list_func)
 
     def test_repr(self):
@@ -2037,7 +2038,7 @@ class ObjectStorageTest(unittest.TestCase):
         with utils.SelfDeletingTempfile() as tmp:
             with open(tmp, "w") as content:
                 content.write("x" * 66)
-            with open(tmp) as content:
+            with open(tmp, "rb") as content:
                 ret = mgr._upload(obj_name, content, content_type,
                         content_encoding, content_length, etag, chunked,
                         chunk_size, headers)
@@ -2133,7 +2134,7 @@ class ObjectStorageTest(unittest.TestCase):
         resp_body = ""
         mgr.api.method_get = Mock(return_value=(resp, resp_body))
         ret = mgr._fetch_chunker(uri, chunk_size, None, obj.total_bytes)
-        self.assertRaises(StopIteration, ret.next)
+        self.assertRaises(StopIteration, lambda: next(ret))
 
     def test_sobj_mgr_fetch_partial(self):
         obj = self.obj
@@ -2187,7 +2188,7 @@ class ObjectStorageTest(unittest.TestCase):
     def test_sobj_mgr_download_no_structure(self):
         obj = self.obj
         mgr = obj.manager
-        txt = utils.random_unicode()
+        txt = utils.random_unicode().encode("utf-8")
         mgr.fetch = Mock(return_value=txt)
         with utils.SelfDeletingTempDirectory() as directory:
             mgr.download(obj, directory, structure=False)
@@ -2199,7 +2200,7 @@ class ObjectStorageTest(unittest.TestCase):
         obj = self.obj
         obj.name = "%s/%s/%s" % (obj.name, obj.name, obj.name)
         mgr = obj.manager
-        txt = utils.random_unicode()
+        txt = utils.random_unicode().encode("utf-8")
         mgr.fetch = Mock(return_value=txt)
         with utils.SelfDeletingTempDirectory() as directory:
             mgr.download(obj, directory, structure=True)
@@ -3477,12 +3478,11 @@ class ObjectStorageTest(unittest.TestCase):
         ignore = "*FAKE*"
         upload_key = utils.random_unicode()
         folder_up = FolderUploader(root_folder, cont, ignore, upload_key, clt)
-        arg = utils.random_unicode()
         dirname = "FAKE DIRECTORY"
         fname1 = utils.random_unicode()
         fname2 = utils.random_unicode()
         fnames = [fname1, fname2]
-        ret = folder_up.upload_files_in_folder(arg, dirname, fnames)
+        ret = folder_up.upload_files_in_folder(dirname, fnames)
         self.assertFalse(ret)
 
     def test_folder_uploader_upload_files_in_folder_abort(self):
@@ -3492,14 +3492,13 @@ class ObjectStorageTest(unittest.TestCase):
         ignore = "*FAKE*"
         upload_key = utils.random_unicode()
         folder_up = FolderUploader(root_folder, cont, ignore, upload_key, clt)
-        arg = utils.random_unicode()
         dirname = utils.random_unicode()
         fname1 = utils.random_unicode()
         fname2 = utils.random_unicode()
         fnames = [fname1, fname2]
         clt._should_abort_folder_upload = Mock(return_value=True)
         clt.upload_file = Mock()
-        ret = folder_up.upload_files_in_folder(arg, dirname, fnames)
+        ret = folder_up.upload_files_in_folder(dirname, fnames)
         self.assertEqual(clt.upload_file.call_count, 0)
 
     def test_folder_uploader_upload_files_in_folder(self):
@@ -3507,21 +3506,20 @@ class ObjectStorageTest(unittest.TestCase):
         cont = self.container
         ignore = "*FAKE*"
         upload_key = utils.random_unicode()
-        arg = utils.random_unicode()
         fname1 = utils.random_ascii()
         fname2 = utils.random_ascii()
         fname3 = utils.random_ascii()
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            fnames = [tmpdir, fname1, fname2, fname3]
-            for fname in fnames[1:]:
+            fnames = [fname1, fname2, fname3]
+            for fname in fnames:
                 pth = os.path.join(tmpdir, fname)
                 open(pth, "w").write("faketext")
             clt._should_abort_folder_upload = Mock(return_value=False)
             clt.upload_file = Mock()
             clt._update_progress = Mock()
             folder_up = FolderUploader(tmpdir, cont, ignore, upload_key, clt)
-            ret = folder_up.upload_files_in_folder(arg, tmpdir, fnames)
-            self.assertEqual(clt.upload_file.call_count, len(fnames) - 1)
+            ret = folder_up.upload_files_in_folder(tmpdir, fnames)
+            self.assertEqual(clt.upload_file.call_count, len(fnames))
 
     def test_folder_uploader_run(self):
         clt = self.client
@@ -3533,10 +3531,13 @@ class ObjectStorageTest(unittest.TestCase):
         fname2 = utils.random_ascii()
         fname3 = utils.random_ascii()
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            fnames = [tmpdir, fname1, fname2, fname3]
-            for fname in fnames[1:]:
+            fnames = [fname1, fname2, fname3]
+            for fname in fnames:
                 pth = os.path.join(tmpdir, fname)
-                open(pth, "w").write("faketext")
+                with open(pth, "wb") as f:
+                    f.write(b"faketext")
+                    f.close()
+            self.assertEqual(sorted(os.listdir(tmpdir)), sorted(fnames))
             clt._should_abort_folder_upload = Mock(return_value=False)
             folder_up = FolderUploader(tmpdir, cont, ignore, upload_key, clt)
             folder_up.upload_files_in_folder = Mock()

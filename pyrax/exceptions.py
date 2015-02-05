@@ -15,6 +15,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+from __future__ import absolute_import, unicode_literals
 
 # Since we use the novaclient package, we need to expose its exception
 # classes here.
@@ -478,7 +479,7 @@ def from_response(response, body):
             message = body.get("message")
             details = body.get("details")
             if message is details is None:
-                error = body[body.keys()[0]]
+                error = body[next(iter(body))]
                 if isinstance(error, dict):
                     message = error.get("message", None)
                     details = error.get("details", None)
