@@ -17,8 +17,6 @@ from pyrax.cloudblockstorage import _resolve_id
 from pyrax.cloudblockstorage import _resolve_name
 from pyrax.cloudblockstorage import assure_volume
 from pyrax.cloudblockstorage import assure_snapshot
-from pyrax.cloudblockstorage import MIN_SIZE
-from pyrax.cloudblockstorage import MAX_SIZE
 import pyrax.exceptions as exc
 from pyrax.manager import BaseManager
 import pyrax.utils as utils
@@ -255,26 +253,24 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_create_body_volume_bad_size(self):
         mgr = self.client._manager
         self.assertRaises(exc.InvalidSize, mgr._create_body, "name",
-                size=MIN_SIZE - 1)
-        self.assertRaises(exc.InvalidSize, mgr._create_body, "name",
-                size=MAX_SIZE + 1)
+                size='foo')
 
     def test_create_volume_bad_clone_size(self):
         mgr = self.client._manager
         mgr._create = Mock(side_effect=exc.BadRequest(400,
                 "Clones currently must be >= original volume size"))
         self.assertRaises(exc.VolumeCloneTooSmall, mgr.create, "name",
-                size=MIN_SIZE, clone_id=utils.random_unicode())
+                size=100, clone_id=utils.random_unicode())
 
     def test_create_volume_fail_other(self):
         mgr = self.client._manager
         mgr._create = Mock(side_effect=exc.BadRequest(400, "FAKE"))
         self.assertRaises(exc.BadRequest, mgr.create, "name",
-                size=MIN_SIZE, clone_id=utils.random_unicode())
+                size=100, clone_id=utils.random_unicode())
 
     def test_create_body_volume(self):
         mgr = self.client._manager
-        size = random.randint(MIN_SIZE, MAX_SIZE)
+        size = random.randint(100, 1024)
         name = utils.random_unicode()
         snapshot_id = utils.random_unicode()
         clone_id = utils.random_unicode()
@@ -301,7 +297,7 @@ class CloudBlockStorageTest(unittest.TestCase):
 
     def test_create_body_volume_defaults(self):
         mgr = self.client._manager
-        size = random.randint(MIN_SIZE, MAX_SIZE)
+        size = random.randint(100, 1024)
         name = utils.random_unicode()
         snapshot_id = utils.random_unicode()
         clone_id = utils.random_unicode()
