@@ -20,16 +20,16 @@ import time
 import types
 import unicodedata
 
+import six
+
+import pyrax
+import pyrax.exceptions as exc
+
 try:
     import pudb
 except ImportError:
     import pdb as pudb
 trace = pudb.set_trace
-
-import six
-
-import pyrax
-import pyrax.exceptions as exc
 
 
 SLUGIFY_STRIP_RE = re.compile(r"[^\w\s-]")
