@@ -88,7 +88,7 @@ setup(
         "rackspace-novaclient",
         "keyring",
         "requests>=2.2.1",
-        "six>=1.5.2",
+        "six>=1.9.0",
     ] + testing_requires,
     packages=[
         "pyrax",
