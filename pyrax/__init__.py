@@ -57,8 +57,8 @@ try:
     from novaclient import exceptions as _cs_exceptions
     from novaclient import auth_plugin as _cs_auth_plugin
     from novaclient.shell import OpenStackComputeShell as _cs_shell
-    from novaclient.v1_1 import client as _cs_client
-    from novaclient.v1_1.servers import Server as CloudServer
+    from novaclient import client as _cs_client
+    from novaclient.v2.servers import Server as CloudServer
 
     from .autoscale import AutoScaleClient
     from .clouddatabases import CloudDatabaseClient
@@ -665,8 +665,8 @@ def connect_to_cloudservers(region=None, context=None, verify_ssl=None, **kwargs
     else:
         insecure = not verify_ssl
     cs_shell = _cs_shell()
-    extensions = cs_shell._discover_extensions("1.1")
-    cloudservers = _cs_client.Client(context.username, context.password,
+    extensions = cs_shell._discover_extensions("2")
+    cloudservers = _cs_client.Client("2", context.username, context.password,
             project_id=context.tenant_id, auth_url=context.auth_endpoint,
             auth_system=id_type, region_name=region, service_type="compute",
             auth_plugin=auth_plugin, insecure=insecure, extensions=extensions,
