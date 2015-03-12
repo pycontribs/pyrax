@@ -648,13 +648,6 @@ class BaseIdentity(object):
             if not hasattr(service, "endpoints"):
                 # Not an OpenStack service
                 continue
-            if not hasattr(self.services, service.service_type):
-                setattr(self.services, service.service_type, service)
-            else:
-                # If we see the same service_type come up again, merge
-                # the endpoints instead of overwriting.
-                svc = getattr(self.services, service.service_type)
-                svc.merge(service.endpoints)
             self.regions.update(list(service.endpoints.keys()))
         # Update the 'ALL' services to include all available regions.
         self.regions.discard("ALL")
