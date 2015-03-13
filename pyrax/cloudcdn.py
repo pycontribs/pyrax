@@ -36,9 +36,9 @@ class CloudCDNFlavorManager(BaseManager):
         return [CloudCDNFlavor(self, info)
                 for info in resp_body[self.plural_response_key]]
 
-    def get(self, flavor):
+    def get(self, flavor_id):
         resp, resp_body = self.api.method_get(
-                "/%s/%s" % (self.uri_base, flavor))
+                "/%s/%s" % (self.uri_base, flavor_id))
         return CloudCDNFlavor(self, resp_body)
 
 
@@ -135,9 +135,9 @@ class CloudCDNClient(BaseClient):
         """List CDN flavors."""
         return self._flavor_manager.list()
 
-    def get_flavor(self, flavor):
+    def get_flavor(self, flavor_id):
         """Get one CDN flavor."""
-        return self._flavor_manager.get(flavor)
+        return self._flavor_manager.get(flavor_id)
 
     def list_services(self, limit=None, marker=None):
         """List CDN services."""
