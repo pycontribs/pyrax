@@ -648,6 +648,7 @@ class BaseIdentity(object):
             if not hasattr(service, "endpoints"):
                 # Not an OpenStack service
                 continue
+            setattr(self.services, service.service_type, service)
             self.regions.update(list(service.endpoints.keys()))
         # Update the 'ALL' services to include all available regions.
         self.regions.discard("ALL")
