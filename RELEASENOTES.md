@@ -29,6 +29,7 @@
     - `verify_ssl` is now respected when creating a context #523
     - pep8 fix ups for recent pep8 1.6 changes #540
     - Replace support email address with contact page #546
+    - Ensure we default verify_ssl to True in the default environment
 
 ### 2014.11.24 - Version 1.9.3
 

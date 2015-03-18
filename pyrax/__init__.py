@@ -172,6 +172,12 @@ class Settings(object):
     _settings = {"default": dict.fromkeys(list(env_dct.keys()))}
     _default_set = False
 
+    def __init__(self, *args, **kwargs):
+        # Default verify_ssl to True
+        if self._settings["default"].get("verify_ssl") is None:
+            self._settings["default"]["verify_ssl"] = True
+
+        super(Settings, self).__init__(*args, **kwargs)
 
     def get(self, key, env=None):
         """
