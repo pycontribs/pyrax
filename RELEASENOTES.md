@@ -2,6 +2,10 @@
 
 ### 2015.03.XX - Version 1.9.4
 
+  - Cloud CDN
+    - Introduced the Cloud CDN service with support for listing flavors as
+      well creating, updating, and deleting of services.
+
   - Identity
     - Make BaseIdentity respect `verify_ssl` # 515
     - Respect the `_auth_endpoint` attribute of the identity instance for Keystone identity #522
