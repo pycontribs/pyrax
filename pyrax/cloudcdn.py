@@ -68,7 +68,9 @@ class CloudCDNServiceManager(BaseManager):
         resp, resp_body = self.api.method_post("/%s" % self.uri_base,
                                                body=body)
 
-        return resp.headers.get("location")
+        body["id"] = resp.headers.get("location").split("/")[-1]
+
+        return CloudCDNService(self, body)
 
     def update(self, service_id, changes):
         resp, resp_body = self.api.method_patch(
