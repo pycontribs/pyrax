@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
+#
 # Copyright (c)2012 Rackspace US, Inc.
-
+#
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -15,23 +15,21 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
-from functools import wraps
 import time
-
 import six
-
 import pyrax
-from pyrax.client import BaseClient
 import pyrax.exceptions as exc
-from pyrax.manager import BaseManager
-from pyrax.resource import BaseResource
 import pyrax.utils as utils
+from functools import wraps
+from pyrax.resource import BaseResource
+from pyrax.manager import BaseManager
+from pyrax.client import BaseClient
 
-
-MIN_SIZE = 100
+SATA_MIN_SIZE = 75
+SSD_MIN_SIZE = 50
 MAX_SIZE = 1024
 RETRY_INTERVAL = 5
+MIN_SIZE=75
 
 
 def _resolve_id(val):
@@ -249,12 +247,18 @@ class CloudBlockStorageManager(BaseManager):
         """
         Used to create the dict required to create a new volume
         """
-        if not isinstance(size, (int, long)) or not (
-                MIN_SIZE <= size <= MAX_SIZE):
-            raise exc.InvalidSize("Volume sizes must be integers between "
-                    "%s and %s." % (MIN_SIZE, MAX_SIZE))
         if volume_type is None:
             volume_type = "SATA"
+        if volume_type == "SATA":
+            if not isinstance(size, (int, long)) or not (SATA_MIN_SIZE
+            <= size <= MAX_SIZE):
+                raise exc.InvalidSize("Volume sizes must be integers between "
+                "%s and %s." % (SATA_MIN_SIZE, MAX_SIZE))
+        if volume_type == "SSD":
+            if not isinstance(size, (int, long)) or not (SSD_MIN_SIZE 
+            <= size <= MAX_SIZE):
+                raise exc.InvalidSize("Volume sizes must be integers between "
+                "%s and %s." % (SSD_MIN_SIZE, MAX_SIZE))
         if description is None:
             description = ""
         if metadata is None:
