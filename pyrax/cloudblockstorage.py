@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
+#
 # Copyright (c)2012 Rackspace US, Inc.
-
+#
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -15,17 +15,15 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
-from functools import wraps
 import time
 import six
 import pyrax
-from pyrax.client import BaseClient
 import pyrax.exceptions as exc
-from pyrax.manager import BaseManager
-from pyrax.resource import BaseResource
 import pyrax.utils as utils
-
+from functools import wraps
+from pyrax.resource import BaseResource
+from pyrax.manager import BaseManager
+from pyrax.client import BaseClient
 
 SATA_MIN_SIZE = 75
 SSD_MIN_SIZE = 50
