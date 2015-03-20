@@ -33,6 +33,7 @@ SATA_MIN_SIZE = 75
 SSD_MIN_SIZE = 50
 MAX_SIZE = 1024
 RETRY_INTERVAL = 5
+MIN_SIZE=75
 
 
 def _resolve_id(val):
