@@ -253,11 +253,15 @@ class CloudBlockStorageManager(BaseManager):
         if volume_type is None:
             volume_type = "SATA"
         if volume_type = "SATA":
-            if not isinstance(size, (int, long)) or not (SATA_MIN_SIZE <= size <= MAX_SIZE):
-                raise exc.InvalidSize("Volume sizes must be integers between ""%s and %s." % (SATA_MIN_SIZE, MAX_SIZE))
+            if not isinstance(size, (int, long)) or not (SATA_MIN_SIZE
+            <= size <= MAX_SIZE):
+                raise exc.InvalidSize("Volume sizes must be integers between "
+                "%s and %s." % (SATA_MIN_SIZE, MAX_SIZE))
         if volume_type = "SSD":
-            if not isinstance(size, (int, long)) or not (SSD_MIN_SIZE <= size <= MAX_SIZE):
-                raise exc.InvalidSize("Volume sizes must be integers between ""%s and %s." % (SSD_MIN_SIZE, MAX_SIZE))
+            if not isinstance(size, (int, long)) or not (SSD_MIN_SIZE 
+            <= size <= MAX_SIZE):
+                raise exc.InvalidSize("Volume sizes must be integers between "
+                "%s and %s." % (SSD_MIN_SIZE, MAX_SIZE))
         if description is None:
             description = ""
         if metadata is None:
