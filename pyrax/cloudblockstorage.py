@@ -18,9 +18,7 @@
 
 from functools import wraps
 import time
-
 import six
-
 import pyrax
 from pyrax.client import BaseClient
 import pyrax.exceptions as exc
