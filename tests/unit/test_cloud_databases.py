@@ -904,7 +904,7 @@ class CloudDatabasesTest(unittest.TestCase):
         nm = utils.random_unicode()
         clt._get_flavor_ref = Mock(return_value=example_uri)
         self.assertRaises(exc.MissingCloudDatabaseParameter,
-            clt._manager._create_body,nm, version="10")
+            clt._manager._create_body, nm, version="10")
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_create_body_datastore(self):

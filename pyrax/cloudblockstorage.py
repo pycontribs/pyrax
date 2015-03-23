@@ -29,8 +29,6 @@ from pyrax.resource import BaseResource
 import pyrax.utils as utils
 
 
-MIN_SIZE = 100
-MAX_SIZE = 1024
 RETRY_INTERVAL = 5
 
 
@@ -94,6 +92,23 @@ class CloudBlockStorageSnapshot(BaseResource):
                 time.sleep(RETRY_INTERVAL)
                 # Try again; if it fails, oh, well...
                 super(CloudBlockStorageSnapshot, self).delete()
+
+
+    def update(self, display_name=None, display_description=None):
+        """
+        Update the specified values on this snapshot. You may specify one or
+        more values to update. If no values are specified as non-None, the call
+        is a no-op; no exception will be raised.
+        """
+        return self.manager.update(self, display_name=display_name,
+                display_description=display_description)
+
+
+    def rename(self, name):
+        """
+        Allows for direct renaming of an existing snapshot.
+        """
+        return self.update(display_name=name)
 
 
     def _get_name(self):
@@ -187,6 +202,23 @@ class CloudBlockStorageVolume(BaseResource):
             raise
 
 
+    def update(self, display_name=None, display_description=None):
+        """
+        Update the specified values on this volume. You may specify one or more
+        values to update. If no values are specified as non-None, the call is a
+        no-op; no exception will be raised.
+        """
+        return self.manager.update(self, display_name=display_name,
+                display_description=display_description)
+
+
+    def rename(self, name):
+        """
+        Allows for direct renaming of an existing volume.
+        """
+        return self.update(display_name=name)
+
+
     def create_snapshot(self, name=None, description=None, force=False):
         """
         Creates a snapshot of this volume, with an optional name and
@@ -249,10 +281,11 @@ class CloudBlockStorageManager(BaseManager):
         """
         Used to create the dict required to create a new volume
         """
-        if not isinstance(size, (int, long)) or not (
-                MIN_SIZE <= size <= MAX_SIZE):
-            raise exc.InvalidSize("Volume sizes must be integers between "
-                    "%s and %s." % (MIN_SIZE, MAX_SIZE))
+        try:
+            int(size)
+        except:
+            raise exc.InvalidSize("Volume sizes must be integers")
+
         if volume_type is None:
             volume_type = "SATA"
         if description is None:
@@ -294,7 +327,8 @@ class CloudBlockStorageManager(BaseManager):
     def update(self, volume, display_name=None, display_description=None):
         """
         Update the specified values on the specified volume. You may specify
-        one or more values to update.
+        one or more values to update. If no values are specified as non-None,
+        the call is a no-op; no exception will be raised.
         """
         uri = "/%s/%s" % (self.uri_base, utils.get_id(volume))
         param_dict = {}
@@ -380,7 +414,8 @@ class CloudBlockStorageSnapshotManager(BaseManager):
     def update(self, snapshot, display_name=None, display_description=None):
         """
         Update the specified values on the specified snapshot. You may specify
-        one or more values to update.
+        one or more values to update. If no values are specified as non-None,
+        the call is a no-op; no exception will be raised.
         """
         uri = "/%s/%s" % (self.uri_base, utils.get_id(snapshot))
         param_dict = {}
@@ -449,10 +484,18 @@ class CloudBlockStorageClient(BaseClient):
     def update(self, volume, display_name=None, display_description=None):
         """
         Update the specified values on the specified volume. You may specify
-        one or more values to update.
+        one or more values to update. If no values are specified as non-None,
+        the call is a no-op; no exception will be raised.
         """
-        return self._manager.update(volume, display_name=display_name,
+        return volume.update(display_name=display_name,
                 display_description=display_description)
+
+
+    def rename(self, volume, name):
+        """
+        Allows for direct renaming of an existing volume.
+        """
+        return self.update(volume, display_name=name)
 
 
     @assure_volume
@@ -480,12 +523,19 @@ class CloudBlockStorageClient(BaseClient):
         return snapshot.delete()
 
 
+    @assure_snapshot
     def update_snapshot(self, snapshot, display_name=None,
             display_description=None):
         """
         Update the specified values on the specified snapshot. You may specify
         one or more values to update.
         """
-        return self._snapshot_manager.update(snapshot,
-                display_name=display_name,
+        return snapshot.update(display_name=display_name,
                 display_description=display_description)
+
+
+    def rename_snapshot(self, snapshot, name):
+        """
+        Allows for direct renaming of an existing snapshot.
+        """
+        return self.update_snapshot(snapshot, display_name=name)
