@@ -194,7 +194,7 @@ Try running this code; you should find that the retrieved text is identical usin
 
 
 ## Handling Objects in Nested Folders
-Since Cloud Files does not have a hierachical folder structure, you can simulate it be including the full folder path in the object name. E.g., if your folder structure looks like:
+Since Cloud Files does not have a hierarchical folder structure, you can simulate it be including the full folder path in the object name. E.g., if your folder structure looks like:
 
 * base
     * one

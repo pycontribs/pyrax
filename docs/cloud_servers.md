@@ -168,7 +168,7 @@ Now that you have the image and flavor objects you want (actually, it's their `i
 
     server = cs.servers.create("first_server", ubu_image.id, flavor_1GB.id)
 
-If you wanted to create the server with your SSH key as described in the preceeding section, add it using the `key_name` parameter:
+If you wanted to create the server with your SSH key as described in the preceding section, add it using the `key_name` parameter:
 
     server = cs.servers.create("first_server", ubu_image.id, flavor_1GB.id,
             key_name="my_key")
