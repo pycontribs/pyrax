@@ -44,8 +44,8 @@ class CloudCDNFlavorManager(BaseManager):
 
 class CloudCDNService(BaseResource):
 
-    def update(self, changes):
-        self.manager.update(self.id, changes)
+    def patch(self, changes):
+        self.manager.patch(self.id, changes)
 
     def delete(self):
         self.manager.delete(self)
@@ -72,7 +72,7 @@ class CloudCDNServiceManager(BaseManager):
 
         return CloudCDNService(self, body)
 
-    def update(self, service_id, changes):
+    def patch(self, service_id, changes):
         resp, resp_body = self.api.method_patch(
             "/%s/%s" % (self.uri_base, service_id), body=changes)
 
@@ -170,8 +170,8 @@ class CloudCDNClient(BaseClient):
         return self._services_manager.create(name, flavor_id, domains, origins,
                                              restrictions, caching)
 
-    def update_service(self, service_id, changes):
-        """Update a CDN service
+    def patch_service(self, service_id, changes):
+        """Update a CDN service with a patch
 
         Arguments:
         service_id: The ID of the service to update.
@@ -181,7 +181,7 @@ class CloudCDNClient(BaseClient):
                  is the path to update. A value must be specified for
                  add or replace ops, but can be omitted for remove.
         """
-        self._services_manager.update(service_id, changes)
+        self._services_manager.patch(service_id, changes)
 
     def delete_service(self, service):
         """Delete a CDN service."""
@@ -191,7 +191,7 @@ class CloudCDNClient(BaseClient):
         """Delete CDN assets
 
         Arguments:
-        service_id: The ID of the service to update.
+        service_id: The ID of the service to delete from.
         url: The URL at which to delete assets
         all: When True, delete all assets associated with the service_id.
 

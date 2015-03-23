@@ -53,12 +53,12 @@ class CloudCDNTest(unittest.TestCase):
         sot.create_service(*args)
         mock_create.assert_called_once_with(*args)
 
-    @mock.patch("pyrax.cloudcdn.CloudCDNServiceManager.update")
-    def test_update_service(self, mock_update):
+    @mock.patch("pyrax.cloudcdn.CloudCDNServiceManager.patch")
+    def test_patch_service(self, mock_patch):
         sot = CloudCDNClient(mock.MagicMock())
         args = (1, 2)
-        sot.update_service(*args)
-        mock_update.assert_called_once_with(*args)
+        sot.patch_service(*args)
+        mock_patch.assert_called_once_with(*args)
 
     @mock.patch("pyrax.cloudcdn.CloudCDNServiceManager.delete")
     def test_delete_service(self, mock_delete):
