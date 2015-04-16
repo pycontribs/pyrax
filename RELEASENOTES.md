@@ -1,5 +1,36 @@
 # Release Notes for pyrax
 
+### 2015.04.16 - Version 1.9.4
+
+  - Cloud CDN
+    - Introduced the Cloud CDN service with support for listing flavors as
+      well creating, updating, and deleting of services.
+
+  - Identity
+    - Make BaseIdentity respect `verify_ssl` # 515
+    - Respect the `_auth_endpoint` attribute of the identity instance for Keystone identity #522
+
+  - Cloud Monitoring
+    - Add ability to create agent check types #508
+    - Fix entity retrieval #512
+    - Add support for monitoring agent tokens #525
+
+  - Cloud Files
+    - Update documentation #519
+
+  - Cloud Databases
+    - PEP8 Clean Up #507
+
+  - Cloud Block Storage
+    - Allow renaming volumes and snapshots #506
+    - Do not hardcode CBS volume sizes #541
+
+  - General
+    - `verify_ssl` is now respected when creating a context #523
+    - pep8 fix ups for recent pep8 1.6 changes #540
+    - Replace support email address with contact page #546
+    - Ensure we default verify_ssl to True in the default environment
+
 ### 2014.11.24 - Version 1.9.3
 
   - Identity

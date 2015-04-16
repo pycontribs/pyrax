@@ -17,8 +17,6 @@ from pyrax.cloudblockstorage import _resolve_id
 from pyrax.cloudblockstorage import _resolve_name
 from pyrax.cloudblockstorage import assure_volume
 from pyrax.cloudblockstorage import assure_snapshot
-from pyrax.cloudblockstorage import MIN_SIZE
-from pyrax.cloudblockstorage import MAX_SIZE
 import pyrax.exceptions as exc
 from pyrax.manager import BaseManager
 import pyrax.utils as utils
@@ -64,7 +62,7 @@ class CloudBlockStorageTest(unittest.TestCase):
 
     def test_assure_volume(self):
         class TestClient(object):
-            _manager = fakes.FakeManager()
+            _manager = fakes.FakeBlockStorageManager()
 
             @assure_volume
             def test_method(self, volume):
@@ -81,7 +79,7 @@ class CloudBlockStorageTest(unittest.TestCase):
 
     def test_assure_snapshot(self):
         class TestClient(object):
-            _snapshot_manager = fakes.FakeManager()
+            _snapshot_manager = fakes.FakeSnapshotManager()
 
             @assure_snapshot
             def test_method(self, snapshot):
@@ -189,7 +187,24 @@ class CloudBlockStorageTest(unittest.TestCase):
                 name=name, description=desc, force=False)
         BaseManager.create = sav
 
-    def test_update_volume(self):
+    def test_vol_update_volume(self):
+        vol = self.volume
+        mgr = vol.manager
+        mgr.update = Mock()
+        nm = utils.random_unicode()
+        desc = utils.random_unicode()
+        vol.update(display_name=nm, display_description=desc)
+        mgr.update.assert_called_once_with(vol, display_name=nm,
+                display_description=desc)
+
+    def test_vol_rename(self):
+        vol = self.volume
+        nm = utils.random_unicode()
+        vol.update = Mock()
+        vol.rename(nm)
+        vol.update.assert_called_once_with(display_name=nm)
+
+    def test_mgr_update_volume(self):
         clt = self.client
         vol = self.volume
         mgr = clt._manager
@@ -202,7 +217,7 @@ class CloudBlockStorageTest(unittest.TestCase):
         mgr.update(vol, display_name=name, display_description=desc)
         mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
 
-    def test_update_volume_empty(self):
+    def test_mgr_update_volume_empty(self):
         clt = self.client
         vol = self.volume
         mgr = clt._manager
@@ -238,26 +253,24 @@ class CloudBlockStorageTest(unittest.TestCase):
     def test_create_body_volume_bad_size(self):
         mgr = self.client._manager
         self.assertRaises(exc.InvalidSize, mgr._create_body, "name",
-                size=MIN_SIZE - 1)
-        self.assertRaises(exc.InvalidSize, mgr._create_body, "name",
-                size=MAX_SIZE + 1)
+                size='foo')
 
     def test_create_volume_bad_clone_size(self):
         mgr = self.client._manager
         mgr._create = Mock(side_effect=exc.BadRequest(400,
                 "Clones currently must be >= original volume size"))
         self.assertRaises(exc.VolumeCloneTooSmall, mgr.create, "name",
-                size=MIN_SIZE, clone_id=utils.random_unicode())
+                size=100, clone_id=utils.random_unicode())
 
     def test_create_volume_fail_other(self):
         mgr = self.client._manager
         mgr._create = Mock(side_effect=exc.BadRequest(400, "FAKE"))
         self.assertRaises(exc.BadRequest, mgr.create, "name",
-                size=MIN_SIZE, clone_id=utils.random_unicode())
+                size=100, clone_id=utils.random_unicode())
 
     def test_create_body_volume(self):
         mgr = self.client._manager
-        size = random.randint(MIN_SIZE, MAX_SIZE)
+        size = random.randint(100, 1024)
         name = utils.random_unicode()
         snapshot_id = utils.random_unicode()
         clone_id = utils.random_unicode()
@@ -284,7 +297,7 @@ class CloudBlockStorageTest(unittest.TestCase):
 
     def test_create_body_volume_defaults(self):
         mgr = self.client._manager
-        size = random.randint(MIN_SIZE, MAX_SIZE)
+        size = random.randint(100, 1024)
         name = utils.random_unicode()
         snapshot_id = utils.random_unicode()
         clone_id = utils.random_unicode()
@@ -456,6 +469,22 @@ class CloudBlockStorageTest(unittest.TestCase):
         pyrax.cloudblockstorage.RETRY_INTERVAL = 0.1
         self.assertRaises(exc.ClientException, snap.delete)
 
+    def test_snapshot_update(self):
+        snap = self.snapshot
+        snap.manager.update = Mock()
+        nm = utils.random_unicode()
+        desc = utils.random_unicode()
+        snap.update(display_name=nm, display_description=desc)
+        snap.manager.update.assert_called_once_with(snap, display_name=nm,
+                display_description=desc)
+
+    def test_snapshot_rename(self):
+        snap = self.snapshot
+        snap.update = Mock()
+        nm = utils.random_unicode()
+        snap.rename(nm)
+        snap.update.assert_called_once_with(display_name=nm)
+
     def test_volume_name_property(self):
         vol = self.volume
         nm = utils.random_unicode()
@@ -492,7 +521,7 @@ class CloudBlockStorageTest(unittest.TestCase):
         snap.description = nm
         self.assertEqual(snap.description, snap.display_description)
 
-    def test_update_snapshot(self):
+    def test_mgr_update_snapshot(self):
         clt = self.client
         snap = self.snapshot
         mgr = clt._snapshot_manager
@@ -505,7 +534,7 @@ class CloudBlockStorageTest(unittest.TestCase):
         mgr.update(snap, display_name=name, display_description=desc)
         mgr.api.method_put.assert_called_once_with(exp_uri, body=exp_body)
 
-    def test_update_snapshot_empty(self):
+    def test_mgr_update_snapshot_empty(self):
         clt = self.client
         snap = self.snapshot
         mgr = clt._snapshot_manager
@@ -518,20 +547,36 @@ class CloudBlockStorageTest(unittest.TestCase):
         vol = self.volume
         name = utils.random_unicode()
         desc = utils.random_unicode()
-        clt._manager.update = Mock()
+        vol.update = Mock()
         clt.update(vol, display_name=name, display_description=desc)
-        clt._manager.update.assert_called_once_with(vol, display_name=name,
+        vol.update.assert_called_once_with(display_name=name,
                 display_description=desc)
+
+    def test_clt_rename(self):
+        clt = self.client
+        vol = self.volume
+        nm = utils.random_unicode()
+        clt.update = Mock()
+        clt.rename(vol, nm)
+        clt.update.assert_called_once_with(vol, display_name=nm)
 
     def test_clt_update_snapshot(self):
         clt = self.client
         snap = self.snapshot
         name = utils.random_unicode()
         desc = utils.random_unicode()
-        clt._snapshot_manager.update = Mock()
+        snap.update = Mock()
         clt.update_snapshot(snap, display_name=name, display_description=desc)
-        clt._snapshot_manager.update.assert_called_once_with(snap,
-                display_name=name, display_description=desc)
+        snap.update.assert_called_once_with(display_name=name,
+                display_description=desc)
+
+    def test_clt_rename_snapshot(self):
+        clt = self.client
+        snap = self.snapshot
+        nm = utils.random_unicode()
+        clt.update_snapshot = Mock()
+        clt.rename_snapshot(snap, nm)
+        clt.update_snapshot.assert_called_once_with(snap, display_name=nm)
 
     def test_get_snapshot(self):
         clt = self.client

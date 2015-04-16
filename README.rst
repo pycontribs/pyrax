@@ -114,5 +114,5 @@ Your feedback is appreciated! If you have specific issues with the
 **pyrax** SDK, developers should file an `issue via
 Github <https://github.com/rackspace/pyrax/issues>`_.
 
-For general feedback and support requests, send an email to:
-`sdk-support@rackspace.com <mailto:sdk-support@rackspace.com>`_.
+For general feedback and support requests, contact us at
+https://developer.rackspace.com/support/

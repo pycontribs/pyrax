@@ -445,6 +445,17 @@ Metadata for storage objects works exactly the same, using the analogous methods
 Cloud Files makes it easy to publish your stored objects over the high-speed Akamai CDN. Content is made available at the container level. Individual files within a public container cannot be private. This may affect your storage design, so that only files you wish to have accessible to the public are stored in public containers.
 
 
+### CDN default web pages
+
+You can set a static web page as the landing page for you CND-enabled containter by calling:
+
+    cont.set_web_index_page("example-index.html")
+
+Set the header indicating the error page in this container by calling:
+
+    cont.set_web_error_page("example-error.html")
+
+
 ### Publishing a Container to CDN
 To publish a container to CDN, simply make the following call:
 
