@@ -1,6 +1,6 @@
 # Release Notes for pyrax
 
-### 2015.03.XX - Version 1.9.4
+### 2015.04.16 - Version 1.9.4
 
   - Cloud CDN
     - Introduced the Cloud CDN service with support for listing flavors as
