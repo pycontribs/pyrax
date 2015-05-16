@@ -253,6 +253,10 @@ Parameter | Required? | Description | Default
 **container** | yes | Either the name of an existing container, or an actual container object | n/a
 **include_hidden** | no | When False, files in your folder that begin with a period are ignored | False
 **ignore_timestamps** | no | When False, if the local file and remote object differ, the local file is uploaded and overwrites the remote. When True, the local file's modification time is compared with the remote object's last_modified time, and the remote object is only overwritten if the local file is newer. | False
+**delete** | no | If the 'delete' option is True, any objects in the container that do not have corresponding files in the local folder are deleted | False
+**ignore** | no | You can selectively ignor efiles by passing either a single pattern or a list of patterns; these will be applied to the individual folder and file names, and any names that match any of the 'ignore' patterns will not be uploaded. The patterns should be a standard *nix-style shell patterns; e.g., '*pyc' will ignore all files ending in 'pyc', such as 'program.pyc' and 'abcpyc'| False
+**object_prefix** | no | If 'object_prefix' is set it will be appended to the object name when it is checked and uploaded to the container. For example, if you use sync_foler_to_container("folderToSync/", myContainer, object_prefix="imgFolder") it will upload the files to the container/imgFolder/... instead of just container/... | ""
+**verbose** | no | Set 'verbose' to True to make it print what is going on. It will show which files are being uploaded and which ones are not and why | False 
 
 As an example, assume you have a project named 'important' that you want to make sure is always backed up to Cloud Files. You could write a quick script like this, and call it from a cron job.
 
