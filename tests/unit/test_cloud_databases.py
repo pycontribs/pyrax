@@ -929,7 +929,7 @@ class CloudDatabasesTest(unittest.TestCase):
         limit = utils.random_unicode()
         marker = utils.random_unicode()
         clt.list_ha()
-        clt._ha_manager.list.assert_called_once()
+        clt._ha_manager.list.assert_called_once_with()
 
     @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
     def test_create_ha(self):
