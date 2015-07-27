@@ -1029,7 +1029,8 @@ class CloudDatabaseClient(BaseClient):
         instance, the database type and version, a replica source, and a
         list of replicas must be specified.
         """
-        return self._ha_manager.create(name, type, version, replica_source, replicas)
+        return self._ha_manager.create(name, type, version, replica_source,
+                                       replicas)
 
     def list_ha(self):
         """
