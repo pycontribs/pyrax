@@ -13,6 +13,7 @@ from pyrax.clouddatabases import CloudDatabaseInstance
 from pyrax.clouddatabases import CloudDatabaseUser
 from pyrax.clouddatabases import CloudDatabaseVolume
 from pyrax.clouddatabases import assure_instance
+from pyrax.clouddatabases import CloudDatabaseSpec
 import pyrax.exceptions as exc
 from pyrax.resource import BaseResource
 import pyrax.utils as utils
@@ -921,6 +922,31 @@ class CloudDatabasesTest(unittest.TestCase):
                 "datastore": {"type": "MariaDB", "version": "10"}}}
         self.assertEqual(ret, expected)
 
+    @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
+    def test_list_ha(self):
+        clt = self.client
+        clt._ha_manager.list = Mock()
+        limit = utils.random_unicode()
+        marker = utils.random_unicode()
+        clt.list_ha()
+        clt._ha_manager.list.assert_called_once()
+
+    @patch("pyrax.manager.BaseManager", new=fakes.FakeManager)
+    def test_create_ha(self):
+        clt = self.client
+        clt._ha_manager.create = Mock()
+
+        replicasrc = CloudDatabaseSpec(name="src", volume=1, flavor=2)
+        replica1 = CloudDatabaseSpec(name="rep", volume=1, flavor=2)
+        replicas = [replica1]
+
+        #name, type, version, replica_source, replicas
+
+        db = clt.create_ha(name="test", type="mysql", version="1.0",
+            replica_source=replicasrc, replicas=replicas)
+
+        clt._ha_manager.create.assert_called_once_with("test",
+                "mysql", "1.0", replicasrc, replicas)
 
 if __name__ == "__main__":
     unittest.main()
