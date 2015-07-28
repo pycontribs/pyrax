@@ -3,7 +3,7 @@ pyrax
 
 Python SDK for OpenStack/Rackspace APIs
 
-**Note: Please consider submitting an issue before submitting a pull
+**Note: Please submit an issue before submitting a pull
 request so we can determine whether or not the change may be accepted.
 Pyrax is in the process of being deprecated in favor of the OpenStack
 SDK. We will announce the process and timelines for this deprecation
