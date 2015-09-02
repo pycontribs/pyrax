@@ -1,5 +1,12 @@
 # Release Notes for pyrax
 
+### 2015.09.02 - Version 1.9.5
+
+  - Cloud Servers
+    - Handle a change to python-novaclient 2.27.0
+    - Pin python-novaclient to less or equal to 2.27.0
+    - Suppress deprecation warnings emitted for novaclient.v1_1
+
 ### 2015.04.16 - Version 1.9.4
 
   - Cloud CDN
