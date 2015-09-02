@@ -37,6 +37,10 @@ import re
 import six.moves.configparser as ConfigParser
 import warnings
 
+# Ignore UserWarnings. Currently we're getting warnings about novaclient.v1_1
+# deprecations as UserWarning instead of DeprecationWarning (why?).
+warnings.filterwarnings("ignore", ".*novaclient.v1_1 is deprecated.*")
+
 # keyring is an optional import
 try:
     import keyring

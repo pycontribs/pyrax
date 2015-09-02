@@ -84,7 +84,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "python-novaclient>=2.13.0",
+        "python-novaclient>=2.13.0,<=2.27.0",
         "rackspace-novaclient",
         "keyring",
         "requests>=2.2.1",
