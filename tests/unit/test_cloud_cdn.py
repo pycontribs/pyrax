@@ -49,7 +49,7 @@ class CloudCDNTest(unittest.TestCase):
     @mock.patch("pyrax.cloudcdn.CloudCDNServiceManager.create")
     def test_create_service(self, mock_create):
         sot = CloudCDNClient(mock.MagicMock())
-        args = (1, 2, 3, 4, 5, 6)
+        args = (1, 2, 3, 4, 5, 6, 7)
         sot.create_service(*args)
         mock_create.assert_called_once_with(*args)
 
