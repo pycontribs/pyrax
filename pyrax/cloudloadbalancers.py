@@ -860,7 +860,7 @@ class CloudLoadBalancerManager(BaseManager):
         if intermediateCertificate:
             req_body["intermediateCertificate"] = intermediateCertificate
         resp, body = self.api.method_post(uri, body={"certificateMapping": req_body })
-        return body
+        return body.get("certificateMapping", {})
 
 
     def get_certificate_mapping(self, loadbalancer, certificateMappingId):
@@ -874,8 +874,8 @@ class CloudLoadBalancerManager(BaseManager):
         return body.get("certificateMapping", {})
 
 
-    def update_certificate_mapping(self, loadbalancer, certificateMappingId, privatekey=False, certificate=False,
-            intermediateCertificate=False):
+    def update_certificate_mapping(self, loadbalancer, certificateMappingId, hostName=None, 
+            privatekey=False, certificate=False, intermediateCertificate=False):
         """
         Updates an existing SSL certificate mapping on the load balancer. 
         """
@@ -889,7 +889,7 @@ class CloudLoadBalancerManager(BaseManager):
             req_body["hostName"] = hostName
         if privateKey:
             req_body["privateKey"] = privateKey
-        if privateKey:
+        if certificate:
             req_body["certificate"] = certificate
         if intermediateCertificate:
             req_body["intermediateCertificate"] = intermediateCertificate
