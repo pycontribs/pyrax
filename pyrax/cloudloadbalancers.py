@@ -281,44 +281,44 @@ class CloudLoadBalancer(BaseResource):
         return self.manager.delete_ssl_termination(self)
 
 
-    def list_certificate_mappings(self, loadbalancer):
+    def list_certificate_mappings(self):
         """
         Returns a list of SSL certificate mappings on the load balancer. 
         """
-        return self.manager.list_certificate_mappings(loadbalancer)
+        return self.manager.list_certificate_mappings(self)
 
 
-    def add_certificate_mapping(self, loadbalancer, hostName, privatekey, certificate,
+    def add_certificate_mapping(self, hostName, privatekey, certificate,
             intermediateCertificate=False):
         """
         Adds an SSL certificate mapping to the load balancer. 
         """
-        return self.manager.add_certificate_mapping(loadbalancer, hostName, privatekey, 
+        return self.manager.add_certificate_mapping(self, hostName, privatekey, 
             certificate, intermediateCertificate)
 
 
-    def get_certificate_mapping(self, loadbalancer, certificateMappingId):
+    def get_certificate_mapping(self, certificateMappingId):
         """
         Returns a dict representing a single SSL certificate mapping
         for the load balancer. 
         """
-        return self.manager.get_certificate_mapping(loadbalancer, certificateMappingId)
+        return self.manager.get_certificate_mapping(self, certificateMappingId)
 
 
-    def update_certificate_mapping(self, loadbalancer, certificateMappingId, privatekey=False, certificate=False,
-            intermediateCertificate=False):
+    def update_certificate_mapping(self, certificateMappingId, privatekey=False, 
+            certificate=False, intermediateCertificate=False):
         """
         Updates an existing SSL certificate mapping on the load balancer. 
         """
-        return self.manager.update_certificate_mapping(loadbalancer, certificateMappingId, privatekey=False, 
-            certificate=False, intermediateCertificate=False)
+        return self.manager.update_certificate_mapping(self, certificateMappingId, 
+            privatekey, certificate, intermediateCertificate)
 
 
-    def delete_certificate_mapping(self, loadbalancer, certificateMappingId):
+    def delete_certificate_mapping(self, certificateMappingId):
         """
         Deletes the SSL certificate mapping for the load balancer.
         """
-        return self.manager.delete_certificate_mapping(loadbalancer, certificateMappingId)
+        return self.manager.delete_certificate_mapping(self, certificateMappingId)
 
 
     def get_metadata(self):
@@ -887,8 +887,8 @@ class CloudLoadBalancerManager(BaseManager):
         req_body = {}
         if hostName:
             req_body["hostName"] = hostName
-        if privateKey:
-            req_body["privateKey"] = privateKey
+        if privatekey:
+            req_body["privateKey"] = privatekey
         if certificate:
             req_body["certificate"] = certificate
         if intermediateCertificate:
