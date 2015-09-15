@@ -881,7 +881,7 @@ class CloudLoadBalancerManager(BaseManager):
         """
         mapping_info = self.get_certificate_mapping(loadbalancer, certificateMappingId)
         if not mapping_info:
-            raise exc.NoSuchObject("The certificate mapping ID you requested does not exist".)
+            raise exc.NoSuchObject("The certificate mapping ID you requested does not exist")
         uri = "/loadbalancers/%s/ssltermination/certificatemappings/%s" % (
             utils.get_id(loadbalancer), certificateMappingId)
         req_body = {}
