@@ -305,13 +305,13 @@ class CloudLoadBalancer(BaseResource):
         return self.manager.get_certificate_mapping(self, certificateMappingId)
 
 
-    def update_certificate_mapping(self, certificateMappingId, privatekey=False, 
-            certificate=False, intermediateCertificate=False):
+    def update_certificate_mapping(self, certificateMappingId, hostName=False, 
+            privatekey=False, certificate=False, intermediateCertificate=False):
         """
         Updates an existing SSL certificate mapping on the load balancer. 
         """
         return self.manager.update_certificate_mapping(self, certificateMappingId, 
-            privatekey, certificate, intermediateCertificate)
+            hostName, privatekey, certificate, intermediateCertificate)
 
 
     def delete_certificate_mapping(self, certificateMappingId):
