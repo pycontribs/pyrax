@@ -138,7 +138,7 @@ To create the check, run the following:
     chk = cm.create_check(ent, label="sample_check", check_type="remote.http",
             details={"url": "http://example.com/some_page"}, period=900,
             timeout=20, monitoring_zones_poll=["mzdfw", "mzlon", "mzsyd"],
-            target_hostname="http://example.com")
+            target_hostname="example.com")
 
 This will create an HTTP check on the entity `ent` for the page `http://example.com/some_page` that will run every 15 minutes from the Dallas, London, and Sydney monitoring zones.
 
