@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import time
 import datetime
 import random
 import unittest
@@ -1440,6 +1441,71 @@ class CloudMonitoringTest(unittest.TestCase):
         notification_plan = utils.random_unicode()
         ret = clt.delete_notification_plan(notification_plan)
         mgr.delete.assert_called_once_with(notification_plan)
+        self.assertEqual(ret, answer)
+
+    def test_clt_list_suppressions(self):
+        clt = self.client
+        mgr = clt._suppression_manager
+        answer = utils.random_unicode()
+        mgr.list = Mock(return_value=answer)
+        ret = clt.list_suppressions()
+        mgr.list.assert_called_once_with()
+
+    def test_clt_get_suppression(self):
+        clt = self.client
+        mgr = clt._suppression_manager
+        answer = utils.random_unicode()
+        suppression_id = utils.random_unicode()
+        mgr.get = Mock(return_value=answer)
+        ret = clt.get_suppression(suppression_id)
+        mgr.get.assert_called_once_with(suppression_id)
+        self.assertEqual(ret, answer)
+
+    def test_clt_create_suppression(self):
+        clt = self.client
+        mgr = clt._suppression_manager
+        entities = [utils.random_unicode()]
+        checks = [utils.random_unicode()]
+        alarms = [utils.random_unicode()]
+        notification_plans = [utils.random_unicode()]
+        start_time = time.time() * 1000
+        end_time = (time.time() + 300)* 1000
+        label = utils.random_unicode()
+        answer = utils.random_unicode()
+        mgr.create = Mock(return_value=answer)
+        ret = clt.create_suppression(entities, checks, alarms,
+            notification_plans, start_time, end_time, label)
+        mgr.create.assert_called_once_with(entities, checks, alarms,
+            notification_plans, start_time, end_time, label)
+        self.assertEqual(ret, answer)
+
+    def test_clt_update_suppression(self):
+        clt = self.client
+        mgr = clt._suppression_manager
+        suppression = fakes.FakeCloudMonitorSuppression()
+        entities = [utils.random_unicode()]
+        checks = [utils.random_unicode()]
+        alarms = [utils.random_unicode()]
+        notification_plans = [utils.random_unicode()]
+        start_time = time.time() * 1000
+        end_time = (time.time() + 300)* 1000
+        label = utils.random_unicode()
+        answer = utils.random_unicode()
+        mgr.update = Mock(return_value=answer)
+        ret = clt.update_suppression(suppression, entities, checks, alarms,
+            notification_plans, start_time, end_time, label)
+        mgr.update.assert_called_once_with(suppression, entities, checks,
+            alarms, notification_plans, start_time, end_time, label)
+        self.assertEqual(ret, answer)
+
+    def test_clt_delete_suppression(self):
+        clt = self.client
+        mgr = clt._suppression_manager
+        suppression = fakes.FakeCloudMonitorSuppression()
+        answer = utils.random_unicode()
+        mgr.delete = Mock(return_value=answer)
+        ret = clt.delete_suppression(suppression)
+        mgr.delete.assert_called_once_with(suppression)
         self.assertEqual(ret, answer)
 
     def test_clt_list_alarms(self):
