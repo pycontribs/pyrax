@@ -114,7 +114,7 @@ Support and Feedback
 --------------------
 
 You can find documentation for using the **pyrax** SDK at
-`docs.rackspace.com <http://docs.rackspace.com/sdks/guide/content/python.html>`_.
+https://developer.rackspace.com/sdks/python/.
 
 Your feedback is appreciated! If you have specific issues with the
 **pyrax** SDK, developers should file an `issue via
