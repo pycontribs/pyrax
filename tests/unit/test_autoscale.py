@@ -671,7 +671,8 @@ class AutoscaleTest(unittest.TestCase):
         metadata = utils.random_unicode()
         personality = utils.random_unicode()
         networks = utils.random_unicode()
-
+        userdata = utils.random_unicode()
+        config_drive = utils.random_unicode()
         sg.launchConfiguration = {
                 "type": typ,
                 "args": {
@@ -683,6 +684,8 @@ class AutoscaleTest(unittest.TestCase):
                         "personality": personality,
                         "networks": networks,
                         "metadata": metadata,
+                        "user_data": userdata,
+                        "config_drive": config_drive,
                         },
                     "loadBalancers": lbs,
                     },
@@ -699,6 +702,8 @@ class AutoscaleTest(unittest.TestCase):
                         "name": new_name,
                         "imageRef": new_img,
                         "flavorRef": new_flv,
+                        "user_data": userdata,
+                        "config_drive": config_drive,
                         },
                     "loadBalancers": []
                     }
@@ -708,7 +713,8 @@ class AutoscaleTest(unittest.TestCase):
         uri = "/%s/%s/launch" % (mgr.uri_base, sg.id)
 
         mgr.replace_launch_config(sg.id, launch_config_type=new_typ,
-                server_name=new_name, flavor=new_flv, image=new_img)
+                server_name=new_name, flavor=new_flv, image=new_img,
+                user_data=userdata, config_drive=config_drive)
         mgr.api.method_put.assert_called_once_with(uri, body=expected)
 
     def test_mgr_update_launch_metadata(self):
@@ -1532,15 +1538,19 @@ class AutoscaleTest(unittest.TestCase):
         networks = utils.random_unicode()
         load_balancers = utils.random_unicode()
         key_name = utils.random_unicode()
+        userdata = utils.random_unicode()
+        config_drive = utils.random_unicode()
         clt.replace_launch_config(sg, launch_config_type, server_name, image,
                 flavor, disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers, key_name=key_name)
+                load_balancers=load_balancers, key_name=key_name,
+                user_data=userdata, config_drive=config_drive)
         mgr.replace_launch_config.assert_called_once_with(sg,
                 launch_config_type, server_name, image, flavor,
                 disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers, key_name=key_name)
+                load_balancers=load_balancers, key_name=key_name,
+                user_data=userdata, config_drive=config_drive)
 
     def test_clt_update_launch_config(self):
         clt = fakes.FakeAutoScaleClient()

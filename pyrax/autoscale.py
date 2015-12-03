@@ -1077,7 +1077,7 @@ class AutoScaleClient(BaseClient):
     def replace_launch_config(self, scaling_group, launch_config_type,
             server_name, image, flavor, disk_config=None, metadata=None,
             personality=None, networks=None, load_balancers=None,
-            key_name=None):
+            key_name=None, config_drive=False, user_data=None):
         """
         Replace an existing launch configuration. All of the attributes must be
         specified. If you wish to delete any of the optional attributes, pass
@@ -1087,7 +1087,8 @@ class AutoScaleClient(BaseClient):
                 launch_config_type, server_name, image, flavor,
                 disk_config=disk_config, metadata=metadata,
                 personality=personality, networks=networks,
-                load_balancers=load_balancers, key_name=key_name)
+                load_balancers=load_balancers, key_name=key_name,
+                config_drive=config_drive, user_data=user_data)
 
 
     def update_launch_config(self, scaling_group, server_name=None, image=None,
