@@ -31,6 +31,8 @@ from pyrax.manager import BaseManager
 from pyrax.resource import BaseResource
 import pyrax.utils as utils
 
+from novaclient.v2.servers import Server as CloudServer
+
 # How long (in seconds) to wait for a response from async operations
 DEFAULT_TIMEOUT = 5
 # How long (in seconds) to wait in between checks for async completion
@@ -928,12 +930,12 @@ class CloudDNSManager(BaseManager):
         """
         try:
             from tests.unit import fakes
-            server_types = (pyrax.CloudServer, fakes.FakeServer)
+            server_types = (CloudServer, fakes.FakeServer)
             lb_types = (CloudLoadBalancer, fakes.FakeLoadBalancer,
                     fakes.FakeDNSDevice)
         except ImportError:
             # Not running with tests
-            server_types = (pyrax.CloudServer, )
+            server_types = (CloudServer, )
             lb_types = (CloudLoadBalancer, )
         if isinstance(device, server_types):
             device_type = "server"
