@@ -61,8 +61,8 @@ try:
     from novaclient import exceptions as _cs_exceptions
     from novaclient import auth_plugin as _cs_auth_plugin
     from novaclient import client as nc
-    from novaclient.v1_1 import client as _cs_client
-    from novaclient.v1_1.servers import Server as CloudServer
+    from novaclient.v2 import client as _cs_client
+    from novaclient.v2.servers import Server as CloudServer
 
     from .autoscale import AutoScaleClient
     from .cloudcdn import CloudCDNClient
