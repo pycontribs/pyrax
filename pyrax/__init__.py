@@ -121,17 +121,17 @@ services = tuple()
 
 _client_classes = {
         "compute": _cs_client.Client,
-        "cdn": CloudCDNClient,
+        "rax:cdn": CloudCDNClient,
         "object_store": StorageClient,
-        "database": CloudDatabaseClient,
-        "load_balancer": CloudLoadBalancerClient,
+        "rax:database": CloudDatabaseClient,
+        "rax:load_balancer": CloudLoadBalancerClient,
         "volume": CloudBlockStorageClient,
-        "dns": CloudDNSClient,
-        "compute:network": CloudNetworkClient,
-        "monitor": CloudMonitorClient,
-        "autoscale": AutoScaleClient,
+        "rax:dns": CloudDNSClient,
+        "network": CloudNetworkClient,
+        "rax:monitor": CloudMonitorClient,
+        "rax:autoscale": AutoScaleClient,
         "image": ImageClient,
-        "queues": QueueClient,
+        "rax:queues": QueueClient,
         }
 
 
@@ -739,21 +739,22 @@ def connect_to_cloudfiles(region=None, public=None):
     if ret:
         # Add CDN endpoints, if available
         region = _safe_region(region)
-        ret.cdn_management_url = _get_service_endpoint(None, "object_cdn",
+        ret.cdn_management_url = _get_service_endpoint(None, "rax:object_cdn",
                 region, public=is_public)
     return ret
 
 
 @_require_auth
-def _create_client(ep_name, region, public=True, verify_ssl=None):
+def _create_client(ep_name, region, public=True, verify_ssl=None, class_name=None):
     region = _safe_region(region)
-    ep = _get_service_endpoint(None, ep_name.split(":")[0], region,
+    ep = _get_service_endpoint(None, ep_name, region,
             public=public)
     if not ep:
         return
     if verify_ssl is None:
         verify_ssl = get_setting("verify_ssl")
-    cls = _client_classes[ep_name]
+    client_classname = class_name if class_name else ep_name
+    cls = _client_classes[client_classname]
     client = cls(identity, region_name=region, management_url=ep,
             verify_ssl=verify_ssl, http_log_debug=_http_debug)
     client.user_agent = _make_agent_name(client.user_agent)
@@ -762,17 +763,17 @@ def _create_client(ep_name, region, public=True, verify_ssl=None):
 
 def connect_to_cloud_databases(region=None):
     """Creates a client for working with cloud databases."""
-    return _create_client(ep_name="database", region=region)
+    return _create_client(ep_name="rax:database", region=region)
 
 
 def connect_to_cloud_cdn(region=None):
     """Creates a client for working with cloud loadbalancers."""
-    return _create_client(ep_name="cdn", region=region)
+    return _create_client(ep_name="rax:cdn", region=region)
 
 
 def connect_to_cloud_loadbalancers(region=None):
     """Creates a client for working with cloud loadbalancers."""
-    return _create_client(ep_name="load_balancer", region=region)
+    return _create_client(ep_name="rax:load_balancer", region=region)
 
 
 def connect_to_cloud_blockstorage(region=None):
@@ -782,22 +783,22 @@ def connect_to_cloud_blockstorage(region=None):
 
 def connect_to_cloud_dns(region=None):
     """Creates a client for working with cloud dns."""
-    return _create_client(ep_name="dns", region=region)
+    return _create_client(ep_name="rax:dns", region=region)
 
 
 def connect_to_cloud_networks(region=None):
     """Creates a client for working with cloud networks."""
-    return _create_client(ep_name="compute:network", region=region)
+    return _create_client(ep_name="compute", region=region, class_name="network")
 
 
 def connect_to_cloud_monitoring(region=None):
     """Creates a client for working with cloud monitoring."""
-    return _create_client(ep_name="monitor", region=region)
+    return _create_client(ep_name="rax:monitor", region=region)
 
 
 def connect_to_autoscale(region=None):
     """Creates a client for working with AutoScale."""
-    return _create_client(ep_name="autoscale", region=region)
+    return _create_client(ep_name="rax:autoscale", region=region)
 
 
 def connect_to_images(region=None, public=True):
@@ -807,7 +808,7 @@ def connect_to_images(region=None, public=True):
 
 def connect_to_queues(region=None, public=True):
     """Creates a client for working with Queues."""
-    return _create_client(ep_name="queues", region=region, public=public)
+    return _create_client(ep_name="rax:queues", region=region, public=public)
 
 
 def client_class_for_service(service):
