@@ -828,6 +828,11 @@ fake_identity_response = {u'access':
         'name': 'cloudDNS',
         'type': 'rax:dns'},
         {u'endpoints': [{u'publicURL':
+        'https://global.dns.api.rackspacecloud.com/v2/000000',
+        'tenantId': '000000'}],
+        'name': 'Managed DNS',
+        'type': 'dns'},
+        {u'endpoints': [{u'publicURL':
             'https://dfw.databases.api.rackspacecloud.com/v1.0/000000',
             'region': 'DFW',
             'tenantId': '000000'},

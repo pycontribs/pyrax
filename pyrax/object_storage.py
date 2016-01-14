@@ -2219,7 +2219,7 @@ class StorageClient(BaseClient):
         Initialize CDN-related endpoints, if available.
         """
         ident = self.identity
-        cdn_svc = ident.services.get("object_cdn")
+        cdn_svc = ident.services.get("rax:object_cdn")
         if cdn_svc:
             ep = cdn_svc.endpoints.get(self.region_name)
             if ep:

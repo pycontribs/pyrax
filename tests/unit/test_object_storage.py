@@ -2344,7 +2344,7 @@ class ObjectStorageTest(unittest.TestCase):
         fake_service = fakes.FakeService()
         fake_ep = fakes.FakeEndpoint()
         fake_ep.public_url = utils.random_unicode()
-        ident.services["object_cdn"] = fake_service
+        ident.services["rax:object_cdn"] = fake_service
         fake_service.endpoints = {clt.region_name: fake_ep}
         clt._configure_cdn()
         self.assertEqual(clt.cdn_management_url, fake_ep.public_url)
