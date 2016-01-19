@@ -1,5 +1,10 @@
 # Release Notes for pyrax
 
+### 2016.01.19 - Version 1.9.7
+
+  - General
+    - Bump to 1.9.7 to handle pypi packing issue
+
 ### 2016.01.19 - Version 1.9.6
 
   - Cloud DNS
