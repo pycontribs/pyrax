@@ -1,5 +1,15 @@
 # Release Notes for pyrax
 
+### 2016.01.19 - Version 1.9.6
+
+  - Cloud DNS
+    - Ignore new Managed DNS offering
+
+  - General
+    - Pin python-novaclient to 2.27.0
+    - Pin six and requests to not exceed the next semver major release
+    - Update references for novaclient v1.1 to v2
+
 ### 2015.09.02 - Version 1.9.5
 
   - Cloud Servers
