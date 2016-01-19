@@ -648,6 +648,10 @@ class BaseIdentity(object):
             if not hasattr(service, "endpoints"):
                 # Not an OpenStack service
                 continue
+            if service.prefix == '' and service.service_type == 'dns':
+                # Skip service registration of Managed DNS
+                # so it doesn't conflict with Cloud DNS
+                continue
             setattr(self.services, service.service_type, service)
             self.regions.update(list(service.endpoints.keys()))
         # Update the 'ALL' services to include all available regions.

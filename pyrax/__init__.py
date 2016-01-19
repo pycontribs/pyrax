@@ -37,10 +37,6 @@ import re
 import six.moves.configparser as ConfigParser
 import warnings
 
-# Ignore UserWarnings. Currently we're getting warnings about novaclient.v1_1
-# deprecations as UserWarning instead of DeprecationWarning (why?).
-warnings.filterwarnings("ignore", ".*novaclient.v1_1 is deprecated.*")
-
 # keyring is an optional import
 try:
     import keyring
@@ -61,8 +57,9 @@ try:
     from novaclient import exceptions as _cs_exceptions
     from novaclient import auth_plugin as _cs_auth_plugin
     from novaclient import client as nc
-    from novaclient.v1_1 import client as _cs_client
-    from novaclient.v1_1.servers import Server as CloudServer
+    from novaclient import client as _cs_client
+    from novaclient import API_MAX_VERSION as _cs_max_version
+    from novaclient.v2.servers import Server as CloudServer
 
     from .autoscale import AutoScaleClient
     from .cloudcdn import CloudCDNClient
@@ -120,7 +117,7 @@ regions = tuple()
 services = tuple()
 
 _client_classes = {
-        "compute": _cs_client.Client,
+        "compute": _cs_client.get_client_class(_cs_max_version),
         "cdn": CloudCDNClient,
         "object_store": StorageClient,
         "database": CloudDatabaseClient,
@@ -679,8 +676,12 @@ def connect_to_cloudservers(region=None, context=None, verify_ssl=None, **kwargs
         insecure = not get_setting("verify_ssl")
     else:
         insecure = not verify_ssl
-    extensions = nc.discover_extensions("1.1")
-    cloudservers = _cs_client.Client(context.username, context.password,
+    try:
+        extensions = nc.discover_extensions(_cs_max_version)
+    except AttributeError:
+        extensions = None
+    clt_class = _cs_client.get_client_class(_cs_max_version)
+    cloudservers = clt_class(context.username, context.password,
             project_id=context.tenant_id, auth_url=context.auth_endpoint,
             auth_system=id_type, region_name=region, service_type="compute",
             auth_plugin=auth_plugin, insecure=insecure, extensions=extensions,
