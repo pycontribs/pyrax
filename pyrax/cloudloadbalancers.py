@@ -281,6 +281,46 @@ class CloudLoadBalancer(BaseResource):
         return self.manager.delete_ssl_termination(self)
 
 
+    def list_certificate_mappings(self):
+        """
+        Returns a list of SSL certificate mappings on the load balancer. 
+        """
+        return self.manager.list_certificate_mappings(self)
+
+
+    def add_certificate_mapping(self, hostName, privatekey, certificate,
+            intermediateCertificate=False):
+        """
+        Adds an SSL certificate mapping to the load balancer. 
+        """
+        return self.manager.add_certificate_mapping(self, hostName, privatekey, 
+            certificate, intermediateCertificate)
+
+
+    def get_certificate_mapping(self, certificateMappingId):
+        """
+        Returns a dict representing a single SSL certificate mapping
+        for the load balancer. 
+        """
+        return self.manager.get_certificate_mapping(self, certificateMappingId)
+
+
+    def update_certificate_mapping(self, certificateMappingId, hostName=False, 
+            privatekey=False, certificate=False, intermediateCertificate=False):
+        """
+        Updates an existing SSL certificate mapping on the load balancer. 
+        """
+        return self.manager.update_certificate_mapping(self, certificateMappingId, 
+            hostName, privatekey, certificate, intermediateCertificate)
+
+
+    def delete_certificate_mapping(self, certificateMappingId):
+        """
+        Deletes the SSL certificate mapping for the load balancer.
+        """
+        return self.manager.delete_certificate_mapping(self, certificateMappingId)
+
+
     def get_metadata(self):
         """
         Returns the current metadata for the load balancer.
@@ -794,6 +834,76 @@ class CloudLoadBalancerManager(BaseManager):
         Deletes the SSL Termination configuration for the load balancer.
         """
         uri = "/loadbalancers/%s/ssltermination" % utils.get_id(loadbalancer)
+        resp, body = self.api.method_delete(uri)
+
+
+    def list_certificate_mappings(self, loadbalancer):
+        """
+        Returns a list of SSL certificate mappings on the load balancer. 
+        """
+        uri = "/loadbalancers/%s/ssltermination/certificatemappings" % utils.get_id(loadbalancer)
+        resp, body = self.api.method_get(uri)
+        return body.get("certificateMappings", {})
+
+
+    def add_certificate_mapping(self, loadbalancer, hostName, privatekey, certificate,
+            intermediateCertificate=False):
+        """
+        Adds an SSL certificate mapping to the load balancer. 
+        """
+        uri = "/loadbalancers/%s/ssltermination/certificatemappings" % utils.get_id(loadbalancer)
+        req_body = {
+            "hostName": hostName,
+            "privateKey": privatekey,
+            "certificate": certificate,
+        }
+        if intermediateCertificate:
+            req_body["intermediateCertificate"] = intermediateCertificate
+        resp, body = self.api.method_post(uri, body={"certificateMapping": req_body })
+        return body.get("certificateMapping", {})
+
+
+    def get_certificate_mapping(self, loadbalancer, certificateMappingId):
+        """
+        Returns a dict representing a single SSL certificate mapping
+        for the load balancer. 
+        """
+        uri = "/loadbalancers/%s/ssltermination/certificatemappings/%s" % (
+            utils.get_id(loadbalancer), certificateMappingId)
+        resp, body = self.api.method_get(uri)
+        return body.get("certificateMapping", {})
+
+
+    def update_certificate_mapping(self, loadbalancer, certificateMappingId, hostName=None, 
+            privatekey=False, certificate=False, intermediateCertificate=False):
+        """
+        Updates an existing SSL certificate mapping on the load balancer. 
+        """
+        mapping_info = self.get_certificate_mapping(loadbalancer, certificateMappingId)
+        if not mapping_info:
+            raise exc.NoSuchObject("The certificate mapping ID you requested does not exist")
+        uri = "/loadbalancers/%s/ssltermination/certificatemappings/%s" % (
+            utils.get_id(loadbalancer), certificateMappingId)
+        req_body = {}
+        if hostName:
+            req_body["hostName"] = hostName
+        if privatekey:
+            req_body["privateKey"] = privatekey
+        if certificate:
+            req_body["certificate"] = certificate
+        if intermediateCertificate:
+            req_body["intermediateCertificate"] = intermediateCertificate
+        
+        resp, body = self.api.method_put(uri, body={"certificateMapping": req_body })
+        return body
+
+
+    def delete_certificate_mapping(self, loadbalancer, certificateMappingId):
+        """
+        Deletes the SSL certificate mapping for the load balancer.
+        """
+        uri = "/loadbalancers/%s/ssltermination/certificatemappings/%s" % (
+            utils.get_id(loadbalancer), certificateMappingId)
         resp, body = self.api.method_delete(uri)
 
 
