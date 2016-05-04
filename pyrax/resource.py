@@ -68,7 +68,7 @@ class BaseResource(object):
         corresponding attributes on the object.
         """
         for (key, val) in six.iteritems(info):
-            if isinstance(key, six.text_type):
+            if isinstance(key, six.text_type) and six.PY2:
                 key = key.encode(pyrax.get_encoding())
             elif isinstance(key, bytes):
                 key = key.decode("utf-8")
