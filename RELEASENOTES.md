@@ -1,5 +1,9 @@
 # Release Notes for pyrax
 
+### 2016.08.22 - Version 1.9.8
+  - Cloud Monitoring
+    - Resolve TypeError #617
+
 ### 2016.01.19 - Version 1.9.7
 
   - General
