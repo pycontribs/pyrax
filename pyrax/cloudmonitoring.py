@@ -955,7 +955,7 @@ class CloudMonitorAlarm(BaseResource):
     Alarms bind alerting rules, entities, and notification plans into a logical
     unit.
     """
-    def __init__(self, manager, info, entity, key=None, loaded=False):
+    def __init__(self, manager, info, entity=None, key=None, loaded=False):
         super(CloudMonitorAlarm, self).__init__(manager, info, key=key,
                 loaded=loaded)
         if entity is None:
