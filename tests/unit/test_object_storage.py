@@ -39,6 +39,16 @@ import pyrax.utils as utils
 import pyrax.fakes as fakes
 
 
+class WriteRecorder(object):
+
+    def __init__(self):
+        self.value = ""
+        self.writes = 0
+
+    def write(self, buf):
+        self.writes += 1
+        self.value += buf
+
 
 class ObjectStorageTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -3542,6 +3552,38 @@ class ObjectStorageTest(unittest.TestCase):
             folder_up.upload_files_in_folder = Mock()
             folder_up.run()
             self.assertEqual(folder_up.upload_files_in_folder.call_count, 1)
+
+    def test_copy_maxlen_bytes_typical(self):
+        contents = "123456789012345"
+        src = StringIO(contents)
+        dst = WriteRecorder()
+        pyrax.object_storage.copy_maxlen_bytes(src, dst, 9, 5)
+        self.assertEquals(dst.value, contents[:9])
+        self.assertEquals(dst.writes, 2)
+
+    def test_copy_maxlen_bytes_eof(self):
+        contents = "123456789012345"
+        src = StringIO(contents)
+        dst = WriteRecorder()
+        pyrax.object_storage.copy_maxlen_bytes(src, dst, 20, 5)
+        self.assertEquals(dst.value, contents)
+        self.assertEquals(dst.writes, 3)
+
+    def test_copy_maxlen_bytes_exact(self):
+        contents = "123456789012345"
+        src = StringIO(contents)
+        dst = WriteRecorder()
+        pyrax.object_storage.copy_maxlen_bytes(src, dst, 15, 5)
+        self.assertEquals(dst.value, contents)
+        self.assertEquals(dst.writes, 3)
+
+    def test_copy_maxlen_bytes_one(self):
+        contents = "123456789012345"
+        src = StringIO(contents)
+        dst = WriteRecorder()
+        pyrax.object_storage.copy_maxlen_bytes(src, dst, 15, 20)
+        self.assertEquals(dst.value, contents)
+        self.assertEquals(dst.writes, 1)
 
 
 if __name__ == "__main__":

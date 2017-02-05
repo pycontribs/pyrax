@@ -1741,6 +1741,25 @@ class StorageObjectIterator(utils.ResultsIterator):
         self.marker_att = "name"
 
 
+def copy_maxlen_bytes(src, dst, maxlen, bufsize=16 * 1024):
+    """
+    Copy maxlen bytes from src into dst file like objects, or until EOF is
+    reached in src.
+
+    The data copy is done as a stream, using slices of up to bufsize bytes max
+    at a time.
+    """
+    rest = maxlen
+    while True:
+        readsize = bufsize if bufsize < rest else rest
+        buf = src.read(readsize)
+        if not buf:  # Done on EOF
+            break
+        dst.write(buf)
+        rest -= len(buf)
+        if rest <= 0:  # Done on maxlen copied bytes
+            break
+
 
 class StorageObjectManager(BaseManager):
     """
@@ -1910,7 +1929,7 @@ class StorageObjectManager(BaseManager):
             seg_name = "%s.%s" % (obj_name, sequence)
             with utils.SelfDeletingTempfile() as tmpname:
                 with open(tmpname, "wb") as tmp:
-                    tmp.write(content.read(MAX_FILE_SIZE))
+                    copy_maxlen_bytes(content, tmp, MAX_FILE_SIZE)
                 with open(tmpname, "rb") as tmp:
                     # We have to calculate the etag for each segment
                     etag = utils.get_checksum(tmp)
