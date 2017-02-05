@@ -43,7 +43,7 @@ class sdist(_sdist):
         # Expand macros in pyrax.spec.in
         spec_in = open('pyrax.spec.in', 'r')
         spec = open('pyrax.spec', 'w')
-        for line in spec_in.xreadlines():
+        for line in spec_in:
             if "@VERSION@" in line:
                 line = line.replace("@VERSION@", version)
             elif "@RELEASE@" in line:
