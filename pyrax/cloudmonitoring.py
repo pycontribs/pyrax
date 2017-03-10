@@ -537,6 +537,73 @@ class CloudMonitorAlarmManager(_PaginationManager):
         resp, resp_body = self.api.method_put(uri, body=body)
 
 
+class CloudMonitorSuppressionManager(_PaginationManager):
+    """
+    Handles all of the suppression-specific requests.
+    """
+
+    def __init__(self, api, resource_class=None, response_key=None,
+                 plural_response_key=None, uri_base=None):
+        _PaginationManager.__init__(self, api, resource_class=resource_class,
+            response_key=response_key, plural_response_key=plural_response_key,
+            uri_base=uri_base)
+
+
+    def create(self, entities=None, checks=None, alarms=None,
+            notification_plans=None, start_time=0, end_time=0, label=None):
+        """
+        Creates an alarm notification suppression that binds to entities,
+        checks, alarms and/or notification_plans.
+
+        See http://docs.rackspace.com for more details
+        """
+        uri = "/%s" % self.uri_base
+        body = {"start_time": start_time,
+                "end_time": end_time
+        }
+
+        if entities:
+            body["entities"] = entities
+        if checks:
+            body["checks"] = checks
+        if alarms:
+            body["alarms"] = alarms
+        if notification_plans:
+            body["notification_plans"] = notification_plans
+        if label:
+            body["label"] = label
+
+        resp, resp_body = self.api.method_post(uri, body=body)
+        if resp.status_code == 201:
+            suppression_id = resp.headers["x-object-id"]
+            return self.get(suppression_id)
+
+
+    def update(self, suppression, entities=None, checks=None, alarms=None,
+            notification_plans=None, start_time=0, end_time=0, label=None):
+        """
+        Updates an existing alarm. See the comments on the 'create()' method
+        regarding the criteria parameter.
+        """
+        uri = "/%s/%s" % (self.uri_base, utils.get_id(suppression))
+        body = {}
+        if entities:
+            body["entities"] = entities
+        if checks:
+            body["checks"] = checks
+        if alarms:
+            body["alarms"] = alarms
+        if notification_plans:
+            body["notification_plans"] = notification_plans
+        if start_time:
+            body["start_time"] = start_time
+        if end_time:
+            body["end_time"] = end_time
+        if label:
+            body["label"] = label
+
+        resp, resp_body = self.api.method_put(uri, body=body)
+
 
 class CloudMonitorCheckManager(_PaginationManager):
     """
@@ -990,6 +1057,14 @@ class CloudMonitorAlarm(BaseResource):
     def name(self):
         return self.label
 
+class CloudMonitorSuppression(BaseResource):
+    """
+
+    """
+    @property
+    def name(self):
+        return self.label
+
 
 class CloudMonitorAgentToken(BaseResource):
     """
@@ -1030,6 +1105,10 @@ class CloudMonitorClient(BaseClient):
                 uri_base="notifications",
                 resource_class=CloudMonitorNotification,
                 response_key=None, plural_response_key=None)
+        self._suppression_manager = CloudMonitorSuppressionManager(self,
+                uri_base="suppressions",
+                resource_class=CloudMonitorSuppression, response_key=None,
+                plural_response_key=None)
         self._notification_plan_manager = CloudMonitorNotificationPlanManager(
                 self, uri_base="notification_plans",
                 resource_class=CloudMonitorNotificationPlan,
@@ -1305,6 +1384,46 @@ class CloudMonitorClient(BaseClient):
         Deletes the specified notification plan.
         """
         return self._notification_plan_manager.delete(notification_plan)
+
+
+    def create_suppression(self, entities=None, checks=None, alarms=None,
+            notification_plans=None, start_time=0, end_time=0, label=None):
+        """
+        Creates an alarm notification suppression that binds to entities,
+        checks, alarms and/or notification_plans.
+        """
+        return self._suppression_manager.create(entities, checks, alarms,
+                notification_plans, start_time, end_time, label)
+
+
+    def list_suppressions(self):
+        """Returns a list of all defined suppression."""
+        return self._suppression_manager.list()
+
+
+    def get_suppression(self, suppression_id):
+        """
+        Returns the CloudMonitorSuppression object for the specified ID.
+        """
+        return self._suppression_manager.get(suppression_id)
+
+
+    def update_suppression(self, suppression, entities=None, checks=None,
+            alarms=None, notification_plans=None, start_time=0, end_time=0,
+            label=None):
+        """
+        Updates the specified suppression with the supplied details.
+        """
+        return self._suppression_manager.update(suppression, entities,
+            checks, alarms, notification_plans, start_time, end_time,
+            label)
+
+
+    def delete_suppression(self, suppression):
+        """
+        Deletes the specified suppression.
+        """
+        return self._suppression_manager.delete(suppression)
 
     @assure_entity
     def create_alarm(self, entity, check, notification_plan, criteria=None,

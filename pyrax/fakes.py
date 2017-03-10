@@ -40,6 +40,7 @@ from pyrax.cloudmonitoring import CloudMonitorClient
 from pyrax.cloudmonitoring import CloudMonitorEntity
 from pyrax.cloudmonitoring import CloudMonitorCheck
 from pyrax.cloudmonitoring import CloudMonitorNotification
+from pyrax.cloudmonitoring import CloudMonitorSuppression
 from pyrax.image import Image
 from pyrax.image import ImageClient
 from pyrax.image import ImageManager
@@ -545,6 +546,14 @@ class FakeCloudMonitorCheck(CloudMonitorCheck):
         super(FakeCloudMonitorCheck, self).__init__(FakeManager(), info, *args,
                 **kwargs)
         self.set_entity(entity)
+        self.id = uuid.uuid4()
+
+
+class FakeCloudMonitorSuppression(CloudMonitorSuppression):
+    def __init__(self, *args, **kwargs):
+        info = kwargs.pop("info", {"fake": "fake"})
+        super(FakeCloudMonitorSuppression, self).__init__(manager=None,
+                info=info, *args, **kwargs)
         self.id = uuid.uuid4()
 
 
