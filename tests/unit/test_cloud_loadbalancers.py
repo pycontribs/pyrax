@@ -1096,7 +1096,8 @@ class CloudLoadBalancerTest(unittest.TestCase):
 
     def test_node_to_dict(self):
         nd = fakes.FakeNode()
-        expected = {"address": nd.address,
+        expected = {"id": nd.id,
+                "address": nd.address,
                 "port": nd.port,
                 "condition": nd.condition,
                 "type": nd.type,

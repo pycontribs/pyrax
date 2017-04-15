@@ -1097,7 +1097,8 @@ class Node(object):
 
     def to_dict(self):
         """Convert this Node to a dict representation for passing to the API."""
-        return {"address": self.address,
+        return {"id": self.id,
+                "address": self.address,
                 "port": self.port,
                 "condition": self.condition,
                 "type": self.type,
