@@ -82,7 +82,7 @@ There are two variations: calling the `create_database()` method of a `CloudData
 
 or:
 
-    db = cdb.create_instance(inst, "db_name")
+    db = cdb.create(inst, "db_name")
     print "DB:", db
 
 Both calls return an object representing the newly-created database:
