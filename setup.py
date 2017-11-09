@@ -84,11 +84,11 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "python-novaclient==2.27.0",
+        "python-novaclient>=2.27.0",
         "rackspace-novaclient",
         "keyring",
-        "requests>=2.2.1,<3",
-        "six>=1.9.0,<2",
+        "requests>=2.2.1",
+        "six>=1.9.0",
     ] + testing_requires,
     packages=[
         "pyrax",
