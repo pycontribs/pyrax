@@ -5,7 +5,7 @@ Python SDK for OpenStack/Rackspace APIs
 
    **DEPRECATED**: Pyrax is no longer being developed or supported.
    See `openstacksdk <https://pypi.python.org/pypi/openstacksdk>`__
-   and the `rackspacedsk <https://pypi.python.org/pypi/rackspacesdk>`__
+   and the `rackspacesdk <https://pypi.python.org/pypi/rackspacesdk>`__
    plugin in order to interact with Rackspace's OpenStack-based
    public cloud.
 
