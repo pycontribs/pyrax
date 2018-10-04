@@ -17,7 +17,7 @@
 
 
 # For doxygen class doc generation:
-"""
+r"""
 \mainpage Class Documentation for pyrax
 
 This module provides the Python Language Bindings for creating applications
