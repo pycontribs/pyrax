@@ -1,6 +1,12 @@
 pyrax
 =====
 
+.. image:: https://img.shields.io/pypi/v/jira.svg
+        :target: https://pypi.python.org/pypi/jira/
+
+.. image:: https://travis-ci.com/pycontribs/jira.svg?branch=master
+        :target: https://travis-ci.com/pycontribs/jira
+
 Python SDK for OpenStack/Rackspace APIs
 
    **DEPRECATED**: Pyrax is no longer being developed or supported.
@@ -21,9 +27,6 @@ app will work fine on any standard Swift deployment.
 See the `Release
 Notes <https://github.com/rackspace/pyrax/tree/master/RELEASENOTES.md>`_
 for what has changed in the latest release
-
-.. image:: https://travis-ci.org/rackspace/pyrax.svg?branch=master
-       :target: https://travis-ci.org/rackspace/pyrax
 
 Getting Started with OpenStack/Rackspace
 ----------------------------------------
