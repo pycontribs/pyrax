@@ -25,7 +25,7 @@ built on the Rackspace / OpenStack Cloud.<br />
 
 The source code for <b>pyrax</b> can be found at:
 
-http://github.com/rackspace/pyrax
+http://github.com/pycontribs/pyrax
 """
 
 from __future__ import absolute_import

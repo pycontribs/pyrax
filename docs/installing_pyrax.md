@@ -8,7 +8,7 @@ If you don't already have `pip` installed, you should follow the [pip installati
 
 > For all of the examples below, it is assumed that you are installing into a virtualenv, or on a system where you are logged in as the root/administrator. If that is not the case, then you probably have to run the installation under `sudo` to get administrator privileges.
 
-`pip` installs pyrax and its dependencies from one of two sources: the official packaged releases on the [Python Package Index (PyPI)](http://pypi.python.org/pypi), or from the source code repository on [GitHub](https://github.com/rackspace/pyrax). The only difference between the two is that with PyPI you can only install the latest official release of pyrax, while with GitHub you can install any branch, including the current development trunk version. Bear in mind that this option is only for developers who need the latest changes and are willing to live with occasional bugs as the code gets updated – what is commonly referred to as the "bleeding edge".
+`pip` installs pyrax and its dependencies from one of two sources: the official packaged releases on the [Python Package Index (PyPI)](http://pypi.python.org/pypi), or from the source code repository on [GitHub](https://github.com/pycontribs/pyrax). The only difference between the two is that with PyPI you can only install the latest official release of pyrax, while with GitHub you can install any branch, including the current development trunk version. Bear in mind that this option is only for developers who need the latest changes and are willing to live with occasional bugs as the code gets updated – what is commonly referred to as the "bleeding edge".
 
 To install from PyPI, run the following:
 
@@ -16,11 +16,11 @@ To install from PyPI, run the following:
 
 To install the current released version from GitHub, run:
 
-    pip install git+git://github.com/rackspace/pyrax.git@latest-release
+    pip install git+git://github.com/pycontribs/pyrax.git@latest-release
 
 To install the development trunk version from GitHub, run:
 
-    pip install git+git://github.com/rackspace/pyrax.git
+    pip install git+git://github.com/pycontribs/pyrax.git
 
 
 ## Installing From Source
@@ -28,7 +28,7 @@ To install the development trunk version from GitHub, run:
 
 Download the source code for pyrax from GitHub, and install from that. First, grab the source:
 
-    curl -O https://github.com/downloads/rackspace/pyrax/pyrax-<version>.tar.gz
+    curl -O https://github.com/downloads/pycontribs/pyrax/pyrax-<version>.tar.gz
 
 Then from the command line:
 

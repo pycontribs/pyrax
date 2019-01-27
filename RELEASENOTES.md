@@ -556,7 +556,7 @@
   environment.
 - Configuration settings can now be stored in environment variables. These all
   begin with `CLOUD_`; a full list can be found in the [main pyrax
-  documentation](https://github.com/rackspace/pyrax/tree/master/docs/pyrax_doc.md).
+  documentation](https://github.com/pycontribs/pyrax/tree/master/docs/pyrax_doc.md).
 - Available regions are now available in the `pyrax.regions` attribute after
   authentication.
 - Services that are available for the current cloud provider are now available
