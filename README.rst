@@ -33,7 +33,7 @@ Getting Started with OpenStack/Rackspace
 
 To sign up for a Rackspace Cloud account, go to
 
-`http://www.rackspace.com/cloud <http://www.rackspace.com/cloud>`_
+`http://cart.rackspace.com/cloud <http://cart.rackspace.com/cloud>`_
 
 and follow the prompts.
 
