@@ -12,6 +12,6 @@ root of this repository.
 If you find any bugs, or have ideas for improving pyrax, please create an issue
 at:
 
-    https://github.com/rackspace/pyrax/issues
+    https://github.com/pycontribs/pyrax/issues
 
 Thanks!
