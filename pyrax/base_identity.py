@@ -511,7 +511,7 @@ class BaseIdentity(object):
         tenant_name = self.tenant_name or self.username
         tenant_id = self.tenant_id or self.username
         return {"auth": {"passwordCredentials":
-                {"username": self.username,
+                {"username": tenant_name,
                 "password": self.password,
                 },
                 "tenantId": tenant_id}}
