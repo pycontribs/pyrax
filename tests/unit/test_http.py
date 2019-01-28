@@ -14,13 +14,14 @@ import pyrax.exceptions as exc
 from pyrax import client
 
 from pyrax import fakes
-
+from requests import Session as req_session
 
 
 class HttpTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(HttpTest, self).__init__(*args, **kwargs)
         self.http = pyrax.http
+        self.http_method_choices = ("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH")
 
     def setUp(self):
         pass
@@ -29,77 +30,65 @@ class HttpTest(unittest.TestCase):
         pass
 
     def test_request(self):
-        mthd = random.choice(self.http.req_methods.keys())
-        sav_method = self.http.req_methods[mthd]
+        mthd = random.choice(self.http_method_choices)
         resp = fakes.FakeResponse()
-        self.http.req_methods[mthd] = Mock(return_value=resp)
         uri = utils.random_unicode()
         hk = utils.random_unicode()
         hv = utils.random_unicode()
         headers = {hk: hv}
-        self.http.request(mthd, uri, headers=headers)
-        self.http.req_methods[mthd].assert_called_once_with(uri,
-                headers=headers)
-        self.http.req_methods[mthd] = sav_method
+        with patch.object(req_session, 'request', return_value=resp) as mocked:
+            self.http.request(mthd, uri, headers=headers)
+        mocked.assert_called_once_with(mthd, uri, headers=headers)
 
     def test_request_no_json(self):
-        mthd = random.choice(self.http.req_methods.keys())
-        sav_method = self.http.req_methods[mthd]
+        mthd = random.choice(self.http_method_choices)
         resp = fakes.FakeResponse()
         resp.json = Mock(side_effect=ValueError(""))
-        self.http.req_methods[mthd] = Mock(return_value=resp)
         uri = utils.random_unicode()
         hk = utils.random_unicode()
         hv = utils.random_unicode()
         headers = {hk: hv}
-        self.http.request(mthd, uri, headers=headers)
-        self.http.req_methods[mthd].assert_called_once_with(uri,
-                headers=headers)
-        self.http.req_methods[mthd] = sav_method
+        with patch.object(req_session, 'request', return_value=resp) as mocked:
+            self.http.request(mthd, uri, headers=headers)
+        mocked.assert_called_once_with(mthd, uri, headers=headers)
 
     def test_request_exception(self):
-        mthd = random.choice(self.http.req_methods.keys())
-        sav_method = self.http.req_methods[mthd]
+        mthd = random.choice(self.http_method_choices)
         resp = fakes.FakeResponse()
         resp.status_code = 404
-        self.http.req_methods[mthd] = Mock(return_value=resp)
         uri = utils.random_unicode()
         hk = utils.random_unicode()
         hv = utils.random_unicode()
         headers = {hk: hv}
-        self.assertRaises(exc.NotFound, self.http.request, mthd, uri,
-                headers=headers)
+        with patch.object(req_session, 'request', return_value=resp) as mocked:
+            self.assertRaises(exc.NotFound, self.http.request, mthd, uri,
+                              headers=headers)
+        mocked.assert_called_once_with(mthd, uri, headers=headers)
 
     def test_request_data(self):
-        mthd = random.choice(self.http.req_methods.keys())
-        sav_method = self.http.req_methods[mthd]
+        mthd = random.choice(self.http_method_choices)
         resp = fakes.FakeResponse()
-        self.http.req_methods[mthd] = Mock(return_value=resp)
         uri = utils.random_unicode()
         hk = utils.random_unicode()
         hv = utils.random_unicode()
         headers = {hk: hv}
         data = utils.random_unicode()
-        self.http.request(mthd, uri, headers=headers, data=data)
-        self.http.req_methods[mthd].assert_called_once_with(uri,
-                headers=headers, data=data)
-        self.http.req_methods[mthd] = sav_method
+        with patch.object(req_session, 'request', return_value=resp) as mocked:
+            self.http.request(mthd, uri, headers=headers, data=data)
+        mocked.assert_called_once_with(mthd, uri, headers=headers, data=data)
 
     def test_request_body(self):
-        mthd = random.choice(self.http.req_methods.keys())
-        sav_method = self.http.req_methods[mthd]
+        mthd = random.choice(self.http_method_choices)
         resp = fakes.FakeResponse()
-        self.http.req_methods[mthd] = Mock(return_value=resp)
         uri = utils.random_unicode()
         hk = utils.random_unicode()
         hv = utils.random_unicode()
         headers = {hk: hv}
         body = utils.random_unicode()
         jbody = json.dumps(body)
-        self.http.request(mthd, uri, headers=headers, body=body)
-        self.http.req_methods[mthd].assert_called_once_with(uri,
-                headers=headers, data=jbody)
-        self.http.req_methods[mthd] = sav_method
+        with patch.object(req_session, 'request', return_value=resp) as mocked:
+            self.http.request(mthd, uri, headers=headers, body=body)
+        mocked.assert_called_once_with(mthd, uri, headers=headers, data=jbody)
 
     def test_http_log_req(self):
         args = ("a", "b")

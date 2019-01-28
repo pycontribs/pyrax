@@ -20,19 +20,12 @@ Wrapper around the requests library. Used for making all HTTP calls.
 import logging
 import json
 import requests
+import threading
 
 import pyrax
 import pyrax.exceptions as exc
 
-
-req_methods = {
-    "HEAD": requests.head,
-    "GET": requests.get,
-    "POST": requests.post,
-    "PUT": requests.put,
-    "DELETE": requests.delete,
-    "PATCH": requests.patch,
-    }
+tls = threading.local()
 
 # NOTE: FIX THIS!!!
 verify_ssl = False
@@ -46,7 +39,6 @@ def request(method, uri, *args, **kwargs):
     Formats the request into a dict representing the headers
     and body that will be used to make the API call.
     """
-    req_method = req_methods[method.upper()]
     raise_exception = kwargs.pop("raise_exception", True)
     raw_content = kwargs.pop("raw_content", False)
     kwargs["headers"] = kwargs.get("headers", {})
@@ -59,10 +51,14 @@ def request(method, uri, *args, **kwargs):
         if "Content-Type" not in kwargs["headers"]:
             kwargs["headers"]["Content-Type"] = "application/json"
         data = json.dumps(kwargs.pop("body"))
+    session = getattr(tls, 'pyrax_http_session', None)
+    if session is None:
+        session = requests.Session()
+        tls.pyrax_http_session = session
     if data:
-        resp = req_method(uri, data=data, **kwargs)
+        resp = session.request(method, uri, data=data, **kwargs)
     else:
-        resp = req_method(uri, **kwargs)
+        resp = session.request(method, uri, **kwargs)
     if raw_content:
         body = resp.content
     else:
