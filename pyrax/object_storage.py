@@ -61,6 +61,7 @@ MAX_BULK_DELETE = 10000
 class Fault_cls(object):
     def __nonzero__(self):
         return False
+    __bool__ = __nonzero__
 
 FAULT = Fault_cls()
 
@@ -2827,7 +2828,7 @@ class StorageClient(BaseClient):
                     if self.count > self.interval:
                         self.count = 0
                         print(".")
-                ret = self.gen.next()
+                ret = next(self.gen)
                 self.processed += len(ret)
                 return ret
 

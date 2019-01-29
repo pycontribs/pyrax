@@ -369,9 +369,9 @@ class BaseIdentity(object):
         if svc is not None:
             return svc.endpoints
         # Either invalid service, or a region
-        ret = utils.DotDict([(stype, svc.endpoints.get(att))
-                for stype, svc in list(self.services.items())
-                if svc.endpoints.get(att) is not None])
+        ret = utils.DotDict([(stype, svc_.endpoints.get(att))
+                for stype, svc_ in list(self.services.items())
+                if svc_.endpoints.get(att) is not None])
         ret._att_mapper.update(self.service_mapping)
         if ret:
             return ret
@@ -489,7 +489,7 @@ class BaseIdentity(object):
             raise exc.AuthenticationFailed("Incorrect/unauthorized "
                     "credentials received")
         elif resp.status_code > 299:
-            msg = resp_body[resp_body.keys()[0]]["message"]
+            msg = resp_body[next(iter(resp_body))]["message"]
             raise exc.AuthenticationFailed("%s - %s." % (resp.reason, msg))
         return resp, resp_body
 
