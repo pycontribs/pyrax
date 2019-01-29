@@ -172,8 +172,8 @@ class ObjectStorageTest(unittest.TestCase):
 
     def test_backwards_aliases(self):
         cont = self.container
-        get_func = cont.get_objects.im_func
-        list_func = cont.list.im_func
+        get_func = cont.get_objects.__func__
+        list_func = cont.list.__func__
         self.assertTrue(get_func is list_func)
 
     def test_repr(self):
@@ -2133,7 +2133,8 @@ class ObjectStorageTest(unittest.TestCase):
         resp_body = ""
         mgr.api.method_get = Mock(return_value=(resp, resp_body))
         ret = mgr._fetch_chunker(uri, chunk_size, None, obj.total_bytes)
-        self.assertRaises(StopIteration, ret.next)
+        with self.assertRaises(StopIteration):
+            next(ret)
 
     def test_sobj_mgr_fetch_partial(self):
         obj = self.obj
