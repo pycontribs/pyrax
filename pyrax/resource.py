@@ -68,7 +68,7 @@ class BaseResource(object):
         corresponding attributes on the object.
         """
         for (key, val) in six.iteritems(info):
-            if isinstance(key, six.text_type):
+            if isinstance(key, six.text_type) and six.PY2:
                 key = key.encode(pyrax.get_encoding())
             elif isinstance(key, bytes):
                 key = key.decode("utf-8")
@@ -94,9 +94,9 @@ class BaseResource(object):
 
     def __repr__(self):
         reprkeys = sorted(key for key in self.__dict__.keys()
-                if (key[0] != "_")
-                and (key not in ("manager", "created", "updated"))
-                and (key not in self._non_display))
+                if (key[0] != "_") and
+                   (key not in ("manager", "created", "updated")) and
+                   (key not in self._non_display))
         reprkeys += self._repr_properties
         info = ", ".join("%s=%s" % (key, getattr(self, key))
                 for key in reprkeys)
