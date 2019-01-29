@@ -12,3 +12,7 @@ rpms/
 .coveralls.yml
 .coverage
 pyrax.spec
+
+.venv/
+env/
+venv/
