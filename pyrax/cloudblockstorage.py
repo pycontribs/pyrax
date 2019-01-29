@@ -281,9 +281,7 @@ class CloudBlockStorageManager(BaseManager):
         """
         Used to create the dict required to create a new volume
         """
-        try:
-            size = int(size)
-        except (ValueError, TypeError):
+        if not isinstance(size, six.integer_types):
             raise exc.InvalidSize("Volume sizes must be integers")
 
         if volume_type is None:
