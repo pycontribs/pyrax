@@ -26,10 +26,10 @@ from __future__ import absolute_import, unicode_literals
 
 import json
 import logging
-import requests
-import six
 import time
 
+import requests
+import six
 from six.moves import urllib
 
 import pyrax
