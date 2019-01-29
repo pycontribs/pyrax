@@ -203,10 +203,7 @@ class Settings(object):
             else:
                 env_var = self.env_dct.get(key)
             if env_var is not None:
-                try:
-                    ret = os.environ[env_var]
-                except KeyError:
-                    ret = None
+                ret = os.environ.get(env_var)
         return ret
 
 
