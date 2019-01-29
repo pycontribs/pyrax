@@ -24,8 +24,8 @@ class RaxIdentity(BaseIdentity):
 
 
     def _get_auth_endpoint(self):
-        return (self._auth_endpoint or pyrax.get_setting("auth_endpoint")
-                or AUTH_ENDPOINT)
+        return (self._auth_endpoint or pyrax.get_setting("auth_endpoint") or
+                AUTH_ENDPOINT)
 
 
     def _read_credential_file(self, cfg):

@@ -511,7 +511,7 @@ class BaseIdentity(object):
         tenant_name = self.tenant_name or self.username
         tenant_id = self.tenant_id or self.username
         return {"auth": {"passwordCredentials":
-                {"username": self.username,
+                {"username": tenant_name,
                 "password": self.password,
                 },
                 "tenantId": tenant_id}}
@@ -647,6 +647,10 @@ class BaseIdentity(object):
             service = Service(self, svc)
             if not hasattr(service, "endpoints"):
                 # Not an OpenStack service
+                continue
+            if service.prefix == '' and service.service_type == 'dns':
+                # Skip service registration of Managed DNS
+                # so it doesn't conflict with Cloud DNS
                 continue
             setattr(self.services, service.service_type, service)
             self.regions.update(list(service.endpoints.keys()))

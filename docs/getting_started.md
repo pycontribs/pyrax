@@ -8,7 +8,7 @@
 
 
 ## Prerequisites
-You need Python 2.7.x to run pyrax. It may work with earlier versions, but this has not been tested. There are plans to port it to run in both 2.x and 3.x, but that work has not yet been started. But no matter what version you run, if you encounter a problem with pyrax, please report it on [https://github.com/rackspace/pyrax/issues](https://github.com/rackspace/pyrax/issues).
+You need Python 2.7.x to run pyrax. It may work with earlier versions, but this has not been tested. There are plans to port it to run in both 2.x and 3.x, but that work has not yet been started. But no matter what version you run, if you encounter a problem with pyrax, please report it on [https://github.com/pycontribs/pyrax/issues](https://github.com/pycontribs/pyrax/issues).
 
 The documentation assumes that you are experienced with programming in Python, and have a basic understanding of cloud computing concepts. If you would like to brush up on cloud computing, you should visit the [Rackspace Knowledge Center](http://www.rackspace.com/knowledge_center/).
 
@@ -22,11 +22,11 @@ You need to do this as root/administrator (that is, using `sudo`), unless you ar
 
 You can also install directly from GitHub (where the pyrax source code is hosted). To do that, run:
 
-    pip install git+git://github.com/rackspace/pyrax.git
+    pip install git+git://github.com/pycontribs/pyrax.git
 
 The difference is that using the GitHub installation method installs the current trunk version, which has the latest changes, but may also be less stable.
 
-To upgrade your installation in the future, re-run the same command, but this time add the `--upgrade` option to make sure that pyrax and any dependecies are updated to the newest available version.
+To upgrade your installation in the future, re-run the same command, but this time add the `--upgrade` option to make sure that pyrax and any dependencies are updated to the newest available version.
 
 
 ## Set up Authentication
@@ -193,7 +193,7 @@ If the environment is then changed to 'public', pyrax switches to Rackspace auth
 
 
 ### Accessing Environment Information
-Pyrax offers several methods for querying and modifying envrionments and their settings. To start, you can determine the current environment by calling `pyrax.get_environment()`. You can also get a list of all defined envrionments by calling `pyrax.list_environments()`. And as mentioned above, you can switch the current envrionment by calling `pyrax.set_environment(new_env_name)`.
+Pyrax offers several methods for querying and modifying environments and their settings. To start, you can determine the current environment by calling `pyrax.get_environment()`. You can also get a list of all defined environments by calling `pyrax.list_environments()`. And as mentioned above, you can switch the current envrionment by calling `pyrax.set_environment(new_env_name)`.
 
 To get the value of a setting, call `pyrax.get_setting(key)`. Normally you do not need to change settings in the middle of a session, but just in case you do, you can use the `pyrax.set_setting(key, val)` method. Both of these methods work on the current environment by default. You can get/set settings in other environments with those calls by passing in the envrionment name as the optional `env` parameter to those methods.
 
@@ -217,7 +217,7 @@ As of this writing, Rackspace has three cloud regions in the US: "DFW" (Dallas-F
 
 The important point to keep in mind when dealing with multiple regions is that all of pyrax's `connect_to_*` methods take a region parameter, and return a region-specific object. If you do not explicitly include a region, the default region you defined in your config file is used. If you did not define a default region, pyrax defaults to the "DFW" region.
 
-**Update as of Version 1.8.0**: Pyrax's new [*context objects*](https://github.com/rackspace/pyrax/blob/master/docs/context_objects.md) make it even easier to work with multiple regions. See that document for more in-depth information, but here is the code listed above re-written to use context objects to handle multiple regions:
+**Update as of Version 1.8.0**: Pyrax's new [*context objects*](https://github.com/pycontribs/pyrax/blob/master/docs/context_objects.md) make it even easier to work with multiple regions. See that document for more in-depth information, but here is the code listed above re-written to use context objects to handle multiple regions:
 
     import pyrax
     ctx = pyrax.create_context()
@@ -234,7 +234,7 @@ The important point to keep in mind when dealing with multiple regions is that a
 ## The `Identity` Class
 pyrax has an `Identity` class that is used to handle authentication and cache credentials. You can access it in your code using the reference `pyrax.identity`.  Once authenticated, it stores your credentials and authentication token information. In most cases you do not need to interact with this object directly; pyrax uses it to handle authentication tasks for you. But it is available in case you need more fine-grained control of the authentication process, such as querying endpoints in different regions, or getting a list of user roles.
 
-As of Version 1.8.0 of pyrax, the concept of [**context objects**](https://github.com/rackspace/pyrax/docs/context_objects.md) that encapsulate all of the identity and clients for a given login can be used.
+As of Version 1.8.0 of pyrax, the concept of [**context objects**](https://github.com/pycontribs/pyrax/docs/context_objects.md) that encapsulate all of the identity and clients for a given login can be used.
 
 You can check its `authenticated` attribute to determine if authentication was successful; if so, its `token` and `expires` attributes contain the returned authentication information, and its `services` attribute contains a dict with all the service endpoint information. Here is an example of the contents of `services` after authentication (with identifying information obscured):
 

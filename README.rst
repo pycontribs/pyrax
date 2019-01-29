@@ -1,7 +1,19 @@
 pyrax
 =====
 
+.. image:: https://img.shields.io/pypi/v/jira.svg
+        :target: https://pypi.python.org/pypi/jira/
+
+.. image:: https://travis-ci.com/pycontribs/jira.svg?branch=master
+        :target: https://travis-ci.com/pycontribs/jira
+
 Python SDK for OpenStack/Rackspace APIs
+
+   **DEPRECATED**: Pyrax is no longer being developed or supported.
+   See `openstacksdk <https://pypi.python.org/pypi/openstacksdk>`__
+   and the `rackspacesdk <https://pypi.python.org/pypi/rackspacesdk>`__
+   plugin in order to interact with Rackspace's OpenStack-based
+   public cloud.
 
 See the LICENSE file for license and copyright information.
 
@@ -13,18 +25,15 @@ OpenStack Swift. But if you don't use any of the CDN-related code, your
 app will work fine on any standard Swift deployment.
 
 See the `Release
-Notes <https://github.com/rackspace/pyrax/tree/master/RELEASENOTES.md>`_
+Notes <https://github.com/pycontribs/pyrax/tree/master/RELEASENOTES.md>`_
 for what has changed in the latest release
-
-.. image:: https://travis-ci.org/rackspace/pyrax.svg?branch=master
-       :target: https://travis-ci.org/rackspace/pyrax
 
 Getting Started with OpenStack/Rackspace
 ----------------------------------------
 
 To sign up for a Rackspace Cloud account, go to
 
-`http://www.rackspace.com/cloud <http://www.rackspace.com/cloud>`_
+`http://cart.rackspace.com/cloud <http://cart.rackspace.com/cloud>`_
 
 and follow the prompts.
 
@@ -62,7 +71,7 @@ you can install directly from trunk on GitHub:
 
 ::
 
-    pip install git+git://github.com/rackspace/pyrax.git
+    pip install git+git://github.com/pycontribs/pyrax.git
 
 If you are not using
 `virtualenv <http://pypi.python.org/pypi/virtualenv>`_, you will need to
@@ -70,7 +79,7 @@ run ``pip install`` as admin using ``sudo``.
 
 You may also download and install from source. The source code for
 **pyrax** is available on
-`GitHub <https://github.com/rackspace/pyrax/>`_.
+`GitHub <https://github.com/pycontribs/pyrax/>`_.
 
 Once you have the source code, ``cd`` to the base directory of the
 source and run (using ``sudo``, if necessary):
@@ -82,7 +91,7 @@ source and run (using ``sudo``, if necessary):
 For more information on getting started, check out the following
 documentation:
 
-`https://github.com/rackspace/pyrax/blob/master/docs/getting\_started.md <https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md>`_
+`https://github.com/pycontribs/pyrax/blob/master/docs/getting\_started.md <https://github.com/pycontribs/pyrax/blob/master/docs/getting_started.md>`_
 `https://developer.rackspace.com/sdks/python/ <https://developer.rackspace.com/sdks/python/>`_
 
 Updates
@@ -96,7 +105,7 @@ updates from either PyPI or GitHub:
     # PyPI
     pip install --upgrade pyrax
     # GitHub
-    pip install --upgrade git+git://github.com/rackspace/pyrax.git
+    pip install --upgrade git+git://github.com/pycontribs/pyrax.git
 
 Contributing
 ------------
@@ -108,11 +117,11 @@ Support and Feedback
 --------------------
 
 You can find documentation for using the **pyrax** SDK at
-`docs.rackspace.com <http://docs.rackspace.com/sdks/guide/content/python.html>`_.
+https://developer.rackspace.com/sdks/python/.
 
 Your feedback is appreciated! If you have specific issues with the
 **pyrax** SDK, developers should file an `issue via
-Github <https://github.com/rackspace/pyrax/issues>`_.
+Github <https://github.com/pycontribs/pyrax/issues>`_.
 
-For general feedback and support requests, send an email to:
-`sdk-support@rackspace.com <mailto:sdk-support@rackspace.com>`_.
+For general feedback and support requests, contact us at
+https://developer.rackspace.com/support/
