@@ -2949,6 +2949,14 @@ class ObjectStorageTest(unittest.TestCase):
                     txt += chunker.read()
                 except StopIteration:
                     break
+                except RuntimeError as exc:
+                    # in py37, a StopIteration raised by a generator
+                    # results in a RuntimeError
+                    if not str(exc).endswith(
+                        'generator raised StopIteration'
+                    ):
+                        raise
+                    break
             self.assertEqual(txt, "aaabbbccc")
 
     def test_clt_download_object(self):

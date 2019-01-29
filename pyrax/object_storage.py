@@ -2004,11 +2004,11 @@ class StorageObjectManager(BaseManager):
             pos = endpos + 1
             if not resp_body:
                 # End of file
-                raise StopIteration
+                return
             yield resp_body
             total_bytes += len(resp_body)
             if total_bytes >= max_size:
-                raise StopIteration
+                return
 
 
     def fetch_partial(self, obj, size):
