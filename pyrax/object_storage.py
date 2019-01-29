@@ -1897,7 +1897,7 @@ class StorageObjectManager(BaseManager):
                 fsize = get_file_size(content)
             else:
                 fsize = content_length
-        if fsize <= MAX_FILE_SIZE:
+        if fsize is None or fsize <= MAX_FILE_SIZE:
             # We can just upload it as-is.
             return self._store_object(obj_name, content=content, etag=etag,
                     chunked=chunked, chunk_size=chunk_size, headers=headers)
