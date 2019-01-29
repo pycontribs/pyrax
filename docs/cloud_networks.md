@@ -3,7 +3,7 @@
 ## Basic Concepts
 Rackspace Cloud Networks allows you to create virtual isolated networks and associate them with your Cloud Server instances. This allows you to create a typical bastion setup, with servers that are only accessible from the internet through a primary bastion server.
 
-See the [sample code](https://github.com/rackspace/pyrax/tree/master/samples/cloud_networks) for an example of creating a typical bastion server setup.
+See the [sample code](https://github.com/pycontribs/pyrax/tree/master/samples/cloud_networks) for an example of creating a typical bastion server setup.
 
 
 ## Default Networks

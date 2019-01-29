@@ -1,5 +1,62 @@
 # Release Notes for pyrax
 
+### 2016.08.22 - Version 1.9.8
+  - Cloud Monitoring
+    - Resolve TypeError #617
+
+### 2016.01.19 - Version 1.9.7
+
+  - General
+    - Bump to 1.9.7 to handle pypi packing issue
+
+### 2016.01.19 - Version 1.9.6
+
+  - Cloud DNS
+    - Ignore new Managed DNS offering
+
+  - General
+    - Pin python-novaclient to 2.27.0
+    - Pin six and requests to not exceed the next semver major release
+    - Update references for novaclient v1.1 to v2
+
+### 2015.09.02 - Version 1.9.5
+
+  - Cloud Servers
+    - Handle a change to python-novaclient 2.27.0
+    - Pin python-novaclient to less or equal to 2.27.0
+    - Suppress deprecation warnings emitted for novaclient.v1_1
+
+### 2015.04.16 - Version 1.9.4
+
+  - Cloud CDN
+    - Introduced the Cloud CDN service with support for listing flavors as
+      well creating, updating, and deleting of services.
+
+  - Identity
+    - Make BaseIdentity respect `verify_ssl` # 515
+    - Respect the `_auth_endpoint` attribute of the identity instance for Keystone identity #522
+
+  - Cloud Monitoring
+    - Add ability to create agent check types #508
+    - Fix entity retrieval #512
+    - Add support for monitoring agent tokens #525
+
+  - Cloud Files
+    - Update documentation #519
+
+  - Cloud Databases
+    - PEP8 Clean Up #507
+
+  - Cloud Block Storage
+    - Allow renaming volumes and snapshots #506
+    - Do not hardcode CBS volume sizes #541
+
+  - General
+    - `verify_ssl` is now respected when creating a context #523
+    - pep8 fix ups for recent pep8 1.6 changes #540
+    - Replace support email address with contact page #546
+    - Ensure we default verify_ssl to True in the default environment
+
 ### 2014.11.24 - Version 1.9.3
 
   - Identity
@@ -220,7 +277,7 @@
   - General
     - Added a CONTRIBUTING.rst file, following the suggestion of @justinclift
       in GitHub #327.
-    - Removed dependecy on the httplib2 library; pyrax now only relies on the
+    - Removed dependency on the httplib2 library; pyrax now only relies on the
       'requests' module for HTTP communication.
     - Fixed a bug in folder size calculations. GitHub #302
     - Removed a limit that only handled Rackspace vendor extensions. GitHub #315
@@ -499,7 +556,7 @@
   environment.
 - Configuration settings can now be stored in environment variables. These all
   begin with `CLOUD_`; a full list can be found in the [main pyrax
-  documentation](https://github.com/rackspace/pyrax/tree/master/docs/pyrax_doc.md).
+  documentation](https://github.com/pycontribs/pyrax/tree/master/docs/pyrax_doc.md).
 - Available regions are now available in the `pyrax.regions` attribute after
   authentication.
 - Services that are available for the current cloud provider are now available

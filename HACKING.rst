@@ -1,15 +1,11 @@
 Contributing to pyrax
 =====================
 
-Please create all pull requests against the 'working' branch. The
-'master' branch is reserved for full releases, complete with updated
-docs, etc.
+Please create all pull requests against the 'master' branch.
 
 For ease of testing, please ensure that the ``tox`` module is installed.
 
-While PEP8 is generally followed, it is not treated as Holy Gospel.
-Practicality beats purity, and coming up with some convoluted coding to
-avoid a line of 82 characters is an anti-pattern.
+We follow PEP8 standards with the exception of line length of 84 characters.
 
 When indenting continuation lines, the standard is 2 levels (i.e., 8
 spaces). Please do not use "visual indentation", as it is fraught with

@@ -14,7 +14,7 @@ where `id_type` is either "keystone" or "rackspace". If you've defined the ident
 
     ctx = pyrax.create_context()
 
-If you have multiple **[environments](https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md#configuration-environments)** defined, you may specify the environment to use when creating the context by specifying that name in the `env` parameter:
+If you have multiple **[environments](https://github.com/pycontribs/pyrax/blob/master/docs/getting_started.md#configuration-environments)** defined, you may specify the environment to use when creating the context by specifying that name in the `env` parameter:
 
     ctx = pyrax.create_context(env="{my_special_environment}")
 
@@ -33,7 +33,7 @@ At this point you have an unauthenticated context. You must authenticate before 
 
     ctx.set_credentials({your_user_name}, {your_password})
 
-...or if you have them stored in a file (see the information on **[credential files](https://github.com/rackspace/pyrax/blob/master/docs/getting_started.md#authenticating)** for how to set one up), you can call:
+...or if you have them stored in a file (see the information on **[credential files](https://github.com/pycontribs/pyrax/blob/master/docs/getting_started.md#authenticating)** for how to set one up), you can call:
 
     ctx.set_credential_file({path/to/your/file})
 
