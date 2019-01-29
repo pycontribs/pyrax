@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 
 import datetime
 import hashlib
@@ -34,9 +35,12 @@ class UtilsTest(unittest.TestCase):
         pass
 
     def test_runproc(self):
-        currdir = os.getcwd()
+        if hasattr(os, 'getcwdb'):
+            currdir = os.getcwdb()
+        else:
+            currdir = os.getcwd()
         out, err = utils.runproc("pwd")
-        self.assertEqual(err, "")
+        self.assertEqual(err, b"")
         self.assertEqual(out.strip(), currdir)
 
     def test_self_deleting_temp_file(self):
@@ -64,7 +68,7 @@ class UtilsTest(unittest.TestCase):
         self.assertRaises(AttributeError, getattr, dd, "bogus")
 
     def test_get_checksum_from_string(self):
-        test = utils.random_ascii()
+        test = utils.random_ascii().encode("ascii")
         md = hashlib.md5()
         md.update(test)
         expected = md.hexdigest()
@@ -99,14 +103,14 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(expected, received)
 
     def test_get_checksum_from_file(self):
-        test = "some random text"
+        test = b"some random text"
         md = hashlib.md5()
         md.update(test)
         expected = md.hexdigest()
         with utils.SelfDeletingTempfile() as tmp:
-            with open(tmp, "w") as testfile:
+            with open(tmp, "wb") as testfile:
                 testfile.write(test)
-            with open(tmp, "r") as testfile:
+            with open(tmp, "rb") as testfile:
                 received = utils.get_checksum(testfile)
         self.assertEqual(expected, received)
 

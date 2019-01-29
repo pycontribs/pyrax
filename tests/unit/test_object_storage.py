@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 
 import logging
 import mimetypes
@@ -2037,7 +2038,7 @@ class ObjectStorageTest(unittest.TestCase):
         with utils.SelfDeletingTempfile() as tmp:
             with open(tmp, "w") as content:
                 content.write("x" * 66)
-            with open(tmp) as content:
+            with open(tmp, "rb") as content:
                 ret = mgr._upload(obj_name, content, content_type,
                         content_encoding, content_length, etag, chunked,
                         chunk_size, headers)
@@ -2188,7 +2189,7 @@ class ObjectStorageTest(unittest.TestCase):
     def test_sobj_mgr_download_no_structure(self):
         obj = self.obj
         mgr = obj.manager
-        txt = utils.random_unicode()
+        txt = utils.random_unicode().encode("utf-8")
         mgr.fetch = Mock(return_value=txt)
         with utils.SelfDeletingTempDirectory() as directory:
             mgr.download(obj, directory, structure=False)
@@ -2200,7 +2201,7 @@ class ObjectStorageTest(unittest.TestCase):
         obj = self.obj
         obj.name = "%s/%s/%s" % (obj.name, obj.name, obj.name)
         mgr = obj.manager
-        txt = utils.random_unicode()
+        txt = utils.random_unicode().encode("utf-8")
         mgr.fetch = Mock(return_value=txt)
         with utils.SelfDeletingTempDirectory() as directory:
             mgr.download(obj, directory, structure=True)
