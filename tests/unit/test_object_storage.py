@@ -3478,12 +3478,11 @@ class ObjectStorageTest(unittest.TestCase):
         ignore = "*FAKE*"
         upload_key = utils.random_unicode()
         folder_up = FolderUploader(root_folder, cont, ignore, upload_key, clt)
-        arg = utils.random_unicode()
         dirname = "FAKE DIRECTORY"
         fname1 = utils.random_unicode()
         fname2 = utils.random_unicode()
         fnames = [fname1, fname2]
-        ret = folder_up.upload_files_in_folder(arg, dirname, fnames)
+        ret = folder_up.upload_files_in_folder(dirname, fnames)
         self.assertFalse(ret)
 
     def test_folder_uploader_upload_files_in_folder_abort(self):
@@ -3493,14 +3492,13 @@ class ObjectStorageTest(unittest.TestCase):
         ignore = "*FAKE*"
         upload_key = utils.random_unicode()
         folder_up = FolderUploader(root_folder, cont, ignore, upload_key, clt)
-        arg = utils.random_unicode()
         dirname = utils.random_unicode()
         fname1 = utils.random_unicode()
         fname2 = utils.random_unicode()
         fnames = [fname1, fname2]
         clt._should_abort_folder_upload = Mock(return_value=True)
         clt.upload_file = Mock()
-        ret = folder_up.upload_files_in_folder(arg, dirname, fnames)
+        ret = folder_up.upload_files_in_folder(dirname, fnames)
         self.assertEqual(clt.upload_file.call_count, 0)
 
     def test_folder_uploader_upload_files_in_folder(self):
@@ -3508,21 +3506,20 @@ class ObjectStorageTest(unittest.TestCase):
         cont = self.container
         ignore = "*FAKE*"
         upload_key = utils.random_unicode()
-        arg = utils.random_unicode()
         fname1 = utils.random_ascii()
         fname2 = utils.random_ascii()
         fname3 = utils.random_ascii()
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            fnames = [tmpdir, fname1, fname2, fname3]
-            for fname in fnames[1:]:
+            fnames = [fname1, fname2, fname3]
+            for fname in fnames:
                 pth = os.path.join(tmpdir, fname)
                 open(pth, "w").write("faketext")
             clt._should_abort_folder_upload = Mock(return_value=False)
             clt.upload_file = Mock()
             clt._update_progress = Mock()
             folder_up = FolderUploader(tmpdir, cont, ignore, upload_key, clt)
-            ret = folder_up.upload_files_in_folder(arg, tmpdir, fnames)
-            self.assertEqual(clt.upload_file.call_count, len(fnames) - 1)
+            ret = folder_up.upload_files_in_folder(tmpdir, fnames)
+            self.assertEqual(clt.upload_file.call_count, len(fnames))
 
     def test_folder_uploader_run(self):
         clt = self.client
