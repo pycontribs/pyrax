@@ -561,11 +561,11 @@ class ObjectStorageTest(unittest.TestCase):
         cont.object_manager.delete_all_objects = Mock()
         name1 = utils.random_unicode()
         name2 = utils.random_unicode()
-        async = utils.random_unicode()
+        async_ = utils.random_unicode()
         cont.list_object_names = Mock(return_value=[name1, name2])
-        cont.delete_all_objects(async=async)
+        cont.delete_all_objects(async_=async_)
         cont.object_manager.delete_all_objects.assert_called_once_with(
-                [name1, name2], async=async)
+                [name1, name2], async_=async_)
 
     def test_cont_copy_object(self):
         cont = self.container
@@ -778,7 +778,7 @@ class ObjectStorageTest(unittest.TestCase):
         mgr.api.method_delete = Mock(return_value=(None, None))
         mgr.delete(cont, del_objects=True)
         mgr.list_object_names.assert_called_once_with(cont, full_listing=True)
-        mgr.api.bulk_delete.assert_called_once_with(cont, names, async=False)
+        mgr.api.bulk_delete.assert_called_once_with(cont, names, async_=False)
         mgr.api.method_delete.assert_called_once_with(exp_uri)
 
     def test_cmgr_create_body(self):
@@ -2164,22 +2164,22 @@ class ObjectStorageTest(unittest.TestCase):
         obj = self.obj
         mgr = obj.manager
         nms = utils.random_unicode()
-        async = utils.random_unicode()
+        async_ = utils.random_unicode()
         mgr.api.bulk_delete = Mock()
-        mgr.delete_all_objects(nms, async=async)
-        mgr.api.bulk_delete.assert_called_once_with(mgr.name, nms, async=async)
+        mgr.delete_all_objects(nms, async_=async_)
+        mgr.api.bulk_delete.assert_called_once_with(mgr.name, nms, async_=async_)
 
     def test_sobj_mgr_delete_all_objects_no_names(self):
         obj = self.obj
         mgr = obj.manager
         nms = utils.random_unicode()
-        async = utils.random_unicode()
+        async_ = utils.random_unicode()
         mgr.api.list_object_names = Mock(return_value=nms)
         mgr.api.bulk_delete = Mock()
-        mgr.delete_all_objects(None, async=async)
+        mgr.delete_all_objects(None, async_=async_)
         mgr.api.list_object_names.assert_called_once_with(mgr.name,
                                                           full_listing=True)
-        mgr.api.bulk_delete.assert_called_once_with(mgr.name, nms, async=async)
+        mgr.api.bulk_delete.assert_called_once_with(mgr.name, nms, async_=async_)
 
     def test_sobj_mgr_download_no_directory(self):
         obj = self.obj
@@ -3300,14 +3300,14 @@ class ObjectStorageTest(unittest.TestCase):
         clt._delete_objects_not_in_list(cont, object_prefix=object_prefix)
         cont.get_object_names.assert_called_once_with(prefix=object_prefix,
                 full_listing=True)
-        clt.bulk_delete.assert_called_once_with(cont, exp_del, async=True)
+        clt.bulk_delete.assert_called_once_with(cont, exp_del, async_=True)
 
     @patch("pyrax.object_storage.BulkDeleter.start")
     def test_clt_bulk_delete_async(self, mock_del):
         clt = self.client
         cont = self.container
         obj_names = ["test1", "test2"]
-        ret = clt.bulk_delete(cont, obj_names, async=True)
+        ret = clt.bulk_delete(cont, obj_names, async_=True)
         self.assertTrue(isinstance(ret, BulkDeleter))
 
     def test_clt_bulk_delete_sync(self):
@@ -3336,7 +3336,7 @@ class ObjectStorageTest(unittest.TestCase):
             return (resp, body)
 
         clt.method_delete = Mock(side_effect=fake_bulk_resp)
-        ret = clt.bulk_delete(cont, obj_names, async=False)
+        ret = clt.bulk_delete(cont, obj_names, async_=False)
         self.assertEqual(ret, expected)
 
     def test_clt_bulk_delete_sync_413(self):
@@ -3370,7 +3370,7 @@ class ObjectStorageTest(unittest.TestCase):
             return (resp, body)
 
         clt.method_delete = Mock(side_effect=fake_bulk_resp)
-        ret = clt.bulk_delete(cont, obj_names, async=False)
+        ret = clt.bulk_delete(cont, obj_names, async_=False)
         self.assertEqual(ret, expected)
 
     def test_clt_cdn_request_not_enabled(self):
