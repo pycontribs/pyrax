@@ -479,7 +479,7 @@ def from_response(response, body):
             message = body.get("message")
             details = body.get("details")
             if message is details is None:
-                error = body[body.keys()[0]]
+                error = body[next(iter(body))]
                 if isinstance(error, dict):
                     message = error.get("message", None)
                     details = error.get("details", None)
