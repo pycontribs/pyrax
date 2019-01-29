@@ -1,11 +1,11 @@
 pyrax
 =====
 
-.. image:: https://img.shields.io/pypi/v/jira.svg
-        :target: https://pypi.python.org/pypi/jira/
+.. image:: https://img.shields.io/pypi/v/pyrax.svg
+        :target: https://pypi.python.org/pypi/pyrax/
 
-.. image:: https://travis-ci.com/pycontribs/jira.svg?branch=master
-        :target: https://travis-ci.com/pycontribs/jira
+.. image:: https://travis-ci.com/pycontribs/pyrax.svg?branch=master
+        :target: https://travis-ci.com/pycontribs/pyrax
 
 Python SDK for OpenStack/Rackspace APIs
 
