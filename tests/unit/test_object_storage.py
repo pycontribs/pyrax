@@ -2133,7 +2133,8 @@ class ObjectStorageTest(unittest.TestCase):
         resp_body = ""
         mgr.api.method_get = Mock(return_value=(resp, resp_body))
         ret = mgr._fetch_chunker(uri, chunk_size, None, obj.total_bytes)
-        self.assertRaises(StopIteration, ret.next)
+        with self.assertRaises(StopIteration):
+            next(ret)
 
     def test_sobj_mgr_fetch_partial(self):
         obj = self.obj
