@@ -369,9 +369,9 @@ class BaseIdentity(object):
         if svc is not None:
             return svc.endpoints
         # Either invalid service, or a region
-        ret = utils.DotDict([(stype, svc.endpoints.get(att))
-                for stype, svc in list(self.services.items())
-                if svc.endpoints.get(att) is not None])
+        ret = utils.DotDict([(stype, svc_.endpoints.get(att))
+                for stype, svc_ in list(self.services.items())
+                if svc_.endpoints.get(att) is not None])
         ret._att_mapper.update(self.service_mapping)
         if ret:
             return ret

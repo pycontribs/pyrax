@@ -63,7 +63,7 @@ try:
     f = codecs.open('README.rst', encoding='utf-8')
     long_description = f.read()
     f.close()
-except:
+except IOError:
     long_description = ''
 
 testing_requires = ["mock"]

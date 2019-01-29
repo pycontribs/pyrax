@@ -139,9 +139,6 @@ class InvalidLoadBalancer(PyraxException):
 class InvalidLoadBalancerParameters(PyraxException):
     pass
 
-class InvalidImageMemberStatus(PyraxException):
-    pass
-
 class InvalidMonitoringCheckDetails(PyraxException):
     pass
 
