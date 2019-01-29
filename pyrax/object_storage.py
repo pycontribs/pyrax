@@ -3279,7 +3279,7 @@ class FolderUploader(threading.Thread):
         return os.path.basename(pth.rstrip(os.sep))
 
 
-    def upload_files_in_folder(self, arg, dirname, fnames):
+    def upload_files_in_folder(self, dirname, fnames):
         """Handles the iteration across files within a folder."""
         if utils.match_pattern(dirname, self.ignore):
             return False
@@ -3289,9 +3289,6 @@ class FolderUploader(threading.Thread):
             if self.client._should_abort_folder_upload(self.upload_key):
                 return
             full_path = os.path.join(dirname, fname)
-            if os.path.isdir(full_path):
-                # Skip folders; os.walk will include them in the next pass.
-                continue
             obj_name = os.path.relpath(full_path, self.root_folder)
             obj_size = os.stat(full_path).st_size
             self.client.upload_file(self.container, full_path,
@@ -3303,8 +3300,8 @@ class FolderUploader(threading.Thread):
         """Starts the uploading thread."""
         root_path, folder_name = os.path.split(self.root_folder)
         self.root_folder = os.path.join(root_path, folder_name)
-        os.path.walk(self.root_folder, self.upload_files_in_folder, None)
-
+        for dirname, _, fnames in os.walk(self.root_folder):
+            self.upload_files_in_folder(dirname, fnames)
 
 
 class BulkDeleter(threading.Thread):

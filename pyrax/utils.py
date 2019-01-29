@@ -321,22 +321,17 @@ def folder_size(pth, ignore=None):
 
     ignore = coerce_to_list(ignore)
 
-    def get_size(total, root, names):
+    total = 0
+    for root, _, names in os.walk(pth):
         paths = [os.path.realpath(os.path.join(root, nm)) for nm in names]
         for pth in paths[::-1]:
             if not os.path.exists(pth):
                 paths.remove(pth)
-            elif os.path.isdir(pth):
-                # Don't count folder stat sizes
-                paths.remove(pth)
             elif match_pattern(pth, ignore):
                 paths.remove(pth)
-        total[0] += sum(os.stat(pth).st_size for pth in paths)
+        total += sum(os.stat(pth).st_size for pth in paths)
 
-    # Need a mutable to pass
-    total = [0]
-    os.path.walk(pth, get_size, total)
-    return total[0]
+    return total
 
 
 def add_method(obj, func, name=None):
