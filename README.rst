@@ -75,7 +75,7 @@ you can install directly from trunk on GitHub:
 
 If you are not using
 `virtualenv <http://pypi.python.org/pypi/virtualenv>`_, you will need to
-run ``pip install`` as admin using ``sudo``.
+run ``pip install --user`` to install into your user account's site packages.
 
 You may also download and install from source. The source code for
 **pyrax** is available on
