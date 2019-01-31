@@ -1060,9 +1060,9 @@ class ObjectStorageTest(unittest.TestCase):
     def test_cmgr_get_temp_url_unicode_error(self):
         cont = self.container
         mgr = cont.manager
-        obj = utils.random_unicode()
+        obj = utils.random_unicode() + u'💯'
         seconds = random.randint(1, 1000)
-        key = utils.random_unicode()
+        key = utils.random_unicode() + u'💯'
         method = "GET"
         mgr.api.management_url = "%s/v2/" % fakes.example_uri
         self.assertRaises(exc.UnicodePathError, mgr.get_temp_url, cont,
@@ -2390,8 +2390,8 @@ class ObjectStorageTest(unittest.TestCase):
                 "%s%s" % (ACCOUNT_META_PREFIX, key_exclude): val_exclude}
         mgr.get_account_headers = Mock(return_value=headers)
         ret = clt.get_account_details()
-        self.assertTrue(key_include in ret)
-        self.assertFalse(key_exclude in ret)
+        self.assertIn(key_include.replace('-', '_'), ret)
+        self.assertNotIn(key_exclude.replace('-', '_'), ret)
 
     def test_clt_get_account_info(self):
         clt = self.client
