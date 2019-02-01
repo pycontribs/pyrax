@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 
 import logging
 import mimetypes
@@ -560,11 +561,11 @@ class ObjectStorageTest(unittest.TestCase):
         cont.object_manager.delete_all_objects = Mock()
         name1 = utils.random_unicode()
         name2 = utils.random_unicode()
-        async = utils.random_unicode()
+        async_ = utils.random_unicode()
         cont.list_object_names = Mock(return_value=[name1, name2])
-        cont.delete_all_objects(async=async)
+        cont.delete_all_objects(async_=async_)
         cont.object_manager.delete_all_objects.assert_called_once_with(
-                [name1, name2], async=async)
+                [name1, name2], async_=async_)
 
     def test_cont_copy_object(self):
         cont = self.container
@@ -777,7 +778,7 @@ class ObjectStorageTest(unittest.TestCase):
         mgr.api.method_delete = Mock(return_value=(None, None))
         mgr.delete(cont, del_objects=True)
         mgr.list_object_names.assert_called_once_with(cont, full_listing=True)
-        mgr.api.bulk_delete.assert_called_once_with(cont, names, async=False)
+        mgr.api.bulk_delete.assert_called_once_with(cont, names, async_=False)
         mgr.api.method_delete.assert_called_once_with(exp_uri)
 
     def test_cmgr_create_body(self):
@@ -1059,9 +1060,9 @@ class ObjectStorageTest(unittest.TestCase):
     def test_cmgr_get_temp_url_unicode_error(self):
         cont = self.container
         mgr = cont.manager
-        obj = utils.random_unicode()
+        obj = utils.random_unicode() + u'💯'
         seconds = random.randint(1, 1000)
-        key = utils.random_unicode()
+        key = utils.random_unicode() + u'💯'
         method = "GET"
         mgr.api.management_url = "%s/v2/" % fakes.example_uri
         self.assertRaises(exc.UnicodePathError, mgr.get_temp_url, cont,
@@ -2037,7 +2038,7 @@ class ObjectStorageTest(unittest.TestCase):
         with utils.SelfDeletingTempfile() as tmp:
             with open(tmp, "w") as content:
                 content.write("x" * 66)
-            with open(tmp) as content:
+            with open(tmp, "rb") as content:
                 ret = mgr._upload(obj_name, content, content_type,
                         content_encoding, content_length, etag, chunked,
                         chunk_size, headers)
@@ -2163,22 +2164,22 @@ class ObjectStorageTest(unittest.TestCase):
         obj = self.obj
         mgr = obj.manager
         nms = utils.random_unicode()
-        async = utils.random_unicode()
+        async_ = utils.random_unicode()
         mgr.api.bulk_delete = Mock()
-        mgr.delete_all_objects(nms, async=async)
-        mgr.api.bulk_delete.assert_called_once_with(mgr.name, nms, async=async)
+        mgr.delete_all_objects(nms, async_=async_)
+        mgr.api.bulk_delete.assert_called_once_with(mgr.name, nms, async_=async_)
 
     def test_sobj_mgr_delete_all_objects_no_names(self):
         obj = self.obj
         mgr = obj.manager
         nms = utils.random_unicode()
-        async = utils.random_unicode()
+        async_ = utils.random_unicode()
         mgr.api.list_object_names = Mock(return_value=nms)
         mgr.api.bulk_delete = Mock()
-        mgr.delete_all_objects(None, async=async)
+        mgr.delete_all_objects(None, async_=async_)
         mgr.api.list_object_names.assert_called_once_with(mgr.name,
                                                           full_listing=True)
-        mgr.api.bulk_delete.assert_called_once_with(mgr.name, nms, async=async)
+        mgr.api.bulk_delete.assert_called_once_with(mgr.name, nms, async_=async_)
 
     def test_sobj_mgr_download_no_directory(self):
         obj = self.obj
@@ -2188,7 +2189,7 @@ class ObjectStorageTest(unittest.TestCase):
     def test_sobj_mgr_download_no_structure(self):
         obj = self.obj
         mgr = obj.manager
-        txt = utils.random_unicode()
+        txt = utils.random_unicode().encode("utf-8")
         mgr.fetch = Mock(return_value=txt)
         with utils.SelfDeletingTempDirectory() as directory:
             mgr.download(obj, directory, structure=False)
@@ -2200,7 +2201,7 @@ class ObjectStorageTest(unittest.TestCase):
         obj = self.obj
         obj.name = "%s/%s/%s" % (obj.name, obj.name, obj.name)
         mgr = obj.manager
-        txt = utils.random_unicode()
+        txt = utils.random_unicode().encode("utf-8")
         mgr.fetch = Mock(return_value=txt)
         with utils.SelfDeletingTempDirectory() as directory:
             mgr.download(obj, directory, structure=True)
@@ -2389,8 +2390,8 @@ class ObjectStorageTest(unittest.TestCase):
                 "%s%s" % (ACCOUNT_META_PREFIX, key_exclude): val_exclude}
         mgr.get_account_headers = Mock(return_value=headers)
         ret = clt.get_account_details()
-        self.assertTrue(key_include in ret)
-        self.assertFalse(key_exclude in ret)
+        self.assertIn(key_include.replace('-', '_'), ret)
+        self.assertNotIn(key_exclude.replace('-', '_'), ret)
 
     def test_clt_get_account_info(self):
         clt = self.client
@@ -2948,6 +2949,14 @@ class ObjectStorageTest(unittest.TestCase):
                     txt += chunker.read()
                 except StopIteration:
                     break
+                except RuntimeError as exc:
+                    # in py37, a StopIteration raised by a generator
+                    # results in a RuntimeError
+                    if not str(exc).endswith(
+                        'generator raised StopIteration'
+                    ):
+                        raise
+                    break
             self.assertEqual(txt, "aaabbbccc")
 
     def test_clt_download_object(self):
@@ -3299,14 +3308,14 @@ class ObjectStorageTest(unittest.TestCase):
         clt._delete_objects_not_in_list(cont, object_prefix=object_prefix)
         cont.get_object_names.assert_called_once_with(prefix=object_prefix,
                 full_listing=True)
-        clt.bulk_delete.assert_called_once_with(cont, exp_del, async=True)
+        clt.bulk_delete.assert_called_once_with(cont, exp_del, async_=True)
 
     @patch("pyrax.object_storage.BulkDeleter.start")
     def test_clt_bulk_delete_async(self, mock_del):
         clt = self.client
         cont = self.container
         obj_names = ["test1", "test2"]
-        ret = clt.bulk_delete(cont, obj_names, async=True)
+        ret = clt.bulk_delete(cont, obj_names, async_=True)
         self.assertTrue(isinstance(ret, BulkDeleter))
 
     def test_clt_bulk_delete_sync(self):
@@ -3335,7 +3344,7 @@ class ObjectStorageTest(unittest.TestCase):
             return (resp, body)
 
         clt.method_delete = Mock(side_effect=fake_bulk_resp)
-        ret = clt.bulk_delete(cont, obj_names, async=False)
+        ret = clt.bulk_delete(cont, obj_names, async_=False)
         self.assertEqual(ret, expected)
 
     def test_clt_bulk_delete_sync_413(self):
@@ -3369,7 +3378,7 @@ class ObjectStorageTest(unittest.TestCase):
             return (resp, body)
 
         clt.method_delete = Mock(side_effect=fake_bulk_resp)
-        ret = clt.bulk_delete(cont, obj_names, async=False)
+        ret = clt.bulk_delete(cont, obj_names, async_=False)
         self.assertEqual(ret, expected)
 
     def test_clt_cdn_request_not_enabled(self):
@@ -3478,12 +3487,11 @@ class ObjectStorageTest(unittest.TestCase):
         ignore = "*FAKE*"
         upload_key = utils.random_unicode()
         folder_up = FolderUploader(root_folder, cont, ignore, upload_key, clt)
-        arg = utils.random_unicode()
         dirname = "FAKE DIRECTORY"
         fname1 = utils.random_unicode()
         fname2 = utils.random_unicode()
         fnames = [fname1, fname2]
-        ret = folder_up.upload_files_in_folder(arg, dirname, fnames)
+        ret = folder_up.upload_files_in_folder(dirname, fnames)
         self.assertFalse(ret)
 
     def test_folder_uploader_upload_files_in_folder_abort(self):
@@ -3493,14 +3501,13 @@ class ObjectStorageTest(unittest.TestCase):
         ignore = "*FAKE*"
         upload_key = utils.random_unicode()
         folder_up = FolderUploader(root_folder, cont, ignore, upload_key, clt)
-        arg = utils.random_unicode()
         dirname = utils.random_unicode()
         fname1 = utils.random_unicode()
         fname2 = utils.random_unicode()
         fnames = [fname1, fname2]
         clt._should_abort_folder_upload = Mock(return_value=True)
         clt.upload_file = Mock()
-        ret = folder_up.upload_files_in_folder(arg, dirname, fnames)
+        ret = folder_up.upload_files_in_folder(dirname, fnames)
         self.assertEqual(clt.upload_file.call_count, 0)
 
     def test_folder_uploader_upload_files_in_folder(self):
@@ -3508,21 +3515,20 @@ class ObjectStorageTest(unittest.TestCase):
         cont = self.container
         ignore = "*FAKE*"
         upload_key = utils.random_unicode()
-        arg = utils.random_unicode()
         fname1 = utils.random_ascii()
         fname2 = utils.random_ascii()
         fname3 = utils.random_ascii()
         with utils.SelfDeletingTempDirectory() as tmpdir:
-            fnames = [tmpdir, fname1, fname2, fname3]
-            for fname in fnames[1:]:
+            fnames = [fname1, fname2, fname3]
+            for fname in fnames:
                 pth = os.path.join(tmpdir, fname)
                 open(pth, "w").write("faketext")
             clt._should_abort_folder_upload = Mock(return_value=False)
             clt.upload_file = Mock()
             clt._update_progress = Mock()
             folder_up = FolderUploader(tmpdir, cont, ignore, upload_key, clt)
-            ret = folder_up.upload_files_in_folder(arg, tmpdir, fnames)
-            self.assertEqual(clt.upload_file.call_count, len(fnames) - 1)
+            ret = folder_up.upload_files_in_folder(tmpdir, fnames)
+            self.assertEqual(clt.upload_file.call_count, len(fnames))
 
     def test_folder_uploader_run(self):
         clt = self.client

@@ -28,7 +28,7 @@ The source code for <b>pyrax</b> can be found at:
 http://github.com/pycontribs/pyrax
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 from functools import wraps
 import inspect
 import logging
@@ -202,10 +202,8 @@ class Settings(object):
                     return _import_identity(ityp)
             else:
                 env_var = self.env_dct.get(key)
-            try:
-                ret = os.environ[env_var]
-            except KeyError:
-                ret = None
+            if env_var is not None:
+                ret = os.environ.get(env_var)
         return ret
 
 

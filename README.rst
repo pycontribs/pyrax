@@ -1,11 +1,11 @@
 pyrax
 =====
 
-.. image:: https://img.shields.io/pypi/v/jira.svg
-        :target: https://pypi.python.org/pypi/jira/
+.. image:: https://img.shields.io/pypi/v/pyrax.svg
+        :target: https://pypi.python.org/pypi/pyrax/
 
-.. image:: https://travis-ci.com/pycontribs/jira.svg?branch=master
-        :target: https://travis-ci.com/pycontribs/jira
+.. image:: https://travis-ci.com/pycontribs/pyrax.svg?branch=master
+        :target: https://travis-ci.com/pycontribs/pyrax
 
 Python SDK for OpenStack/Rackspace APIs
 
@@ -48,8 +48,10 @@ Requirements
    -  username
    -  API key
 
--  Python 2.7
+-  Python 2.7, 3.4, 3.5, 3.6, or 3.7
 
+   -  Support for Python 3.4 ends in March 2019.
+   -  Support for Python 2.7 ends at the end of 2019.
    -  pyrax is not yet tested yet with other Python versions. Please
       post feedback about what works or does not work with other
       versions. See the **Support and Feedback** section below for where
@@ -75,7 +77,7 @@ you can install directly from trunk on GitHub:
 
 If you are not using
 `virtualenv <http://pypi.python.org/pypi/virtualenv>`_, you will need to
-run ``pip install`` as admin using ``sudo``.
+run ``pip install --user`` to install into your user account's site packages.
 
 You may also download and install from source. The source code for
 **pyrax** is available on

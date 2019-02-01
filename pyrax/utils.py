@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function, unicode_literals
 
 import datetime
 import email.utils
@@ -237,14 +237,13 @@ def get_checksum(content, encoding="utf8", block_size=8192):
     md = hashlib.md5()
 
     def safe_update(txt):
-        try:
-            md.update(txt)
-        except UnicodeEncodeError:
-            md.update(txt.encode(encoding))
+        if isinstance(txt, six.text_type):
+            txt = txt.encode(encoding)
+        md.update(txt)
 
     try:
         isfile = os.path.isfile(content)
-    except TypeError:
+    except (TypeError, ValueError):
         # Will happen with binary content.
         isfile = False
     if isfile:
@@ -322,29 +321,27 @@ def folder_size(pth, ignore=None):
 
     ignore = coerce_to_list(ignore)
 
-    def get_size(total, root, names):
+    total = 0
+    for root, _, names in os.walk(pth):
         paths = [os.path.realpath(os.path.join(root, nm)) for nm in names]
         for pth in paths[::-1]:
             if not os.path.exists(pth):
                 paths.remove(pth)
-            elif os.path.isdir(pth):
-                # Don't count folder stat sizes
-                paths.remove(pth)
             elif match_pattern(pth, ignore):
                 paths.remove(pth)
-        total[0] += sum(os.stat(pth).st_size for pth in paths)
+        total += sum(os.stat(pth).st_size for pth in paths)
 
-    # Need a mutable to pass
-    total = [0]
-    os.path.walk(pth, get_size, total)
-    return total[0]
+    return total
 
 
 def add_method(obj, func, name=None):
     """Adds an instance method to an object."""
     if name is None:
-        name = func.func_name
-    method = types.MethodType(func, obj, obj.__class__)
+        name = func.__name__
+    if sys.version_info < (3,):
+        method = types.MethodType(func, obj, obj.__class__)
+    else:
+        method = types.MethodType(func, obj)
     setattr(obj, name, method)
 
 

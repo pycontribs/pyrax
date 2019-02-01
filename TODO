@@ -1,5 +1,5 @@
 * Cloud Backups
 * Add Cloud Files container sync
 * Add support for Cloud Networks virtual interfaces
-
-* Python 3 compatibility
+* March 2019: Drop support for Python 3.4
+* January 2020: Drop support for Python 2.7
