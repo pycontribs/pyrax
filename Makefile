@@ -12,7 +12,9 @@ all: rpms
 clean:
 	rm -rf dist/ build/ rpm-build/ rpms/
 	rm -rf docs/*.gz MANIFEST *~
+	rm -rf .tox/
 	find . -name '*.pyc' -exec rm -f {} \;
+	find . -name '__pycache__' -exec rm -rf {} \; -prune
 
 build: clean
 	python setup.py build -f

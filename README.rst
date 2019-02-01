@@ -48,8 +48,10 @@ Requirements
    -  username
    -  API key
 
--  Python 2.7
+-  Python 2.7, 3.4, 3.5, 3.6, or 3.7
 
+   -  Support for Python 3.4 ends in March 2019.
+   -  Support for Python 2.7 ends at the end of 2019.
    -  pyrax is not yet tested yet with other Python versions. Please
       post feedback about what works or does not work with other
       versions. See the **Support and Feedback** section below for where

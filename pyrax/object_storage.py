@@ -574,12 +574,12 @@ class Container(BaseResource):
         return self.manager.delete_object_in_seconds(self, obj, seconds)
 
 
-    def delete_all_objects(self, async=False):
+    def delete_all_objects(self, async_=False):
         """
         Deletes all objects from this container.
 
         By default the call will block until all objects have been deleted. By
-        passing True for the 'async' parameter, this method will not block, and
+        passing True for the 'async_' parameter, this method will not block, and
         instead return an object that can be used to follow the progress of the
         deletion. When deletion is complete the bulk deletion object's
         'results' attribute will be populated with the information returned
@@ -593,7 +593,7 @@ class Container(BaseResource):
             errors - a list of any errors returned by the bulk delete call
         """
         nms = self.list_object_names(full_listing=True)
-        return self.object_manager.delete_all_objects(nms, async=async)
+        return self.object_manager.delete_all_objects(nms, async_=async_)
 
 
     def copy_object(self, obj, new_container, new_obj_name=None,
@@ -852,7 +852,7 @@ class ContainerManager(BaseManager):
         """
         if del_objects:
             nms = self.list_object_names(container, full_listing=True)
-            self.api.bulk_delete(container, nms, async=False)
+            self.api.bulk_delete(container, nms, async_=False)
         uri = "/%s" % utils.get_name(container)
         resp, resp_body = self.api.method_delete(uri)
 
@@ -2004,11 +2004,11 @@ class StorageObjectManager(BaseManager):
             pos = endpos + 1
             if not resp_body:
                 # End of file
-                raise StopIteration
+                return
             yield resp_body
             total_bytes += len(resp_body)
             if total_bytes >= max_size:
-                raise StopIteration
+                return
 
 
     def fetch_partial(self, obj, size):
@@ -2028,12 +2028,12 @@ class StorageObjectManager(BaseManager):
         return super(StorageObjectManager, self).delete(obj)
 
 
-    def delete_all_objects(self, nms, async=False):
+    def delete_all_objects(self, nms, async_=False):
         """
         Deletes all objects from this container.
 
         By default the call will block until all objects have been deleted. By
-        passing True for the 'async' parameter, this method will not block, and
+        passing True for the 'async_' parameter, this method will not block, and
         instead return an object that can be used to follow the progress of the
         deletion. When deletion is complete the bulk deletion object's
         'results' attribute will be populated with the information returned
@@ -2048,7 +2048,7 @@ class StorageObjectManager(BaseManager):
         """
         if nms is None:
             nms = self.api.list_object_names(self.name, full_listing=True)
-        return self.api.bulk_delete(self.name, nms, async=async)
+        return self.api.bulk_delete(self.name, nms, async_=async_)
 
 
     @_handle_object_not_found
@@ -3161,17 +3161,17 @@ class StorageClient(BaseClient):
         self._sync_summary["deleted"] += len(to_delete)
         # We don't need to wait around for this to complete. Store the thread
         # reference in case it is needed at some point.
-        self._thread = self.bulk_delete(cont, to_delete, async=True)
+        self._thread = self.bulk_delete(cont, to_delete, async_=True)
 
 
-    def bulk_delete(self, container, object_names, async=False):
+    def bulk_delete(self, container, object_names, async_=False):
         """
         Deletes multiple objects from a container in a single call.
 
         The bulk deletion call does not return until all of the specified
         objects have been processed. For large numbers of objects, this can
-        take quite a while, so there is an 'async' parameter to give you the
-        option to have this call return immediately. If 'async' is True, an
+        take quite a while, so there is an 'async_' parameter to give you the
+        option to have this call return immediately. If 'async_' is True, an
         object is returned with a 'completed' attribute that will be set to
         True as soon as the bulk deletion is complete, and a 'results'
         attribute that will contain a dictionary (described below) with the
@@ -3192,7 +3192,7 @@ class StorageClient(BaseClient):
         """
         deleter = BulkDeleter(self, container, object_names)
         deleter.start()
-        if async:
+        if async_:
             return deleter
         while not deleter.completed:
             time.sleep(self.bulk_delete_interval)
