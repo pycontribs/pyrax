@@ -117,7 +117,7 @@ class UtilsTest(unittest.TestCase):
     def test_random_unicode(self):
         testlen = random.randint(50, 500)
         nm = utils.random_unicode(testlen)
-        self.assertEqual(len(nm), testlen)
+        self.assertEqual(len(nm), testlen, (nm, testlen, len(nm)))
 
     def test_folder_size_bad_folder(self):
         self.assertRaises(exc.FolderNotFound, utils.folder_size,
