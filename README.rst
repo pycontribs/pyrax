@@ -113,7 +113,7 @@ Contributing
 ------------
 
 Please see the `HACKING <HACKING.rst>`_ file for contribution guidelines.
-Make sure pull requests are on the ``working`` branch!
+Make sure pull requests are on the ``master`` branch!
 
 Support and Feedback
 --------------------
