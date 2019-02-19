@@ -27,7 +27,7 @@ All changes must pass all unit tests. You can run the tests by running:
 
 ::
 
-    tox -e py27
+    tox
 
 For consistency's sake, use double quotes to delimit strings unless the
 strings contain double quote characters.
@@ -38,24 +38,23 @@ Pull Request Guidelines:
    be observed and evaluated together. Here's the best way to make that
    happen:
 
-   -  Pull from this repo's 'working' branch to your local repo. All
-      pull requests *must* be against the 'working' branch.
+   -  Pull from this repo's 'master' branch to your local repo. All
+      pull requests *must* be against the 'master' branch.
    -  Create a local branch for making your changes:
 
-      -  git checkout working
-      -  git checkout -b mychangebranch
+      -  git checkout -b mychangebranch upstream/master
 
    -  Do all your testing, fixing, etc., in that branch. Make as many
       commits as you need as you work.
    -  When you've completed your changes, and have added your unit tests
       and made sure that everything's working great, merge it back into
-      working using the '--squash' option so that it appears as a single
+      master using the '--squash' option so that it appears as a single
       commit.
 
-      -  git checkout working
+      -  git checkout master
       -  git merge --squash mychangebranch
       -  git commit -am "Adds super powers to pyrax."
-      -  git push origin working
+      -  git push origin master
 
    -  Now you have your changes in a single commit against your
-      'working' branch on GitHub, and can create the pull request.
+      'master' branch on GitHub, and can create the pull request.
