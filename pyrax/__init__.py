@@ -678,8 +678,7 @@ def connect_to_cloudservers(region=None, context=None, verify_ssl=None, **kwargs
         extensions = nc.discover_extensions(_cs_max_version)
     except AttributeError:
         extensions = None
-    clt_class = _cs_client.get_client_class(_cs_max_version)
-    cloudservers = clt_class(context.username, context.password,
+    cloudservers = nc.Client(2, context.username, context.password,
             project_id=context.tenant_id, auth_url=context.auth_endpoint,
             auth_system=id_type, region_name=region, service_type="compute",
             auth_plugin=auth_plugin, insecure=insecure, extensions=extensions,
