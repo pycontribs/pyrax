@@ -16,3 +16,4 @@ pyrax.spec
 .venv/
 env/
 venv/
+.idea
