@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
-from setuptools import setup
-from setuptools.command.sdist import sdist as _sdist
+import codecs
 import re
+import subprocess
 import sys
 import time
-import codecs
-import subprocess
+
+from setuptools import setup
+from setuptools.command.sdist import sdist as _sdist
+
+
 if sys.version < "2.2.3":
     from distutils.dist import DistributionMetadata
     DistributionMetadata.classifiers = None
@@ -84,7 +87,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "python-novaclient==2.27.0",
+        "python-novaclient==3.4.0",
         "rackspace-novaclient",
         "keyring",
         "requests>=2.2.1,<3",
