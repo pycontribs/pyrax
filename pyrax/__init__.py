@@ -117,7 +117,7 @@ regions = tuple()
 services = tuple()
 
 _client_classes = {
-        "compute": _cs_client.get_client_class(_cs_max_version),
+        "compute": _cs_client.Client(_cs_max_version),
         "cdn": CloudCDNClient,
         "object_store": StorageClient,
         "database": CloudDatabaseClient,
