@@ -70,7 +70,7 @@ class BaseResource(object):
         for (key, val) in six.iteritems(info):
             if isinstance(key, six.text_type):
                 key = key.encode(pyrax.get_encoding())
-            elif isinstance(key, bytes):
+            if isinstance(key, bytes):
                 key = key.decode("utf-8")
             setattr(self, key, val)
 

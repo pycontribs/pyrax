@@ -191,7 +191,7 @@ class ResultsIterator(object):
         return self
 
 
-    def next(self):
+    def __next__(self):
         """
         Return the next available item. If there are no more items in the
         local 'results' list, check if there is a 'next_uri' value. If so,
@@ -244,7 +244,7 @@ def get_checksum(content, encoding="utf8", block_size=8192):
 
     try:
         isfile = os.path.isfile(content)
-    except TypeError:
+    except (TypeError, ValueError):
         # Will happen with binary content.
         isfile = False
     if isfile:

@@ -1886,7 +1886,7 @@ class StorageObjectManager(BaseManager):
             headers["Content-Type"] = content_type
         if content_encoding is not None:
             headers["Content-Encoding"] = content_encoding
-        if isinstance(content, six.string_types):
+        if isinstance(content, six.string_types) or isinstance(content, bytes):
             fsize = len(content)
         else:
             if chunked:
