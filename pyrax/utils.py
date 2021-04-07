@@ -781,3 +781,17 @@ def to_slug(value, incoming=None, errors="strict"):
 
 # For backwards compatibility, alias slugify to point to_slug
 slugify = to_slug
+
+def read_in_chunks(file_object, max_size, chunk_size=8192):
+    bytes_left_to_read = int(max_size)
+    chunk_size = int(chunk_size)
+    # Set read size to pick the smaller of the two values
+    # in case max_size is smaller than the default chunk size
+    read_size = min(max_size, chunk_size)
+    while read_size > 0:
+        data = file_object.read(read_size)
+        bytes_left_to_read -= chunk_size
+        read_size = min(bytes_left_to_read, chunk_size)
+        if not data:
+            break
+        yield data

@@ -1911,8 +1911,11 @@ class StorageObjectManager(BaseManager):
             sequence = str(segment + 1).zfill(digits)
             seg_name = "%s.%s" % (obj_name, sequence)
             with utils.SelfDeletingTempfile() as tmpname:
+                # Write the temporary file in small pieces, to be memory efficient.
                 with open(tmpname, "wb") as tmp:
-                    tmp.write(content.read(MAX_FILE_SIZE))
+                    for chunk in utils.read_in_chunks(content,
+                            max_size=MAX_FILE_SIZE):
+                        tmp.write(chunk)
                 with open(tmpname, "rb") as tmp:
                     # We have to calculate the etag for each segment
                     etag = utils.get_checksum(tmp)

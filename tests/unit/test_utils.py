@@ -426,6 +426,54 @@ class UtilsTest(unittest.TestCase):
         ret = utils.update_exc(err, msg2, before=False, separator=sep)
         self.assertEqual(ret.message, exp)
 
+    def test_read_in_chunks(self):
+        # create junk file to test size.
+        source_file = "source_file.dat"
+        target_file = "target_file.dat"
+        def compare_contents(source_file_name, target_file_name):
+            # compare whatever is contained in the target file to the first part of the source file
+            with open(source_file_name, "rb") as source_handle, open(target_file_name, "rb") as target_handle:
+                read_size = os.path.getsize(target_file_name)
+                target_contents = target_handle.read(read_size)
+                source_contents = source_handle.read(read_size)
+                self.assertEqual(target_contents, source_contents)
+        # Try block is just to make sure we delete the files.
+        # Using only main python libraries to hopefully improve test reliability.
+        try:
+            # Write something into the source file
+            with open(source_file, "wb") as source:
+                source.write(os.urandom(1024))
+            # Make sure it's the size we're expecting
+            self.assertEqual(1024, os.path.getsize(source_file))
+            # Now test different sizing cases for file consistency.
+            # test max_size smaller than chunk size
+            with open(target_file, "wb") as target, open(source_file, "rb") as source:
+                for chunk in utils.read_in_chunks(source, max_size=1, chunk_size=1024):
+                    target.write(chunk)
+                compare_contents(source_file, target_file)
+            os.unlink(target_file)
+            # test max_size larger than chunk size
+            with open(target_file, "wb") as target, open(source_file, "rb") as source:
+                for chunk in utils.read_in_chunks(source, max_size=512, chunk_size=64):
+                    target.write(chunk)
+                compare_contents(source_file, target_file)
+            os.unlink(target_file)
+            # test max_size equal with chunk size
+            with open(target_file, "wb") as target, open(source_file, "rb") as source:
+                for chunk in utils.read_in_chunks(source, max_size=512, chunk_size=512):
+                    target.write(chunk)
+                compare_contents(source_file, target_file)
+            os.unlink(target_file)
+            os.unlink(source_file)
+
+        except:
+            raise
+        finally:
+            # Remove the test files we made!
+            if os.path.exists(source_file):
+                os.unlink(source_file)
+            if os.path.exists(target_file):
+                os.unlink(target_file)
 
 if __name__ == "__main__":
     unittest.main()
