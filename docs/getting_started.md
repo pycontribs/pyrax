@@ -72,6 +72,7 @@ To authenticate, run the following code using one of these authentication method
     import pyrax
 
     # Using direct method
+    pyrax.set_setting("tenant_id", "123456")
     pyrax.set_credentials("my_username", "01234567890abcdef")
 
     # Using credentials file
@@ -312,4 +313,3 @@ You can check its `authenticated` attribute to determine if authentication was s
        u'roles': [{u'description': u'User Admin Role.',
                    u'id': u'3',
                    u'name': u'identity:user-admin'}]}}}
-
