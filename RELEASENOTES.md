@@ -1,5 +1,11 @@
 # Release Notes for pyrax
 
+### 2021.04.07 - Version 1.10.0
+  - initial Python 3 support
+  - fix some doc issues
+  - switch to GitHub flow for contributions
+  - switch from Travis CI to GitHub Actions
+
 ### 2016.08.22 - Version 1.9.8
   - Cloud Monitoring
     - Resolve TypeError #617
