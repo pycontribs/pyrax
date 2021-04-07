@@ -57,14 +57,15 @@ class CloudCDNService(BaseResource):
 class CloudCDNServiceManager(BaseManager):
 
     def create(self, name, flavor_id, domains, origins,
-               restrictions=None, caching=None):
+               restrictions=None, caching=None, log_delivery=False):
 
         body = {"name": name,
                 "flavor_id": flavor_id,
                 "domains": domains,
                 "origins": origins,
                 "restrictions": restrictions or [],
-                "caching": caching or []}
+                "caching": caching or [],
+                "log_delivery": {"enabled": bool(log_delivery)}}
         resp, resp_body = self.api.method_post("/%s" % self.uri_base,
                                                body=body)
 
@@ -150,7 +151,7 @@ class CloudCDNClient(BaseClient):
         return self._services_manager.get(service_id)
 
     def create_service(self, name, flavor_id, domains, origins,
-                       restrictions=None, caching=None):
+                       restrictions=None, caching=None, log_delivery=False):
         """Create a new CDN service.
 
         Arguments:
@@ -168,7 +169,8 @@ class CloudCDNClient(BaseClient):
 
         """
         return self._services_manager.create(name, flavor_id, domains, origins,
-                                             restrictions, caching)
+                                             restrictions, caching,
+                                             log_delivery)
 
     def patch_service(self, service_id, changes):
         """Update a CDN service with a patch
