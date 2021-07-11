@@ -788,7 +788,7 @@ class ContainerManager(BaseManager):
     def list(self, limit=None, marker=None, end_marker=None, prefix=None):
         """
         Swift doesn't return listings in the same format as the rest of
-        OpenStack, so this method has to be overriden.
+        OpenStack, so this method has to be overridden.
         """
         uri = "/%s" % self.uri_base
         qs = utils.dict_to_qs({"marker": marker, "limit": limit,
@@ -819,7 +819,7 @@ class ContainerManager(BaseManager):
     def create(self, name, metadata=None, prefix=None, *args, **kwargs):
         """
         Creates a new container, and returns a Container object that represents
-        that contianer. If a container by the same name already exists, no
+        that container. If a container by the same name already exists, no
         exception is raised; instead, a reference to that existing container is
         returned.
         """

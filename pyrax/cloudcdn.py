@@ -195,7 +195,7 @@ class CloudCDNClient(BaseClient):
         url: The URL at which to delete assets
         all: When True, delete all assets associated with the service_id.
 
-        You cannot specifiy both url and all.
+        You cannot specify both url and all.
         """
         self._services_manager.delete_assets(service_id, url, all)
 

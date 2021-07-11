@@ -48,7 +48,7 @@ class UtilsTest(unittest.TestCase):
             self.assert_(isinstance(tmp, six.string_types))
             self.assert_(os.path.exists(tmp))
             self.assert_(os.path.isfile(tmp))
-        # File shoud be deleted after exiting the block
+        # File should be deleted after exiting the block
         self.assertFalse(os.path.exists(tmp))
 
     def test_self_deleting_temp_directory(self):
@@ -56,7 +56,7 @@ class UtilsTest(unittest.TestCase):
             self.assert_(isinstance(tmp, six.string_types))
             self.assert_(os.path.exists(tmp))
             self.assert_(os.path.isdir(tmp))
-        # Directory shoud be deleted after exiting the block
+        # Directory should be deleted after exiting the block
         self.assertFalse(os.path.exists(tmp))
 
     def test_dot_dict(self):

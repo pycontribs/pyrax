@@ -46,7 +46,7 @@ Parameter | Effect
 **status** | Filter parameter that species the image status as 'queued', 'saving', 'active', 'killed', 'deleted', or 'pending_delete'.
 **size_min** | Filters images whose size **in bytes** is greater than or equal to this value.
 **size_max** | Filters images whose size **in bytes** is less than or equal to this value. 
-**sort_key** | Images by default are returned in order of their **created_at** value. You can specifiy any other attribute of an image to control the sorting with this parameter.
+**sort_key** | Images by default are returned in order of their **created_at** value. You can specify any other attribute of an image to control the sorting with this parameter.
 **sort_dir** | Sort direction. Valid values are 'asc' (ascending) and 'desc' (descending). The default is 'desc'.
 
 

@@ -203,7 +203,7 @@ Since Cloud Files does not have a hierarchical folder structure, you can simulat
 
 …you would typically create a container named 'base', and when uploading the file 'three.txt', you would give it the name 'one/two/three.txt'. There really isn't any such structure inside that container, but it helps you to track the relation of files to their original directory structure.
 
-When you retieve the file from Cloud Files, it's helpful to retain that structure on your disk. Like the other methods, there are three ways to do this. If you have a `StorageObject` reference for the object you want to download, just call its `download()` method. If you have the `Container` object that holds the stored object, call its `downlod_object()` method, passing in the name of the object to fetch. Finally, you can call the `pyrax.cloudfiles.download_object()` method, passing in the container and object names. On all three, you also need to pass in the full path to the local directory in which the file is written. That directory must exist on your disk before you attempt to download files to it.
+When you retrieve the file from Cloud Files, it's helpful to retain that structure on your disk. Like the other methods, there are three ways to do this. If you have a `StorageObject` reference for the object you want to download, just call its `download()` method. If you have the `Container` object that holds the stored object, call its `downlod_object()` method, passing in the name of the object to fetch. Finally, you can call the `pyrax.cloudfiles.download_object()` method, passing in the container and object names. On all three, you also need to pass in the full path to the local directory in which the file is written. That directory must exist on your disk before you attempt to download files to it.
 
 These commands take an optional parameter named `structure`. When `True` (the default if omitted), the folder structure of your object name is recreated on your disk. If for any reason you don't want this done, simply set this to `False`, and the objects are all stored in the same base directory without any regard to any paths in their names.
 
@@ -447,7 +447,7 @@ Cloud Files makes it easy to publish your stored objects over the high-speed Aka
 
 ### CDN default web pages
 
-You can set a static web page as the landing page for you CND-enabled containter by calling:
+You can set a static web page as the landing page for you CND-enabled container by calling:
 
     cont.set_web_index_page("example-index.html")
 
