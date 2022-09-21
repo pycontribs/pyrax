@@ -123,7 +123,7 @@ Please note that if you used `auth_with_token()` to authenticate originally, pyr
 
 
 ## Pyrax Configuration
-You can control how pyrax behaves through the configuration file. It should be named `~/.pyrax.cfg`. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Alternatively, you may set these values using environment variables in the OS. Note that the configuration file values take precendence over any environment variables. Environment variables also do not support multiple configurations.
+You can control how pyrax behaves through the configuration file. It should be named `~/.pyrax.cfg`. Like the credential file, `~/.pyrax.cfg` is a standard configuration file. Alternatively, you may set these values using environment variables in the OS. Note that the configuration file values take precedence over any environment variables. Environment variables also do not support multiple configurations.
 
 **Do not include login credentials**, such as passwords, in the configuration file. As this is a defined file in a known location, it is a security risk to have your login information stored in clear text. You may use a [credential file](#authenticating) if you wish to store your credentials on disk; this can be named whatever you wish, and placed anywhere on disk, since you pass the full path to the file when authenticating this way. Please note that credentials stored in the configuration file will be ignored, and a warning will be issued if they are found.
 
@@ -193,9 +193,9 @@ If the environment is then changed to 'public', pyrax switches to Rackspace auth
 
 
 ### Accessing Environment Information
-Pyrax offers several methods for querying and modifying environments and their settings. To start, you can determine the current environment by calling `pyrax.get_environment()`. You can also get a list of all defined environments by calling `pyrax.list_environments()`. And as mentioned above, you can switch the current envrionment by calling `pyrax.set_environment(new_env_name)`.
+Pyrax offers several methods for querying and modifying environments and their settings. To start, you can determine the current environment by calling `pyrax.get_environment()`. You can also get a list of all defined environments by calling `pyrax.list_environments()`. And as mentioned above, you can switch the current environment by calling `pyrax.set_environment(new_env_name)`.
 
-To get the value of a setting, call `pyrax.get_setting(key)`. Normally you do not need to change settings in the middle of a session, but just in case you do, you can use the `pyrax.set_setting(key, val)` method. Both of these methods work on the current environment by default. You can get/set settings in other environments with those calls by passing in the envrionment name as the optional `env` parameter to those methods.
+To get the value of a setting, call `pyrax.get_setting(key)`. Normally you do not need to change settings in the middle of a session, but just in case you do, you can use the `pyrax.set_setting(key, val)` method. Both of these methods work on the current environment by default. You can get/set settings in other environments with those calls by passing in the environment name as the optional `env` parameter to those methods.
 
 
 ## Debugging HTTP requests

@@ -129,7 +129,7 @@ class Queue(BaseResource):
 
         The 'marker' and 'limit' parameters are used to control pagination of
         results. 'Marker' is the ID of the last message returned, while 'limit'
-        controls the number of messages returned per reuqest (default=20).
+        controls the number of messages returned per request (default=20).
         """
         return self._message_manager.list(include_claimed=include_claimed,
                 echo=echo, marker=marker, limit=limit)
@@ -666,7 +666,7 @@ class QueueClient(BaseClient):
 
         The 'marker' and 'limit' parameters are used to control pagination of
         results. 'Marker' is the ID of the last message returned, while 'limit'
-        controls the number of messages returned per reuqest (default=20).
+        controls the number of messages returned per request (default=20).
         """
         return queue.list(include_claimed=include_claimed, echo=echo,
                 marker=marker, limit=limit)
