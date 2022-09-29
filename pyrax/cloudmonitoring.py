@@ -221,12 +221,12 @@ class CloudMonitorEntity(BaseResource):
                 metadata=metadata)
 
 
-    def update_alarm(self, alarm, criteria=None, disabled=False,
+    def update_alarm(self, alarm, notification_plan, criteria=None, disabled=False,
             label=None, name=None, metadata=None):
         """
         Updates an existing alarm on this entity.
         """
-        return self._alarm_manager.update(alarm, criteria=criteria,
+        return self._alarm_manager.update(alarm, notification_plan, criteria=criteria,
                 disabled=disabled, label=label, name=name, metadata=metadata)
 
 
@@ -966,12 +966,12 @@ class CloudMonitorAlarm(BaseResource):
         self.entity = entity
 
 
-    def update(self, criteria=None, disabled=False, label=None, name=None,
+    def update(self, notification_plan=None, criteria=None, disabled=False, label=None, name=None,
             metadata=None):
         """
         Updates this alarm.
         """
-        return self.entity.update_alarm(self, criteria=criteria,
+        return self.entity.update_alarm(self, notification_plan=notification_plan, criteria=criteria,
                 disabled=disabled, label=label, name=name, metadata=metadata)
 
 
